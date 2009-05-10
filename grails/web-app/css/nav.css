@@ -1,0 +1,43 @@
+.nav {
+	color: gray;
+	background: #fff url( ../images/skin/shadow.jpg ) bottom repeat-x;
+	border: 1px solid #93B2CC;
+	border-style: solid none solid none;
+	padding: 4px 0px 4px 0;
+	font-size: smaller;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin: 0 auto;
+}
+
+.nav li {
+	display: inline;
+	border-right: 1px solid black;
+	margin-right: 1em;
+	padding-right: 1em;
+}
+
+.nav li.last {
+	border-right: none;
+}
+
+.nav li a {
+	text-decoration: none;
+}
+
+.nav li a:visited {
+	color: gray;
+}
+
+.nav li a:hover {
+	text-decoration: underline;
+}
+
+.navitem a:link {
+	color: gray;
+}
+
+#clogo {
+	text-transform:none;
+	font-size:small;
+}

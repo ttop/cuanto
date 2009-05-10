@@ -1,0 +1,300 @@
+/**
+ * Standard HTML Tags
+ */
+html * {
+	margin: 0; /*padding: 0; SELECT NOT DISPLAYED CORRECTLY IN FIREFOX */
+}
+
+body {
+	background: #fff;
+	color: #333;
+	font: 11px verdana, arial, helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	color: #006dba;
+}
+
+.failure a:link, .failure a:visited, .failure a:hover {
+	color: red;
+}
+
+img {
+	border-style: none none none none;
+}
+
+h1 {
+	color: #006dba;
+	font-weight: normal;
+	font-size: 16px;
+	margin: .8em 0 .3em 0;
+}
+
+.head1 {
+	color: #006dba;
+	font-weight: normal;
+	font-size: 16px;
+	margin: .8em 0 .3em 0;
+}
+
+h2 {
+	color: #006dba;
+	font-weight: normal;
+	font-size: 14px;
+	margin: .8em 0 .3em 0;
+}
+
+h3 {
+	color: #006dba;
+	font-weight: normal;
+	font-size: 12px;
+	margin: .8em 0 .3em 0;
+}
+
+ul {
+	padding-left: 15px;
+}
+
+p {
+	margin-left: 10px;
+	margin-right: 40%;
+	padding-bottom: 12px;
+}
+
+label {
+	display: block;
+	float: left;
+	width: 30%;
+	clear: left;
+}
+
+hr {
+	width: 80%
+}
+
+/**
+ * Used in _header.gsp files.
+ */
+
+.heading {
+	font-weight: bold;
+}
+
+.headone {
+	color: #006dba;
+	font-weight: normal;
+	font-size: 16px;
+	margin: .8em 0 .3em 0;
+}
+
+.text {
+	font: 12px verdana, arial, helvetica, sans-serif;
+}
+
+.hidden {
+    display: none;
+}
+
+/**
+ * Controls
+ */
+input, select, textarea {
+	background-color: #fcfcfc;
+	border: 1px solid #ccc;
+	font: 11px verdana, arial, helvetica, sans-serif;
+	margin: 2px 0;
+	padding: 2px 4px;
+}
+
+select {
+	padding: 2px 2px 2px 0;
+}
+
+input:focus, select:focus, textarea:focus {
+	border: 1px solid #b2d1ff;
+}
+
+/**
+ * Container/Font formatting.
+ */
+
+.body {
+	float: left;
+	margin: 0 15px 10px 15px;
+}
+
+.cuantoBody {
+	margin-left: 10px;
+}
+
+.highlighted {
+	background-color: yellow;
+}
+
+.smaller {
+	font-size:smaller;
+}
+
+/**
+ * Charts and graphs
+ */
+
+#lineChart {
+	height: 200px;
+	width: 700px;
+}
+
+.graph {
+	margin-left: 30px;
+}
+
+/* MESSAGES AND ERRORS */
+
+.message {
+	background: #f3f8fc url( ../images/skin/information.png ) 8px 50% no-repeat;
+	border: 1px solid #b2d1ff;
+	color: #006dba;
+	margin: 10px 0 5px 0;
+	padding: 5px 5px 5px 30px
+}
+
+div.errors {
+	background: #fff3f3;
+	border: 1px solid red;
+	color: #cc0000;
+	margin: 10px 0 5px 0;
+	padding: 5px 0 5px 0;
+}
+
+div.errors ul {
+	list-style: none;
+	padding: 0;
+}
+
+div.errors li {
+	background: url( ../images/skin/exclamation.png ) 8px 0% no-repeat;
+	line-height: 16px;
+	padding-left: 30px;
+}
+
+td.errors select {
+	border: 1px solid red;
+}
+
+td.errors input {
+	border: 1px solid red;
+}
+
+.outcomeElement {
+    /*TODO: Only used in shared/_result.gsp and testOutcome/outcome.gsp. consider refactoring, but it's only one rule.*/
+	display: block;
+	margin-left: 20%;
+	padding-bottom: 5px; /*float:left;*/
+/*margin: 0 15px 10px 15px;*/
+/*display:inline-block;*/
+}
+
+/* ACTION BUTTONS */
+
+.buttons {
+	background: #fff url( ../images/skin/shadow.jpg ) bottom repeat-x;
+	border: 1px solid #ccc;
+	color: #666;
+	font-size: 10px;
+	margin-top: 5px;
+	overflow: hidden;
+	padding: 0;
+}
+
+.buttons input {
+	background: #fff;
+	border: 0;
+	color: #333;
+	cursor: pointer;
+	font-size: 10px;
+	font-weight: bold;
+	margin-left: 3px;
+	overflow: visible;
+	padding: 2px 6px;
+}
+
+.buttons input.delete {
+	background: transparent url( ../images/skin/database_delete.png ) 5px 50% no-repeat;
+	padding-left: 28px;
+}
+
+.buttons input.edit {
+	background: transparent url( ../images/skin/database_edit.png ) 5px 50% no-repeat;
+	padding-left: 28px;
+}
+
+.buttons input.save {
+	background: transparent url( ../images/skin/database_save.png ) 5px 50% no-repeat;
+	padding-left: 28px;
+}
+
+.clear {
+	clear: both;
+}
+
+#yui-history-iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 1px;
+	visibility: hidden;
+}
+
+/**
+ * Forms
+ */
+form.wideForm {
+	width: 450px;
+}
+
+label.normalLabel {
+	width: 25%;
+	margin-right: 10px;
+}
+
+label.wideLabel {
+	width: 40%;
+	margin-right: 10px;
+}
+
+.formHeader {
+	margin-left: 10px;
+}
+
+/**
+ * Search
+ */
+#searchForm {
+	display: inline;
+}
+
+/**
+ * TODO: Find a place for this.
+ */
+form label.dialogLabel {
+	width: 35%;
+	margin-right: 10px;
+}
+
+.projectLine {
+	padding-bottom:10px;
+}
+
+.projectLine label {
+	width:30%;
+	margin-right: 10px;
+}
+
+#pdAutoComplete {
+	width:10em;
+    padding-bottom:2em;
+	position:static;
+}

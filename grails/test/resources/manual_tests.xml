@@ -1,0 +1,42 @@
+<testCases>
+	<testCase>
+		<name>Goose Test</name>
+		<package>birds</package>
+		<description>I am a goose</description>
+	</testCase>
+	<testCase>
+		<name>Duck Test</name>
+		<package>birds</package>
+		<description>Everything is just ducky</description>
+	</testCase>
+	<testCase>
+		<name>Pigeon Test</name>
+		<package>birds</package>
+		<description>I am the rat of the air</description>
+	</testCase>
+	<testCase>
+		<name>Starbucks Test</name>
+		<package>beverage.coffee</package>
+		<description>Have a cup on Howard</description>
+	</testCase>
+	<testCase>
+		<name>Uptown Test</name>
+		<package>beverage.coffee</package>
+		<description>Test that velvety foam</description>
+	</testCase>
+	<testCase>
+		<name>Cherry Street Test</name>
+		<package>beverage.coffee</package>
+		<description>Why is it on First and Clay?</description>
+	</testCase>
+	<testCase>
+		<name>Tully's Test</name>
+		<package>beverage.coffee</package>
+		<description>Alliteration is my friend</description>
+	</testCase>
+	<testCase>
+		<name>Lighthouse Test</name>
+		<package>beverage.coffee</package>
+		<description>The tastiest roast around</description>
+	</testCase>
+</testCases>

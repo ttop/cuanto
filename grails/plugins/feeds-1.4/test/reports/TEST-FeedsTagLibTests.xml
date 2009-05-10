@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="MacBook.local" name="FeedsTagLibTests" tests="1" time="0.073" timestamp="2008-06-09T13:36:15">
+  <properties />
+  <testcase classname="FeedsTagLibTests" name="testSomething" time="0.0" />
+  <system-out><![CDATA[--Output from testSomething--
+]]></system-out>
+  <system-err><![CDATA[--Output from testSomething--
+]]></system-err>
+</testsuite>

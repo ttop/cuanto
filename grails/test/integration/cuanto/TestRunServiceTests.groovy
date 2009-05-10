@@ -1,0 +1,279 @@
+package cuanto
+
+import cuanto.test.TestObjects
+import cuanto.test.WordGenerator
+import cuanto.*
+
+class TestRunServiceTests extends GroovyTestCase {
+
+	def dataService
+	def initializationService
+	def testRunService
+	def testResultService
+	TestObjects to
+	WordGenerator wordGen = new WordGenerator()
+
+	@Override
+	void setUp() {
+		initializationService.initializeAll()
+		to = new TestObjects()
+		to.dataService = dataService
+	}
+
+
+
+	void testCalculateTestRunTotals() {
+		Project proj = to.getProject()
+		proj.testType = TestType.findByName("JUnit")
+		proj.save()
+
+		def numCases = 11
+
+		TestRun testRun = to.getTestRun(proj, "foobar")
+
+		if (!testRun.save()) {
+			reportError testRun
+		}
+
+		for (x in 1..numCases) {
+			TestCase tc = to.getTestCase(proj)
+			tc.packageName = "a.b.c"
+
+			if (!proj.addToTestCases(tc).save()) {
+				reportError proj
+			}
+
+			TestOutcome outcome = to.getTestOutcome(tc, testRun)
+			outcome.duration = 1
+			if (x == 2) {
+				outcome.testResult = dataService.result("fail")
+			} else if (x == 3) {
+				outcome.testResult = dataService.result("error")
+			} else if (x == 4) {
+				outcome.testResult = dataService.result("ignore")
+			}
+
+			if (!testRun.addToOutcomes(outcome).save()) {
+				reportError testRun
+			}
+		}
+
+		testRunService.calculateTestRunStats(testRun)
+
+		assertNotNull "results not found", testRun.testRunStatistics
+		TestRunStats result = testRun.testRunStatistics
+		assertEquals "wrong total tests", 10, result.tests
+		assertEquals "wrong failures", 2, result.failed
+		assertEquals "wrong passed", 8, result.passed
+		assertEquals "wrong avg duration", 1, result.averageDuration
+		assertEquals "wrong total duration", 10, result.totalDuration
+	}
+
+	void testSearchByTestNote() {
+		Project proj = to.getProject()
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			reportError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			if (!proj.addToTestCases(testCase).save()) {
+				reportError proj
+			}
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj, "mile1")
+		testRunOne.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			if (!testRunOne.addToOutcomes(out).save()) {
+				reportError testRunOne
+			}
+		}
+
+		def testRunTwo = to.getTestRun(proj, "mile1")
+		testRunTwo.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			if (!testRunTwo.addToOutcomes(out).save()) {
+				reportError testRunTwo
+			}
+		}
+
+		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		runOneOutcomes[0].note = "Pacific Ocean Blue"
+		runOneOutcomes[0].save()
+		runOneOutcomes[1].note = "Lost in the Pacific"
+		runOneOutcomes[1].save()
+
+		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		runTwoOutcomes[0].note = "Pacific Lake Blue"
+		runTwoOutcomes[0].save()
+		runTwoOutcomes[1].note = "Found in the Pacific"
+		runTwoOutcomes[1].save()
+
+		def sort = "note"
+		def order = "asc"
+		def max = 10
+		def offset = 0
+		def count = dataService.countTestOutcomesBySearch("note", "Pacific", testRunOne)
+		assertEquals "Wrong count", 2, count
+		count = dataService.countTestOutcomesBySearch("note", "Pacific", testRunTwo)
+		assertEquals "Wrong count", 2, count
+
+		def searchResults = testRunService.searchTestOutcomes("note", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
+
+		order = "desc"
+		searchResults = testRunService.searchTestOutcomes("note", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
+	}
+
+
+	void testSearchByTestName() {
+		Project proj = to.getProject()
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			reportError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			if (!proj.addToTestCases(testCase).save()) {
+				reportError proj
+			}
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj, "mile1")
+		testRunOne.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			if (!testRunOne.addToOutcomes(out).save()) {
+				reportError testRunOne
+			}
+		}
+
+		def testRunTwo = to.getTestRun(proj, "mile1")
+		testRunTwo.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			if (!testRunTwo.addToOutcomes(out).save()) {
+				reportError testRunTwo
+			}
+		}
+
+		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		runOneOutcomes[0].testCase.fullName = "a Pacific Ocean Blue"
+		runOneOutcomes[0].testCase.save()
+		runOneOutcomes[1].testCase.fullName = "b Lost in the Pacific"
+		runOneOutcomes[1].testCase.save()
+
+		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		runTwoOutcomes[0].testCase.fullName = "a Pacific Lake Blue"
+		runTwoOutcomes[0].testCase.save()
+		runTwoOutcomes[1].testCase.fullName = "b Found in the Pacific"
+		runTwoOutcomes[1].testCase.save()
+
+		def sort = "name"
+		def order = "asc"
+		def max = 10
+		def offset = 0
+
+		def searchResults = testRunService.searchTestOutcomes("name", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
+
+		order = "desc"
+		searchResults = testRunService.searchTestOutcomes("name", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
+	}
+
+
+	void testSearchByTestOwner() {
+		Project proj = to.getProject()
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			reportError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			if (!proj.addToTestCases(testCase).save()) {
+				reportError proj
+			}
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj, "mile1")
+		testRunOne.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			if (!testRunOne.addToOutcomes(out).save()) {
+				reportError testRunOne
+			}
+		}
+
+		def testRunTwo = to.getTestRun(proj, "mile1")
+		testRunTwo.save()
+
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			if (!testRunTwo.addToOutcomes(out).save()) {
+				reportError testRunTwo
+			}
+		}
+
+		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		runOneOutcomes[0].owner = "Pacific Ocean Blue"
+		runOneOutcomes[0].save()
+		runOneOutcomes[1].owner = "Lost in the Pacific"
+		runOneOutcomes[1].save()
+
+		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		runTwoOutcomes[0].owner = "Pacific Lake Blue"
+		runTwoOutcomes[0].save()
+		runTwoOutcomes[1].owner = "Found in the Pacific"
+		runTwoOutcomes[1].save()
+
+		def sort = "owner"
+		def order = "asc"
+		def max = 10
+		def offset = 0
+
+		def searchResults = testRunService.searchTestOutcomes("owner", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
+
+		order = "desc"
+		searchResults = testRunService.searchTestOutcomes("owner", "Pacific", testRunOne, sort, order, max, offset)
+		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
+		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
+		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
+	}	
+}
+

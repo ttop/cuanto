@@ -1,0 +1,28 @@
+.accordionMenu {
+	margin-left: 20px;
+}
+
+.accordionMenu .toggler:hover {
+	cursor: pointer;
+}
+
+.accordion table {
+	width: 500px;
+	margin-left: 15px;
+}
+
+.accordion table {
+	border-spacing: 0;
+}
+
+.accordion td {
+	padding: 0;
+}
+
+.accordion .projRow:hover {
+	background-color: mintcream;
+}
+
+.accordion .tdTitle {
+	font-style: italic;
+}

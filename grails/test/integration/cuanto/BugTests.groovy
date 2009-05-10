@@ -1,0 +1,94 @@
+package cuanto
+
+import cuanto.test.TestObjects
+import cuanto.*
+
+class BugTests extends GroovyTestCase {
+
+	def dataService
+	def initializationService
+	def testRunService
+	def bugService
+
+	TestObjects to
+
+
+	@Override
+	void setUp() {
+		initializationService.initializeAll()
+		to = new TestObjects()
+		to.dataService = dataService
+	}
+
+
+	void testBugSummary() {
+		Project proj = to.getProject()
+		proj.testType = TestType.findByName("JUnit")
+		proj.save()
+
+		def numCases = 25
+
+		TestRun testRun = to.getTestRun(proj, "foobar")
+
+		if (!testRun.save()) {
+			reportError testRun
+		}
+
+		def bugs = []
+		bugs << ["bug1", "http://bug1"]
+		bugs << ["bug2", "http://bug2"]
+		bugs << ["bug3", "http://bug3"]
+		bugs << ["bug4", "http://bug4"]
+
+		for (x in 1..numCases) {
+			TestCase tc = to.getTestCase(proj)
+			tc.packageName = "a.b.c"
+
+			if (!proj.addToTestCases(tc).save()) {
+				reportError proj
+			}
+
+			TestOutcome outcome = to.getTestOutcome(tc, testRun)
+			outcome.duration = 1
+			if (x < 5) { // 4 total
+				outcome.testResult = dataService.result("fail")
+				outcome.bug = bugService.getBug(bugs[0][0], bugs[0][1])
+			}
+
+			if (x >= 5 && x < 13) { // 8 total
+				outcome.testResult = dataService.result("fail")
+				outcome.bug = bugService.getBug(bugs[1][0], bugs[1][1])
+			}
+
+			if (x == 15) {  // 1 bug
+				outcome.testResult = dataService.result("fail")
+				outcome.bug = bugService.getBug(bugs[2][0], bugs[2][1])
+			}
+
+			if (x > 19) { // 6 bugs
+				outcome.testResult = dataService.result("fail")
+				outcome.bug = bugService.getBug(bugs[3][0], bugs[3][1])
+			}
+
+			if (!testRun.addToOutcomes(outcome).save()) {
+				reportError testRun
+			}
+		}
+
+		def bugSummary = testRunService.getBugSummary(testRun)
+		assertEquals "Wrong number of bugs", 4, bugSummary.size()
+
+		assertEquals "Wrong bug", bugService.getBug(bugs[1][0], bugs[1][1]), bugSummary[0].bug
+		assertEquals "Wrong total", 8, bugSummary[0].total
+
+		assertEquals "Wrong bug", bugService.getBug(bugs[3][0], bugs[3][1]), bugSummary[1].bug
+		assertEquals "Wrong total", 6, bugSummary[1].total
+
+		assertEquals "Wrong bug", bugService.getBug(bugs[0][0], bugs[0][1]), bugSummary[2].bug
+		assertEquals "Wrong total", 4, bugSummary[2].total
+
+		assertEquals "Wrong bug", bugService.getBug(bugs[2][0], bugs[2][1]), bugSummary[3].bug
+		assertEquals "Wrong total", 1, bugSummary[3].total
+
+	}
+}

@@ -1,0 +1,31 @@
+Testsuite: FeedBuilderTests
+Tests run: 8, Failures: 0, Errors: 0, Time elapsed: 1.497 sec
+------------- Standard Output ---------------
+--Output from testBuilderRootNodeWithAttribs--
+--Output from testBuilderRootNodeWithAttribsAndPropertySetting--
+--Output from testBuilderEntries--
+--Output from testBuilderEnclosures--
+--Output from testBuilderiTunesTags--
+--Output from testBuilderiTunesTagsEnhancedUsage--
+--Output from testBuilderContent--
+--Output from testBuilderValidation--
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+--Output from testBuilderRootNodeWithAttribs--
+--Output from testBuilderRootNodeWithAttribsAndPropertySetting--
+--Output from testBuilderEntries--
+--Output from testBuilderEnclosures--
+--Output from testBuilderiTunesTags--
+--Output from testBuilderiTunesTagsEnhancedUsage--
+--Output from testBuilderContent--
+--Output from testBuilderValidation--
+------------- ---------------- ---------------
+
+Testcase: testBuilderRootNodeWithAttribs took 0.386 sec
+Testcase: testBuilderRootNodeWithAttribsAndPropertySetting took 0.305 sec
+Testcase: testBuilderEntries took 0.144 sec
+Testcase: testBuilderEnclosures took 0.079 sec
+Testcase: testBuilderiTunesTags took 0.129 sec
+Testcase: testBuilderiTunesTagsEnhancedUsage took 0.058 sec
+Testcase: testBuilderContent took 0.121 sec
+Testcase: testBuilderValidation took 0.205 sec

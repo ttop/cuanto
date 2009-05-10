@@ -1,0 +1,17 @@
+<plugin name='feeds' version='1.4'>
+  <author>Marc Palmer</author>
+  <authorEmail>marc@anyware.co.uk</authorEmail>
+  <title>Render RSS/Atom feeds with a simple builder</title>
+  <description>
+		This plugin adds a feedType and feedVersion parameters to the render method of controllers, which if passed
+		a valid feed type such as "rss" or "atom" and a version will expect a closure to be passed with render,
+		which will render a feed using a custom builder. The FeedBuilder used for this accepts entry and content nodes, any properties
+		of which can be set within the builder. These are beans from the ROME API so all properties there
+		should work.
+	</description>
+  <documentation>http://grails.org/Feeds+Plugin</documentation>
+  <resources>
+    <resource>UrlMappings</resource>
+    <resource>FeedsTagLib</resource>
+  </resources>
+</plugin>

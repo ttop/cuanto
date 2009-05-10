@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="MacBook.local" name="FeedBuilderTests" tests="8" time="1.497" timestamp="2008-06-09T13:36:11">
+  <properties />
+  <testcase classname="FeedBuilderTests" name="testBuilderRootNodeWithAttribs" time="0.386" />
+  <testcase classname="FeedBuilderTests" name="testBuilderRootNodeWithAttribsAndPropertySetting" time="0.305" />
+  <testcase classname="FeedBuilderTests" name="testBuilderEntries" time="0.144" />
+  <testcase classname="FeedBuilderTests" name="testBuilderEnclosures" time="0.079" />
+  <testcase classname="FeedBuilderTests" name="testBuilderiTunesTags" time="0.129" />
+  <testcase classname="FeedBuilderTests" name="testBuilderiTunesTagsEnhancedUsage" time="0.058" />
+  <testcase classname="FeedBuilderTests" name="testBuilderContent" time="0.121" />
+  <testcase classname="FeedBuilderTests" name="testBuilderValidation" time="0.204" />
+  <system-out><![CDATA[--Output from testBuilderRootNodeWithAttribs--
+--Output from testBuilderRootNodeWithAttribsAndPropertySetting--
+--Output from testBuilderEntries--
+--Output from testBuilderEnclosures--
+--Output from testBuilderiTunesTags--
+--Output from testBuilderiTunesTagsEnhancedUsage--
+--Output from testBuilderContent--
+--Output from testBuilderValidation--
+]]></system-out>
+  <system-err><![CDATA[--Output from testBuilderRootNodeWithAttribs--
+--Output from testBuilderRootNodeWithAttribsAndPropertySetting--
+--Output from testBuilderEntries--
+--Output from testBuilderEnclosures--
+--Output from testBuilderiTunesTags--
+--Output from testBuilderiTunesTagsEnhancedUsage--
+--Output from testBuilderContent--
+--Output from testBuilderValidation--
+]]></system-err>
+</testsuite>

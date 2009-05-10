@@ -1,0 +1,26 @@
+#helpRegion {
+	margin-left: 30px
+}
+
+#helpRegion h3 {
+	margin-left: 15px
+}
+
+#helpRegion span {
+	margin-left: 15px
+}
+
+#helpRegion a {
+	text-decoration: none;
+}
+
+#helpRegion a:hover {
+	text-decoration: underline;
+}
+
+.code {
+/*margin-left:4%;*/
+	margin-right: 40%;
+	padding: 1%;
+	background-color: lightskyblue;
+}

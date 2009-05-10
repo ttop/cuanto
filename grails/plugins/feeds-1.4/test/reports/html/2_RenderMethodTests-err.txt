@@ -1,0 +1,10 @@
+--Output from testRenderNodes--
+--Output from testRenderNodesToAtom10--
+--Output from testRenderNodesNestedExplicitContentNodeBeforePropertySetters--
+--Output from testRenderNodesNestedExplicitContentNode--
+--Output from testRenderNodesBadMethodResolution--
+--Output from testRenderStringStillWorks--
+--Output from testRenderClosureStillWorks--
+--Output from testRenderMapClosureStillWorks--
+--Output from testSimple--
+

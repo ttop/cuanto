@@ -1,0 +1,131 @@
+Testsuite: RenderMethodTests
+Tests run: 9, Failures: 0, Errors: 0, Time elapsed: 2.114 sec
+------------- Standard Output ---------------
+--Output from testRenderNodes--
+--Output from testRenderNodesToAtom10--
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title>Test feed</title>
+  <link rel="alternate" href="http://somewhere.com/" />
+  <subtitle>This is a test feed</subtitle>
+  <entry>
+    <title>Title for A</title>
+    <author>
+      <name />
+    </author>
+    <content />
+  </entry>
+  <entry>
+    <title>Title for B</title>
+    <author>
+      <name />
+    </author>
+    <content />
+  </entry>
+  <entry>
+    <title>Title for C</title>
+    <author>
+      <name />
+    </author>
+    <content />
+  </entry>
+</feed>
+
+
+--Output from testRenderNodesNestedExplicitContentNodeBeforePropertySetters--
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Test feed</title>
+    <link>http://somewhere.com/</link>
+    <description>This is a test feed</description>
+    <item>
+      <title>Title for A</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:16 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:16Z</dc:date>
+    </item>
+    <item>
+      <title>Title for B</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:16 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:16Z</dc:date>
+    </item>
+    <item>
+      <title>Title for C</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:16 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:16Z</dc:date>
+    </item>
+  </channel>
+</rss>
+
+
+--Output from testRenderNodesNestedExplicitContentNode--
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Test feed</title>
+    <link>http://somewhere.com/</link>
+    <description>This is a test feed</description>
+    <item>
+      <title>Title for A</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:17 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:17Z</dc:date>
+    </item>
+    <item>
+      <title>Title for B</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:17 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:17Z</dc:date>
+    </item>
+    <item>
+      <title>Title for C</title>
+      <link>http://somewhere.com/x</link>
+      <content:encoded />
+      <pubDate>Mon, 09 Jun 2008 13:36:17 GMT</pubDate>
+      <guid>http://somewhere.com/x</guid>
+      <dc:date>2008-06-09T13:36:17Z</dc:date>
+    </item>
+  </channel>
+</rss>
+
+
+--Output from testRenderNodesBadMethodResolution--
+--Output from testRenderStringStillWorks--
+--Output from testRenderClosureStillWorks--
+--Output from testRenderMapClosureStillWorks--
+--Output from testSimple--
+------------- ---------------- ---------------
+------------- Standard Error -----------------
+--Output from testRenderNodes--
+--Output from testRenderNodesToAtom10--
+--Output from testRenderNodesNestedExplicitContentNodeBeforePropertySetters--
+--Output from testRenderNodesNestedExplicitContentNode--
+--Output from testRenderNodesBadMethodResolution--
+--Output from testRenderStringStillWorks--
+--Output from testRenderClosureStillWorks--
+--Output from testRenderMapClosureStillWorks--
+--Output from testSimple--
+------------- ---------------- ---------------
+
+Testcase: testRenderNodes took 0.702 sec
+Testcase: testRenderNodesToAtom10 took 0.224 sec
+Testcase: testRenderNodesNestedExplicitContentNodeBeforePropertySetters took 0.197 sec
+Testcase: testRenderNodesNestedExplicitContentNode took 0.234 sec
+Testcase: testRenderNodesBadMethodResolution took 0.238 sec
+Testcase: testRenderStringStillWorks took 0.063 sec
+Testcase: testRenderClosureStillWorks took 0.13 sec
+Testcase: testRenderMapClosureStillWorks took 0.122 sec
+Testcase: testSimple took 0.159 sec

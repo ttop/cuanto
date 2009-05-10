@@ -1,0 +1,10 @@
+<plugin name='yui' version='2.6.0'>
+  <author>Marcel Overdijk</author>
+  <authorEmail>marceloverdijk@gmail.com</authorEmail>
+  <title>Yahoo! User Interface Library (YUI)</title>
+  <description>Provides integration with the Yahoo! UI Library</description>
+  <documentation>http://grails.org/YUI+Plugin</documentation>
+  <resources>
+    <resource>YuiTagLib</resource>
+  </resources>
+</plugin>
