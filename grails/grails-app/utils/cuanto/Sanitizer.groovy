@@ -12,7 +12,7 @@ public class Sanitizer {
 	 * @return escaped String
 	 */
 	static String escapeHtmlScriptTags(String s) {
-		s.replaceAll('<script', '&lt;script').replaceAll('</script>', '&lt;/script&gt;')
+		s?.replaceAll('<script', '&lt;script')?.replaceAll('</script>', '&lt;/script&gt;')
 	}
 
 	/**
@@ -22,6 +22,6 @@ public class Sanitizer {
 	 * @return unescaped String 
 	 */
 	static String unescapeHtmlScriptTags(String s) {
-		s.replaceAll('&lt;script', '<script').replaceAll('&lt;/script&gt;', '</script>')
+		s?.replaceAll('&lt;script', '<script')?.replaceAll('&lt;/script&gt;', '</script>')
 	}
 }
