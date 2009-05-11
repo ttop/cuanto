@@ -1,49 +1,60 @@
 %{--
 
-    Copyright 2009 COPYRIGHT_HOLDER
+ Copyright (c) 2008 thePlatform, Inc.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+This file is part of Cuanto, a test results repository and analysis program.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 --}%
+<div id="tableDiv" class="anlzElem">
+	<span class="colHdr">Analysis for Test Run: <span id="testRun">${outcome?.testRun?.dateExecuted?.encodeAsHTML()}</span></span>
+	<g:form name="anData" id="anForm">
+		<table id="anTable">
+			<col class="fieldSelect"/>
+			<col class="fieldName"/>
+			<tr><th colspan="2" class="smaller" id="fieldHdr">Include fields</th><th></th></tr>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="testResult"/></td><td class="intable">Result:</td>
+				<td id="testResult"/></tr>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="analysisState"/></td>
+				<td class="intable">Reason:</td>
+				<td id="analysisState"/></tr>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="bug"/></td><td class="intable">Bug:</td>
+				<td>
+					<a id="bug"/>
+				</td>
+			</tr>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="owner"/></td><td class="intable">Owner:</td>
+				<td id="owner"/></tr>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="note"/></td>	<td class="intable">Note:</td>
+				<td id="note"/></tr>
+		</table>
+		<button id="anApply" type="button">Apply to selected tests</button>
+		<span id="applyStatus"></span>
+	</g:form>
+</div>
 
-Analysis for Test Run: <span id="testRun">${outcome?.testRun?.dateExecuted?.encodeAsHTML()}</span>
-				(<span id="currentRecord"></span> of <span id="totalRecords"></span>)
-<g:form name="anData">
-	<table id="anTable">
-		<col class="fieldSelect"/>
-		<col class="fieldName"/>
-		<tr><th colspan="3">Include fields</th><th></th></tr>
-		<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="testResult"/></td><td class="intable">Result:</td>
-			<td id="testResult"/></tr>
-		<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="analysisState"/></td>
-			<td class="intable">Reason:</td>
-			<td id="analysisState"/></tr>
-		<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="bug"/></td><td class="intable">Bug:</td>
-			<td>
-			    <a id="bug"/>
-			</td>
-		</tr>
-		<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="owner"/></td><td class="intable">Owner:</td>
-			<td id="owner"/></tr>
-		<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="note"/></td>	<td class="intable">Note:</td>
-			<td id="note"/></tr>
-	</table>
-	<button id="anApply" type="button">Apply to selected tests</button>
-	<button id="olderAnlz" type="button">Older</button>
-	<button id="newerAnlz" type="button">Newer</button>
-	<span id="applyStatus"></span>
-	
-</g:form>
+<div id="prevAnlz" class="anlzElem">
+	<span class="colHdr">Analysis History for This Test<br/></span>
+	<form id="prevAnlzForm">
+		<select id="anlzHistory"></select>
+	</form>
+</div>
+<br class="nofloat"/>
+
+<br/>
 <div id="outputParentDiv">
 	Output for this analysis:<br/>
 	<div id="anOutputDiv" class="testOutput"></div>
