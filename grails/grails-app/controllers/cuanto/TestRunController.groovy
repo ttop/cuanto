@@ -226,27 +226,6 @@ class TestRunController {
 	}
 
 
-	def failureStatistics = {  // todo: is this used?? Delete??
-		def testRun = TestRun.get(params.id)
-		if (testRun) {
-			withFormat {
-				json {
-					def myJson = [:]
-					Map failureStatistics = testRun?.getTestRunStatistics()?.failureStatistics
-					def failStats = []
-					for (stat in failureStatistics?.keySet()) {
-						failStats += [analysisState: stat, total: Long.valueOf(failureStatistics[stat])]
-					}
-					myJson["failureStatistics"] = failStats
-					render myJson as JSON
-				}
-			}
-		} else {
-			render "Unable to location test run: ${params?.id}"
-		}
-	}
-
-
 	def get = {
 		def testRun = TestRun.get(Long.valueOf(params.id))
 		def testRunMap = testRun.toJSONWithDateFormat(dateFormat)
