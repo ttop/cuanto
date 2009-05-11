@@ -1,10 +1,5 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.theplatform</groupId>
-		<artifactId>theplatform</artifactId>
-		<version>4-SNAPSHOT</version>
-	</parent>
 
 	<groupId>cuanto</groupId>
 	<artifactId>cuanto-api</artifactId>
