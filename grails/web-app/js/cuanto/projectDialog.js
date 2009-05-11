@@ -98,6 +98,11 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 
 		$('pdAutoComplete').setStyle({width: $('pdGroup').getStyle('width')});
 		var autoComplete = new YAHOO.widget.AutoComplete("pdGroup", "pdAutoComplete", dataSource);
+		autoComplete.minQueryLength = 2;
+		autoComplete.queryDelay = .4;
+		autoComplete.generateRequest = function (qry) {
+			return "&query=" + qry;
+		}
 		autoComplete.doBeforeExpandContainer = function () {
 			var Dom = YAHOO.util.Dom;
 			Dom.setXY("pdAutoComplete", [Dom.getX("pdGroup"), Dom.getY("pdGroup") + Dom.get("pdGroup").offsetHeight]);
@@ -152,14 +157,14 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 
 	pub.loadProject = function(projectId) {
 	    $('pdLoading').show();
-		new Ajax.Request(YAHOO.cuanto.urls.get('projectInfo') + "?rand=" + new Date().getTime(), {
-			parameters: {'id': projectId, format: 'json'},
+		new Ajax.Request(YAHOO.cuanto.urls.get('projectInfo'), {
+			parameters: {'id': projectId, format: 'json', rand: new Date().getTime()},
 			method: "get",
 			onSuccess: function(transport) {
 				var project = transport.responseJSON;
 				$('pdProjectId').setValue(project['id']);
 				$('pdName').setValue(project['name']);
-				if (project['projectGroup']['name']) {
+				if (project['projectGroup'] && project['projectGroup']['name']) {
 					$('pdGroup').setValue(project['projectGroup']['name']);
 				}
 				$('pdProjectKey').setValue(project['projectKey']);
@@ -167,7 +172,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 					$('pdUrlPattern').setValue(project['bugUrlPattern']);
 				}
 				$('pdFormatters').setValue(project['testCaseFormatKey']);
-            $('pdType').setValue(project['testType']['name']);
+				$('pdType').setValue(project['testType']['name']);
 				$('pdLoading').hide();
 			}
 		})
