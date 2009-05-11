@@ -88,8 +88,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 	projDialog.render();
 
 	function initAutoComplete() {
-		var dataSource = new YAHOO.util.XHRDataSource(YAHOO.cuanto.urls.get('groupNames') +
-		                                              "?rand=" + new Date().getTime());
+		var dataSource = new YAHOO.util.XHRDataSource(YAHOO.cuanto.urls.get('groupNames'));
 		dataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
 		dataSource.responseSchema = {
 			resultsList: "groups",
@@ -101,7 +100,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		autoComplete.minQueryLength = 2;
 		autoComplete.queryDelay = .4;
 		autoComplete.generateRequest = function (qry) {
-			return "&query=" + qry;
+			return "?rand=" + new Date().getTime() + "&query=" + qry;
 		}
 		autoComplete.doBeforeExpandContainer = function () {
 			var Dom = YAHOO.util.Dom;
