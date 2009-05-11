@@ -1,3 +1,25 @@
 # ignore emacs backup files
 \#*#
 *~
+api/cuanto-api.iml
+api/cuanto-api.ipr
+api/cuanto-api.iws
+cuanto.ipr
+cuanto.iws
+grails/.classpath
+grails/.project
+grails/cuanto-test.launch
+grails/cuanto.tmproj
+grails/cuanto_grails.iml
+grails/ivy.xml
+grails/ivysettings.xml
+grails/stacktrace.log
+grails/web-app/WEB-INF/
+#grails/web-app/css/main.css
+#grails/web-app/images/favicon.ico
+grails/web-app/images/grails_logo.jpg
+grails/web-app/images/skin/house.png
+grails/web-app/images/skin/sorted_asc.gif
+grails/web-app/images/skin/sorted_desc.gif
+grails/web-app/js/application.js
+#grails/web-app/plugins/
