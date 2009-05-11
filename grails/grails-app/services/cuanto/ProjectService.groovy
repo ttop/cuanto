@@ -65,6 +65,18 @@ class ProjectService {
 	}
 
 
+	def getProjectGroupByName(groupName) {
+		def groupToReturn = null
+		if (groupName && groupName.trim() != "") {
+			groupToReturn = dataService.findProjectGroupByName(groupName)
+			if (!groupToReturn) {
+				groupToReturn = dataService.createProjectGroup(groupName)
+			}
+		}
+		return groupToReturn
+	}
+	
+
 	def createProject(params) {
 		def project = new Project()
 		Project.withTransaction {status ->
@@ -73,11 +85,7 @@ class ProjectService {
 			}
 
 			if (params.group) {
-				def grp = dataService.findProjectGroupByName(params.group)
-				if (!grp) {
-					grp = dataService.createProjectGroup(params.group)
-				}
-				project.projectGroup = grp
+				project.projectGroup = getProjectGroupByName(params.group)
 			}
 
 			if (params.name) {

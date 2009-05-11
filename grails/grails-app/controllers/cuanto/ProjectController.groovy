@@ -61,7 +61,7 @@ class ProjectController {
 		if (params.project) {
 			project = Project.get(params.project)     // todo: refactor with new grails 1.1 validation?
 			if (params.group) {
-				project.projectGroup = dataService.findProjectGroupByName(params.group)
+				project.projectGroup = projectService.getProjectGroupByName(params.group)
 			}
 
 			if (params.bugUrlPattern) {
