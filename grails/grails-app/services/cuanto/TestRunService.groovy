@@ -595,16 +595,20 @@ class TestRunService {
 	def parseQueryFromParams(params) {
 		// returns a map with 'searchField' and 'searchTerms'
 		def searchField, query
-		def delim = params.qry.indexOf("|")
-		if (delim == -1) {
-			searchField = "Name"
-			query = params.qry
-		} else {
-			searchField = params.qry.substring(0, delim)
-			query = params.qry.substring(delim + 1)
-		}
+		if (params.qry) {
+			def delim = params?.qry?.indexOf("|")
+			if (delim == -1) {
+				searchField = "Name"
+				query = params.qry
+			} else {
+				searchField = params.qry.substring(0, delim)
+				query = params.qry.substring(delim + 1)
+			}
 
-		return ['searchField': searchField.toLowerCase(), 'searchTerms': query]
+			return ['searchField': searchField.toLowerCase(), 'searchTerms': query]
+		} else {
+			throw new CuantoException("No query parameter was provided")
+		}
 	}
 
 

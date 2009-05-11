@@ -2,7 +2,6 @@ package cuanto
 
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
-import cuanto.*
 
 class TestRunServiceTests extends GroovyTestCase {
 
@@ -70,7 +69,7 @@ class TestRunServiceTests extends GroovyTestCase {
 	}
 
 	void testSearchByTestNote() {
-		Project proj = to.getProject()
+		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
 			reportError proj
@@ -123,18 +122,24 @@ class TestRunServiceTests extends GroovyTestCase {
 		def order = "asc"
 		def max = 10
 		def offset = 0
-		def count = dataService.countTestOutcomesBySearch("note", "Pacific", testRunOne)
+
+		def runOneParams = ['sort': sort, 'order': order, 'max': max, 'offset': offset, 'id': testRunOne.id,
+			'qry': 'note|Pacific']
+		def runTwoParams = ['sort': sort, 'order': order, 'max': max, 'offset': offset, 'id': testRunTwo.id,
+			'qry': 'note|Pacific']
+
+		def count = testRunService.countTestOutcomesBySearch(runOneParams)
 		assertEquals "Wrong count", 2, count
-		count = dataService.countTestOutcomesBySearch("note", "Pacific", testRunTwo)
+		count = testRunService.countTestOutcomesBySearch(runTwoParams)
 		assertEquals "Wrong count", 2, count
 
-		def searchResults = testRunService.searchTestOutcomes("note", "Pacific", testRunOne, sort, order, max, offset)
+		def searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
 
-		order = "desc"
-		searchResults = testRunService.searchTestOutcomes("note", "Pacific", testRunOne, sort, order, max, offset)
+		runOneParams['order'] = "desc"
+		searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
@@ -142,7 +147,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 
 	void testSearchByTestName() {
-		Project proj = to.getProject()
+		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
 			reportError proj
@@ -191,18 +196,15 @@ class TestRunServiceTests extends GroovyTestCase {
 		runTwoOutcomes[1].testCase.fullName = "b Found in the Pacific"
 		runTwoOutcomes[1].testCase.save()
 
-		def sort = "name"
-		def order = "asc"
-		def max = 10
-		def offset = 0
-
-		def searchResults = testRunService.searchTestOutcomes("name", "Pacific", testRunOne, sort, order, max, offset)
+		def runOneParams = ['sort': 'name', 'order': 'asc', 'max': 10, 'offset': 0, 'id': testRunOne.id,
+			'qry': 'name|Pacific']
+		def searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
 
-		order = "desc"
-		searchResults = testRunService.searchTestOutcomes("name", "Pacific", testRunOne, sort, order, max, offset)
+		runOneParams['order'] = "desc"
+		searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
@@ -210,7 +212,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 
 	void testSearchByTestOwner() {
-		Project proj = to.getProject()
+		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
 			reportError proj
@@ -259,18 +261,16 @@ class TestRunServiceTests extends GroovyTestCase {
 		runTwoOutcomes[1].owner = "Found in the Pacific"
 		runTwoOutcomes[1].save()
 
-		def sort = "owner"
-		def order = "asc"
-		def max = 10
-		def offset = 0
+		def runOneParams = ['sort': 'owner', 'order': 'asc', 'max': 10, 'offset': 0, 'id': testRunOne.id,
+			'qry': "owner|Pacific"]
 
-		def searchResults = testRunService.searchTestOutcomes("owner", "Pacific", testRunOne, sort, order, max, offset)
+		def searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[1]
 
-		order = "desc"
-		searchResults = testRunService.searchTestOutcomes("owner", "Pacific", testRunOne, sort, order, max, offset)
+		runOneParams['order'] = 'desc'
+		searchResults = testRunService.searchTestOutcomes(runOneParams)
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
