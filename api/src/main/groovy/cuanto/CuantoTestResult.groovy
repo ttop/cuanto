@@ -36,7 +36,6 @@ class CuantoTestResult {
 	String packageName
 	String testName
 	String description
-	String testType
 	String testResult
 	String testOutput
 	String owner

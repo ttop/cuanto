@@ -131,12 +131,12 @@ class CuantoClient {
 			post.addParameter "targetEnv", targetEnv
 		}
 
-		def projectId
+		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
 			def responseText = post.getResponseBodyAsStream().text.trim()
 			if (responseCode == 200) {
-				projectId = Long.valueOf(responseText)
+				testRunId = Long.valueOf(responseText)
 			} else if (responseCode == 403) {
 				throw new IllegalArgumentException(responseText)
 			} else {
@@ -145,7 +145,7 @@ class CuantoClient {
 		} finally {
 			post.releaseConnection()
 		}
-		return projectId
+		return testRunId
 
 	}
 
