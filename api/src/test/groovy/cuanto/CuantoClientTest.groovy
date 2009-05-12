@@ -14,7 +14,7 @@ import org.apache.commons.httpclient.methods.PostMethod
  */
 class CuantoClientTest extends GroovyTestCase{
 
-	def serverUrl = "http://localhost:9090/cuanto"
+	def serverUrl = "http://localhost:8080/cuanto"
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
@@ -127,7 +127,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		def fileType = "JUnit"
-		client.submit(fileToSubmit, testRunId, fileType)
+		client.submit(fileToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "34", stats.tests
 		assertEquals "3", stats.failed
@@ -139,7 +139,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		def fileType = "JUnit"
-		client.submit(fileToSubmit, testRunId, fileType)
+		client.submit(fileToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "56", stats.tests
 		assertEquals "15", stats.failed
@@ -153,7 +153,7 @@ class CuantoClientTest extends GroovyTestCase{
 		filesToSubmit += getFile("junitReport_single_suite.xml")
 		filesToSubmit += getFile("junitReport_multiple_suite.xml")
 		def fileType = "JUnit"
-		client.submit(filesToSubmit, testRunId, fileType)
+		client.submit(filesToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "90", stats.tests
 		assertEquals "18", stats.failed
