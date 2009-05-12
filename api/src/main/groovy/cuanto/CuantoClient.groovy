@@ -21,13 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.CuantoTestResult
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
+import com.thoughtworks.xstream.XStream
+import org.apache.commons.httpclient.methods.StringRequestEntity
 
 /**
  * User: Todd Wells
@@ -71,7 +72,11 @@ class CuantoClient {
 
 		def projectId
 		if (responseCode == 200) {
-			projectId = Long.valueOf(responseText)
+			try {
+				projectId = Long.valueOf(responseText)
+			} catch (NumberFormatException e) {
+			    throw new RuntimeException("Couldn't parse project ID response: ${responseText}")
+			}
 		} else {
 			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
 		}
@@ -181,8 +186,30 @@ class CuantoClient {
 	}
 
 
-	public void submit(CuantoTestResult result) {
-		throw new RuntimeException("Not implemented");
+	public Long submit(ParsableTestOutcome testOutcome, Long testRunId) {
+		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
+		PostMethod post = new PostMethod(fullUri)
+		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+
+		XStream xstream = new XStream()
+		def outcomeXml = xstream.toXML(testOutcome)
+		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
+
+		def responseCode
+		def responseText
+		def testOutcomeId
+		try {
+			HttpClient hclient = getHttpClient()
+			responseCode = hclient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().getText()
+			testOutcomeId = Long.valueOf(responseText)
+		} finally {
+			post.releaseConnection()
+		}
+		if (responseCode != 200) {
+			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+		}
+		return testOutcomeId 
 	}
 
 	Map getTestRunStats(Long testRunId){

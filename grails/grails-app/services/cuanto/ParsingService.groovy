@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
+import com.thoughtworks.xstream.XStream
+
 
 /**
  * User: Todd Wells
@@ -79,10 +81,59 @@ class ParsingService {
 	}
 
 
+	TestOutcome parseTestOutcome(inputStream, testRunId) {
+		def testRun = dataService.getTestRun(testRunId)
+
+		XStream xstream = new XStream()
+		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome)xstream.fromXML(inputStream)
+
+		TestCase testCase = parseTestCase(parsableTestOutcome)
+
+		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
+		if (matchingTestCase) {
+			testCase = matchingTestCase
+		} else {
+			dataService.addTestCases(testRun.project, [testCase])
+		}
+
+		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
+
+		def testResultsMap = dataService.getAllTestResultsMap()
+		analysisStateMap = dataService.getAllAnalysisStatesMap()
+
+		def testOutcome
+		if (matchingTestCase) {
+			def existingTestOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
+			if (existingTestOutcome) {
+				testOutcome = existingTestOutcome
+			} else {
+				testOutcome = new TestOutcome()
+			}
+		} else {
+			testOutcome = new TestOutcome()
+		}
+
+		testOutcome.testResult = testResultsMap.get(parsableTestOutcome.testResult.toLowerCase())
+	    testOutcome.duration = parsableTestOutcome.duration
+		testOutcome.testCase = testCase
+		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
+		testOutcome.owner = parsableTestOutcome.owner
+		testOutcome.note = parsableTestOutcome.note
+		processTestFailure(testOutcome, testRun.project)
+
+		if (parsableTestOutcome.bug) {
+			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
+		}
+
+		dataService.saveTestOutcomes(testRun, [testOutcome])
+		testRunService.calculateTestRunStats(testRun)
+		return testOutcome
+	}
+
 	private TestCase parseTestCase(parsableTestOutcome) {
 		TestCase testCase = new TestCase(
 			testName: parsableTestOutcome.testCase.testName,
-			packageName: parsableTestOutcome.testCase.testPackage
+			packageName: parsableTestOutcome.testCase.packageName
 		)
 
 		if (testCase.packageName) {

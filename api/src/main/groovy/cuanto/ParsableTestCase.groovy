@@ -28,7 +28,7 @@ package cuanto
  */
 class ParsableTestCase implements Comparable {
 	String project
-	String testPackage // todo: change to packageName
+	String packageName // todo: change to packageName
 	String testName
 	String fullName
 	String description
@@ -38,8 +38,8 @@ class ParsableTestCase implements Comparable {
 		def other = (ParsableTestCase) t
 		if (this.project != other.project)
 			return this.project.compareTo(other.project)
-		if (this.testPackage != other.testPackage)
-			return this.testPackage.compareTo(other.testPackage)
+		if (this.packageName != other.packageName)
+			return this.packageName.compareTo(other.packageName)
 		if (this.testName != other.testName)
 			return this.testName.compareTo(other.testName)
 		if (this.fullName != other.fullName)

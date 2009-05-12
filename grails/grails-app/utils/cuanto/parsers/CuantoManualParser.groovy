@@ -54,8 +54,8 @@ class CuantoManualParser implements CuantoTestParser {
 				ParsableTestOutcome outcome = new ParsableTestOutcome()
 				outcome.testCase = new ParsableTestCase()
 				outcome.testCase.testName = tc.name.text()
-				outcome.testCase.testPackage = tc.'package'.text()
-				outcome.testCase.fullName = outcome.testCase.testPackage + "." + outcome.testCase.testName
+				outcome.testCase.packageName = tc.'package'.text()
+				outcome.testCase.fullName = outcome.testCase.packageName + "." + outcome.testCase.testName
 				outcome.testCase.description = tc.description.text()
 				outcome.testResult = "unexecuted"
 				outcomes << outcome

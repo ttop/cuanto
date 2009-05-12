@@ -1,7 +1,6 @@
 package cuanto
 
 import cuanto.CuantoClient
-import cuanto.CuantoTestResult
 import cuanto.WordGenerator
 
 /**
@@ -22,7 +21,8 @@ class SubmitSingleResultTest extends GroovyTestCase {
 	@Override
 	void setUp() {
 		projectName = wordGen.getSentence(3)
-		projectId = client.createProject(projectName, wordGen.getSentence(3).replaceAll("\\s+", ""), 'JUnit')
+		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "")
+		projectId = client.createProject(projectName, projectKey, 'JUnit')
 	}
 
 
@@ -34,26 +34,53 @@ class SubmitSingleResultTest extends GroovyTestCase {
 	void testSubmitOneResult() {
 		def testRunId = client.getTestRunId(projectName, null, wordGen.getSentence(2), null, null)
 
-		CuantoTestResult result = new CuantoTestResult(testRunId)
-		result.packageName = "foo.bar"
-		result.testName = "myTestName"
-		result.description = "my description"
-		result.testResult = "Pass"
-		result.testOutput = wordGen.getSentence(50)
-		result.owner = "Me!"
-		result.bug = "http://jira/CUANTO-5"
-		result.note = "this is my note"
-		result.analysisState = "Bug"
+		ParsableTestCase testCase = new ParsableTestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
 
-		// TODO: does JUnit RunListener expose test output?
+		ParsableTestOutcome outcome = new ParsableTestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Pass"
 
-		client.submit(result)
+		def outcomeId = client.submit(outcome, testRunId)
+		assertNotNull outcomeId
+		
+		def stats = client.getTestRunStats(testRunId)
+		assertNotNull stats
+		assertEquals "Wrong total tests", "1", stats?.tests
+		assertEquals "Wrong passed", "1", stats?.passed
+		assertEquals "Wrong failed", "0", stats?.failed
+	}
+
+
+	void testUpdateSingleResult() {
+		def testRunId = client.getTestRunId(projectName, null, wordGen.getSentence(2), null, null)
+
+		ParsableTestCase testCase = new ParsableTestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
+
+		ParsableTestOutcome outcome = new ParsableTestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Fail"
+
+		def outcomeId = client.submit(outcome, testRunId)
+		assertNotNull outcomeId
 
 		def stats = client.getTestRunStats(testRunId)
 		assertNotNull stats
-		assertEquals "Wrong total tests", 1, stats?.tests
-		assertEquals "Wrong passed", 1, stats?.passed
-		assertEquals "Wrong failed", 0, stats?.failed
-		
+		assertEquals "Wrong total tests", "1", stats?.tests
+		assertEquals "Wrong passed", "0", stats?.passed
+		assertEquals "Wrong failed", "1", stats?.failed
+
+		outcome.testOutput = "This is the test output"
+		def updatedOutcomeId = client.submit(outcome, testRunId)
+		assertEquals "Test outcome IDs not the same", outcomeId, updatedOutcomeId
+
+		def updatedStats = client.getTestRunStats(testRunId)
+		assertNotNull updatedStats
+		assertEquals "Wrong total tests", "1", updatedStats?.tests
+		assertEquals "Wrong passed", "0", updatedStats?.passed
+		assertEquals "Wrong failed", "1", updatedStats?.failed
 	}
 }

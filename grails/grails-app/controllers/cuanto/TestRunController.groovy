@@ -112,6 +112,15 @@ class TestRunController {
 	}
 
 
+	def submitSingleTest = {
+		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
+		def testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId)
+		//def myJson = [:]
+		//myJson["testOutcomeId"] = testOutcome.id
+		//render myJson as JSON
+		render testOutcome.id
+	}
+
 	def outcomes = {
 		def queryParams = [:]
 
