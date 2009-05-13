@@ -174,6 +174,26 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "Wrong date", "2008-03-05 20:55:00", runInfo.dateExecuted
 	}
 
+
+	void testUpdateResults() {
+		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		
+		ParsableTestOutcome outcomeOne = new ParsableTestOutcome()
+		outcomeOne.testCase = new ParsableTestCase(packageName: "cuanto.test.packageOne.SampleTest", testName: "LeCarre")
+		outcomeOne.testResult = "Fail"
+		def outcomeOneId = client.submit(outcomeOne, testRunId)
+		def retrievedOutcomeOne = client.getTestOutcome(outcomeOneId)
+		assertEquals "Wrong result", "Fail", retrievedOutcomeOne.testResult
+
+		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
+		client.submit(fileToSubmit, testRunId)
+		def stats = client.getTestRunStats(testRunId)
+		assertEquals "Wrong number of total tests", "56", stats.tests
+		assertEquals "Wrong number of total failures", "15", stats.failed
+		assertEquals "Wrong number of passing tests", "41", stats.passed
+
+	}
+
 	
 	File getFile(String filename) {
 		def path = "grails/test/resources"
