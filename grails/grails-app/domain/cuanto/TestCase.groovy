@@ -45,4 +45,14 @@ class TestCase implements Comparable{
 		TestCase tc = (TestCase)t
 		return this.fullName.compareTo(tc.fullName)
 	}
+
+	ParsableTestCase toParsableTestCase() {
+		ParsableTestCase tc = new ParsableTestCase()
+		tc.testName = this.testName
+		tc.packageName = this.packageName
+		tc.project = this.project.toString()
+		tc.description = this.description
+		tc.fullName = this.fullName
+		return tc
+	}
 }
