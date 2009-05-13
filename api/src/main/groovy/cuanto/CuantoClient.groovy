@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
 import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.methods.StringRequestEntity
+import org.apache.commons.httpclient.HttpStatus
 
 /**
  * User: Todd Wells
@@ -65,7 +66,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().text
+			responseText = post.responseBodyAsStream.text
 		} finally {
 			post.releaseConnection()
 		}
@@ -93,7 +94,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().text
+			responseText = post.responseBodyAsStream.text
 		} finally {
 			post.releaseConnection()
 		}
@@ -139,7 +140,7 @@ class CuantoClient {
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
-			def responseText = post.getResponseBodyAsStream().text.trim()
+			def responseText = post.responseBodyAsStream.text.trim()
 			if (responseCode == 200) {
 				testRunId = Long.valueOf(responseText)
 			} else if (responseCode == 403) {
@@ -154,6 +155,28 @@ class CuantoClient {
 
 	}
 
+	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
+		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
+		def get = new GetMethod(url)
+		get.addRequestHeader "Accept", "text/xml"
+
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.responseBodyAsStream.text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				XStream xstream = new XStream()
+				def outcome = (ParsableTestOutcome)xstream.fromXML(responseText)
+				return outcome
+			}
+		} finally {
+			get.releaseConnection()
+		}
+
+	}
 
 	public void submit(File file, Long testRunId) {
 		submit([file], testRunId)
@@ -169,14 +192,14 @@ class CuantoClient {
 		files.each { file ->
 			parts += new FilePart(file.getName(), file)
 		}
-		post.setRequestEntity(new MultipartRequestEntity(parts as Part[], post.getParams()))
+		post.requestEntity = new MultipartRequestEntity(parts as Part[], post.params)
 
 		def responseCode
 		def responseText
 		try {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().getText()
+			responseText = post.responseBodyAsStream.text
 		} finally {
 			post.releaseConnection()
 		}
@@ -201,7 +224,7 @@ class CuantoClient {
 		try {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().getText()
+			responseText = post.responseBodyAsStream.text
 			testOutcomeId = Long.valueOf(responseText)
 		} finally {
 			post.releaseConnection()
@@ -225,7 +248,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(get)
-			responseText = get.getResponseBodyAsStream().text
+			responseText = get.responseBodyAsStream.text
 		} finally {
 			get.releaseConnection()
 		}
@@ -249,7 +272,7 @@ class CuantoClient {
 	private HttpClient getHttpClient() {
 		HttpClient httpClient = new HttpClient()
 		if (proxyHost && proxyPort) {
-			httpClient.getHostConfiguration().setProxy proxyHost, proxyPort
+			httpClient.hostConfiguration.setProxy proxyHost, proxyPort
 		}
 		return httpClient
 	}
