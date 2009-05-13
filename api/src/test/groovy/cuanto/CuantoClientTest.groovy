@@ -122,11 +122,10 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals targetEnv, runInfo.targetEnv
 	}
 
-	/*  boolean submit(File file, Long testRunId, String fileType, String testType)  */
+	/*  boolean submit(File file, Long testRunId)  */
 	void testSubmitSingleSuite() {
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
-		def fileType = "JUnit"
 		client.submit(fileToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "34", stats.tests
@@ -138,7 +137,6 @@ class CuantoClientTest extends GroovyTestCase{
 	void testSubmitMultipleSuite() {
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
-		def fileType = "JUnit"
 		client.submit(fileToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "56", stats.tests
@@ -152,7 +150,6 @@ class CuantoClientTest extends GroovyTestCase{
 		def filesToSubmit = []
 		filesToSubmit += getFile("junitReport_single_suite.xml")
 		filesToSubmit += getFile("junitReport_multiple_suite.xml")
-		def fileType = "JUnit"
 		client.submit(filesToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
 		assertEquals "90", stats.tests
