@@ -99,8 +99,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 		  <h1><a name="using_the_cuanto_ant_task">Using the Cuanto ant task</a></h1>
-		  <h2>Downloading the Cuanto Client Jar</h2>
-		  <p>You can download the Cuanto client jar for this version of Cuanto <a href="client/cuanto-api-2.2.0.jar">here</a>.</p>
+		  <!--<h2>Downloading the Cuanto Client Jar</h2>-->
+		  <!--<p>You can download the Cuanto client jar for this version of Cuanto <a href="client/cuanto-api-2.2.0.jar">here</a>.</p>-->
 
 
 		  <h2>Defining the task in an ant file</h2>
