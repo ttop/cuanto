@@ -7,10 +7,10 @@
 	        <!-- The CuantoClient jar needs to be in the classpath for this to work -->
 
 		<path id="cuanto-api-path">
-			<fileset dir="dist" includes="*.jar"/>
+			<fileset dir="target" includes="cuanto-*.jar"/>
 		</path>
 		<!--<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="cuanto-api-path"/>-->
-		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="dist/cuanto-api.jar"/>
+		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="target/cuanto-api-2.0-SNAPSHOT.jar"/>
 
 	</target>
 
