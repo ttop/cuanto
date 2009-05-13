@@ -23,8 +23,12 @@ class CuantoClientTest extends GroovyTestCase{
 
 	@Override
 	void setUp() {
-		projectName = wordGen.getSentence(3)
-		projectId = client.createProject(projectName, wordGen.getSentence(3).replaceAll("\\s+", ""), "JUnit")
+		projectName = wordGen.getSentence(3).trim()
+		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
+		if (projectKey.length() > 25) {
+			projectKey = projectKey.substring(0, 24)
+		}
+		projectId = client.createProject(projectName, projectKey, "JUnit")
 	}
 
 
@@ -73,6 +77,14 @@ class CuantoClientTest extends GroovyTestCase{
 	}
 
 
+	void testCreateProjectTooBig() {
+		def message = shouldFail(CuantoClientException) {
+			client.createProject("Long name", "abcdefghijklmnopqrstuvwxyz", "JUnit")
+		}
+		assertTrue "Wrong error message: $message", message.contains("projectKey.maxSize")
+	}
+
+	
 	void testGetTestRunId() {
 		/* getTestRunID(String project, String dateExecuted, String milestone, String build, String
 			 targetEnv) //everything but project can be null */
@@ -109,7 +121,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	void testGetTestRunWithParams() {
 		def milestone = wordGen.getSentence(2)
-		def build = wordGen.getWord()
+		def build = wordGen.word
 		def targetEnv = wordGen.getSentence(2)
 		Long testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv)
 		assertNotNull "No testRunId returned", testRunId
@@ -121,6 +133,7 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals build, runInfo.build
 		assertEquals targetEnv, runInfo.targetEnv
 	}
+
 
 	/*  boolean submit(File file, Long testRunId)  */
 	void testSubmitSingleSuite() {
@@ -148,13 +161,14 @@ class CuantoClientTest extends GroovyTestCase{
 	void testSubmitMultipleFiles() {
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		def filesToSubmit = []
-		filesToSubmit += getFile("junitReport_single_suite.xml")
-		filesToSubmit += getFile("junitReport_multiple_suite.xml")
+		filesToSubmit << getFile("junitReport_single_suite.xml")
+		filesToSubmit << getFile("junitReport_single_suite_2.xml")
+
 		client.submit(filesToSubmit, testRunId)
 		def stats = client.getTestRunStats(testRunId)
-		assertEquals "90", stats.tests
-		assertEquals "18", stats.failed
-		assertEquals "72", stats.passed
+		assertEquals "68", stats.tests
+		assertEquals "6", stats.failed
+		assertEquals "62", stats.passed
 	}
 
 	

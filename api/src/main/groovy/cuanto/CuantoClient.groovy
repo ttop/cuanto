@@ -66,7 +66,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(post)
-			responseText = post.responseBodyAsStream.text
+			responseText = post.getResponseBodyAsStream().text
 		} finally {
 			post.releaseConnection()
 		}
@@ -76,10 +76,13 @@ class CuantoClient {
 			try {
 				projectId = Long.valueOf(responseText)
 			} catch (NumberFormatException e) {
-			    throw new RuntimeException("Couldn't parse project ID response: ${responseText}")
+			    throw new CuantoClientException("Couldn't parse project ID response: ${responseText}")
 			}
-		} else {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+		} else if (responseCode == 500) {
+			throw new CuantoClientException(responseText)
+		}
+		else {
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return projectId
 	}
@@ -94,13 +97,13 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(post)
-			responseText = post.responseBodyAsStream.text
+			responseText = post.getResponseBodyAsStream().text
 		} finally {
 			post.releaseConnection()
 		}
 
 		if (responseCode != 200) {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
@@ -140,13 +143,13 @@ class CuantoClient {
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
-			def responseText = post.responseBodyAsStream.text.trim()
+			def responseText = post.getResponseBodyAsStream().text.trim()
 			if (responseCode == 200) {
 				testRunId = Long.valueOf(responseText)
 			} else if (responseCode == 403) {
 				throw new IllegalArgumentException(responseText)
 			} else {
-				throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
 		} finally {
 			post.releaseConnection()
@@ -164,7 +167,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(get)
-			responseText = get.responseBodyAsStream.text
+			responseText = get.getResponseBodyAsStream().text
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
 			} else {
@@ -199,12 +202,12 @@ class CuantoClient {
 		try {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
-			responseText = post.responseBodyAsStream.text
+			responseText = post.getResponseBodyAsStream().text
 		} finally {
 			post.releaseConnection()
 		}
 		if (responseCode != 200) {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
@@ -224,13 +227,13 @@ class CuantoClient {
 		try {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
-			responseText = post.responseBodyAsStream.text
+			responseText = post.getResponseBodyAsStream().text
 			testOutcomeId = Long.valueOf(responseText)
 		} finally {
 			post.releaseConnection()
 		}
 		if (responseCode != 200) {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return testOutcomeId 
 	}
@@ -248,7 +251,7 @@ class CuantoClient {
 		def responseText
 		try {
 			responseCode = httpClient.executeMethod(get)
-			responseText = get.responseBodyAsStream.text
+			responseText = get.getResponseBodyAsStream().text
 		} finally {
 			get.releaseConnection()
 		}
@@ -263,7 +266,7 @@ class CuantoClient {
 				}
 			}
 		} else {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return valueMap
 	}

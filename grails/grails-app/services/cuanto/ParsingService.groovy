@@ -51,22 +51,34 @@ class ParsingService {
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
-		for (ParsableTestOutcome parsableTestOutcome in outcomes)
-		{
+		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
 			TestCase testCase = parseTestCase(parsableTestOutcome)
 
 			def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
-			matchingTestCase ? testCase = matchingTestCase : testCasesToSave.add(testCase)
+			if (matchingTestCase) {
+				testCase = matchingTestCase
+			} else {
+				dataService.addTestCases(testRun.project, [testCase])
+			}
 
 			setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
 
-			def testOutcome = new TestOutcome(
-				testResult: testResultsMap.get(parsableTestOutcome.testResult.toLowerCase()),
-				duration: parsableTestOutcome.duration,	'testCase': testCase
-			)
+			TestOutcome testOutcome = null
+			if (matchingTestCase) {
+				testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
+			}
+			if (!testOutcome) {
+				testOutcome = new TestOutcome('testCase': testCase)
+			}
 
+			testOutcome.testResult = testResultsMap.get(parsableTestOutcome.testResult?.toLowerCase())
+			testOutcome.duration = parsableTestOutcome.duration
+			testOutcome.testCase = testCase
 			testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
+			testOutcome.owner = parsableTestOutcome.owner
+			testOutcome.note = parsableTestOutcome.note
+
 			processTestFailure(testOutcome, testRun.project)
 			testOutcomesToSave.add(testOutcome)
 		}
@@ -85,14 +97,16 @@ class ParsingService {
 		def testRun = dataService.getTestRun(testRunId)
 
 		XStream xstream = new XStream()
-		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome)xstream.fromXML(inputStream)
+		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome) xstream.fromXML(inputStream)
 
 		TestCase testCase = parseTestCase(parsableTestOutcome)
 
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
 		if (matchingTestCase) {
 			testCase = matchingTestCase
-		} else {
+		}
+
+		if (!testOutcome) {
 			dataService.addTestCases(testRun.project, [testCase])
 		}
 
@@ -101,20 +115,15 @@ class ParsingService {
 		def testResultsMap = dataService.getAllTestResultsMap()
 		analysisStateMap = dataService.getAllAnalysisStatesMap()
 
-		def testOutcome
+		TestOutcome testOutcome
 		if (matchingTestCase) {
-			def existingTestOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
-			if (existingTestOutcome) {
-				testOutcome = existingTestOutcome
-			} else {
-				testOutcome = new TestOutcome()
-			}
+			testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
 		} else {
-			testOutcome = new TestOutcome()
+			testOutcome = new TestOutcome('testCase': testCase)
 		}
 
 		testOutcome.testResult = testResultsMap.get(parsableTestOutcome.testResult.toLowerCase())
-	    testOutcome.duration = parsableTestOutcome.duration
+		testOutcome.duration = parsableTestOutcome.duration
 		testOutcome.testCase = testCase
 		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
 		testOutcome.owner = parsableTestOutcome.owner
@@ -129,6 +138,7 @@ class ParsingService {
 		testRunService.calculateTestRunStats(testRun)
 		return testOutcome
 	}
+
 
 	private TestCase parseTestCase(parsableTestOutcome) {
 		TestCase testCase = new TestCase(
@@ -166,6 +176,7 @@ class ParsingService {
 		}
 	}
 
+
 	def setTestCaseDescription(desiredDescription, testCase) {
 		if (desiredDescription != testCase.description && desiredDescription != "") {
 			testCase.description = desiredDescription
@@ -188,7 +199,7 @@ class ParsingService {
 			def unanalyzed = true
 			if (project.bugUrlPattern) {
 				def urls = parseUrls(testOutcome.testOutput)
-				def firstUrl = urls.find { it -> project.getBugMap(it).url }
+				def firstUrl = urls.find {it -> project.getBugMap(it).url }
 				def bugInfo = project.getBugMap(firstUrl)
 				if (bugInfo && bugInfo.url) {
 					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) //todo: will this work? Test!
@@ -204,18 +215,19 @@ class ParsingService {
 	}
 
 
-	def parseUrls( strInput ) {
+	def parseUrls(strInput) {
 		// return a list of all URLs found in strInput
 		def urls = []
 		def urlRegEx = '([A-Za-z][A-Za-z0-9+.-]{1,120}:[A-Za-z0-9/](([A-Za-z0-9$_.+!*,;/?:@&~=-])|%[A-Fa-f0-9]{2}){1,333}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*,;/?:@&~=%-]{0,1000}))?)'
 		// regex from http://www.manamplified.org/archives/2006/10/url-regex-pattern.html
 
 		def matcher = strInput =~ urlRegEx
-		while (matcher.find()){
+		while (matcher.find()) {
 			urls += matcher.group()
 		}
 		return urls
 	}
+
 
 	def getTestRun(testRunId) {
 		def errMsg = "Unable to locate test run ID ${testRunId}"
