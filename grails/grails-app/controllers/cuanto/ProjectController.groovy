@@ -51,8 +51,16 @@ class ProjectController {
 
 
 	def create = {
-		def project = projectService.createProject(params)
-		render "${project.id}"
+		def project
+		def responseText
+		try {
+			project = projectService.createProject(params)
+			responseText = project?.id.toString()
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			responseText = e.message
+		}
+		render responseText
 	}
 
 
