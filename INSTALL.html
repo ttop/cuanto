@@ -82,15 +82,19 @@
 		instance using this method.</p>
 		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.1 or greater installed. Copy
 		your modified <span class="mono">cuanto-db.groovy</span> file to the
-		<span class="mono">~/.grails</span> directory (or the Windows equivalent). Copy your JDBC driver to the <span class="mono">grails/lib</span> directory. Then in the
+		<span class="mono">~/.grails</span> directory (or the Windows equivalent). Copy your JDBC driver to the
+			<span class="mono">grails/lib</span> directory. Then in the
 		<span class="mono">cuanto/grails</span> directory, type "<span class="mono">grails upgrade</span>".
-		Then you can start Cuanto by executing <span class="mono">"grails run-app"</span>. Once it has started, the URL to reach Cuanto will be displayed,
+		Then you can start Cuanto by executing <span class="mono">"grails run-app"</span>. Once it has started,
+			the URL to reach Cuanto will be displayed,
 		usually <span class="mono">http://localhost:8080/cuanto</span>.</p>
 
 		<h2>Building the WAR</h2>
-		<p>With Ant 1.7.0 or greater installed, change to the <span class="mono">cuanto/grails</span> directory and
-		type "<span class="mono">ant war</span>". This will create a <span class="mono">cuanto-&lt;version&gt;.war</span>
-		file in the <span class="mono">grails</span> directory.</p>
+		<p>With Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
+			<span class="mono">cuanto/grails</span> directory and
+		type "<span class="mono">ant build-cuanto</span>". This will create a
+			<span class="mono">cuanto-&lt;version&gt;.war</span>
+		file in the <span class="mono">grails</span> directory. It will also build the client jar.</p>
 
 		
 		<h2>Deploying the application</h2>
@@ -102,7 +106,7 @@
 		for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu
 		link to read about how to use Cuanto.</p>
 
-		<h2>Building and using the client jar/ant task</h2>
+		<h2>Building/using the client jar/ant task</h2>
 		<p>Presently maven is required to build the client jar. With maven installed (2.0.9 or greater recommended),
 		change to the <span class="mono">cuanto/api</span> directory and type</p>
 			<pre class="code">mvn clean package</pre>
@@ -116,7 +120,8 @@
 	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
 &lt;/cuanto&gt;</pre>
 		
-		<p>Where the <span class="mono">testProject</span> property is the fully-qualified group/project of an existing Cuanto project.</p>
+		<p>Where the <span class="mono">testProject</span> property is the fully-qualified group/project of an existing
+			Cuanto project.</p>
 		  <br/>
 	</body>
 </html>

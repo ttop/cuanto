@@ -128,4 +128,8 @@
     <target name="deploy" depends="war" description="--> The deploy target (initially empty)">
         <!-- TODO -->
     </target>
+
+	<target name="buildCuanto" depends="-init-grails" description="-->Build Cuanto">
+		<grails script="BuildCuanto"/>
+	</target>
 </project>
