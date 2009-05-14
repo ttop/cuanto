@@ -34,6 +34,12 @@
 			.mono {
 				font-family:monospace;
 			}
+
+			.code {
+				margin-right: 40%;
+				padding: 1%;
+				background-color: lightskyblue;
+			}
 		</style>
 	</head>
 
@@ -95,5 +101,22 @@
 		<p>The application should be ready to run now -- start your application server and go to the appropriate URL
 		for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu
 		link to read about how to use Cuanto.</p>
+
+		<h2>Building and using the client jar/ant task</h2>
+		<p>Presently maven is required to build the client jar. With maven installed (2.0.9 or greater recommended),
+		change to the <span class="mono">cuanto/api</span> directory and type</p>
+			<pre class="code">mvn clean package</pre>
+		<p>The jar will be built and placed in the <span class="mono">target</span> directory, with a name like
+		<span class="mono">cuanto-api-&lt;VERSION&gt;.jar</span>.</p>
+		<p>The ant task is in the client jar, so if it is in your classpath you can use it from an ant build file like this:</p>
+		<pre class="code">&lt;taskdef name="cuanto" classname="cuanto.CuantoAntTask"/&gt;</pre>
+		And then submit your results to Cuanto like this:
+				  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="Sample/CuantoProd" milestone="1.0"
+   build="30343" targetEnv="test lab"&gt;
+	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
+&lt;/cuanto&gt;</pre>
+		
+		<p>Where the <span class="mono">testProject</span> property is the fully-qualified group/project of an existing Cuanto project.</p>
+		  <br/>
 	</body>
 </html>

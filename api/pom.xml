@@ -18,22 +18,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-artifact-ant</artifactId>
-			<version>2.0.4</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>1.6.0</version>
+			<version>1.6.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -70,11 +63,31 @@
 			<groupId>org.codehaus.groovy.maven</groupId>
 			<artifactId>gmaven-mojo</artifactId>
 			<version>1.0-rc-5</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.grooovy</groupId>
+					<artifactId>groovy-all-minimal</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy.maven.runtime</groupId>
 			<artifactId>gmaven-runtime-1.6</artifactId>
 			<version>1.0-rc-5</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.grooovy</groupId>
+					<artifactId>groovy-all-minimal</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<version>1.2.1</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -106,9 +119,25 @@
 					</includes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<!-- put your configurations here -->
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
-		
+
 	</build>
 
 </project>
