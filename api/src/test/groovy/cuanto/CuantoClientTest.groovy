@@ -193,11 +193,16 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		
 		ParsableTestOutcome outcomeOne = new ParsableTestOutcome()
-		outcomeOne.testCase = new ParsableTestCase(packageName: "cuanto.test.packageOne.SampleTest", testName: "LeCarre")
+		def pkgName = "cuanto.test.packageOne.SampleTest"
+		def testName = "LeCarre"
+		outcomeOne.testCase = new ParsableTestCase(packageName: pkgName, 'testName': testName)
 		outcomeOne.testResult = "Fail"
 		def outcomeOneId = client.submit(outcomeOne, testRunId)
 		def retrievedOutcomeOne = client.getTestOutcome(outcomeOneId)
 		assertEquals "Wrong result", "Fail", retrievedOutcomeOne.testResult
+		assertEquals "Wrong test pkg", pkgName, retrievedOutcomeOne.testCase.packageName
+		assertEquals "Wrong test name", testName, retrievedOutcomeOne.testCase.testName
+		assertNull "Wrong test output", retrievedOutcomeOne.testOutput
 
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submit(fileToSubmit, testRunId)
@@ -205,7 +210,20 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "Wrong number of total tests", "56", stats.tests
 		assertEquals "Wrong number of total failures", "15", stats.failed
 		assertEquals "Wrong number of passing tests", "41", stats.passed
+		def retrievedOutcomeTwo = client.getTestOutcome(outcomeOneId)
 
+		assertEquals "Wrong result", "Fail", retrievedOutcomeTwo.testResult
+		assertEquals "Wrong test pkg", pkgName, retrievedOutcomeTwo.testCase.packageName
+		assertEquals "Wrong test name", testName, retrievedOutcomeTwo.testCase.testName
+		assertTrue "Wrong test output: ${retrievedOutcomeTwo.testOutput}",
+			retrievedOutcomeTwo.testOutput.contains("junit.framework.AssertionFailedError: LeCarre failed")
+
+		// submit all results again, just to be sure they haven't changed
+		client.submit(fileToSubmit, testRunId)
+		stats = client.getTestRunStats(testRunId)
+		assertEquals "Wrong number of total tests", "56", stats.tests
+		assertEquals "Wrong number of total failures", "15", stats.failed
+		assertEquals "Wrong number of passing tests", "41", stats.passed
 	}
 
 	

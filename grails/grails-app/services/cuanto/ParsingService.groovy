@@ -104,9 +104,7 @@ class ParsingService {
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
 		if (matchingTestCase) {
 			testCase = matchingTestCase
-		}
-
-		if (!testOutcome) {
+		} else {
 			dataService.addTestCases(testRun.project, [testCase])
 		}
 
@@ -115,10 +113,12 @@ class ParsingService {
 		def testResultsMap = dataService.getAllTestResultsMap()
 		analysisStateMap = dataService.getAllAnalysisStatesMap()
 
-		TestOutcome testOutcome
+		TestOutcome testOutcome = null
 		if (matchingTestCase) {
 			testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
-		} else {
+		}
+
+		if (!testOutcome) {
 			testOutcome = new TestOutcome('testCase': testCase)
 		}
 
