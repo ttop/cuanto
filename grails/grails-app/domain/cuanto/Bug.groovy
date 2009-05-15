@@ -32,11 +32,6 @@ class Bug {
 	boolean equals(Bug bug) {
 		if (this.title != bug.title) {
 			return false
-		} else if (this.url != bug.url) {
-			return false
-		}
-		else {
-			return true
-		}
+		} else return this.url == bug.url
 	}
 }
