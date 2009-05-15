@@ -36,54 +36,21 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 
-	def analysisStateMap
-
 
 	TestRun parseFileFromStream(stream, testRunId) {
 		def testRun = getTestRun(testRunId)
 		def parser = getParser(testRun.project.testType)
 		def outcomes = parser.parseStream(stream)
 
-		def testResultsMap = dataService.getAllTestResultsMap()
-		analysisStateMap = dataService.getAllAnalysisStatesMap()
-
-		def testCasesToSave = []
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
-			TestCase testCase = parseTestCase(parsableTestOutcome)
-
-			def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
-			if (matchingTestCase) {
-				testCase = matchingTestCase
-			} else {
-				dataService.addTestCases(testRun.project, [testCase])
-			}
-
-			setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
-
-			TestOutcome testOutcome = null
-			if (matchingTestCase) {
-				testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
-			}
-			if (!testOutcome) {
-				testOutcome = new TestOutcome('testCase': testCase)
-			}
-
-			testOutcome.testResult = testResultsMap.get(parsableTestOutcome.testResult?.toLowerCase())
-			testOutcome.duration = parsableTestOutcome.duration
-			testOutcome.testCase = testCase
-			testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
-			testOutcome.owner = parsableTestOutcome.owner
-			testOutcome.note = parsableTestOutcome.note
-
-			processTestFailure(testOutcome, testRun.project)
+			def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
 			testOutcomesToSave.add(testOutcome)
 		}
 
-		dataService.addTestCases(testRun.project, testCasesToSave)
 		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
 
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
@@ -98,7 +65,19 @@ class ParsingService {
 
 		XStream xstream = new XStream()
 		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome) xstream.fromXML(inputStream)
+		def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
 
+		if (parsableTestOutcome.bug) {
+			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
+		}
+
+		dataService.saveTestOutcomes(testRun, [testOutcome])
+		testRunService.calculateTestRunStats(testRun)
+		return testOutcome
+	}
+
+
+	private TestOutcome processParsableOutcome(testRun, ParsableTestOutcome parsableTestOutcome) {
 		TestCase testCase = parseTestCase(parsableTestOutcome)
 
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
@@ -110,9 +89,6 @@ class ParsingService {
 
 		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
 
-		def testResultsMap = dataService.getAllTestResultsMap()
-		analysisStateMap = dataService.getAllAnalysisStatesMap()
-
 		TestOutcome testOutcome = null
 		if (matchingTestCase) {
 			testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
@@ -122,20 +98,13 @@ class ParsingService {
 			testOutcome = new TestOutcome('testCase': testCase)
 		}
 
-		testOutcome.testResult = testResultsMap.get(parsableTestOutcome.testResult.toLowerCase())
+		testOutcome.testResult = dataService.result(parsableTestOutcome.testResult.toLowerCase())
 		testOutcome.duration = parsableTestOutcome.duration
 		testOutcome.testCase = testCase
 		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
 		testOutcome.owner = parsableTestOutcome.owner
 		testOutcome.note = parsableTestOutcome.note
 		processTestFailure(testOutcome, testRun.project)
-
-		if (parsableTestOutcome.bug) {
-			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
-		}
-
-		dataService.saveTestOutcomes(testRun, [testOutcome])
-		testRunService.calculateTestRunStats(testRun)
 		return testOutcome
 	}
 
@@ -162,17 +131,17 @@ class ParsingService {
 
 
 	def getParser(testType) {
-		def parserToReturn
+		def parserToReturn = null
 		testParserRegistry.parsers.each { parser ->
-			if (testType && parser.getTestType().equalsIgnoreCase(testType.name)) {
+			if (testType && parser.testType.equalsIgnoreCase(testType.name)) {
 				parserToReturn = parser
 			}
 		}
 
-		if (!parserToReturn) {
-			throw new ParsingException("Unsupported test type: ${testType}")
-		} else {
+		if (parserToReturn) {
 			return parserToReturn
+		} else {
+			throw new ParsingException("Unsupported test type: ${testType}")
 		}
 	}
 
@@ -203,13 +172,13 @@ class ParsingService {
 				def bugInfo = project.getBugMap(firstUrl)
 				if (bugInfo && bugInfo.url) {
 					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) //todo: will this work? Test!
-					testOutcome.analysisState = analysisStateMap.get("bug")
+					testOutcome.analysisState = AnalysisState.findByIsBug(true)
 					testOutcome.note = "Bug auto-populated based on the test output matching the project's bug pattern."
 					unanalyzed = false
 				}
 			}
 			if (unanalyzed) {
-				testOutcome.analysisState = analysisStateMap.get("unanalyzed")
+				testOutcome.analysisState = AnalysisState.findByIsDefault(true)
 			}
 		}
 	}
