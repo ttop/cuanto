@@ -24,3 +24,4 @@ grails/web-app/images/skin/sorted_desc.gif
 grails/web-app/js/application.js
 grails/test/reports
 #grails/web-app/plugins/
+grails/lib/cuanto-api*
