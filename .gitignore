@@ -9,7 +9,6 @@ cuanto.ipr
 cuanto.iws
 grails/.classpath
 grails/.project
-grails/cobertura.ser
 grails/cuanto-test.launch
 grails/cuanto.tmproj
 grails/cuanto_grails.iml
