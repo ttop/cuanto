@@ -10,6 +10,6 @@ class AnalysisStateTests extends GroovyTestCase{
 
 	void testToString() {
 		def state = new AnalysisState(name: "Foo")
-		assertEquals "Wrong name", "Foo", state
+		assertEquals "Wrong name", "Foo", state.toString()
 	}
 }
