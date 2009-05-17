@@ -14,10 +14,6 @@ grails/cuanto.tmproj
 grails/cuanto_grails.iml
 grails/ivy.xml
 grails/ivysettings.xml
-grails/lib/build/
-grails/lib/compile/
-grails/lib/runtime/
-grails/lib/test/
 grails/lib/cuanto-api-*
 grails/lib/mysql-connector-java*
 grails/stacktrace.log
