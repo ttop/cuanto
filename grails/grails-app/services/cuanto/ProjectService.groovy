@@ -33,7 +33,8 @@ class ProjectService {
 
 
 	def getProjectByFullName(String fullName) throws CuantoException {
-		def groupName, projectName
+		def groupName = null
+		def projectName = null
 		if (fullName) {
 			def parts = fullName.tokenize("/")
 			if (parts.size() == 2) {
@@ -108,6 +109,11 @@ class ProjectService {
 				dataService.saveDomainObject(project)
 			} else {
 				status.setRollbackOnly() // rollback any potential group creation if anything failed validation
+				def err = ""
+				project.errors.allErrors.each {
+					err += "${it}\n"
+				}
+				throw new CuantoException(err)
 			}
 		}
 		return project

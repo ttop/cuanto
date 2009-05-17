@@ -212,10 +212,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <p>Cuanto is Copyright (C) 2009 thePlatform, Inc.</p>
 
 		  <p>Cuanto is made available under the terms of the GNU Lesser General Public License, version 3, also known
-		  as <a href="http://www.gnu.org/licenses/lgpl-3.0.txt">LGPLv3</a>.</p>
+		  as <a href="http://www.gnu.org/licenses/lgpl.html">LGPLv3</a>.</p>
 
 		  <img src="images/lgplv3-147x51.png" alt="LGPLv3"/>
-		  <p/>
+
+		  <h1>Additional licenses used</h1>
+		  <p><a href="licenses/xpp3_license.txt">XPP3 License</a> - This product includes software developed by the Indiana University
+			  Extreme! Lab (http://www.extreme.indiana.edu/).</p>
+		  <p><a href="licenses/xstream_license.txt">XStream License</a></p>
+		  <p><a href="js/yui/2.6.0/LICENSE">YUI License</a></p>
+
+		  <p>You may find additional license information in the source distribution.</p>
+
 	  </div>
   </body>
 </html>

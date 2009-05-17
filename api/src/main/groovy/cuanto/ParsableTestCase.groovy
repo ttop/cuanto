@@ -18,29 +18,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
 package cuanto
+
 /**
  * User: Todd Wells
- * Date: Mar 3, 2009
- * Time: 5:58:46 PM
- * 
+ * Date: May 13, 2008
+ * Time: 9:49:54 PM
+ *
  */
-class CuantoTestResult {
+class ParsableTestCase implements Comparable {
+	String project
+	String packageName // todo: change to packageName
+	String testName
+	String fullName
+	String description
 
-	CuantoTestResult(Long testRunId) {
-		
+
+	public int compareTo(Object t) {
+		def other = (ParsableTestCase) t
+		if (this.project != other.project)
+			return this.project.compareTo(other.project)
+		if (this.packageName != other.packageName)
+			return this.packageName.compareTo(other.packageName)
+		if (this.testName != other.testName)
+			return this.testName.compareTo(other.testName)
+		if (this.fullName != other.fullName)
+			return this.fullName.compareTo(other.fullName)
+		if (this.description != other.description)
+			return this.description.compareTo(other.description)
+		return 0
 	}
 
-
-	String packageName
-	String testName
-	String description
-	String testType
-	String testResult
-	String testOutput
-	String owner
-	String bug
-	String note
-	String analysisState
 }

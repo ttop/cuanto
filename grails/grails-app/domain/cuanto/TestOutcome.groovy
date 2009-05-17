@@ -46,4 +46,17 @@ class TestOutcome {
     String owner
     Bug bug
     String note
+	
+
+	ParsableTestOutcome toParsableTestOutcome() {
+		ParsableTestOutcome out = new ParsableTestOutcome()
+		out.testCase = this.testCase.toParsableTestCase()
+		out.testResult = this.testResult.toString()
+		out.testOutput = this.testOutput
+		out.duration = this.duration
+		out.owner = this.owner
+		out.bug = this.bug?.url ? this.bug?.url : this.bug?.title
+		out.note = this.note
+		return out
+	}
 }

@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
+import com.thoughtworks.xstream.XStream
+
 
 /**
  * User: Todd Wells
@@ -34,42 +36,21 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 
-	def analysisStateMap
-
 
 	TestRun parseFileFromStream(stream, testRunId) {
 		def testRun = getTestRun(testRunId)
 		def parser = getParser(testRun.project.testType)
 		def outcomes = parser.parseStream(stream)
 
-		def testResultsMap = dataService.getAllTestResultsMap()
-		analysisStateMap = dataService.getAllAnalysisStatesMap()
-
-		def testCasesToSave = []
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
-		for (ParsableTestOutcome parsableTestOutcome in outcomes)
-		{
+		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
-			TestCase testCase = parseTestCase(parsableTestOutcome)
-
-			def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
-			matchingTestCase ? testCase = matchingTestCase : testCasesToSave.add(testCase)
-
-			setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
-
-			def testOutcome = new TestOutcome(
-				testResult: testResultsMap.get(parsableTestOutcome.testResult.toLowerCase()),
-				duration: parsableTestOutcome.duration,	'testCase': testCase
-			)
-
-			testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
-			processTestFailure(testOutcome, testRun.project)
+			def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
 			testOutcomesToSave.add(testOutcome)
 		}
 
-		dataService.addTestCases(testRun.project, testCasesToSave)
 		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
 
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
@@ -79,10 +60,59 @@ class ParsingService {
 	}
 
 
+	TestOutcome parseTestOutcome(inputStream, testRunId) {
+		def testRun = dataService.getTestRun(testRunId)
+
+		XStream xstream = new XStream()
+		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome) xstream.fromXML(inputStream)
+		def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
+
+		if (parsableTestOutcome.bug) {
+			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
+		}
+
+		dataService.saveTestOutcomes(testRun, [testOutcome])
+		testRunService.calculateTestRunStats(testRun)
+		return testOutcome
+	}
+
+
+	private TestOutcome processParsableOutcome(testRun, ParsableTestOutcome parsableTestOutcome) {
+		TestCase testCase = parseTestCase(parsableTestOutcome)
+
+		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
+		if (matchingTestCase) {
+			testCase = matchingTestCase
+		} else {
+			dataService.addTestCases(testRun.project, [testCase])
+		}
+
+		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
+
+		TestOutcome testOutcome = null
+		if (matchingTestCase) {
+			testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
+		}
+
+		if (!testOutcome) {
+			testOutcome = new TestOutcome('testCase': testCase)
+		}
+
+		testOutcome.testResult = dataService.result(parsableTestOutcome.testResult.toLowerCase())
+		testOutcome.duration = parsableTestOutcome.duration
+		testOutcome.testCase = testCase
+		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
+		testOutcome.owner = parsableTestOutcome.owner
+		testOutcome.note = parsableTestOutcome.note
+		processTestFailure(testOutcome, testRun.project)
+		return testOutcome
+	}
+
+
 	private TestCase parseTestCase(parsableTestOutcome) {
 		TestCase testCase = new TestCase(
 			testName: parsableTestOutcome.testCase.testName,
-			packageName: parsableTestOutcome.testCase.testPackage
+			packageName: parsableTestOutcome.testCase.packageName
 		)
 
 		if (testCase.packageName) {
@@ -101,19 +131,20 @@ class ParsingService {
 
 
 	def getParser(testType) {
-		def parserToReturn
+		def parserToReturn = null
 		testParserRegistry.parsers.each { parser ->
-			if (testType && parser.getTestType().equalsIgnoreCase(testType.name)) {
+			if (testType && parser.testType.equalsIgnoreCase(testType.name)) {
 				parserToReturn = parser
 			}
 		}
 
-		if (!parserToReturn) {
-			throw new ParsingException("Unsupported test type: ${testType}")
-		} else {
+		if (parserToReturn) {
 			return parserToReturn
+		} else {
+			throw new ParsingException("Unsupported test type: ${testType}")
 		}
 	}
+
 
 	def setTestCaseDescription(desiredDescription, testCase) {
 		if (desiredDescription != testCase.description && desiredDescription != "") {
@@ -137,34 +168,35 @@ class ParsingService {
 			def unanalyzed = true
 			if (project.bugUrlPattern) {
 				def urls = parseUrls(testOutcome.testOutput)
-				def firstUrl = urls.find { it -> project.getBugMap(it).url }
+				def firstUrl = urls.find {it -> project.getBugMap(it).url }
 				def bugInfo = project.getBugMap(firstUrl)
 				if (bugInfo && bugInfo.url) {
 					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) //todo: will this work? Test!
-					testOutcome.analysisState = analysisStateMap.get("bug")
+					testOutcome.analysisState = AnalysisState.findByIsBug(true)
 					testOutcome.note = "Bug auto-populated based on the test output matching the project's bug pattern."
 					unanalyzed = false
 				}
 			}
 			if (unanalyzed) {
-				testOutcome.analysisState = analysisStateMap.get("unanalyzed")
+				testOutcome.analysisState = AnalysisState.findByIsDefault(true)
 			}
 		}
 	}
 
 
-	def parseUrls( strInput ) {
+	def parseUrls(strInput) {
 		// return a list of all URLs found in strInput
 		def urls = []
 		def urlRegEx = '([A-Za-z][A-Za-z0-9+.-]{1,120}:[A-Za-z0-9/](([A-Za-z0-9$_.+!*,;/?:@&~=-])|%[A-Fa-f0-9]{2}){1,333}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*,;/?:@&~=%-]{0,1000}))?)'
 		// regex from http://www.manamplified.org/archives/2006/10/url-regex-pattern.html
 
 		def matcher = strInput =~ urlRegEx
-		while (matcher.find()){
+		while (matcher.find()) {
 			urls += matcher.group()
 		}
 		return urls
 	}
+
 
 	def getTestRun(testRunId) {
 		def errMsg = "Unable to locate test run ID ${testRunId}"

@@ -18,7 +18,10 @@ class WordGenerator {
 		String [] allwords = words.split("\\s+")
 		wordSet = new HashSet()
 		for (word in allwords) {
-			wordSet << word
+			def trimmed = word.trim()
+			if (trimmed) {
+				wordSet << trimmed
+			}
 		}
 
 		wordList.addAll(wordSet)

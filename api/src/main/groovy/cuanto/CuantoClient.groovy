@@ -21,13 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.CuantoTestResult
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
+import com.thoughtworks.xstream.XStream
+import org.apache.commons.httpclient.methods.StringRequestEntity
+import org.apache.commons.httpclient.HttpStatus
 
 /**
  * User: Todd Wells
@@ -71,9 +73,16 @@ class CuantoClient {
 
 		def projectId
 		if (responseCode == 200) {
-			projectId = Long.valueOf(responseText)
-		} else {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			try {
+				projectId = Long.valueOf(responseText)
+			} catch (NumberFormatException e) {
+			    throw new CuantoClientException("Couldn't parse project ID response: ${responseText}")
+			}
+		} else if (responseCode == 500) {
+			throw new CuantoClientException(responseText)
+		}
+		else {
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return projectId
 	}
@@ -94,7 +103,7 @@ class CuantoClient {
 		}
 
 		if (responseCode != 200) {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
@@ -131,24 +140,46 @@ class CuantoClient {
 			post.addParameter "targetEnv", targetEnv
 		}
 
-		def projectId
+		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
 			def responseText = post.getResponseBodyAsStream().text.trim()
 			if (responseCode == 200) {
-				projectId = Long.valueOf(responseText)
+				testRunId = Long.valueOf(responseText)
 			} else if (responseCode == 403) {
 				throw new IllegalArgumentException(responseText)
 			} else {
-				throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
 		} finally {
 			post.releaseConnection()
 		}
-		return projectId
+		return testRunId
 
 	}
 
+	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
+		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
+		def get = new GetMethod(url)
+		get.addRequestHeader "Accept", "text/xml"
+
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				XStream xstream = new XStream()
+				def outcome = (ParsableTestOutcome)xstream.fromXML(responseText)
+				return outcome
+			}
+		} finally {
+			get.releaseConnection()
+		}
+
+	}
 
 	public void submit(File file, Long testRunId) {
 		submit([file], testRunId)
@@ -164,25 +195,47 @@ class CuantoClient {
 		files.each { file ->
 			parts += new FilePart(file.getName(), file)
 		}
-		post.setRequestEntity(new MultipartRequestEntity(parts as Part[], post.getParams()))
+		post.requestEntity = new MultipartRequestEntity(parts as Part[], post.params)
 
 		def responseCode
 		def responseText
 		try {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().getText()
+			responseText = post.getResponseBodyAsStream().text
 		} finally {
 			post.releaseConnection()
 		}
 		if (responseCode != 200) {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
 
-	public void submit(CuantoTestResult result) {
-		throw new RuntimeException("Not implemented");
+	public Long submit(ParsableTestOutcome testOutcome, Long testRunId) {
+		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
+		PostMethod post = new PostMethod(fullUri)
+		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+
+		XStream xstream = new XStream()
+		def outcomeXml = xstream.toXML(testOutcome)
+		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
+
+		def responseCode
+		def responseText
+		def testOutcomeId
+		try {
+			HttpClient hclient = getHttpClient()
+			responseCode = hclient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().text
+			testOutcomeId = Long.valueOf(responseText)
+		} finally {
+			post.releaseConnection()
+		}
+		if (responseCode != 200) {
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+		}
+		return testOutcomeId 
 	}
 
 	Map getTestRunStats(Long testRunId){
@@ -213,7 +266,7 @@ class CuantoClient {
 				}
 			}
 		} else {
-			throw new RuntimeException("HTTP Response code ${responseCode}: ${responseText}")
+			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return valueMap
 	}
@@ -222,7 +275,7 @@ class CuantoClient {
 	private HttpClient getHttpClient() {
 		HttpClient httpClient = new HttpClient()
 		if (proxyHost && proxyPort) {
-			httpClient.getHostConfiguration().setProxy proxyHost, proxyPort
+			httpClient.hostConfiguration.setProxy proxyHost, proxyPort
 		}
 		return httpClient
 	}

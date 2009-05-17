@@ -65,7 +65,7 @@ class TestNgParser implements CuantoTestParser{
 					    }
 
 					    out.testCase = new ParsableTestCase()
-					    out.testCase.testPackage = testClass.'@name'
+					    out.testCase.packageName = testClass.'@name'
 					    out.testCase.fullName = testClass.'@name' + "." + testMethod.'@name'
 					    out.testCase.testName = testMethod.'@name'
 					    out.testCase.description = testMethod.@description

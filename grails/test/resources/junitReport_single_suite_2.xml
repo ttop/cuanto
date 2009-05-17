@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="1" failures="2" hostname="tpot.local" name="cuanto.test.packageFour.SampleTest" tests="34" time="14.847" timestamp="2008-09-21T16:31:44">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition" />
+    <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Libraries" />
+    <property name="java.vm.version" value="1.5.0_13-119" />
+    <property name="awt.nativeDoubleBuffering" value="true" />
+    <property name="gopherProxySet" value="false" />
+    <property name="ant.version" value="Apache Ant version 1.7.0 compiled on December 13 2006" />
+    <property name="ant.java.version" value="1.5" />
+    <property name="java.vm.vendor" value="Apple Inc." />
+    <property name="java.vendor.url" value="http://www.apple.com/" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="user.country" value="US" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="program.name" value="groovy" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="user.dir" value="/Users/ttop/sources/depot/QA/cuanto/main/generator/src/script" />
+    <property name="java.runtime.version" value="1.5.0_13-b05-237" />
+    <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
+    <property name="basedir" value="/Users/ttop/sources/depot/QA/cuanto/main/generator/src/script" />
+    <property name="java.endorsed.dirs" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/endorsed" />
+    <property name="os.arch" value="i386" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="ant.core.lib" value="/Users/ttop/Library/groovy-1.5.6/lib/ant-1.7.0.jar" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="os.name" value="Mac OS X" />
+    <property name="tools.jar" value="/Library/Java/Home/lib/tools.jar" />
+    <property name="sun.jnu.encoding" value="MacRoman" />
+    <property name="script.name" value="/Users/ttop/Library/groovy-1.5.6/bin/groovy" />
+    <property name="java.library.path" value=".:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="49.0" />
+    <property name="sun.management.compiler" value="HotSpot Client Compiler" />
+    <property name="os.version" value="10.5.4" />
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+    <property name="user.home" value="/Users/ttop" />
+    <property name="user.timezone" value="" />
+    <property name="java.awt.printerjob" value="apple.awt.CPrinterJob" />
+    <property name="java.specification.version" value="1.5" />
+    <property name="file.encoding" value="MacRoman" />
+    <property name="java.class.path" value="/Users/ttop/Library/groovy-1.5.6/lib/groovy-1.5.6.jar" />
+    <property name="user.name" value="ttop" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="java.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home" />
+    <property name="sun.arch.data.model" value="32" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="user.language" value="en" />
+    <property name="awt.toolkit" value="apple.awt.CToolkit" />
+    <property name="java.vm.info" value="mixed mode, sharing" />
+    <property name="java.version" value="1.5.0_13" />
+    <property name="java.ext.dirs" value="/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext" />
+    <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/charsets.jar" />
+    <property name="java.vendor" value="Apple Inc." />
+    <property name="file.separator" value="/" />
+    <property name="java.vendor.url.bug" value="http://bugreport.apple.com/" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="groovy.starter.conf" value="/Users/ttop/Library/groovy-1.5.6/conf/groovy-starter.conf" />
+    <property name="mrj.version" value="1040.1.5.0_13-237" />
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="groovy.home" value="/Users/ttop/Library/groovy-1.5.6" />
+  </properties>
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Stephenson" time="0.121" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Irving" time="0.163" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Tolkein" time="0.461" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Bronte" time="0.169" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Dickens" time="0.418" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Melville" time="0.867" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Steinbeck" time="0.806" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Williams" time="0.244" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Wilson" time="0.634" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Atwood" time="0.753" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Morrisson" time="0.127" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Ferry" time="0.096" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Parker" time="0.792" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Wilde" time="0.539" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Hemingway" time="0.387" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Durrell" time="0.095" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Hugo" time="0.076" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Huxley" time="0.338" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Ginsberg" time="0.559" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Kerouac" time="0.737" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Carver" time="0.924" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Dunne" time="0.333" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="LeCarre" time="0.524">
+    <failure message="LeCarre failed" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: LeCarre failed
+	    http://tpjira/browse/John 
+	at cuanto.test.packageFour.SampleTest.testMain(SampleTest.java:37)
+	at cuanto.test.packageFour.SampleTest.runTest(SampleTest.java:29)
+	at groovy.util.AntBuilder.nodeCompleted(AntBuilder.java:199)
+	at groovy.util.BuilderSupport.doInvokeMethod(BuilderSupport.java:153)
+	at groovy.util.AntBuilder.doInvokeMethod(AntBuilder.java:149)
+	at groovy.util.BuilderSupport.invokeMethod(BuilderSupport.java:64)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:784)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.executeTests(CreateTests.groovy:24)
+	at CreateTests.this$4$executeTests(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:78)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrent0(ScriptBytecodeAdapter.java:112)
+	at CreateTests.run(CreateTests.groovy:16)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:756)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:778)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.InvokerHelper.runScript(InvokerHelper.java:401)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.main(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at groovy.lang.GroovyShell.runMainOrTestOrRunnable(GroovyShell.java:244)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:218)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:147)
+	at groovy.ui.GroovyMain.processOnce(GroovyMain.java:493)
+	at groovy.ui.GroovyMain.run(GroovyMain.java:308)
+	at groovy.ui.GroovyMain.process(GroovyMain.java:294)
+	at groovy.ui.GroovyMain.processArgs(GroovyMain.java:111)
+	at groovy.ui.GroovyMain.main(GroovyMain.java:92)
+	at org.codehaus.groovy.tools.GroovyStarter.rootLoader(GroovyStarter.java:101)
+	at org.codehaus.groovy.tools.GroovyStarter.main(GroovyStarter.java:130)
+</failure>
+  </testcase>
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Chabon" time="0.024" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Christie" time="0.529" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Austen" time="0.943" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Azimov" time="0.092" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Kesey" time="0.616" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Greene" time="0.043" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Eliot" time="0.03" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Chaucer" time="0.49" />
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Bellow" time="0.687">
+    <error message="Test error" type="java.lang.RuntimeException">java.lang.RuntimeException: Test error http://tpjira/browse/SAUL
+	at cuanto.test.packageFour.SampleTest.testMain(SampleTest.java:39)
+	at cuanto.test.packageFour.SampleTest.runTest(SampleTest.java:29)
+	at groovy.util.AntBuilder.nodeCompleted(AntBuilder.java:199)
+	at groovy.util.BuilderSupport.doInvokeMethod(BuilderSupport.java:153)
+	at groovy.util.AntBuilder.doInvokeMethod(AntBuilder.java:149)
+	at groovy.util.BuilderSupport.invokeMethod(BuilderSupport.java:64)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:784)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.executeTests(CreateTests.groovy:24)
+	at CreateTests.this$4$executeTests(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:78)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrent0(ScriptBytecodeAdapter.java:112)
+	at CreateTests.run(CreateTests.groovy:16)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:756)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:778)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.InvokerHelper.runScript(InvokerHelper.java:401)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.main(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at groovy.lang.GroovyShell.runMainOrTestOrRunnable(GroovyShell.java:244)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:218)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:147)
+	at groovy.ui.GroovyMain.processOnce(GroovyMain.java:493)
+	at groovy.ui.GroovyMain.run(GroovyMain.java:308)
+	at groovy.ui.GroovyMain.process(GroovyMain.java:294)
+	at groovy.ui.GroovyMain.processArgs(GroovyMain.java:111)
+	at groovy.ui.GroovyMain.main(GroovyMain.java:92)
+	at org.codehaus.groovy.tools.GroovyStarter.rootLoader(GroovyStarter.java:101)
+	at org.codehaus.groovy.tools.GroovyStarter.main(GroovyStarter.java:130)
+</error>
+  </testcase>
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Hesse" time="0.542">
+    <failure message="Hesse failed" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Hesse failed
+	at cuanto.test.packageFour.SampleTest.testMain(SampleTest.java:37)
+	at cuanto.test.packageFour.SampleTest.runTest(SampleTest.java:29)
+	at groovy.util.AntBuilder.nodeCompleted(AntBuilder.java:199)
+	at groovy.util.BuilderSupport.doInvokeMethod(BuilderSupport.java:153)
+	at groovy.util.AntBuilder.doInvokeMethod(AntBuilder.java:149)
+	at groovy.util.BuilderSupport.invokeMethod(BuilderSupport.java:64)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:784)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.executeTests(CreateTests.groovy:24)
+	at CreateTests.this$4$executeTests(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:78)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrent0(ScriptBytecodeAdapter.java:112)
+	at CreateTests.run(CreateTests.groovy:16)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:756)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:778)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:758)
+	at org.codehaus.groovy.runtime.InvokerHelper.runScript(InvokerHelper.java:401)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:170)
+	at CreateTests.main(CreateTests.groovy)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1105)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:749)
+	at groovy.lang.GroovyShell.runMainOrTestOrRunnable(GroovyShell.java:244)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:218)
+	at groovy.lang.GroovyShell.run(GroovyShell.java:147)
+	at groovy.ui.GroovyMain.processOnce(GroovyMain.java:493)
+	at groovy.ui.GroovyMain.run(GroovyMain.java:308)
+	at groovy.ui.GroovyMain.process(GroovyMain.java:294)
+	at groovy.ui.GroovyMain.processArgs(GroovyMain.java:111)
+	at groovy.ui.GroovyMain.main(GroovyMain.java:92)
+	at org.codehaus.groovy.tools.GroovyStarter.rootLoader(GroovyStarter.java:101)
+	at org.codehaus.groovy.tools.GroovyStarter.main(GroovyStarter.java:130)
+</failure>
+  </testcase>
+  <testcase classname="cuanto.test.packageFour.SampleTest" name="Miller" time="0.684" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

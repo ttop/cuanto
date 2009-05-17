@@ -44,34 +44,34 @@ class TestNgParserTests extends GroovyTestCase {
 		List<ParsableTestOutcome> outcomes = parser.parseFile(getFile("testng-results-simple.xml"))
 		
 		ParsableTestOutcome pto1 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod3",
-			fullName: "cuanto.test.testNgOne.testMethod3", testPackage:"cuanto.test.testNgOne",
+			fullName: "cuanto.test.testNgOne.testMethod3", packageName:"cuanto.test.testNgOne",
 			description: "testMethod3 Description"), testResult: "Fail", duration:2)
 		assertTestOutcomeEquals(pto1, outcomes[0])
 		assertTrue("Wrong output", outcomes[0].testOutput.contains("Is this the right room for an argument?"))
 
 		ParsableTestOutcome pto2 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod2",
-			fullName: "cuanto.test.testNgOne.testMethod2", testPackage:"cuanto.test.testNgOne"),
+			fullName: "cuanto.test.testNgOne.testMethod2", packageName:"cuanto.test.testNgOne"),
 			testResult: "Fail", duration:6)
 		assertTestOutcomeEquals(pto2, outcomes[1])
 		assertTrue "Wrong output", outcomes[1].testOutput.contains("method 2 failed")
 
 		ParsableTestOutcome pto3 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"skippableTest",
-			fullName: "cuanto.test.testNgOne.skippableTest", testPackage:"cuanto.test.testNgOne"),
+			fullName: "cuanto.test.testNgOne.skippableTest", packageName:"cuanto.test.testNgOne"),
 			testResult: "Skip", duration:1)
 		assertTestOutcomeEquals(pto3, outcomes[2])
 
 		ParsableTestOutcome pto4 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"dependencySample",
-			fullName: "cuanto.test.testNgOne.dependencySample", testPackage:"cuanto.test.testNgOne"),
+			fullName: "cuanto.test.testNgOne.dependencySample", packageName:"cuanto.test.testNgOne"),
 			testResult: "Fail", duration:5)
 		assertTestOutcomeEquals(pto4, outcomes[3])
 
 		ParsableTestOutcome pto5 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod1",
-			fullName: "cuanto.test.testNgOne.testMethod1", testPackage:"cuanto.test.testNgOne"),
+			fullName: "cuanto.test.testNgOne.testMethod1", packageName:"cuanto.test.testNgOne"),
 			testResult: "Pass", duration:0)
 		assertTestOutcomeEquals(pto5, outcomes[4])
 
 		ParsableTestOutcome pto6 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod4",
-			fullName: "cuanto.test.testNgOne.testMethod4", testPackage:"cuanto.test.testNgOne"),
+			fullName: "cuanto.test.testNgOne.testMethod4", packageName:"cuanto.test.testNgOne"),
 			testResult: "Pass", duration:0)
 		assertTestOutcomeEquals(pto6, outcomes[5])
 	}

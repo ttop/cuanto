@@ -1,30 +1,23 @@
 <?xml version="1.0"?>
 <project name="cuanto" default="" basedir=".">
 
-	 <property name="cuanto.url" value="http://localhost:8080/cuanto"/>
+	<property name="cuanto.url" value="http://localhost:8080/cuanto"/>
 
 	<target name="init">
-	        <!-- The CuantoClient jar needs to be in the classpath for this to work -->
-
-		<path id="cuanto-api-path">
-			<fileset dir="target" includes="cuanto-*.jar"/>
-		</path>
-		<!--<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="cuanto-api-path"/>-->
 		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="target/cuanto-api-2.0-SNAPSHOT.jar"/>
-
 	</target>
 
 	<target name="submitResults" depends="init">
-	        <!-- submit a few number of result sets just to show how the ant task works -->
+
+		<!-- submit a few result sets just to show how the ant task works -->
 
 		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="233093" targetEnv="test lab"
 		        resultfile="../grails/test/resources/junitReport_single_suite.xml"/>
 
-		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab"
-		        resultfile="../grails/test/resources/junitReport_single_suite.xml"/>
+		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab">
+			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
+		</cuanto>
 
-		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235334" targetEnv="test lab"
-		        resultfile="../grails/test/resources/junitReport_single_suite.xml"/>
 	</target>
 
 </project>

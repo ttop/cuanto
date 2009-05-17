@@ -4,6 +4,7 @@
 api/cuanto-api.iml
 api/cuanto-api.ipr
 api/cuanto-api.iws
+api/target
 cuanto.ipr
 cuanto.iws
 grails/.classpath
@@ -13,9 +14,12 @@ grails/cuanto.tmproj
 grails/cuanto_grails.iml
 grails/ivy.xml
 grails/ivysettings.xml
+grails/lib/cuanto-api-*
+grails/lib/mysql-connector-java*
 grails/stacktrace.log
 grails/web-app/WEB-INF/
-#grails/web-app/css/main.css
+grails/web-app/css/main.css
+out
 #grails/web-app/images/favicon.ico
 grails/web-app/images/grails_logo.jpg
 grails/web-app/images/skin/house.png

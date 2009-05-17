@@ -703,6 +703,11 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 			return null
 		}
 	}
+
+
+	def findOutcomeForTestCase(testCase, testRun) {
+		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
+	}
 }
 
 

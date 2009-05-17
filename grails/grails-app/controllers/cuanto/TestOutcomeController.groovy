@@ -25,6 +25,7 @@ package cuanto
 import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
+import com.thoughtworks.xstream.XStream
 
 class TestOutcomeController {
 	def parsingService
@@ -60,6 +61,18 @@ class TestOutcomeController {
 			testOutput: outcome.testOutput,
 			duration: outcome.duration]
 		render myJson as JSON
+	}
+
+	def getXml = {
+		TestOutcome outcome = TestOutcome.get(params.id)
+		def outString = ""
+		if (outcome) {
+			XStream xstream = new XStream()
+			outString = xstream.toXML(outcome.toParsableTestOutcome())
+		} else {
+		    response.status = response.SC_NOT_FOUND
+		}
+		render outString
 	}
 
 	def outcome = {   //todo: is this and the corresponding GSP used anymore? investigate
