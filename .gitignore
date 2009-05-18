@@ -1,17 +1,14 @@
 # ignore emacs backup files
 \#*#
 *~
-api/cuanto-api.iml
-api/cuanto-api.ipr
-api/cuanto-api.iws
+*.iml
+*.ipr
+*.iws
 api/target
-cuanto.ipr
-cuanto.iws
 grails/.classpath
 grails/.project
 grails/cuanto-test.launch
 grails/cuanto.tmproj
-grails/cuanto_grails.iml
 grails/ivy.xml
 grails/ivysettings.xml
 grails/lib/cuanto-api-*
