@@ -1,16 +1,28 @@
-includeTargets << grailsScript("Init")
+/*
+	Copyright (c) 2009 Todd E. Wells
+
+	This file is part of Cuanto, a test results repository and analysis program.
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+includeTargets << new File("${basedir}/scripts/_BuildCuanto.groovy")
 
 target(main: "Build the CuantoClient and the Cuanto web app") {
-
-	println "Packaging the Cuanto API"
-	def apiPath = "../api"
-
-	// attempt to mvn package the api
-	"mvn -f ${apiPath}/pom.xml clean package".execute().text
-
-	def pomXml = new XmlSlurper().parse(new File("${apiPath}/pom.xml"))
-	def clientJar = "${apiPath}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	ant.copy(file: clientJar, todir: "lib", verbose: "true")
+	depends(cuantopackage)
 }
 
 setDefaultTarget(main)
+
+
