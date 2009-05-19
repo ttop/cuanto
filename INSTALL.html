@@ -55,23 +55,6 @@
 		"<span class="mono">create database cuanto;</span>" when logged onto your SQL server, although you may want
 		to specify additional details depending on any additional database restrictions or options you want to enable.
 
-		<h2>Customizing cuanto-db.groovy</h2>
-		In your <span class="mono">cuanto/grails</span> directory, there is a file named
-		<span class="mono">cuanto-db.groovy</span>.  Edit this file with a text editor.  You'll see a section like this:
-
-		<pre>
-	production {
-		dataSource {
-			username = "my_sql_user"
-			password = "my_sql_password"
-			driverClassName = "com.mysql.jdbc.Driver"
-			url = "jdbc:mysql://my_sql_server:3306/cuanto?autoreconnect=true"
-		}
-	}
-		</pre>
-
-		<p>Edit the username, password, driverClassName and url to correspond to the correct values for your database
-		credentials, JDBC driver and the JDBC URL for your SQL server.  Make sure you edit the "production" section.</p>
 
 
 		<h2>Running Locally</h2>
@@ -79,8 +62,8 @@
 		<p>Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production
 		instance using this method.</p>
 		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.1 installed. Copy
-		your modified <span class="mono">cuanto-db.groovy</span> file to the
-		<span class="mono">~/.grails</span> directory (or the Windows equivalent). Copy your JDBC driver to the
+		<span class="mono">cuanto-db.groovy</span> file to the
+		<span class="mono">~/.grails</span> directory (or the Windows equivalent) and modify as described below. Copy your JDBC driver to the
 			<span class="mono">grails/lib</span> directory. Then in the
 		<span class="mono">cuanto/grails</span> directory, type "<span class="mono">grails upgrade</span>".
 		Then you can start Cuanto by executing <span class="mono">"grails run-app"</span>. Once it has started,
@@ -90,9 +73,27 @@
 		<h2>Building the WAR and client jar</h2>
 		<p>With Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
 			<span class="mono">cuanto/grails</span> directory and
-		type "<span class="mono">ant build-cuanto</span>". This will create a
-			<span class="mono">cuanto-&lt;version&gt;.war</span>
-		file in the <span class="mono">grails</span> directory. It will also build the client jar.</p>
+		type "<span class="mono">ant buildCuanto</span>". This will create a
+			<span class="mono">cuanto-&lt;version&gt;.zip</span>
+		file in the <span class="mono">dist/release</span> directory. Inside the ZIP will be a WAR, the client API Jar,
+		and a <span class="mono">cuanto-db.groovy</span> file.</p>
+
+		<h2>Customizing cuanto-db.groovy</h2>
+			Edit <span class="mono">cuanto-db.groovy</span> with a text editor.  You'll see a section like this:
+			<pre>
+		production {
+			dataSource {
+				username = "my_sql_user"
+				password = "my_sql_password"
+				driverClassName = "com.mysql.jdbc.Driver"
+				url = "jdbc:mysql://my_sql_server:3306/cuanto?autoreconnect=true"
+			}
+		}
+			</pre>
+
+			<p>Edit the username, password, driverClassName and url to correspond to the correct values for your database
+			credentials, JDBC driver and the JDBC URL for your SQL server.  Make sure you edit the "production" section.</p>
+
 
 		<h2>Deploying the application</h2>
 		<p>Unzip the WAR into your application server's <span class="mono">webapps</span> directory into a

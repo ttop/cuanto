@@ -88,6 +88,7 @@ target(cuantopackage: "Build the Cuanto distributable") {
 		}
 	}
 
+	ant.copy(todir: targetDir, file: "${cuantoBase}/dist/INSTALL") 
 	ant.zip(basedir:targetDir, destfile: "${releaseDir}/${zipfile}")
 }
 
