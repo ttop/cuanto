@@ -136,19 +136,6 @@ class TestRunService {
 	}
 
 
-	def getPreviousValidTestRun(TestRun testRun) {
-		// get TestRuns for this project sorted by dateExecuted where valid
-		// if a previous valid testRun is not found, null is returned
-		def testRunList = dataService.getPreviousValidTestRun(testRun)
-
-		if (testRunList.size() > 0) {
-			return testRunList[0]
-		} else {
-			return null
-		}
-	}
-
-
 	def getGoogleChartUrlForProject(proj) {
 		def numColumns = 20
 		def minimumResultsForXAxisLabels = 6

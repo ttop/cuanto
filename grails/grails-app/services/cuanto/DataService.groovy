@@ -148,15 +148,6 @@ class DataService {
 	}
 
 
-	def getPreviousValidTestRun(TestRun testRun) {
-		// get runs for this project sorted by dateExecuted where valid
-		// if a previous valid testRun is not found, null is returned
-		def runList = TestRun.executeQuery("from cuanto.TestRun t where t.valid = ? and t.dateExecuted < ? and t.project = ? order by t.dateExecuted desc",
-			[true, testRun.dateExecuted, testRun.project], [max: 1])
-		return runList
-	}
-
-
 	def findMatchingTestCaseForProject(Project project, TestCase testcase) {
 		TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?", [project, testcase.fullName])
 	}
