@@ -1,6 +1,7 @@
 package cuanto
 
 import cuanto.test.TestObjects
+import org.springframework.orm.hibernate3.HibernateSystemException
 
 class DataServiceTests extends GroovyTestCase {
 
@@ -597,6 +598,11 @@ class DataServiceTests extends GroovyTestCase {
 		proj.save()
 		assertNotNull proj.id
 		assertEquals proj.id, dataService.getProject(proj.id).id
+
+		def msg = shouldFail(HibernateSystemException) {
+			dataService.getProject("foo")
+		}
+		assertTrue "Wrong error message", msg.contains("Provided id of the wrong type")
 	}
 
 
