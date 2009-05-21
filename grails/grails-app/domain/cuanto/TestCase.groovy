@@ -43,7 +43,11 @@ class TestCase implements Comparable{
 
 	public int compareTo(Object t) {
 		TestCase tc = (TestCase)t
-		return this.fullName.compareTo(tc.fullName)
+		if (this.fullName) {
+			return this.fullName.compareTo(tc.fullName)
+		} else {
+			return this.testName.compareTo(tc.testName)
+		}
 	}
 
 	ParsableTestCase toParsableTestCase() {
