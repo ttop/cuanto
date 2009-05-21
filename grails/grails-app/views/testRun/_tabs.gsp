@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						from="${filterList}"/> </span>
 					<span id="nameFormat" class="formHeader">Name Format:
 						<g:select id="tcFormat" from="${formatters}" optionKey="key" optionValue="description" name="tcFormat"
-							value="${testRun?.project?.testCaseFormatKey}"/>
+							value="${tcFormat}"/>
 					</span>
 					<span id="searchSpan" class="formHeader"> Search: 
 						<form id="searchForm" name="searchForm">

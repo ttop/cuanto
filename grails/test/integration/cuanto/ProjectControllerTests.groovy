@@ -26,7 +26,6 @@ class ProjectControllerTests extends GroovyTestCase {
 		proj.projectKey = "foo&bar!"
 		proj.bugUrlPattern = "http://foo.com:1337/bar?bug={BUG}"
 		proj.testCases = [to.getTestCase(proj), to.getTestCase(proj)]
-		proj.testCaseFormatKey = "a.b.c"
 		proj.testType = TestType.findByName("JUnit")
 		proj.save()
 
@@ -43,8 +42,6 @@ class ProjectControllerTests extends GroovyTestCase {
 		assertJsonEquals proj.projectGroup.name, response.projectGroup.name
 		assertJsonEquals proj.projectKey, response.projectKey
 		assertJsonEquals proj.bugUrlPattern,  response.bugUrlPattern
-//		assertJsonEquals proj.testCases,  response.testCases
-		assertJsonEquals proj.testCaseFormatKey, response.testCaseFormatKey
 		assertJsonEquals proj.testType.id, response.testType.id
 		assertJsonEquals proj.testType.name, response.testType.name
 	}

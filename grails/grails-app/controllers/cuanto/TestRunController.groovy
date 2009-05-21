@@ -167,14 +167,7 @@ class TestRunController {
 		}
 		withFormat {
 			json {
-				def desiredFormat
-				if (params.tcFormat) {
-					desiredFormat = params.tcFormat
-				} else {
-					desiredFormat = testRun.project.testCaseFormatKey
-				}
-
-				def formatter = testOutcomeService.getTestCaseFormatter(desiredFormat)
+				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
 				outs.each {outcome ->
 					jsonOutcomes += [testCase: [name:formatter.getTestName(outcome.testCase.packageName,
@@ -263,11 +256,12 @@ class TestRunController {
 
 			def pieChartUrl = testRunService.getGoogleChartUrlForTestRunFailures(testRun)
 			def bugSummary = testRunService.getBugSummary(testRun)
+			def tcFormatList = testCaseFormatterRegistry.formatterList
 			return ['testRun': testRun, 'filter': getDefaultFilter(testRun), 'filterList': getFilterList(),
 				'testResultList': getJavascriptList(TestResult.listOrderByName()),
 				'analysisStateList': getJavascriptList(analysisStates), 'pieChartUrl': pieChartUrl,
-				'bugSummary': bugSummary, 'formatters': testCaseFormatterRegistry.getFormatterList(),
-				'project': testRun?.project]
+				'bugSummary': bugSummary, 'formatters': tcFormatList,
+				'project': testRun?.project, 'tcFormat': tcFormatList[0].key]
 		} else {
 			redirect(controller: 'project', action: 'list')
 		}

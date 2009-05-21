@@ -39,15 +39,7 @@ class TestOutcomeController {
 
 	def get = {
 		TestOutcome outcome = TestOutcome.get(params.id)
-		def desiredFormat
-		if (params.tcFormat) {
-			desiredFormat = params.tcFormat
-		} else {
-			desiredFormat = testRun.project.testCaseFormatKey
-		}
-
-		def formatter = testOutcomeService.getTestCaseFormatter(desiredFormat)
-
+		def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 		def myJson = [
 			id: outcome.id,
 			bug: [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id],

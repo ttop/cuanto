@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
+	var analysisCookieName = "cuantoAnalysis";
+	var prefTcFormat = "tcFormat";
 	var dataTable;
 	var analysisDialog;
 	var testRunDialog = new YAHOO.cuanto.TestRunDialog();
@@ -52,7 +54,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	if (!dataTable) {
 		YAHOO.util.Event.addListener('trDetailsFilter', "change", onFilterChange);
-		YAHOO.util.Event.addListener('tcFormat', "change", onTableStateChange)
+		YAHOO.util.Event.addListener('tcFormat', "change", onTcFormatChange);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
 
@@ -231,8 +233,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function getDefaultTableState() {
+		var tcFormat = YAHOO.util.Cookie.getSub(analysisCookieName, prefTcFormat);
+		if (tcFormat) {
+			$('tcFormat').setValue(tcFormat);
+		} else {
+			setTcFormatPref();
+		}
 		return "format=json&offset=0&max=10&order=asc&sort=testCase&filter=" + getCurrentFilter() +
-		       "&tcFormat=" + getCurrentTcFormat() + "&rand=" + new Date().getTime();
+		       "&tcFormat=" + tcFormat + "&rand=" + new Date().getTime();
 	}
 
 
@@ -573,6 +581,20 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		}
 	}
 
+
+	function onTcFormatChange(e) {
+		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat());
+		setTcFormatPref();
+		onTableStateChange(e);
+	}
+
+	function setTcFormatPref() {
+		var tcFormat = getCurrentTcFormat();
+		var expDate = new Date();
+		expDate.setDate(expDate.getDate() + 30);
+		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, tcFormat, {path: "/", expires: expDate});
+		return tcFormat;
+	}
 
 	function onTableStateChange(e) {
 		var newRequest = generateNewRequest();

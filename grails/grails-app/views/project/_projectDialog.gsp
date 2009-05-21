@@ -56,12 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<br/>
 				</div>
 				<div class="projectLine">
-					<label class="wideLabel" for="pdFormatters">Default test case name format:</label>
-					<g:select id="pdFormatters" class="pdInput" from="${formatters}" optionKey="key" optionValue="description" name="tcFormat"
-						value="${project?.testCaseFormatKey}"/>
-					<br/>
-				</div>
-				<div class="projectLine">
 					<%
 						def testTypes = TestType.listOrderByName()
 						def currentTestType = project?.testType ?: TestType.findByNameIlike("JUnit")

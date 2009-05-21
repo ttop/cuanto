@@ -34,9 +34,8 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		y: 100
 	});
 
-	var inputWidth = $('pdFormatters').getWidth();
 	$$('.pdInput').each(function(inp) {
-		inp.setStyle({width: inputWidth + "px"});
+		inp.setStyle({width: "180px"});
 	});
 
 	if (title) {
@@ -170,7 +169,6 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 				if (project['bugUrlPattern']) {
 					$('pdUrlPattern').setValue(project['bugUrlPattern']);
 				}
-				$('pdFormatters').setValue(project['testCaseFormatKey']);
 				$('pdType').setValue(project['testType']['name']);
 				$('pdLoading').hide();
 			}

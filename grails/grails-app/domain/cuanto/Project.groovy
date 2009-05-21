@@ -31,7 +31,6 @@ class Project implements Comparable {
 	String projectKey
 	String bugUrlPattern
 	List testCases
-	String testCaseFormatKey
 	TestType testType
 
 	static constraints = {
@@ -48,7 +47,6 @@ class Project implements Comparable {
 		)
 		testCases(nullable: true)
 		bugUrlPattern(nullable: true)
-		testCaseFormatKey(nullable: true)
 		testType(nullable: false)
 	}
 
@@ -141,7 +139,6 @@ class Project implements Comparable {
 		json.projectGroup = this.projectGroup?.toJSONMap()
 		json.projectKey = this.projectKey
 		json.bugUrlPattern = this.bugUrlPattern
-		json.testCaseFormatKey = this.testCaseFormatKey
 		json.testType = this.testType?.toJSONMap()
 		return json
 	}

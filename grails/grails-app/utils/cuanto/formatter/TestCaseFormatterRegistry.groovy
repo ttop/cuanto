@@ -32,7 +32,7 @@ class TestCaseFormatterRegistry {
 	Map getFormatMap() {
 		if (formatterMap.size() == 0) {
 			formatterList.each { formatter ->
-				formatterMap[formatter.getKey()] = formatter
+				formatterMap[formatter.key] = formatter
 			}
 		}
 		return formatterMap

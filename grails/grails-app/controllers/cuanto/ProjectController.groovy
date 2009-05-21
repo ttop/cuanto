@@ -84,10 +84,6 @@ class ProjectController {
 				project.projectKey = params.projectKey
 			}
 
-			if (params.tcFormat) {
-				project.testCaseFormatKey = testCaseFormatterRegistry.getFormatMap()[params.tcFormat].getKey()
-			}
-
 			if (params.testType) {
 				project.testType = dataService.getTestType(params.testType)
 			}
