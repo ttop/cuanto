@@ -1,7 +1,14 @@
-Copyright (c) 2008 thePlatform, Inc.
+Cuanto - Track your tests
+-------------------------
 
-This file is part of Cuanto, a test results repository and analysis program.
-    
+Cuanto is a tool for storing automated and manual test results, organizing them into logical groups,
+analyzing the nature of individual test failures, and using the resulting data to provide useful
+statistics.
+
+You can find out more about Cuanto at the [Cuanto web site](http://cuanto.codehaus.org).
+
+### Licensing
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +22,6 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-********************************************************************************
-
-The principal developer of Cuanto is Todd E. Wells of Seattle, Washington, who 
+### Contact
+The principal developer of Cuanto is Todd E. Wells of Seattle, Washington, who
 can be reached at ttopwells@gmail.com or cuanto@ttopzone.com.
-
