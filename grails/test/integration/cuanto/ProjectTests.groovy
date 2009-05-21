@@ -1,6 +1,7 @@
 package cuanto
 
 import cuanto.test.TestObjects
+import org.springframework.orm.hibernate3.HibernateSystemException
 
 
 /**
@@ -369,7 +370,7 @@ class ProjectTests extends GroovyTestCase {
 		def projParams = [ name: fakes.wordGen.getSentence(2),
 			group: fakes.wordGen.getSentence(2),
 			bugUrlPattern: "http://foo/{BUG}",
-			projectKey: fakes.getProjectKey(),
+			projectKey: fakes.projectKey,
 			testType: "JUnit"]
 
 		def proj = projectService.createProject(projParams)
@@ -378,10 +379,129 @@ class ProjectTests extends GroovyTestCase {
 		assertEquals "Wrong group", projParams.group, proj.projectGroup.name
 		assertEquals "Wrong bug pattern", projParams.bugUrlPattern, proj.bugUrlPattern
 		assertEquals "Wrong test type", dataService.getTestType("JUnit"), proj.testType
-
 	}
 
+
+	void testCreateTestCaseErrorConditions() {
+		assertNull "No test case should've been returned", projectService.createTestCase(null)
+		assertEquals "No test case should've been created", 0, TestCase.list().size()
+
+		assertNull "No test case should've been returned", projectService.createTestCase([:])
+		assertEquals "No test case should've been created", 0, TestCase.list().size()
+
+		def msg = shouldFail(HibernateSystemException) {
+			def params = [project: "foo"]
+			projectService.createTestCase(params)
+		}
+		assertTrue "Wrong error message", msg.contains("Provided id of the wrong type")
+
+		msg = shouldFail(CuantoException) {
+			def params = [project: 12345]
+			projectService.createTestCase(params)
+		}
+		assertEquals "Wrong exception message", "Valid project not provided", msg
+
+		def project = fakes.project
+		dataService.saveDomainObject project
+
+		def params =[:]
+		params.project = project.id
+
+		msg = shouldFail(CuantoException) {
+			projectService.createTestCase(params)
+		}
+		assertEquals "Wrong message", "No test case name was provided", msg
+	}
+
+
+	void testCreateTestCase() {
+		def project = fakes.project
+		dataService.saveDomainObject project
+
+		def params =[:]
+		params.project = project.id
+		params.testName = fakes.wordGen.getCamelWords(2)
+		params.packageName = fakes.wordGen.getCamelWords(3)
+		params.description = fakes.wordGen.getSentence(4)
+
+		def testCase = projectService.createTestCase(params)
+		assertNotNull "No test case created", testCase
+		assertEquals "Wrong project", project, testCase.project
+		assertEquals "Wrong test name", params.testName, testCase.testName
+		assertEquals "Wrong package name", params.packageName, testCase.packageName
+		assertEquals "Wrong description", params.description, testCase.description
+
+		params.packageName = null
+		testCase = projectService.createTestCase(params)
+		assertNotNull "No test case created", testCase
+		assertEquals "Wrong project", project, testCase.project
+		assertEquals "Wrong test name", params.testName, testCase.testName
+		assertNull "Wrong package name", testCase.packageName
+		assertEquals "Wrong description", params.description, testCase.description
+
+		params.packageName = "   "
+		testCase = projectService.createTestCase(params)
+		assertNotNull "No test case created", testCase
+		assertEquals "Wrong project", project, testCase.project
+		assertEquals "Wrong test name", params.testName, testCase.testName
+		assertNull "Wrong package name", testCase.packageName
+		assertEquals "Wrong description", params.description, testCase.description
+	}
+
+
+	void testGetTestCasesOnlyName() {
+
+		assertEquals "No test cases should've been returned for null project", 0, projectService.getTestCases(null).size()
+
+		def proj = fakes.project
+		dataService.saveDomainObject(proj)
+		assertEquals "Wrong number of projects", 1, Project.list().size()
+
+		assertEquals "No test cases should've been returned", 0, projectService.getTestCases(proj).size()
+
+		def testCaseNames = ["a", "b", "c", "d", "e"].reverse()
+		def testCases = []
+		testCaseNames.each { name ->
+			def tc = new TestCase(testName: name)
+			testCases << tc
+			proj.addToTestCases(tc)
+		}
+		dataService.saveDomainObject proj
+
+		def fetchedCases = projectService.getTestCases(proj)
+		assertEquals "Wrong number of test cases", testCases.size(), fetchedCases.size()
+		testCaseNames.reverse().eachWithIndex { name, indx ->
+			assertEquals "Wrong title/order", name, fetchedCases[indx].testName
+		}
+	}
+
+
+	void testGetTestCasesWithPackage() {
+
+		assertEquals "No test cases should've been returned", 0, projectService.getTestCases(null).size()
+
+		def proj = fakes.project
+		dataService.saveDomainObject(proj)
+
+		assertEquals "Wrong number of projects", 1, Project.list().size()
+
+		def testPackageNames = ["a", "b", "c", "d", "e"].reverse()
+		def testCases = []
+		testPackageNames.each { name ->
+			def tc = projectService.createTestCase([testName: fakes.wordGen.getCamelWords(2), packageName: name,
+				project: proj.id])
+			testCases << tc
+		}
+		dataService.saveDomainObject proj
+
+		def fetchedCases = projectService.getTestCases(proj)
+		assertEquals "Wrong number of test cases", testCases.size(), fetchedCases.size()
+		testPackageNames.reverse().eachWithIndex { name, indx ->
+			assertEquals "Wrong title/order", name, fetchedCases[indx].packageName
+		}
+	}
 	
+
 	def reportError(domainObj) {
 		def errMsg = ""
 		domainObj.errors.allErrors.each {

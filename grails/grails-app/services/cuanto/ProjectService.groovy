@@ -98,27 +98,41 @@ class ProjectService {
 
 
 	def getTestCases(project) {
-		def testCases = project.testCases
-		Collections.sort(testCases)
-		return testCases  
+		def cases = []
+		if (project && project.testCases) {
+			cases = project.testCases
+			Collections.sort(cases)
+		}
+		return cases  
 	}
 
 
 	def createTestCase(params){
-		def project = dataService.getProject(params.project)
-		def tc = new TestCase(testName: params.testName)
+		def tc = null
+		if (params) {
+			def project = dataService.getProject(params.project)
+			if (project) {
 
-		if (params.packageName) {
-			tc.packageName = params.packageName
-			tc.fullName = tc.packageName + "." + tc.testName
-		} else {
-			tc.fullName = tc.testName
-		}
+				if (params.testName) {
+					tc = new TestCase(testName: params.testName)
 
-		if (params.description) {
-			tc.description = params.description
+					if (params.packageName?.trim()) {
+						tc.packageName = params.packageName.trim()
+						tc.fullName = tc.packageName + "." + tc.testName
+					} else {
+						tc.fullName = tc.testName
+					}
+
+					tc.description = params.description
+					dataService.addTestCases(project, [tc])
+				} else {
+					throw new CuantoException("No test case name was provided") 
+				}
+			} else {
+				throw new CuantoException("Valid project not provided")
+			}
 		}
-		dataService.addTestCases(project, [tc])
+		return tc
 	}
 
 	def getAllGroupNames() {
