@@ -51,18 +51,13 @@ class ProjectService {
 
 	void deleteProject(Project project) {
 		def testRuns = dataService.getTestRunsByProject(project)
+
 		testRuns.each { testRun ->
-			dataService.deleteTestRun(testRun)
+			dataService.deleteOutcomesForTestRun(testRun)
 		}
+		dataService.deleteTestRunsForProject(project)
         dataService.deleteTestCasesForProject(project)
 		dataService.deleteProject(project)
-	}
-
-
-	def saveProject(project) {
-		if (project.validate()) {
-			dataService.saveDomainObject(project)
-		}
 	}
 
 
@@ -81,25 +76,11 @@ class ProjectService {
 	def createProject(params) {
 		def project = new Project()
 		Project.withTransaction {status ->
-			if (params.bugUrlPattern) {
-				project.bugUrlPattern = params.bugUrlPattern
-			}
-
-			if (params.group) {
-				project.projectGroup = getProjectGroupByName(params.group)
-			}
-
-			if (params.name) {
-				project.name = params.name
-			}
-
-			if (params.projectKey) {
-				project.projectKey = params.projectKey
-			}			
-
-			if (params.testType) {
-				project.testType = dataService.getTestType(params.testType)
-			}
+			project.bugUrlPattern = params?.bugUrlPattern
+			project.projectGroup = getProjectGroupByName(params?.group)
+			project.name = params?.name
+			project.projectKey = params?.projectKey
+			project.testType = dataService.getTestType(params?.testType)
 
 			if (project.validate()) {
 				dataService.saveDomainObject(project)

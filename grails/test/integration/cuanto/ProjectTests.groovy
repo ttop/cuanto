@@ -24,6 +24,7 @@ class ProjectTests extends GroovyTestCase {
 	void setUp() {
 		initializationService.initializeAll()
 		testType = TestType.findByName("JUnit")
+		fakes.dataService = dataService
 	}
 
 
@@ -202,11 +203,45 @@ class ProjectTests extends GroovyTestCase {
 	void testDataServiceDeleteProjectWithoutGroup() {
 		def proj = fakes.project
 		dataService.saveDomainObject(proj)
+
 		assertEquals "Wrong number of projects", 1, Project.list().size()
 
-		dataService.deleteProject(proj)
+		def testCases = []
+		def numCases = 5
+		1.upto(numCases) {
+			def tc = fakes.getTestCase(proj)
+			testCases << tc
+			proj.addToTestCases(tc)
+		}
+		dataService.saveDomainObject proj
+
+		def testRuns = []
+		1.upto(3) {
+			def tr = fakes.getTestRun(proj, "foobar")
+			testRuns << tr
+			proj.addToTestRuns(tr)
+			dataService.saveDomainObject proj
+			testCases.each { tc ->
+				def to = fakes.getTestOutcome(tc, tr)
+				tr.addToOutcomes(to)
+			}
+			//dataService.saveDomainObject tr
+		}
+		dataService.saveDomainObject proj, true
+
+		assertEquals "Wrong number of projects", 1, Project.list().size()
+		assertEquals "Wrong number of test outcomes", testRuns.size() * numCases, TestOutcome.list().size()
+		assertEquals "Wrong number of test cases", numCases, TestCase.list().size()
+		assertEquals "Wrong number of test runs", testRuns.size(), TestRun.list().size()
+
+		projectService.deleteProject(proj)
+
 		assertEquals "Wrong number of projects", 0, Project.list().size()
+		assertEquals "Wrong number of test outcomes", 0, TestOutcome.list().size()
+		assertEquals "Wrong number of test cases", 0, TestCase.list().size()
+		assertEquals "Wrong number of test runs", 0, TestRun.list().size()
 	}
+
 
 
 	void testDataServiceDeleteProjectWithGroup() {
@@ -297,6 +332,56 @@ class ProjectTests extends GroovyTestCase {
 	}
 
 
+	void testGetProjectGroupByName() {
+		def groupNames = ["foo", "fie", "bar"]
+		def groups = []
+		groupNames.each {
+			groups << dataService.createProjectGroup(it)
+		}
+
+		assertNull "Wrong project group for null", projectService.getProjectGroupByName(null)
+		assertNull "Wrong project group for empty string", projectService.getProjectGroupByName("")
+		assertEquals "Wrong project group", groups[0].id, projectService.getProjectGroupByName("foo").id
+		assertEquals "Wrong project group", "blah", projectService.getProjectGroupByName("blah").name
+		assertEquals "Wrong total number of groups", groupNames.size() + 1, ProjectGroup.list().size()
+
+		groupNames << "blah"
+		def fetchedGroupNames = projectService.getAllGroupNames()
+
+		assertEquals "Wrong number of group names", groupNames.size(), fetchedGroupNames.size()
+		groupNames.each {
+			assertTrue "Couldn't find group $it", fetchedGroupNames.contains(it)
+		}
+	}
+
+
+	void testCreateProject() {
+		def msg = shouldFail(CuantoException) {
+			projectService.createProject(null)
+		}
+		assertTrue "Wrong message: msg", msg.contains("Field error in object 'cuanto.Project'")
+
+		shouldFail(CuantoException) {
+			projectService.createProject([name: " "])
+		}
+		assertTrue "Wrong message: msg", msg.contains("Field error in object 'cuanto.Project'")
+
+		def projParams = [ name: fakes.wordGen.getSentence(2),
+			group: fakes.wordGen.getSentence(2),
+			bugUrlPattern: "http://foo/{BUG}",
+			projectKey: fakes.getProjectKey(),
+			testType: "JUnit"]
+
+		def proj = projectService.createProject(projParams)
+		assertNotNull "Project not created", proj
+		assertEquals "Wrong name", projParams.name, proj.name
+		assertEquals "Wrong group", projParams.group, proj.projectGroup.name
+		assertEquals "Wrong bug pattern", projParams.bugUrlPattern, proj.bugUrlPattern
+		assertEquals "Wrong test type", dataService.getTestType("JUnit"), proj.testType
+
+	}
+
+	
 	def reportError(domainObj) {
 		def errMsg = ""
 		domainObj.errors.allErrors.each {

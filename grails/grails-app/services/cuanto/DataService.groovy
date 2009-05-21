@@ -70,10 +70,11 @@ class DataService {
 
 	def deleteTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
-		if (run.testRunStatistics) {
-			run.testRunStatistics.delete()
-		}
-		run.delete(flush: true)
+		run.delete()
+	}
+
+	def deleteOutcomesForTestRun(TestRun run) {
+		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
 	}
 
 
@@ -85,6 +86,9 @@ class DataService {
 		}
 	}
 
+	def deleteTestRunsForProject(Project project) {
+		TestRun.executeUpdate("delete cuanto.TestRun t where t.project = ?", [project])
+	}
 
 	def getProject(id) {
 		Project.get(id)
@@ -182,7 +186,11 @@ class DataService {
 
 
 	def getTestType(String name) {
-		return TestType.findByNameIlike(name)
+		if (name) {
+			return TestType.findByNameIlike(name)
+		} else {
+			return null
+		}
 	}
 
 

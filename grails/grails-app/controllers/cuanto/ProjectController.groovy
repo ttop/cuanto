@@ -88,7 +88,7 @@ class ProjectController {
 				project.testType = dataService.getTestType(params.testType)
 			}
 
-			projectService.saveProject(project)
+			dataService.saveDomainObject(project)
 		} else {
 			project = projectService.createProject(params)
 		}
