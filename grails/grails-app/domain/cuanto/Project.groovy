@@ -78,14 +78,29 @@ class Project implements Comparable {
 
 	public int compareTo(Object t) {
 		Project otherProject = (Project) t
-
+		if (t == null) {
+			return 1
+		}
 		if (this.name != otherProject.name) {
-			return this.name.compareTo(otherProject.name)
+			if (this.name == null) {
+				return -1
+			} else if (otherProject.name == null) {
+				return 1
+			} else {
+				return this.name.compareTo(otherProject.name)
+			}
 		}
-
+		
 		if (this.projectGroup != otherProject.projectGroup) {
-			return this.projectGroup.compareTo(projectGroup)
+			if (this.projectGroup == null) {
+				return -1
+			} else if (otherProject.projectGroup == null) {
+				return 1
+			} else {
+				return this.projectGroup.compareTo(otherProject.projectGroup)
+			}
 		}
+		return 0
 	}
 
 
