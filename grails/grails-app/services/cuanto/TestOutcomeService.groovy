@@ -70,10 +70,7 @@ class TestOutcomeService {
 			} else {
 				newBug = bugService.getBug(params?.bugTitle, params?.bugUrl)
 			}
-
-			if (!outcome.bug?.equals(newBug)) {
-				outcome.bug = newBug
-			}
+			outcome.bug = newBug
 		}
 	}
 
