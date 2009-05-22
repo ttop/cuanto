@@ -20,13 +20,15 @@
 
 def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
-def targetDir = "${cuantoBase}/dist/target"
 def apiDir = "${cuantoBase}/api"
 
 def propfileName = "${cuantoBase}/grails/application.properties"
 ant.property(file: propfileName)
 def cuantoVersion = ant.project.properties.'app.version'
 println "Grails app version is $cuantoVersion"
+
+def targetDir = "${cuantoBase}/dist/target"
+def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
 
 def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
@@ -46,9 +48,9 @@ target(cuantoapi: "Build the Cuanto API") {
 	}
 	
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	def origClientJar = "original-${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
+	def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
 	ant.copy(file: origClientJar, todir: "lib", verbose: "true")
-	ant.copy(file: distClientJar, todir: targetDir, verbose: "true")
+	ant.copy(file: distClientJar, todir: zipDir, verbose: "true")
 
 	grailsSettings.compileDependencies << new File(distClientJar)
 }
@@ -58,15 +60,15 @@ target(cuantowar: "Build the Cuanto WAR") {
 	println "Building the Cuanto WAR"
 	includeTargets << grailsScript("_GrailsWar")
 
-	ant.copy(file:"cuanto-db.groovy", todir: targetDir)
+	ant.copy(file:"cuanto-db.groovy", todir: zipDir)
 	depends(war)
-	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: targetDir)
+	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: zipDir)
 }
 
 
 target(cuantopackage: "Build the Cuanto distributable") {
 
-	def licenseDir = "$targetDir/licenses"
+	def licenseDir = "$zipDir/licenses"
 
 	ant.delete(dir: targetDir)
 	ant.delete(dir: releaseDir)
@@ -83,13 +85,13 @@ target(cuantopackage: "Build the Cuanto distributable") {
 		fileset(dir: "${cuantoBase}/licenses", includes: "**/*")
 	}
 
-	ant.copy(todir: targetDir) {
+	ant.copy(todir: zipDir) {
 		fileset(dir: "${cuantoBase}") {
 			include(name: "COPYING*")
 		}
 	}
 
-	ant.copy(todir: targetDir, file: "${cuantoBase}/dist/INSTALL") 
+	ant.copy(todir: zipDir, file: "${cuantoBase}/dist/INSTALL")
 	ant.zip(basedir:targetDir, destfile: "${releaseDir}/${zipfile}")
 }
 
