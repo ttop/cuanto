@@ -45,11 +45,12 @@ target(cuantoapi: "Build the Cuanto API") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
 	}
 	
-	def clientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	ant.copy(file: clientJar, todir: "lib", verbose: "true")
-	ant.copy(file: clientJar, todir: targetDir, verbose: "true")
+	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
+	def origClientJar = "original-${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
+	ant.copy(file: origClientJar, todir: "lib", verbose: "true")
+	ant.copy(file: distClientJar, todir: targetDir, verbose: "true")
 
-	grailsSettings.compileDependencies << new File(clientJar)
+	grailsSettings.compileDependencies << new File(distClientJar)
 }
 
 
