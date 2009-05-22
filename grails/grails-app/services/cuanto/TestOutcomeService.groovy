@@ -34,7 +34,6 @@ class TestOutcomeService {
 	def updateTestOutcome(Map params) {
 
 		def outcome = dataService.getTestOutcome(params.id)
-		def bug = outcome.bug
 		if (outcome) {
 			applyTestResultToTestOutcome(outcome, dataService.result(params.testResult))
 			applyBugParametersToTestOutcome(outcome, params)
@@ -42,13 +41,13 @@ class TestOutcomeService {
 			outcome.note = Sanitizer.escapeHtmlScriptTags(params.note)
 			outcome.owner =  Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
+			dataService.deleteBugIfUnused(outcome.bug)
 		}
-		dataService.deleteBugIfUnused(bug)
 	}
 
 
 	def applyTestResultToTestOutcome(testOutcome, testResult) {
-		if (testResult) {
+		if (testOutcome && testResult) {
 			boolean recalc = false
 			if (testResult != testOutcome.testResult) {
 				recalc = true
