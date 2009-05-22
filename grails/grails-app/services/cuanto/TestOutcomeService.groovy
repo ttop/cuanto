@@ -63,15 +63,17 @@ class TestOutcomeService {
 
 	def applyBugParametersToTestOutcome(outcome, params) {
 		def newBug
-		if (params.bug) {
-			def bugInfo = outcome.testCase.project.extractBugInfo(Sanitizer.escapeHtmlScriptTags(params.bug))
-			newBug = bugService.getBug(bugInfo.title, bugInfo.url)
-		} else {
-			newBug = bugService.getBug(params.bugTitle, params.bugUrl)
-		}
+		if (outcome && params) {
+			if (params?.bug) {
+				def bugInfo = outcome.testCase.project.extractBugInfo(Sanitizer.escapeHtmlScriptTags(params?.bug))
+				newBug = bugService.getBug(bugInfo.title, bugInfo.url)
+			} else {
+				newBug = bugService.getBug(params?.bugTitle, params?.bugUrl)
+			}
 
-		if (!outcome.bug.equals(newBug)) {
-			outcome.bug = newBug
+			if (!outcome.bug?.equals(newBug)) {
+				outcome.bug = newBug
+			}
 		}
 	}
 

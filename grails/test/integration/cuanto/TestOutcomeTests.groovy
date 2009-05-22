@@ -654,6 +654,28 @@ class TestOutcomeTests extends GroovyTestCase {
 		// no error should occur:
 		testOutcomeService.applyTestResultToTestOutcome(outcome, null)
 	}
+
+
+	void testApplyBugParametersToTestOutcome() {
+		Project proj = to.project
+		TestCase tc = to.getTestCase(proj)
+		proj.addToTestCases(tc)
+		dataService.saveDomainObject proj
+
+		TestRun run = to.getTestRun(proj, "foo")
+		dataService.saveDomainObject run
+
+		TestOutcome outcome = to.getTestOutcome(tc, run)
+		run.addToOutcomes(outcome)
+		dataService.saveDomainObject run
+
+		testOutcomeService.applyBugParametersToTestOutcome(null, null)
+
+		// no bug params
+		testOutcomeService.applyBugParametersToTestOutcome(outcome, [:])
+
+		testOutcomeService.applyBugParametersToTestOutcome(outcome, [foo: "bar"])
+	}
 	
 
 	def assertAnalysisEquals(TestOutcome source, TestOutcome target) {
