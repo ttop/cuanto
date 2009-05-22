@@ -33,7 +33,7 @@ def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
 def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
 
-if (cuantoVersion != pomXml.version) {
+if (cuantoVersion.toString() != pomXml.version.toString()) {
 	println "\nWARNING: Grails application version and API pom version are mismatched!\n"
 }
 
