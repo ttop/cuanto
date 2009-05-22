@@ -620,6 +620,40 @@ class TestOutcomeTests extends GroovyTestCase {
 
 	}
 
+
+	void testApplyTestResultToTestOutcome() {
+		testOutcomeService.applyTestResultToTestOutcome(null, null) // should succeed without error
+
+		Project proj = to.project
+		TestCase tc = to.getTestCase(proj)
+		proj.addToTestCases(tc)
+		dataService.saveDomainObject proj
+
+		TestRun run = to.getTestRun(proj, "foo")
+		dataService.saveDomainObject run
+		TestResult result = dataService.result("fail")
+
+		testOutcomeService.applyTestResultToTestOutcome(null, result)
+
+		TestOutcome outcome = to.getTestOutcome(tc, run)
+		run.addToOutcomes(outcome)
+		dataService.saveDomainObject run
+
+		assertEquals "Wrong initial result", dataService.result("pass"), outcome.testResult
+		def outcomeId = outcome.id
+		testOutcomeService.applyTestResultToTestOutcome(outcome, result)
+		def fetchedOutcome = TestOutcome.get(outcomeId)
+
+		assertEquals "Wrong result", result, fetchedOutcome.testResult
+
+		// apply again, no change
+		testOutcomeService.applyTestResultToTestOutcome(outcome, result)
+		fetchedOutcome = TestOutcome.get(outcomeId)
+		assertEquals "Wrong result", result, fetchedOutcome.testResult
+
+		// no error should occur:
+		testOutcomeService.applyTestResultToTestOutcome(outcome, null)
+	}
 	
 
 	def assertAnalysisEquals(TestOutcome source, TestOutcome target) {

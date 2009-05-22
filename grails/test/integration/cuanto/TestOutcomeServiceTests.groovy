@@ -59,6 +59,13 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertEquals textWithoutScriptTags, persistedOutcome.bug.title
 	}
 
+
+	void testUpdateTestOutcomeNoOutcome() {
+		testOutcomeService.updateTestOutcome([:])
+	}
+
+
+
 	void testCreateTestOutcomeWithScriptTags() {
 		// create a project
 		Project proj = to.getProject()
