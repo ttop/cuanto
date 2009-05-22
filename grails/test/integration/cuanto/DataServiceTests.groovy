@@ -1052,6 +1052,46 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
+	void testGetNewFailuresAllNew() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCases = []
+
+		1.upto(4){
+			def testCase = to.getTestCase(project)
+			project.addToTestCases(testCase)
+			dataService.saveDomainObject testCase
+			testCases << testCase
+		}
+
+		def testRun = to.getTestRun(project, "milestone")
+		dataService.saveDomainObject testRun
+		sleep(SYSTEM_SLEEP)
+
+
+		def outcomes = []
+			testCases.each {testCase ->
+				def testOutcome = to.getTestOutcome(testCase, testRun)
+				testOutcome.testRun = null
+				testRun.addToOutcomes(testOutcome)
+				outcomes << testOutcome
+			}
+			dataService.saveDomainObject testRun
+
+		assertEquals 4, outcomes.size()
+
+		def FAIL = dataService.result("fail")
+		outcomes[0..1].each {
+			it.testResult = FAIL
+			dataService.saveDomainObject it
+		}
+
+		def newFailures = dataService.getNewFailures(outcomes, testRun.dateExecuted)
+		assertEquals "Wrong number of new failures", 2 , newFailures.size()
+	}
+
+
 	def reportError(domainObj) {
 		def errMsg = ""
 		domainObj.errors.allErrors.each {

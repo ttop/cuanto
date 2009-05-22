@@ -307,6 +307,8 @@ class DataService {
 				def previousOutcome = getPreviousOutcome(currentOutcome.testCase, priorToDate)
 				if (previousOutcome) {
 					return !previousOutcome?.testResult?.isFailure
+				} else {
+					return true
 				}
 			}
 		}
