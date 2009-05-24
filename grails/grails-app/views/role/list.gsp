@@ -1,4 +1,4 @@
-<head>
+<%@ page import="cuanto.Role" %><head>
 	<meta name="layout" content="main" />
 	<title>Role List</title>
 </head>

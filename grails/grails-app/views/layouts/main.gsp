@@ -49,12 +49,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div id="nav" class="nav">
 			<ul>
 				<li id="clogo">Cuanto</li>
-				<li class="first navitem">
-					<g:link controller="project" action="list">Projects</g:link>
-				</li>
-				<li class="last navitem">
-					<a href="${resource(file: 'help')}">Help</a>
-				</li>
+				<g:isLoggedIn>
+					<li class="first navitem">
+						<g:link controller="project" action="list">Projects</g:link>
+					</li>
+					<li class="navitem">
+						<g:link controller="admin" action="manage">Admin</g:link>
+					</li>
+					<li class="navitem">
+						<a href="${resource(file: 'help')}">Help</a>
+					</li>
+					<li class="last navitem">
+						<g:link controller="logout" action="index">Logout</g:link>
+					</li>
+				</g:isLoggedIn>
+			</ul>
+			<ul>
 			</ul>
 		</div>
 		<% def flashStyle = "" %>

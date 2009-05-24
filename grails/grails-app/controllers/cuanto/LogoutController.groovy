@@ -1,3 +1,4 @@
+package cuanto
 /**
  * Logout Controller (Example).
  */

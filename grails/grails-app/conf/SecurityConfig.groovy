@@ -4,7 +4,7 @@ security {
 
 	active = true
 
-	loginUserDomainClass = "User"
-	authorityDomainClass = "Role"
-	requestMapClass = "Requestmap"
+	loginUserDomainClass = "cuanto.User"
+	authorityDomainClass = "cuanto.Role"
+	requestMapClass = "cuanto.Requestmap"
 }

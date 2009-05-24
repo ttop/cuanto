@@ -1,4 +1,4 @@
-<head>
+<%@ page import="cuanto.User" %><head>
 	<meta name="layout" content="main" />
 	<title>User List</title>
 </head>

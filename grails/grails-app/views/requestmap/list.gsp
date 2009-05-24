@@ -1,4 +1,4 @@
-<head>
+<%@ page import="cuanto.Requestmap" %><head>
 	<meta name="layout" content="main" />
 	<title>Requestmap List</title>
 </head>
