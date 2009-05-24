@@ -232,7 +232,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 	function getAnlzPanel() {
 		if (!panel) {
 			panel = new YAHOO.widget.Panel("anPanel", {dragOnly: true,
-				width: "800px",
+				width: "850px",
 				visible: true, xy: getDesiredAnlzPanelXY(), zIndex: 50, iframe: false, underlay: "none"});
 			initDialogButtons();
 			panel.render();
