@@ -21,12 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import grails.util.GrailsUtil
-
 class InitializationService {
 
+	def authenticateService
 	boolean transactional = true
-
-
 
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {
@@ -117,11 +115,77 @@ class InitializationService {
 		}
 	}
 
+	void initSecurity() {
+		initAdminUser()
+		initUserRole()
+		initUrlRestrictions()
+	}
+
+
+	private def initAdminUser() {
+		def adminRole = initAdminRole()
+		if (!adminRole.people || adminRole.people.size() == 0) {
+			User adminUser = new User()
+			adminUser.username = "admin"
+			adminUser.passwd = authenticateService.encodePassword("admin")
+			adminUser.userRealName = "Administrator"
+			adminUser.email = "admin@yoursite.com"
+			adminUser.enabled = true
+			//adminUser.authorities = [adminRole]
+			adminRole.addToPeople(adminUser)
+			adminRole.save()
+		}
+	}
+
+
+	private def initAdminRole() {
+		def adminRole = Role.findByAuthority('ROLE_ADMIN')
+		if (!adminRole) {
+			adminRole = new Role()
+			adminRole.authority = "ROLE_ADMIN"
+			adminRole.description = "Administrative"
+			adminRole.save()
+		}
+		return adminRole
+	}
+
+
+	private def initUserRole() {
+		if (!Role.findByAuthority('ROLE_USER')) {
+			Role userRole = new Role()
+			userRole.authority = "ROLE_USER,ROLE_ADMIN"
+			userRole.description = "User"
+			userRole.save()
+		}
+	}
+
+	private def initUrlRestrictions() {
+		def requestmaps = []
+		requestmaps << new Requestmap(url: "/project/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/group/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/help/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/testrun/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/testcase/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/testoutcome/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/jstest/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/show/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/*", configAttribute: "ROLE_USER,ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/admin/**", configAttribute: "ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/requestmap/**", configAttribute: "ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/user/**", configAttribute: "ROLE_ADMIN")
+		requestmaps << new Requestmap(url: "/role/**", configAttribute: "ROLE_ADMIN")
+		requestmaps.each {
+			it.save()
+		}
+		authenticateService.clearCachedRequestmaps()
+	}
+
 
 	void initializeAll() {
 		initTestResults()
 		initAnalysisStates()
 		initTestTypes()
 		initProjects()
+		initSecurity()
 	}
 }
