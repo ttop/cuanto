@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.methods.multipart.Part
 import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.HttpStatus
+import sun.misc.BASE64Encoder
 
 /**
  * User: Todd Wells
@@ -43,6 +44,8 @@ class CuantoClient {
 	String dateFormat
 	String proxyHost
 	Integer proxyPort
+	String userId
+	String password
 
 
 	public CuantoClient() {
@@ -57,7 +60,7 @@ class CuantoClient {
 
 
 	public Long createProject(String fullName, String projectKey, String testType) {
-		def post = new PostMethod("${cuantoUrl}/project/create")
+		def post = getMethod("post", "${cuantoUrl}/project/create")
 		post.addParameter "name", fullName
 		post.addParameter "projectKey", projectKey
 		post.addParameter "testType", testType
@@ -89,7 +92,7 @@ class CuantoClient {
 
 
 	void deleteProject(Long id) {
-		def post = new PostMethod("${cuantoUrl}/project/delete")
+		def post = getMethod("post", "${cuantoUrl}/project/delete")
 		post.addParameter "id", id.toString()
 		post.addParameter "client", ""
 
@@ -123,7 +126,7 @@ class CuantoClient {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
 		}
 
-		def post = new PostMethod("${cuantoUrl}/testRun/create")
+		def post = getMethod("post", "${cuantoUrl}/testRun/create")
 		post.addParameter "project", project
 
 		if (dateExecuted) {
@@ -160,7 +163,7 @@ class CuantoClient {
 
 	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
-		def get = new GetMethod(url)
+		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
 
 		def responseCode
@@ -188,7 +191,7 @@ class CuantoClient {
 
 	public void submit(List<File> files, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
-		PostMethod post = new PostMethod(fullUri)
+		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
 
 		def parts = []
@@ -214,7 +217,7 @@ class CuantoClient {
 
 	public Long submit(ParsableTestOutcome testOutcome, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
-		PostMethod post = new PostMethod(fullUri)
+		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
 
 		XStream xstream = new XStream()
@@ -244,7 +247,7 @@ class CuantoClient {
 
 
 	private Map getValueMap(url) {
-		def get = new GetMethod(url)
+		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/plain"
 
 		def responseCode
@@ -279,4 +282,30 @@ class CuantoClient {
 		}
 		return httpClient
 	}
-  }
+
+	private getAuthHeader(){
+		def authHeader = ""
+		if (userId && password) {
+			 authHeader = "Basic " + new BASE64Encoder().encode((userId + ":" + password).getBytes()) 
+		}
+		return authHeader
+	}
+
+
+	private getMethod(methodType, url) {
+		def method
+		if (methodType.toLowerCase() == "get") {
+			method = new GetMethod(url)
+		} else if (methodType.toLowerCase() == "post") {
+			method = new PostMethod(url)
+		} else {
+			throw new CuantoClientException("Unknown HTTP method: ${methodType}")
+		}
+		def authHeader = getAuthHeader()
+		if (authHeader) {
+			method.addRequestHeader("Authorization", authHeader)
+		}
+		return method
+
+	}
+}

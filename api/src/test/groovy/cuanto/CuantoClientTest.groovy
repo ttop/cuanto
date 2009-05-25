@@ -21,8 +21,14 @@ class CuantoClientTest extends GroovyTestCase{
 	def projectName
 	def projectId
 
+	def testUser = "admin"
+	def testPassword = "admin"
+
 	@Override
 	void setUp() {
+		client.userId = testUser
+		client.password = testPassword
+		
 		projectName = wordGen.getSentence(3).trim()
 		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
 		if (projectKey.length() > 25) {
@@ -60,6 +66,7 @@ class CuantoClientTest extends GroovyTestCase{
 		stubHttpClient.demand.executeMethod { 200 }
 
 		def stubPost = new StubFor(PostMethod)
+		stubPost.demand.addRequestHeader(1..1) { name, value ->	}
 		stubPost.demand.addParameter(3..3) { name, value ->	}
 		stubPost.demand.releaseConnection { }
 		stubPost.demand.getResponseBodyAsStream {
@@ -181,7 +188,8 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testDifferentDateFormat() {
-		CuantoClient altDateClient = new CuantoClient(dateFormat: "MM-dd-yyyy HH:mm:ss", cuantoUrl: serverUrl)
+		CuantoClient altDateClient = new CuantoClient(dateFormat: "MM-dd-yyyy HH:mm:ss", cuantoUrl: serverUrl,
+			userId: testUser, password: testPassword)
 		def altFormattedDate = "03-05-2008 20:55:00"
 		Long testRunId = altDateClient.getTestRunId(projectName, altFormattedDate, "test milestone", "test build", "test env")
 		def runInfo = client.getTestRunInfo(testRunId)
