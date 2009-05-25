@@ -23,9 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <div id="testRunHeader">
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
 	<span class="smaller">
-		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> |
+		<span><g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> |
 			<a id="editTestRun" href="#editTestRun">Edit</a></span> |
-		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
+		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> | 
@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<br/>
 	<span class="heading">Note </span>
-	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
+	<a id="editNote" href="#editNote" class="smaller">Edit</a>
 	<span id="noteOps" class="smaller" style="display:none">
 		(<a id="cancelNote" href="#cancelNote" class="smaller">Cancel</a> |
 		<a id="saveNote" href="#saveNote" class="smaller">Save</a>)
