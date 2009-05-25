@@ -116,9 +116,11 @@ class InitializationService {
 	}
 
 	void initSecurity() {
-		initAdminUser()
-		initUserRole()
-		initUrlRestrictions()
+		if (authenticateService.securityConfig.security.active) {
+			initAdminUser()
+			initUserRole()
+			initUrlRestrictions()
+		}
 	}
 
 
@@ -160,24 +162,26 @@ class InitializationService {
 	}
 
 	private def initUrlRestrictions() {
-		def requestmaps = []
-		requestmaps << new Requestmap(url: "/project/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/group/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/help/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/testrun/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/testcase/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/testoutcome/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/jstest/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/show/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/*", configAttribute: "ROLE_USER,ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/admin/**", configAttribute: "ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/requestmap/**", configAttribute: "ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/user/**", configAttribute: "ROLE_ADMIN")
-		requestmaps << new Requestmap(url: "/role/**", configAttribute: "ROLE_ADMIN")
-		requestmaps.each {
-			it.save()
+		if (Requestmap.list().size == 0) {
+			def requestmaps = []
+			requestmaps << new Requestmap(url: "/project/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/group/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/help/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/testrun/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/testcase/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/testoutcome/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/jstest/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/show/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/*", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/admin/**", configAttribute: "ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/requestmap/**", configAttribute: "ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/user/**", configAttribute: "ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/role/**", configAttribute: "ROLE_ADMIN")
+			requestmaps.each {
+				it.save()
+			}
+			authenticateService.clearCachedRequestmaps()
 		}
-		authenticateService.clearCachedRequestmaps()
 	}
 
 
