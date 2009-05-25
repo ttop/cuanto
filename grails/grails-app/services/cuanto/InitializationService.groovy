@@ -21,10 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import grails.util.GrailsUtil
+
 class InitializationService {
 
 	def authenticateService
 	boolean transactional = true
+
 
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {
@@ -64,8 +66,8 @@ class InitializationService {
 			def analysisList = []
 
 			analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
-			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false,  isBug: true)
-			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false,  isBug: false)
+			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false, isBug: true)
+			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Harness", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "No Repro", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
@@ -110,22 +112,23 @@ class InitializationService {
 			if (!Project.findByName("CuantoProd")) {
 				def grp = new ProjectGroup(name: "Sample").save()
 				new Project(name: "CuantoProd", projectKey: "CUANTO", projectGroup: grp,
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
 		}
 	}
 
+
 	void initSecurity() {
 		if (authenticateService.securityConfig.security.active) {
-			initAdminUser()
-			initUserRole()
+			def adminRole = initAdminRole()
+			def userRole = initUserRole()
+			initAdminUser(adminRole, userRole)
 			initUrlRestrictions()
 		}
 	}
 
 
-	private def initAdminUser() {
-		def adminRole = initAdminRole()
+	void initAdminUser(adminRole, userRole) {
 		if (!adminRole.people || adminRole.people.size() == 0) {
 			User adminUser = new User()
 			adminUser.username = "admin"
@@ -136,11 +139,14 @@ class InitializationService {
 			//adminUser.authorities = [adminRole]
 			adminRole.addToPeople(adminUser)
 			adminRole.save()
+
+			userRole.addToPeople(adminUser)
+			userRole.save()
 		}
 	}
 
 
-	private def initAdminRole() {
+	def initAdminRole() {
 		def adminRole = Role.findByAuthority('ROLE_ADMIN')
 		if (!adminRole) {
 			adminRole = new Role()
@@ -152,16 +158,17 @@ class InitializationService {
 	}
 
 
-	private def initUserRole() {
+	def initUserRole() {
 		if (!Role.findByAuthority('ROLE_USER')) {
 			Role userRole = new Role()
-			userRole.authority = "ROLE_USER,ROLE_ADMIN"
+			userRole.authority = "ROLE_USER"
 			userRole.description = "User"
 			userRole.save()
 		}
 	}
 
-	private def initUrlRestrictions() {
+
+	def initUrlRestrictions() {
 		if (Requestmap.list().size == 0) {
 			def requestmaps = []
 			requestmaps << new Requestmap(url: "/project/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
