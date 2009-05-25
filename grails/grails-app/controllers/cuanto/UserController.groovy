@@ -37,10 +37,7 @@ class UserController {
 	}
 
 	def list = {
-		if (!params.max) {
-			params.max = 10
-		}
-		[personList: User.list(params)]
+		[personList: User.listOrderByUsername()]
 	}
 
 	def show = {

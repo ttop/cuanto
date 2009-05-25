@@ -37,4 +37,8 @@ class Role {
 		authority(blank: false, unique: true)
 		description()
 	}
+
+	String toString() {
+		return authority
+	}
 }
