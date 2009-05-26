@@ -135,6 +135,8 @@ input:focus, select:focus, textarea:focus {
 
 .smaller {
 	font-size:smaller;
+	background-color: #edf5ff;
+	padding:2px;
 }
 
 /**
