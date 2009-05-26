@@ -72,23 +72,9 @@
 						</tr>
 
 						<tr>
-							<td><label for="description" class="widerLabel">Description:</label></td>
-							<td class="${hasErrors(bean: person, field: 'description', 'errors')}">
-								<input type="text" id="description" name="description" value="${person.description?.encodeAsHTML()}"/>
-							</td>
-						</tr>
-
-						<tr>
 							<td><label for="email" class="widerLabel">Email:</label></td>
 							<td class="${hasErrors(bean: person, field: 'email', 'errors')}">
 								<input type="text" id="email" name="email" value="${person?.email?.encodeAsHTML()}"/>
-							</td>
-						</tr>
-
-						<tr>
-							<td><label for="emailShow" class="widerLabel">Show Email:</label></td>
-							<td class="${hasErrors(bean: person, field: 'emailShow', 'errors')}">
-								<g:checkBox name="emailShow" value="${person.emailShow}"/>
 							</td>
 						</tr>
 

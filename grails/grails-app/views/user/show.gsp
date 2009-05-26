@@ -68,18 +68,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</tr>
 
 					<tr>
-						<td>Description:</td>
-						<td>${person.description?.encodeAsHTML()}</td>
-					</tr>
-
-					<tr>
 						<td>Email:</td>
 						<td>${person.email?.encodeAsHTML()}</td>
-					</tr>
-
-					<tr>
-						<td>Show Email:</td>
-						<td>${person.emailShow}</td>
 					</tr>
 
 					<tr>

@@ -27,7 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   </head>
   <body>
 	  <div class="cuantoBody ">
-		  <g:link controller="user" action="list">Administer Users</g:link>
+		  <g:link controller="user" action="list">Administer Users</g:link><br/>
+		  <g:link controller="role" action="list">Administer Roles</g:link><br/>
+		  <g:link controller="requestmap" action="list">URL Security</g:link><br/>
 	  </div>
   </body>
 </html>

@@ -39,10 +39,10 @@ class User {
 	boolean enabled
 
 	String email
-	boolean emailShow
+	//boolean emailShow
 
 	/** description */
-	String description = ''
+	//String description = ''
 
 	/** plain password to create a MD5 password */
 	String pass = '[secret]'
