@@ -1,6 +1,6 @@
 <%@ page import="cuanto.User" %><head>
 	<meta name="layout" content="main" />
-	<title>User List</title>
+	<title>Cuanto: User List</title>
     <p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
     <yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
     <yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 	YAHOO.util.Event.onDOMReady(function () {
 		var users = new YAHOO.cuanto.users();
-		
+		users.initUserList();
 	});
 
 
@@ -18,19 +18,11 @@
 
 <body class="yui-skin-sam">
 
-	%{--
-	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
-		<span class="menuButton"><g:link class="create" action="create">New User</g:link></span>
-	</div>
-	--}%
-
 	<div class="body ">
 
 		<h1>User List</h1>
-		<g:if test="${flash.message}">
-		<div class="message">${flash.message}</div>
-		</g:if>
+	    <g:link class="smaller" action="create">Add User</g:link>
+		<p/>
 		<div id="userlistdiv" >
 			<table id="userlist">
 			<thead>
@@ -61,14 +53,6 @@
 					%>
 					
 					<td>${roles}</td>
-					
-					%{--
-					<td class="actionButtons">
-						<span class="actionButton">
-							<g:link action="show" id="${person.id}">Show</g:link>
-						</span>
-					</td>
-					--}%
 				</tr>
 			</g:each>
 			</tbody>

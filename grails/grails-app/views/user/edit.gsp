@@ -1,91 +1,100 @@
 <head>
 	<meta name="layout" content="main" />
-	<title>Edit User</title>
+	<title>Cuanto: Edit User</title>
+
+	<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+
+	<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+	<g:javascript src="cuanto/users.js"/>
+	<g:javascript>
+		YAHOO.util.Event.onDOMReady(function () {
+			var users = new YAHOO.cuanto.users();
+			users.initDelete();
+			var oButton = new YAHOO.widget.Button("updateButton");
+		});
+	</g:javascript>
 </head>
 
 <body>
+	<div class="cuantoBody">
 
-	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
-		<span class="menuButton"><g:link class="list" action="list">User List</g:link></span>
-		<span class="menuButton"><g:link class="create" action="create">New User</g:link></span>
-	</div>
+		<span class="smaller">
+			<a href id="deleteUser">Delete User</a> |
+			<g:link action="create">New User</g:link> |
+			<g:link action="list">User List</g:link> |
+		</span>
 
-	<div class="body">
 		<h1>Edit User</h1>
-		<g:if test="${flash.message}">
-		<div class="message">${flash.message}</div>
-		</g:if>
 		<g:hasErrors bean="${person}">
-		<div class="errors">
-			<g:renderErrors bean="${person}" as="list" />
-		</div>
+			<div class="errors">
+				<g:renderErrors bean="${person}" as="list" />
+			</div>
 		</g:hasErrors>
 
-		<div class="prop">
-			<span class="name">ID:</span>
-			<span class="value">${person.id}</span>
+		<div>
+			<span>ID:</span>
+			<span>${person.id}</span>
 		</div>
 
 		<g:form>
 			<input type="hidden" name="id" value="${person.id}" />
 			<input type="hidden" name="version" value="${person.version}" />
-			<div class="dialog">
-				<table>
+			<div >
+				<table class="usertable">
 				<tbody>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="username">Login Name:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'username','errors')}">
+					<tr>
+						<td><label for="username" class="widerLabel">Login Name:</label></td>
+						<td class="${hasErrors(bean:person,field:'username','errors')}">
 							<input type="text" id="username" name="username" value="${person.username?.encodeAsHTML()}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="userRealName">Full Name:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'userRealName','errors')}">
+					<tr>
+						<td><label for="userRealName" class="widerLabel">Full Name:</label></td>
+						<td class="${hasErrors(bean:person,field:'userRealName','errors')}">
 							<input type="text" id="userRealName" name="userRealName" value="${person.userRealName?.encodeAsHTML()}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="passwd">Password:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'passwd','errors')}">
+					<tr>
+						<td><label for="passwd" class="widerLabel">Password:</label></td>
+						<td class="${hasErrors(bean:person,field:'passwd','errors')}">
 							<input type="password" id="passwd" name="passwd" value="${person.passwd?.encodeAsHTML()}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="enabled">Enabled:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'enabled','errors')}">
+					<tr>
+						<td><label for="enabled" class="widerLabel">Enabled:</label></td>
+						<td class="${hasErrors(bean:person,field:'enabled','errors')}">
 							<g:checkBox name="enabled" value="${person.enabled}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="description">Description:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'description','errors')}">
+					<tr>
+						<td><label for="description" class="widerLabel">Description:</label></td>
+						<td class="${hasErrors(bean:person,field:'description','errors')}">
 							<input type="text" id="description" name="description" value="${person.description?.encodeAsHTML()}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="email">Email:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'email','errors')}">
+					<tr>
+						<td><label for="email" class="widerLabel">Email:</label></td>
+						<td class="${hasErrors(bean:person,field:'email','errors')}">
 							<input type="text" id="email" name="email" value="${person?.email?.encodeAsHTML()}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="emailShow">Show Email:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'emailShow','errors')}">
+					<tr>
+						<td><label for="emailShow" class="widerLabel">Show Email:</label></td>
+						<td class="${hasErrors(bean:person,field:'emailShow','errors')}">
 							<g:checkBox name="emailShow" value="${person.emailShow}"/>
 						</td>
 					</tr>
 
-					<tr class="prop">
-						<td valign="top" class="name"><label for="authorities">Roles:</label></td>
-						<td valign="top" class="value ${hasErrors(bean:person,field:'authorities','errors')}">
+					<tr>
+						<td><label for="authorities" class="widerLabel">Roles:</label></td>
+						<td class="${hasErrors(bean:person,field:'authorities','errors')}">
 							<ul>
 							<g:each var="entry" in="${roleMap}">
 								<li>${entry.key.authority.encodeAsHTML()}
@@ -100,12 +109,12 @@
 				</table>
 			</div>
 
-			<div class="buttons">
-				<span class="button"><g:actionSubmit class="save" value="Update" /></span>
-				<span class="button"><g:actionSubmit class="delete" onclick="return confirm('Are you sure?');" value="Delete" /></span>
+			<div >
+				<span ><g:actionSubmit id="updateButton" class="" value="Update"/></span>
 			</div>
-
 		</g:form>
-
+		<form id="deleteForm" action="${createLink(action:'delete')}" method="post">
+			<input type="hidden" name="id" value="${person.id}"/>
+		</form>
 	</div>
 </body>

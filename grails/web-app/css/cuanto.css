@@ -255,6 +255,10 @@ form.wideForm {
 	width: 450px;
 }
 
+form.widerForm {
+	width: 600px;
+}
+
 label.normalLabel {
 	width: 25%;
 	margin-right: 10px;
@@ -263,6 +267,11 @@ label.normalLabel {
 label.wideLabel {
 	width: 40%;
 	margin-right: 10px;
+}
+
+label.widerLabel {
+	width: 70%;
+	margin-right: 0px;
 }
 
 .formHeader {
@@ -297,4 +306,19 @@ form label.dialogLabel {
 	width:10em;
     padding-bottom:2em;
 	position:static;
+}
+
+/* user */
+
+.usertable {
+	width: 440px;
+}
+.usertable td {
+	border-top: 1px dashed gray;
+}
+.usertable input {
+	width: 16em;
+}
+.usertable li {
+	list-style-type:none;
 }

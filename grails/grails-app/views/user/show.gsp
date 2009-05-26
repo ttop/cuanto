@@ -1,82 +1,103 @@
+<%--
+ Copyright (c) 2009 Todd Wells
+
+This file is part of Cuanto, a test results repository and analysis program.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--%>
 <head>
-	<meta name="layout" content="main" />
-	<title>Show User</title>
+	<meta name="layout" content="main"/>
+	<title>Cuanto: Show User</title>
+
+	<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+	<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+	<g:javascript src="cuanto/users.js"/>
+	<g:javascript>
+		YAHOO.util.Event.onDOMReady(function () {
+			var users = new YAHOO.cuanto.users();
+			users.initDelete();
+		});
+
+	</g:javascript>
 </head>
 
-<body>
+<body class=" yui-skin-sam ">
+	<div class="cuantoBody">
+		<span class="smaller">
+			<g:link id="${person.id}" action="edit">Edit User</g:link> |
+			<a href="${createLink(action:'delete')}" id="deleteUser">Delete User</a> |
+			<g:link action="create">New User</g:link> |
+			<g:link action="list">User List</g:link> |
+		</span>
 
-	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
-		<span class="menuButton"><g:link class="list" action="list">User List</g:link></span>
-		<span class="menuButton"><g:link class="create" action="create">New User</g:link></span>
-	</div>
-
-	<div class="body">
 		<h1>Show User</h1>
-		<g:if test="${flash.message}">
-		<div class="message">${flash.message}</div>
-		</g:if>
-		<div class="dialog">
-			<table>
-			<tbody>
+		<div >
+			<table class="usertable">
+				<tbody>
 
-				<tr class="prop">
-					<td valign="top" class="name">ID:</td>
-					<td valign="top" class="value">${person.id}</td>
-				</tr>
+					<tr>
+						<td>ID:</td>
+						<td>${person.id}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Login Name:</td>
-					<td valign="top" class="value">${person.username?.encodeAsHTML()}</td>
-				</tr>
+					<tr>
+						<td>Login Name:</td>
+						<td>${person.username?.encodeAsHTML()}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Full Name:</td>
-					<td valign="top" class="value">${person.userRealName?.encodeAsHTML()}</td>
-				</tr>
+					<tr>
+						<td>Full Name:</td>
+						<td>${person.userRealName?.encodeAsHTML()}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Enabled:</td>
-					<td valign="top" class="value">${person.enabled}</td>
-				</tr>
+					<tr>
+						<td>Enabled:</td>
+						<td>${person.enabled}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Description:</td>
-					<td valign="top" class="value">${person.description?.encodeAsHTML()}</td>
-				</tr>
+					<tr>
+						<td>Description:</td>
+						<td>${person.description?.encodeAsHTML()}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Email:</td>
-					<td valign="top" class="value">${person.email?.encodeAsHTML()}</td>
-				</tr>
+					<tr>
+						<td>Email:</td>
+						<td>${person.email?.encodeAsHTML()}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Show Email:</td>
-					<td valign="top" class="value">${person.emailShow}</td>
-				</tr>
+					<tr>
+						<td>Show Email:</td>
+						<td>${person.emailShow}</td>
+					</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Roles:</td>
-					<td valign="top" class="value">
-						<ul>
-						<g:each in="${roleNames}" var='name'>
-							<li>${name}</li>
-						</g:each>
-						</ul>
-					</td>
-				</tr>
+					<tr>
+						<td>Roles:</td>
+						<td>
+							<ul>
+								<g:each in="${roleNames}" var='name'>
+									<li>${name}</li>
+								</g:each>
+							</ul>
+						</td>
+					</tr>
 
-			</tbody>
+				</tbody>
 			</table>
+			<form id="deleteForm" action="${createLink(action:'delete')}" method="post">
+				<input type="hidden" name="id" value="${person.id}"/>
+			</form>
 		</div>
-
-		<div class="buttons">
-			<g:form>
-				<input type="hidden" name="id" value="${person.id}" />
-				<span class="button"><g:actionSubmit class="edit" value="Edit" /></span>
-				<span class="button"><g:actionSubmit class="delete" onclick="return confirm('Are you sure?');" value="Delete" /></span>
-			</g:form>
-		</div>
-
 	</div>
 </body>
