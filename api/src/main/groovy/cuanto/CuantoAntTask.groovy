@@ -32,6 +32,8 @@ import org.apache.tools.ant.types.FileSet
  */
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
+	String userId
+	String password
 	String proxyHost
 	String proxyPort
 	File resultFile
@@ -53,6 +55,9 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		}
 
 		def cuantoClient = new CuantoClient(url.toString())
+		cuantoClient.userId = userId
+		cuantoClient.password = password
+		
 		if (dateFormat) {
 			cuantoClient.dateFormat = dateFormat
 		}
