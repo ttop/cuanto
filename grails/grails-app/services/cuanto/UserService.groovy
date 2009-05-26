@@ -18,36 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+
 package cuanto
 
+class UserService {
 
-/**
- * User domain class.
- */
-class User {
-	static transients = ['pass']
-	static hasMany = [authorities: Role]
-	static belongsTo = Role
-
-	/** Username */
-	String username
-	/** User Real Name*/
-	String userRealName
-	/** MD5 Password */
-	String passwd
-	/** enabled */
-	boolean enabled
-
-	String email
-	Boolean changePassword = false
-	
-	/** plain password to create a MD5 password */
-	String pass = '[secret]'
-
-	static constraints = {
-		username(blank: false, unique: true)
-		userRealName(blank: false)
-		passwd(blank: false)
-		enabled()
+	def getUserForUsername(username) {
+		User.findByUsername(username)
 	}
 }

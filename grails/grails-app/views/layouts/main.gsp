@@ -54,6 +54,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<g:link controller="project" action="list">Projects</g:link>
 					</li>
 					<li class="navitem">
+						<g:link controller="user" action="profile">Profile</g:link>
+					</li>
+					<li class="navitem">
 						<g:link controller="admin" action="manage">Admin</g:link>
 					</li>
 					<li class="navitem">
