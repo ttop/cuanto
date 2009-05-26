@@ -8,4 +8,7 @@ security {
 	loginUserDomainClass = "cuanto.User"
 	authorityDomainClass = "cuanto.Role"
 	requestMapClass = "cuanto.Requestmap"
+
+	cookieName = 'cuanto_remember_me'
+	rememberMeKey = 'cuantoWebApp'
 }
