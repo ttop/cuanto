@@ -1,4 +1,5 @@
-<%--
+%{--
+
  Copyright (c) 2009 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
@@ -16,7 +17,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---%>
+--}%
+
 <head>
 	<meta name="layout" content="main"/>
 	<title>Cuanto: Show User</title>
