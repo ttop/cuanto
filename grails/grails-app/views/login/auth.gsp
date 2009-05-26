@@ -37,8 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </head>
 
 <body>
+	<div id="logohead" class="head1"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-48.png')}" alt="Cuanto logo"/><br/>Cuanto</div>
 	<div id='login'>
 		<div class='inner'>
+
 			<form action='${postUrl}' method='POST' id='loginForm' class='cssform'>
 				<p>
 					<label for='j_username'>Login ID</label>

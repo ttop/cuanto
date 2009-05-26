@@ -1,7 +1,14 @@
 #login {
 	margin: 15px 0px;
 	padding: 0px;
-	/*text-align: center;*/
+	text-align: center;
+}
+
+#logohead {
+	width:100%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
 }
 
 #login .inner {
