@@ -7,6 +7,7 @@
 	<g:javascript>
 		YAHOO.util.Event.onDOMReady(function () {
 			var oButton = new YAHOO.widget.Button("loginButton");
+			$('j_username').focus();
 		});
 	</g:javascript>
 
@@ -17,7 +18,6 @@
 <body>
 	<div id='login'>
 		<div class='inner'>
-			<!--<div class='fheader'>Please Login</div>-->
 			<form action='${postUrl}' method='POST' id='loginForm' class='cssform'>
 				<p>
 					<label for='j_username'>Login ID</label>
@@ -38,11 +38,4 @@
 			</form>
 		</div>
 	</div>
-	<script type='text/javascript'>
-		<!--
-		(function() {
-			document.forms['loginForm'].elements['j_username'].focus();
-		})();
-		// -->
-	</script>
 </body>
