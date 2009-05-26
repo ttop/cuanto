@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<span class="smaller">
 			<g:link id="${person.id}" action="edit">Edit User</g:link> |
 			<a href="${createLink(action:'delete')}" id="deleteUser">Delete User</a> |
-			<g:link action="create">New User</g:link> |
+			<g:link action="create">Add User</g:link> |
 			<g:link action="list">User List</g:link> |
 		</span>
 
@@ -85,11 +85,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<tr>
 						<td>Roles:</td>
 						<td>
-							<ul>
-								<g:each in="${roleNames}" var='name'>
-									<li>${name}</li>
-								</g:each>
-							</ul>
+							<g:each in="${roleNames}" var='name'>
+								${name}<br/>
+							</g:each>
 						</td>
 					</tr>
 

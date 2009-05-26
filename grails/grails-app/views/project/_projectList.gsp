@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --}%
 <span class="head1">Projects</span>
-<span class="smaller">(<a href="#addProject" id="addProject">Add Project</a>)</span>
+<span class="smaller"><a href="#addProject" id="addProject">Add Project</a></span>
 <h2>By Group</h2>
 <div class="accordionMenu">
 	<g:each var="group" in="${groups.findAll { it }}">

@@ -6,22 +6,20 @@
     <yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
     <g:javascript src="cuanto/users.js"/>
 
-	<script type="text/javascript">
+	<g:javascript>
 	YAHOO.util.Event.onDOMReady(function () {
 		var users = new YAHOO.cuanto.users();
 		users.initUserList();
 	});
-
-
-	</script>
+	</g:javascript>
 </head>
 
 <body class="yui-skin-sam">
 
 	<div class="body ">
 
+		<g:link class="smaller" action="create">Add User</g:link>
 		<h1>User List</h1>
-	    <g:link class="smaller" action="create">Add User</g:link>
 		<p/>
 		<div id="userlistdiv" >
 			<table id="userlist">
