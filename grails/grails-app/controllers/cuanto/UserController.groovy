@@ -28,7 +28,6 @@ package cuanto
 class UserController {
 
 	def authenticateService
-	def userService
 
 	// the delete, save and update actions only accept POST requests
 	static Map allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
@@ -151,12 +150,6 @@ class UserController {
 		else {
 			render view: 'create', model: [authorityList: Role.list(), person: person]
 		}
-	}
-
-	
-	def profile = {
-		def currentUser = userService.getUserForUsername(authenticateService.principal().username)
-		[user: currentUser]
 	}
 
 

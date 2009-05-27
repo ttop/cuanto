@@ -179,7 +179,7 @@ class InitializationService {
 			requestmaps << new Requestmap(url: "/testoutcome/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
 			requestmaps << new Requestmap(url: "/jstest/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
 			requestmaps << new Requestmap(url: "/show/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
-			requestmaps << new Requestmap(url: "/user/profile*", configAttribute: "ROLE_USER,ROLE_ADMIN")
+			requestmaps << new Requestmap(url: "/profile/**", configAttribute: "ROLE_USER,ROLE_ADMIN")
 			requestmaps << new Requestmap(url: "/*", configAttribute: "ROLE_USER,ROLE_ADMIN")
 			requestmaps << new Requestmap(url: "/admin/**", configAttribute: "ROLE_ADMIN")
 			requestmaps << new Requestmap(url: "/requestmap/**", configAttribute: "ROLE_ADMIN")

@@ -1,5 +1,4 @@
-%{--
-
+/*
  Copyright (c) 2009 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
@@ -17,30 +16,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---}%
+*/
+package cuanto.passwordValidator
 
-<%@ page contentType="text/html;charset=UTF-8" %>
-<html>
-	<head>
-		<meta name="layout" content="main"/>
-		<title>Cuanto: User Profile</title>
+interface PasswordValidator {
 
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<g:javascript src="cuanto/userprofile.js"/>
-		<g:javascript>
-			YAHOO.util.Event.onDOMReady(function () {
-
-			});
-		</g:javascript>
-	</head>
-	<body>
-		<div class="cuantoBody">
-			<h1>User Profile for ${user.username}</h1>
-
-			Real Name: ${user.userRealName}<br/>
-			Email: ${user.email}<br/>
-
-		</div>
-	</body>
-</html>
+	/* Inspect the password. If it does not meet some criteria, return a message describing the problem. Otherwise
+	   return null */
+	String validate(String password)
+}

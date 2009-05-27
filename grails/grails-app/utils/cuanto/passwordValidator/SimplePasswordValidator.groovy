@@ -18,17 +18,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+package cuanto.passwordValidator
 
-package cuanto
+class SimplePasswordValidator implements PasswordValidator {
 
-class UserService {
-	def passwordValidator
 
-	def getUserForUsername(username) {
-		User.findByUsername(username)
+	public String validate(String password) {
+		def message = null
+
+		if (password?.size() < 5) {
+			message = "Password needs to be at least five characters."
+		}
+		return message
 	}
 
-	def validatePassword(candidate) {
-		return passwordValidator.validate(candidate)
-	}
 }

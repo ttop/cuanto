@@ -46,4 +46,6 @@ beans = {
 			new ManualFormatter()
 		]
 	}
+
+	passwordValidator(cuanto.passwordValidator.SimplePasswordValidator)
 }

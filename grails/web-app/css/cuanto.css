@@ -322,3 +322,11 @@ form label.dialogLabel {
 	width: 16em;
 }
 
+.userform {
+	width: 350px;
+}
+.userform label {
+	width: 40%;
+}
+
+

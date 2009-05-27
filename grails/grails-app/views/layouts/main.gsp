@@ -55,7 +55,7 @@ Cuanto</li>
 						<g:link controller="project" action="list">Projects</g:link>
 					</li>
 					<li class="navitem">
-						<g:link controller="user" action="profile">Profile</g:link>
+						<g:link controller="profile" action="edit">Profile</g:link>
 					</li>
 					<li class="navitem">
 						<g:link controller="admin" action="manage">Admin</g:link>
