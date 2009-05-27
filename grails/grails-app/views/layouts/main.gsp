@@ -64,7 +64,7 @@ Cuanto</li>
 						<a href="${resource(file: 'help')}">Help</a>
 					</li>
 					<li class="last navitem">
-						<g:link controller="logout" action="index">Logout</g:link>
+						<g:link controller="logout" action="index">Logout <g:loggedInUserInfo field="username"/></g:link>
 					</li>
 				</g:isLoggedIn>
 			</ul>
