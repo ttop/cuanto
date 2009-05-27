@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	  <div id="helpRegion">
 
 		  <img src="${resource(dir: 'images/logos', file:'cuanto-logo-48.png')}" alt="Cuanto logo"/>
-		  <br/>This is Cuanto version <g:meta name="app.version"/>.
+		  <br/>Cuanto version <g:meta name="app.version"/>.
 		  
 		  <h1>Help</h1>
 
