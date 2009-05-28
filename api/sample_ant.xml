@@ -4,7 +4,7 @@
 	<property name="cuanto.url" value="http://localhost:8080/cuanto"/>
 
 	<target name="init">
-		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="target/cuanto-api-2.0-SNAPSHOT.jar"/>
+		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="target/cuanto-api-2.2.2.jar"/>
 	</target>
 
 	<target name="submitResults" depends="init">
