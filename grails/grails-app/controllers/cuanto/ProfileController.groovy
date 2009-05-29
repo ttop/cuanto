@@ -52,14 +52,23 @@ class ProfileController {
 		def currentUser = userService.getUserForUsername(username)
 		if (params.passwd != params.confpassword) {
 			flash.message = "Passwords do not match"
-		}
-		else {
+		} else {
 			def validationMessage = userService.validatePassword(params.passwd)
 			if (validationMessage) {
 				flash.message = validationMessage
 			} else {
-				currentUser.passwd = authenticateService.encodePassword(params.passwd)
-				flash.message = "Changed password"
+				def newpwd = authenticateService.encodePassword(params.passwd)
+				if (newpwd == currentUser.passwd) {
+					flash.message = "New password is the same as the old password, please select a new password."
+				} else {
+					currentUser.passwd = newpwd
+					currentUser.changePassword = false
+					if (currentUser.save()) {
+						flash.message = "Changed password"
+					} else {
+						flash.message = "There was a problem changing your password"
+					}
+				}
 			}
 		}
 		redirect (action: 'edit')
