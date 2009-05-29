@@ -4,6 +4,7 @@ security {
 
 	active = true
 	basicProcessingFilter = true
+	cacheUsers = true
 
 	loginUserDomainClass = "cuanto.User"
 	authorityDomainClass = "cuanto.Role"
