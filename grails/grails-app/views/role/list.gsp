@@ -1,49 +1,65 @@
+%{--
+
+ Copyright (c) 2009 Todd Wells
+
+This file is part of Cuanto, a test results repository and analysis program.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--}%
+
 <%@ page import="cuanto.Role" %><head>
 	<meta name="layout" content="main" />
-	<title>Role List</title>
+	<title>Cuanto: Role List</title>
+	<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
+	<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
+	<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
+	<g:javascript src="cuanto/roles.js"/>
+
+	<g:javascript>
+		YAHOO.util.Event.onDOMReady(function () {
+			var roles = new YAHOO.cuanto.roles();
+			roles.initRoleList();
+		});
+	</g:javascript>
+
 </head>
 
 <body>
-
-	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
-		<span class="menuButton"><g:link class="create" action="create">New Role</g:link></span>
-	</div>
-
-	<div class="body">
+	<div class="cuantoBody yui-skin-sam ">
+		<span class="smaller"><g:link class="create" action="create">New Role</g:link></span>
 		<h1>Role List</h1>
-		<g:if test="${flash.message}">
-		<div class="message">${flash.message}</div>
-		</g:if>
-		<div class="list">
-			<table>
+		<p/>
+		<div id="rolelistdiv">
+			<table id="rolelist">
 			<thead>
 				<tr>
-					<g:sortableColumn property="id" title="ID" />
-					<g:sortableColumn property="authority" title="Role Name" />
-					<g:sortableColumn property="description" title="Description" />
-					<th>&nbsp;</th>
+					<th>ID</th>
+					<th>Role Name</th>
+					<th>Description</th>
 				</tr>
 			</thead>
 			<tbody>
-			<g:each in="${authorityList}" status="i" var="authority">
-				<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+			<g:each in="${authorityList}" var="authority">
+				<tr>
 					<td>${authority.id}</td>
-					<td>${authority.authority?.encodeAsHTML()}</td>
+					<td><g:link action="show" id="${authority.id}">${authority.authority?.encodeAsHTML()}</g:link></td>
 					<td>${authority.description?.encodeAsHTML()}</td>
-					<td class="actionButtons">
-						<span class="actionButton">
-							<g:link action="show" id="${authority.id}">Show</g:link>
-						</span>
-					</td>
 				</tr>
 			</g:each>
 			</tbody>
 			</table>
-		</div>
-
-		<div class="paginateButtons">
-			<g:paginate total="${Role.count()}" />
 		</div>
 	</div>
 </body>

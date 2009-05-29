@@ -1,43 +1,43 @@
 <head>
 	<meta name="layout" content="main" />
-	<title>Show Role</title>
+	<title>Cuanto: Show Role</title>
 </head>
 
 <body>
 
-	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
-		<span class="menuButton"><g:link class="list" action="list">Role List</g:link></span>
-		<span class="menuButton"><g:link class="create" action="create">New Role</g:link></span>
-	</div>
 
-	<div class="body">
+	<div class="cuantoBody">
+		<span class="smaller">
+			<span><g:link class="list" action="list">Role List</g:link></span>
+			<span><g:link class="create" action="create">New Role</g:link></span>
+		</span>
 		<h1>Show Role</h1>
-		<g:if test="${flash.message}">
-		<div class="message">${flash.message}</div>
-		</g:if>
-		<div class="dialog">
+		<div>
 			<table>
 			<tbody>
 
-				<tr class="prop">
-					<td valign="top" class="name">ID:</td>
-					<td valign="top" class="value">${authority.id}</td>
+				<tr>
+					<td>ID:</td>
+					<td>${authority.id}</td>
 				</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Role Name:</td>
-					<td valign="top" class="value">${authority.authority}</td>
+				<tr>
+					<td>Role Name:</td>
+					<td>${authority.authority}</td>
 				</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">Description:</td>
-					<td valign="top" class="value">${authority.description}</td>
+				<tr>
+					<td>Description:</td>
+					<td>${authority.description}</td>
 				</tr>
 
-				<tr class="prop">
-					<td valign="top" class="name">People:</td>
-					<td valign="top" class="value">${authority.people}</td>
+				<tr>
+					<td>People:</td>
+					<td>
+						<g:each in="${authority.people}" var="person">
+							${person.username}<br/>
+						</g:each>
+					</td>
 				</tr>
 
 			</tbody>
