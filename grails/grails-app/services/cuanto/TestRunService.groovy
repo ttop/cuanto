@@ -478,10 +478,15 @@ class TestRunService {
 
 
 	TestRun createTestRun(Map params) {
-
 		def project
 		if (params.containsKey("project")) {
 			project = projectService.getProjectByFullName(params.project)
+			if (!project) {
+				project = dataService.getProjectByKey(params.project)
+				if (!project) {
+					throw new CuantoException("Unable to locate ${params.project}")
+				}
+			}
 		} else if (params.containsKey("id")) {
 			project = dataService.getProject(Long.valueOf(params.id))
 		} else {
