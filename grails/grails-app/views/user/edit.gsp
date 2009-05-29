@@ -100,6 +100,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</tr>
 
 						<tr>
+							<td><label for="changePassword" class="widerLabel">Change Password on Next Login:</label></td>
+							<td class="${hasErrors(bean:person, field: 'changePassword', 'errors')}">
+								<g:checkBox name="changePassword" value="${person.changePassword}"/>
+							</td>
+						</tr>
+						
+						<tr>
 							<td><label for="authorities" class="widerLabel">Roles:</label></td>
 							<td class="${hasErrors(bean: person, field: 'authorities', 'errors')}">
 								<g:each var="entry" in="${roleMap}">

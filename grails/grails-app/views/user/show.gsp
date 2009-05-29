@@ -75,6 +75,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</tr>
 
 					<tr>
+						<td>Change password on next login:</td>
+						<td>${person.changePassword}</td>
+					</tr>
+					<tr>
 						<td>Roles:</td>
 						<td>
 							<g:each in="${roleNames}" var='name'>
