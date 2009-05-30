@@ -178,7 +178,6 @@ class CuantoClient {
 		} finally {
 			get.releaseConnection()
 		}
-
 	}
 
 	public void submit(File file, Long testRunId) {

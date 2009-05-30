@@ -102,7 +102,8 @@ class TestRunController {
 	}
 
 	def submitFile = {
-		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
+		// get the testRun id from the header (CuantoClient) or the GET param (manual file upload)
+		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id") ?: params.testRunId)
 
 		for (fileName in request.getFileNames()) {
 			def multipartFileRequest = request.getFile(fileName)

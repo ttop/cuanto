@@ -25,7 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="smaller">
 		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> |
 			<a id="editTestRun" href="#editTestRun">Edit</a></span> |
-		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
+		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span> |
+		<span><a href="#manulSubmitDialog" id="manualSubmit">Submit Manual Test Run</a></span>
+		)
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> | 
