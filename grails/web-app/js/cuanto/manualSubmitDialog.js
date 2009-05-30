@@ -36,23 +36,9 @@ YAHOO.cuanto.ManualSubmitDialog = function(onSubmitSuccessful, scope) {
 		this.cancel();
 	};
 
-	var handleDelete = function() {
-		//if ($('dpdConfirmDelete').getValue() == "YES") {
-		//	msDialog.getButtons().each(function(b) {
-		//		b.set('disabled', true);
-		//	});
-		//	$('dpdMessage').innerHTML = "";
-		//	this.submit();
-		//} else {
-		//	$('dpdMessage').innerHTML = "Deletion is <b>not</b> confirmed.";
-		//}
-	};
-
-	var myButtons = [ { text:"Cancel", handler:handleCancel, isDefault:true },
-		{ text:"Delete", handler:handleDelete } ];
+	var myButtons = [ { text:"Cancel", handler:handleCancel, isDefault:true } ];
 	msDialog.cfg.queueProperty("buttons", myButtons);
 
-	//msDialog.callback.success = onDeleteSuccessfulLocal;
 	msDialog.callback.scope = msDialog;
 
 	var escapeKey = new YAHOO.util.KeyListener(document, { keys:27 },
