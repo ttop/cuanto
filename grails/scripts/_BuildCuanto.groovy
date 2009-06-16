@@ -29,6 +29,7 @@ println "Grails app version is $cuantoVersion"
 
 def targetDir = "${cuantoBase}/dist/target"
 def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
+def targetApiDir = "${zipDir}/api"
 
 def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
@@ -42,15 +43,19 @@ target(cuantoapi: "Build the Cuanto API") {
 	println "Packaging the Cuanto API"
 
 	"mvn -f ${apiDir}/pom.xml clean package".execute().text
+	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
 	ant.delete(verbose: "true", failonerror: "true") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
 	}
 	
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
-	ant.copy(file: origClientJar, todir: "lib", verbose: "true")
-	ant.copy(file: distClientJar, todir: zipDir, verbose: "true")
+	//def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
+	ant.copy(file: distClientJar, todir: "lib", verbose: "true")
+	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
+	ant.copy(todir: targetApiDir, verbose: "true") {
+		fileset(dir:"${apiDir}/target/dependency", includes: "*.jar")
+	}
 
 	grailsSettings.compileDependencies << new File(distClientJar)
 }
@@ -75,6 +80,7 @@ target(cuantopackage: "Build the Cuanto distributable") {
 
 	ant.mkdir(dir: licenseDir)
 	ant.mkdir(dir: releaseDir)
+	ant.mkdir(dir: targetApiDir)
 
 	depends(cuantoapi, cuantowar)
 
