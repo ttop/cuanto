@@ -50,19 +50,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<ul>
 					<li id="clogo"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-16.gif')}" alt="Cuanto logo"/>
 Cuanto</li>
-				<g:isLoggedIn>
 					<li class="first navitem">
 						<g:link controller="project" action="list">Projects</g:link>
 					</li>
+				<g:isLoggedIn>
 					<li class="navitem">
 						<g:link controller="profile" action="edit">Profile</g:link>
 					</li>
+				</g:isLoggedIn>
+				<g:ifAnyGranted role="ROLE_ADMIN">
 					<li class="navitem">
 						<g:link controller="admin" action="manage">Admin</g:link>
 					</li>
+				</g:ifAnyGranted>
 					<li class="navitem">
 						<a href="${resource(file: 'help')}">Help</a>
 					</li>
+				<g:isLoggedIn>
 					<li class="last navitem">
 						<g:link controller="logout" action="index">Logout <g:loggedInUserInfo field="username"/></g:link>
 					</li>

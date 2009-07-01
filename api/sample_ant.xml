@@ -3,8 +3,14 @@
 
 	<property name="cuanto.url" value="http://localhost:8080/cuanto"/>
 
+
 	<target name="init">
-		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpath="target/cuanto-api-2.2.2.jar"/>
+		<path id="cuantoClasspath">
+			<fileset dir="${basedir}/../dist/target/cuanto-2.2.3/api/">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="cuantoClasspath"/> 
 	</target>
 
 	<target name="submitResults" depends="init">
@@ -12,9 +18,10 @@
 		<!-- submit a few result sets just to show how the ant task works -->
 
 		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="233093" targetEnv="test lab"
-		        resultfile="../grails/test/resources/junitReport_single_suite.xml"/>
+		        resultfile="../grails/test/resources/junitReport_single_suite.xml" userId="admin" password="admin"/>
 
-		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab">
+		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab"
+			userId="admin" password="admin">
 			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
 		</cuanto>
 
