@@ -239,7 +239,7 @@ class CuantoClient {
 	}
 
 	Map getTestRunStats(Long testRunId){
-		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}")
+		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}?calculate=t")
 	}
 
 
