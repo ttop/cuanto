@@ -1,8 +1,6 @@
 # ignore emacs backup files
 \#*#
 *~
-*.iml
-*.ipr
 *.iws
 api/target
 grails/.classpath
