@@ -1,5 +1,6 @@
 dataSource {
 	pooled = false
+	driverClassName = "hack.dataSourceConfigFileCouldNotBeRead.NonExistentDriver"
 }
 
 hibernate {
