@@ -72,15 +72,15 @@
           <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/code-coverage-1.1.5/lib" />
           <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/feeds-1.4/lib" />
           <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/hibernate-1.1/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/quartz-0.4.1-SNAPSHOT/lib" />
           <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/ui-performance-1.1/lib" />
+          <root url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/acegi-0.5.1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/acegi-0.5.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/code-coverage-1.1.5/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/feeds-1.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/hibernate-1.1/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/quartz-0.4.1-SNAPSHOT/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.1/projects/grails/plugins/ui-performance-1.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
