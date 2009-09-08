@@ -196,6 +196,10 @@ class TestRunController {
 			redirect(controller: 'project', action: 'list')
 		}
 
+		if (params.calculate) {
+			testRunService.calculateTestRunStats(testRun)
+		}
+		
 		withFormat {
 			json {
 				def myJson = [:]

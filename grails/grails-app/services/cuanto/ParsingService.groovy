@@ -52,10 +52,7 @@ class ParsingService {
 		}
 
 		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
-
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
-
-		testRunService.calculateTestRunStats(testRun)
 		return testRun
 	}
 
@@ -72,7 +69,6 @@ class ParsingService {
 		}
 
 		dataService.saveTestOutcomes(testRun, [testOutcome])
-		testRunService.calculateTestRunStats(testRun)
 		return testOutcome
 	}
 

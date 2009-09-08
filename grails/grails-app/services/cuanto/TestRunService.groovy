@@ -52,7 +52,7 @@ class TestRunService {
 
 		dataService.saveDomainObject(calculatedStats)
 
-		testRun.testRunStatistics = calculatedStats
+		//testRun.testRunStatistics = calculatedStats   //todo: what is this here for?
 		testRun.testRunStatistics = calculateAnalysisStats(testRun)
 		dataService.saveTestRun(testRun)
 		return testRun.testRunStatistics

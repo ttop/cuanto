@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
-<project name="cuanto" default="" basedir=".">
+<project name="cuanto" default="submitResults" basedir=".">
 
 	<property name="cuanto.url" value="http://localhost:8080/cuanto"/>
 
 
 	<target name="init">
-		<path id="cuantoClasspath">
-			<fileset dir="${basedir}/../dist/target/cuanto-2.2.3/api/">
-				<include name="*.jar"/>
-			</fileset>
-		</path>
-		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="cuantoClasspath"/> 
+		<path id="api.class.path">
+		   <fileset dir="target">
+		     <include name="cuanto-api-2.2.3-SNAPSHOT.jar"/>
+		     <include name="dependency/*.jar"/>
+		   </fileset>
+		 </path>
+
+		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="api.class.path"/>
 	</target>
 
 	<target name="submitResults" depends="init">

@@ -23,13 +23,6 @@ package cuanto
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.types.FileSet
 
-/**
- * Created by IntelliJ IDEA.
- * User: Todd Wells
- * Date: May 10, 2008
- * Time: 9:46:01 AM
- *
- */
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
 	String userId
@@ -44,16 +37,28 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	String build
 	String date
 	String dateFormat
+	Boolean calculate = true
+	String action = "submit"
 
 	List<FileSet> filesets = []
 
 
 	public void execute() {
-
 		if (!testProject) {
 			throw new BuildException("The project attribute needs to be specified")
 		}
 
+		action = action.toLowerCase().trim()
+		
+		if ( action == "submit") {
+			submit()
+		}
+		else if (action == "calculateStats") {
+			 calculateStats()
+		}
+	}
+
+	private def getCuantoClient() {
 		def cuantoClient = new CuantoClient(url.toString())
 		cuantoClient.userId = userId
 		cuantoClient.password = password
@@ -66,19 +71,37 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 			cuantoClient.proxyHost = proxyHost
 			cuantoClient.proxyPort = Integer.valueOf(proxyPort)
 		}
+		return cuantoClient
+	}
 
+	private void submit() {
+		def cuantoClient = getCuantoClient()
 		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
-
 		log "Submitting results to ${url}"
 
 		def startTime = new Date()
 		cuantoClient.submit(getFilesToSubmit(), testRunId)
 		def endTime = new Date()
-		def duration = (endTime.getTime() - startTime.getTime()) / 1000
-
-		log "Submitting results took ${duration} seconds"
+		def duration = (endTime.time - startTime.time) / 1000
+		log "Submitting results took ${duration} second(s)"
+		if (calculate) {
+			calculateStats()
+		}
 	}
 
+	private void calculateStats() {
+		def cuantoClient = getCuantoClient()
+		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
+		def startTime = new Date()
+		def endTime = new Date()
+		def duration = (endTime.time - startTime.time) / 1000
+		if (duration == 0) {
+			duration = "less than one" 
+		}
+		log "Calculating statistics"
+		cuantoClient.getTestRunStats(testRunId)
+		log "Calculating statistics took ${duration} second(s)"
+	}
 
 	private def getFilesToSubmit() {
 		def files = []
