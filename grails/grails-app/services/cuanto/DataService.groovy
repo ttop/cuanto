@@ -269,6 +269,15 @@ class DataService {
 	}
 
 
+	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
+	// sort is the field name to sort by, order is asc or desc
+	List getTestOutcomeUnanalyzedFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
+		return TestOutcome.executeQuery("""from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true
+and t.analysisState.isAnalyzed = false order by ${sort} ${order}""",
+			[run], paging)
+	}
+
+
 	List getTestOutcomesByTestRun(TestRun run, String pkg, String order, Map paging, boolean includeIgnored) {
 		def queryArgs = [run]
 		def query = "from cuanto.TestOutcome t where t.testRun = ? "

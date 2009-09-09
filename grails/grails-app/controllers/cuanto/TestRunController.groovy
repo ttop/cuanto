@@ -148,13 +148,15 @@ class TestRunController {
 				recordStartIndex = 0
 			}
 
+			def filter = params.filter
+
 			if (params.qry) {
 				totalCount = testRunService.countTestOutcomesBySearch(params)
 				outs = testRunService.searchTestOutcomes(params)
-			} else if (params.filter?.equalsIgnoreCase("allFailures")) {
+			} else if (filter?.equalsIgnoreCase("allFailures") || filter?.equalsIgnoreCase("unanalyzedFailures")) {
 				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
 				totalCount = dataService.countFailuresForTestRun(testRun)
-			} else if (params.filter?.equalsIgnoreCase("newFailures")) {
+			} else if (filter?.equalsIgnoreCase("newFailures")) {
 				outs = testRunService.getNewFailures(testRun, queryParams)
 				totalCount = testRunService.countNewFailuresForTestRun(testRun)
 			} else if (params.outcome) {
@@ -316,6 +318,7 @@ class TestRunController {
 	private getFilterList() {
 		def filterList = []
 		filterList += [id: "allfailures", value: "All Failures"]
+		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
 		filterList += [id: "newfailures", value: "New Failures"]
 		filterList += [id: "allresults", value: "All Results"]
 		return filterList
