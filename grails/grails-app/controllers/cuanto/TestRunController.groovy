@@ -108,7 +108,7 @@ class TestRunController {
 			def multipartFileRequest = request.getFile(fileName)
 			parsingService.parseFileFromStream(multipartFileRequest.getInputStream(), testRunId)
 		}
-		testRunService.calculateTestRunStats(testRun)
+		testRunService.calculateTestRunStats(TestRun.get(testRunId))
 		render ""
 	}
 
