@@ -25,9 +25,15 @@ class BootStrap {
 	def dataService
 	def initializationService
 	def testRunService
+	def grailsApplication
 
 
 	def init = {servletContext ->
+		def ds = grailsApplication.config.dataSource
+		if (GrailsUtil.environment != "test" && !ds.driverClassName) {
+			log.fatal "No database driver found! Is cuanto-db.groovy in the classpath?"
+			System.exit(1)
+		}
 
 		switch (GrailsUtil.environment) {
 			case "development":

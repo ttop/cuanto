@@ -130,7 +130,7 @@ class TestOutcomeController {
 		testOutcomes.each { testOutcome ->
 			def output
 			if (testOutcome && testOutcome.testOutput) {
-				output = testOutcome.testOutput.encodeAsHTML()
+				output = testOutcome.testOutput.encodeAsHTML().replaceAll("\n", "<br/>")
 			} else {
 				output = "(No output available)"
 			}

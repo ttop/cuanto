@@ -52,7 +52,7 @@ class TestRunService {
 
 		dataService.saveDomainObject(calculatedStats)
 
-		testRun.testRunStatistics = calculatedStats
+		//testRun.testRunStatistics = calculatedStats   //todo: what is this here for?
 		testRun.testRunStatistics = calculateAnalysisStats(testRun)
 		dataService.saveTestRun(testRun)
 		return testRun.testRunStatistics
@@ -323,7 +323,10 @@ class TestRunService {
 		def outcomes
 		if (params?.filter?.equalsIgnoreCase("allfailures")) {
 			outcomes = dataService.getTestOutcomeFailuresByTestRun(testRun, sort, order, paging)
-		} else {
+		} else if (params?.filter?.equalsIgnoreCase("unanalyzedfailures")) {
+			outcomes = dataService.getTestOutcomeUnanalyzedFailuresByTestRun(testRun, sort, order, paging)
+		}
+		else {
 			outcomes = dataService.getTestOutcomesByTestRun(testRun, sort, order, paging)
 		}
 

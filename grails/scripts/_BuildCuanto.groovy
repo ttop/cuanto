@@ -20,7 +20,6 @@
 
 def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
-def targetDir = "${cuantoBase}/dist/target"
 def apiDir = "${cuantoBase}/api"
 
 def propfileName = "${cuantoBase}/grails/application.properties"
@@ -28,10 +27,14 @@ ant.property(file: propfileName)
 def cuantoVersion = ant.project.properties.'app.version'
 println "Grails app version is $cuantoVersion"
 
+def targetDir = "${cuantoBase}/dist/target"
+def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
+def targetApiDir = "${zipDir}/api"
+
 def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
 
-if (cuantoVersion != pomXml.version) {
+if (cuantoVersion.toString() != pomXml.version.toString()) {
 	println "\nWARNING: Grails application version and API pom version are mismatched!\n"
 }
 
@@ -40,15 +43,19 @@ target(cuantoapi: "Build the Cuanto API") {
 	println "Packaging the Cuanto API"
 
 	"mvn -f ${apiDir}/pom.xml clean package".execute().text
+	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
 	ant.delete(verbose: "true", failonerror: "true") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
 	}
 	
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	def origClientJar = "original-${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	ant.copy(file: origClientJar, todir: "lib", verbose: "true")
-	ant.copy(file: distClientJar, todir: targetDir, verbose: "true")
+	//def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
+	ant.copy(file: distClientJar, todir: "lib", verbose: "true")
+	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
+	ant.copy(todir: targetApiDir, verbose: "true") {
+		fileset(dir:"${apiDir}/target/dependency", includes: "*.jar")
+	}
 
 	grailsSettings.compileDependencies << new File(distClientJar)
 }
@@ -58,21 +65,22 @@ target(cuantowar: "Build the Cuanto WAR") {
 	println "Building the Cuanto WAR"
 	includeTargets << grailsScript("_GrailsWar")
 
-	ant.copy(file:"cuanto-db.groovy", todir: targetDir)
+	ant.copy(file:"cuanto-db.groovy", todir: zipDir)
 	depends(war)
-	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: targetDir)
+	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: zipDir)
 }
 
 
 target(cuantopackage: "Build the Cuanto distributable") {
 
-	def licenseDir = "$targetDir/licenses"
+	def licenseDir = "$zipDir/licenses"
 
 	ant.delete(dir: targetDir)
 	ant.delete(dir: releaseDir)
 
 	ant.mkdir(dir: licenseDir)
 	ant.mkdir(dir: releaseDir)
+	ant.mkdir(dir: targetApiDir)
 
 	depends(cuantoapi, cuantowar)
 
@@ -83,13 +91,13 @@ target(cuantopackage: "Build the Cuanto distributable") {
 		fileset(dir: "${cuantoBase}/licenses", includes: "**/*")
 	}
 
-	ant.copy(todir: targetDir) {
+	ant.copy(todir: zipDir) {
 		fileset(dir: "${cuantoBase}") {
 			include(name: "COPYING*")
 		}
 	}
 
-	ant.copy(todir: targetDir, file: "${cuantoBase}/dist/INSTALL") 
+	ant.copy(todir: zipDir, file: "${cuantoBase}/dist/INSTALL")
 	ant.zip(basedir:targetDir, destfile: "${releaseDir}/${zipfile}")
 }
 
