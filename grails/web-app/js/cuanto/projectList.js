@@ -35,22 +35,22 @@ YAHOO.cuanto.ProjectList = function() {
 
 	function initAccordion(){
 		var stretchers = $$(".accordion");
-		var togglers = $$(".toggler");
+		var togglers = $$(".inactiveToggler");
 		new fx.Accordion(togglers, stretchers, {
 			trigger: 'hover',
-			triggerThreshold: 200,
+			triggerThreshold: 0,
 			opacity: true,
 			start: false,
-			duration: 300
+			duration: 0
 		});
 
 		// remove the hidden class for the accordion menus after initializing the accordion
-		var hiddenMenus = $$('div.accordionMenu > div.hidden');
-		for (var i = 0; i < hiddenMenus.length; ++i) {
-			var className = hiddenMenus[i].className;
-			if (className.indexOf('accordion'))
-				hiddenMenus[i].className = 'accordion';
-        }
+//		var hiddenMenus = $$('div.accordionMenu > div.hidden');
+//		for (var i = 0; i < hiddenMenus.length; ++i) {
+//			var className = hiddenMenus[i].className;
+//			if (className.indexOf('accordion'))
+//				hiddenMenus[i].className = 'accordion';
+//        }
 	}
 
 	function initProjectDialog() {

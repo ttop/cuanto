@@ -1,14 +1,19 @@
 .accordionMenu {
+	float: left;
 	margin-left: 20px;
 }
 
-.accordionMenu .toggler:hover {
+.activeToggler:hover {
 	cursor: pointer;
+}
+
+.accordion {
+	padding-left: 25px;
+	float: left;
 }
 
 .accordion table {
 	width: 500px;
-	margin-left: 15px;
 }
 
 .accordion table {
@@ -25,4 +30,8 @@
 
 .accordion .tdTitle {
 	font-style: italic;
+}
+
+.activeToggler {
+	font-weight: bold;
 }
