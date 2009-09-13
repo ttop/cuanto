@@ -110,18 +110,22 @@ class InitializationService {
 	void initProjects() {
 		if (GrailsUtil.environment == "development") {
 			def rnd = new Random()
-			5.times {
+			30.times {
 				if (!Project.findByName("CuantoProd$it")) {
 					def grp = new ProjectGroup(name: "Sample$it").save()
-					rnd.nextInt(10).times { prjIndex ->
-						new Project(name: "CuantoProd$prjIndex", projectKey: "CUANTO$prjIndex", projectGroup: grp,
+					(rnd.nextInt(9) + 1).times { prjIndex ->
+						new Project(name: "CuantoProd$it-$prjIndex", projectKey: "CUANTO$it-$prjIndex", projectGroup: grp,
 						bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 					}
 				}
+			}
 
+			5.times {
 				// create ungrouped projects
-				new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+				if (!Project.findByName("Ungrouped-$it")) {
+					new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+				}
 			}
 		}
 	}
