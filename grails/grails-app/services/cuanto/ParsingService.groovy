@@ -161,7 +161,6 @@ class ParsingService {
 
 	def processTestFailure(testOutcome, project) {
 		if (testOutcome.testResult?.isFailure) {
-			def unanalyzed = true
 			if (project.bugUrlPattern) {
 				def urls = parseUrls(testOutcome.testOutput)
 				def firstUrl = urls.find {it -> project.getBugMap(it).url }
@@ -170,12 +169,9 @@ class ParsingService {
 					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) //todo: will this work? Test!
 					testOutcome.analysisState = AnalysisState.findByIsBug(true)
 					testOutcome.note = "Bug auto-populated based on the test output matching the project's bug pattern."
-					unanalyzed = false
 				}
 			}
-			if (unanalyzed) {
-				testOutcome.analysisState = AnalysisState.findByIsDefault(true)
-			}
+			testOutcome.analysisState = AnalysisState.findByIsDefault(true)
 		}
 	}
 

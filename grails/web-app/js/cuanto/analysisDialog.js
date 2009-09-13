@@ -83,7 +83,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 			failure: function(o) {
 				getAnlzPanel().setBody("Failed retrieving analysis of test case " + outcomeId + "<p><br/>" + o.responseText);
 			}
-		}
+		};
 		var url = YAHOO.cuanto.urls.get('analysis') + outcomeId;
 		YAHOO.util.Connect.asyncRequest('GET', url, callback);
 	}
@@ -99,7 +99,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 			analyses.offset = this.options[this.selectedIndex].getAttribute('value');
 			showAnalysis(analyses.offset);
 			YAHOO.util.Event.preventDefault(e);
-		})
+		});
 
 		for (var i = 0; i < outcomes.length; i++) {
 			var option = getOptionForOutcome(outcomes[i], i);
@@ -204,7 +204,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 		var processOutput = function(outputItem) {
 			populateOutputField(outputItem.output);
 			primeAnalysesOutputCache(outputItem);
-		}
+		};
 
 		outputProxy.getOutputForId(analysis.id, processOutput);
 		$('anApply').focus();
@@ -267,6 +267,8 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 
 		startProgressIcon();
 		YAHOO.cuanto.events.bulkAnalysisEvent.fire({'sourceOutcome': sourceOutcome, 'fields': fields});
+		$('anContainer').hide();
+		getAnlzPanel.hide();
 		YAHOO.util.Event.preventDefault(e);
 	}
 

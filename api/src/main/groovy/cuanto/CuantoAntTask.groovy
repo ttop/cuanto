@@ -53,9 +53,6 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		if ( action == "submit") {
 			submit()
 		}
-		else if (action == "calculateStats") {
-			 calculateStats()
-		}
 	}
 
 	private def getCuantoClient() {
@@ -85,18 +82,17 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		def duration = (endTime.time - startTime.time) / 1000
 		log "Submitting results took ${duration} second(s)"
 		if (calculate) {
-			calculateStats()
+			calculateStats(testRunId)
 		}
 	}
 
-	private void calculateStats() {
+	private void calculateStats(testRunId) {
 		def cuantoClient = getCuantoClient()
-		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
 		def startTime = new Date()
 		def endTime = new Date()
 		def duration = (endTime.time - startTime.time) / 1000
 		if (duration == 0) {
-			duration = "less than one" 
+			duration = "less than one"
 		}
 		log "Calculating statistics"
 		cuantoClient.getTestRunStats(testRunId)
