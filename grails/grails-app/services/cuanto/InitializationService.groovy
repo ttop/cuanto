@@ -106,15 +106,21 @@ class InitializationService {
 		}
 	}
 
-
 	void initProjects() {
 		if (GrailsUtil.environment == "development") {
+			if (!Project.findByName("CuantoProd")) {
+				def grp = new ProjectGroup(name: "Sample").save()
+				new Project(name: "CuantoProd", projectKey: "CUANTO", projectGroup: grp,
+				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+			}
+		}
+		else if (GrailsUtil.environment == "test") {
 			def rnd = new Random()
-			30.times {
-				if (!Project.findByName("CuantoProd$it")) {
-					def grp = new ProjectGroup(name: "Sample$it").save()
-					(rnd.nextInt(9) + 1).times { prjIndex ->
-						new Project(name: "CuantoProd$it-$prjIndex", projectKey: "CUANTO$it-$prjIndex", projectGroup: grp,
+			30.times { grpIndex ->
+				def grp = new ProjectGroup(name: "Sample$grpIndex").save()
+				(rnd.nextInt(9) + 1).times { prjIndex ->
+					if (!Project.findByName("CuantoProd$grpIndex-$prjIndex")) {
+						new Project(name: "CuantoProd$grpIndex-$prjIndex", projectKey: "CUANTO$grpIndex-$prjIndex", projectGroup: grp,
 						bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 					}
 				}
@@ -129,7 +135,6 @@ class InitializationService {
 			}
 		}
 	}
-
 
 	void initializeAll() {
 		initTestResults()
