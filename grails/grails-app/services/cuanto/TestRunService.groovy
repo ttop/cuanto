@@ -526,16 +526,24 @@ class TestRunService {
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
-		def testCases = projectService.getTestCases(testRun.project)
-		def testOutcomesToSave = []
-		testCases.each {tc ->
-			def testOutcome = new TestOutcome()
-			testOutcome.testCase = tc
-			testOutcome.testResult = dataService.result("Unexecuted")
-			testOutcomesToSave << testOutcome
+        def project = Project.get(params.id)
+        
+        // if the project is a manual test project, populate the test cases.
+        // otherwise, create a blank test run, to allow fresh manual upload of test run files.
+        if (project.testType.name == 'Manual')
+        {
+			def testCases = projectService.getTestCases(testRun.project)
+			def testOutcomesToSave = []
+			testCases.each {tc ->
+				def testOutcome = new TestOutcome()
+				testOutcome.testCase = tc
+				testOutcome.testResult = dataService.result("Unexecuted")
+				testOutcomesToSave << testOutcome
+			}
+			dataService.saveTestOutcomes(testRun, testOutcomesToSave)
+			calculateTestRunStats testRun
 		}
-		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
-		calculateTestRunStats testRun
+
 		return testRun
 	}
 

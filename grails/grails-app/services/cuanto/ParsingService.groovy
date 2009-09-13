@@ -48,6 +48,7 @@ class ParsingService {
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
 			def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
+			testOutcome.testCase.save()
 			testOutcomesToSave.add(testOutcome)
 		}
 

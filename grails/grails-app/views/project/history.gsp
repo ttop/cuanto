@@ -55,19 +55,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div class="body yui-skin-sam">
 			<span class="head1">Test Run History for
 				<g:if test="${project?.projectGroup}">
-				<g:link controller="project" action="listGroup"
-					params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
+					<g:link controller="project" action="listGroup"
+						params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
 				<g:link controller="project" action="feed" id="${project?.id}">
 					<g:set var="feedTxt" value="RSS feed"/>
 					<img id="feedImg" src="${resource(dir: 'images/feedicons-standard', file: 'feed-icon-14x14.png')}"
 						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
 			</span>
 			<br/>
-			<span class="smaller">(<a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> |
-			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
-			<g:if test="${project?.testType?.name == 'Manual'}">|
-				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-			</g:if></span>
+			<span class="smaller">(
+				<a href="${createLink(controller: 'testRun', action: 'latest')}/${project?.projectKey}">Most Recent</a> |
+				<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link> |
+				%{--<g:if test="${project?.testType?.name == 'Manual'}">|--}%
+					<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
+				%{--</g:if>--}%
+			)</span>
 			<p/><br/>
 			Select a test run to view the detailed results and analysis:
 			<div id="testRunList">
@@ -81,6 +83,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</div>
 			</g:if>
 		</div>
-
 	</body>
 </html>
