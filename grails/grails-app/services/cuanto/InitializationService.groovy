@@ -133,7 +133,7 @@ class InitializationService {
 			}
 		}
 
-		5.times {
+		50.times {
 			// create ungrouped projects
 			if (!Project.findByName("Ungrouped-$it")) {
 				new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
