@@ -1,19 +1,20 @@
 .accordionMenu {
 	float: left;
 	margin-left: 20px;
+	width: 100px;
 }
 
-.activeToggler:hover {
-	cursor: pointer;
-}
+/*.activeToggler:hover {*/
+	/*cursor: pointer;*/
+/*}*/
 
 .accordion {
-	padding-left: 25px;
+	margin-top: -8px;
 	float: left;
 }
 
 .accordion table {
-	width: 500px;
+	width: 400px;
 }
 
 .accordion table {
@@ -33,5 +34,6 @@
 }
 
 .activeToggler {
-	font-weight: bold;
+	/*font-weight: bold;*/
+	background-color: #dff7eb;
 }
