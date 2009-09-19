@@ -39,7 +39,7 @@ YAHOO.cuanto.ListGroup = function() {
 	}
 
 	function showEditProject(e) {
-		projectDialog.setTitle("Edit Project")
+		projectDialog.setTitle("Edit Project");
 		projectDialog.show();
 		var target = YAHOO.util.Event.getTarget(e);
 		var projectId = target.id.match(/.+?(\d+)/)[1];

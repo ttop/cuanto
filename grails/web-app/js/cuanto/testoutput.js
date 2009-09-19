@@ -48,7 +48,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 	}
 
 	function getLoadingDiv() {
-		return "<div>Loading... " + getProgressImg() + "</div>"
+		return "<div>Loading... " + getProgressImg() + "</div>";
 	}
 
 	function getProgressImg() {

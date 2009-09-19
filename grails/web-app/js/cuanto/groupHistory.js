@@ -98,5 +98,5 @@ YAHOO.cuanto.groupHistory = function() {
 			testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
 			testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
 		}
-	}
+	};
 }();

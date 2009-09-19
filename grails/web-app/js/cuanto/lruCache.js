@@ -33,8 +33,8 @@ YAHOO.cuanto.LruCache = function(maxItems) {
 		if (cacheCount > cacheMaxItems) {
 			removeOldestItem();
 		}
-		cache[key] = {'value': value, date: new Date().getTime()}
-	}
+		cache[key] = {'value': value, date: new Date().getTime()};
+	};
 
 	function removeOldestItem() {
 		var oldest;
@@ -57,7 +57,7 @@ YAHOO.cuanto.LruCache = function(maxItems) {
 		} else {
 			return undefined;
 		}
-	}
+	};
 
 	publicMethods.removeItem = function(key) {
 		if (cache[key]) {
@@ -68,26 +68,26 @@ YAHOO.cuanto.LruCache = function(maxItems) {
 		} else {
 			return undefined;
 		}
-	}
+	};
 
 	publicMethods.getCache = function(){
 		return cache;
-	}
+	};
 
 	publicMethods.getCount = function() {
 		return cacheCount;
-	}
+	};
 
 	publicMethods.getRawItem = function(key) {
 		return cache[key];
-	}
+	};
 
 	publicMethods.flush = function() {
 		cache = null;
 		cache = new Object();
 		cacheCount = 0;
-	}
+	};
 	
 	return publicMethods;
-}
+};
 
