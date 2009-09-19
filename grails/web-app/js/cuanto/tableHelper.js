@@ -150,7 +150,7 @@ YAHOO.cuanto.tables = function() {
 			alert("test outcome record " + outcomeId + " not found in the local recordset!");
 		}
 		return recordToReturn;
-	}
+	};
 
 
 	pub.saveRecord = function(record) {
@@ -161,7 +161,7 @@ YAHOO.cuanto.tables = function() {
 			argument: record
 		};
 		YAHOO.util.Connect.asyncRequest('POST', YAHOO.cuanto.urls.get('saveOutcome'), callback, postBody);
-	}
+	};
 
 
 	pub.selectRecord = function(record, table) {
@@ -178,7 +178,7 @@ YAHOO.cuanto.tables = function() {
 			table.unselectAllRows();
 			table.selectRow(record);
 		}
-	}
+	};
 
 
 	pub.updateDataTableRecord = function(e, args, table) {
@@ -210,7 +210,7 @@ YAHOO.cuanto.tables = function() {
 		// must pass along the totalCount so that it is returned in the response meta fields and
 		// so the paginator shows the correct total
 		table.getDataSource().sendRequest(req, refreshRecord);
-	}
+	};
 
 	return pub;
 }();
