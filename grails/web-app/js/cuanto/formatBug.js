@@ -69,7 +69,7 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
@@ -82,11 +82,11 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name', 'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus)
 		{
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
-	}
+	};
 
 	pub.formatBug = function(elCell, oRecord, oColumn, oData)
 	{
@@ -162,7 +162,7 @@ YAHOO.cuanto.format = function() {
 			}
 		}
 		return displayStr;
-	}
+	};
 
 	return pub;
 }();
