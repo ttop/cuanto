@@ -1,22 +1,22 @@
 /*
  Copyright (c) 2008 thePlatform, Inc.
 
- This file is part of Cuanto, a test results repository and analysis program.
+This file is part of Cuanto, a test results repository and analysis program.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU Lesser General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- */
+*/
 
 
 YAHOO.namespace('cuanto');
@@ -70,11 +70,8 @@ YAHOO.cuanto.ManualSubmit = function() {
 		uploader.setAllowMultipleFiles(true);
 
 		// New set of file filters.
-		var ff = new Array(
-			{description:"All TestRun Formats", extensions: "*.xml;*.txt"},
-			{description:"XML", extensions:"*.xml"},
-			{description:"Text", extensions:"*.txt"}
-		);
+		var ff = new Array({description:"All", extensions:"*.*"},
+		{description:"Videos", extensions:"*.avi;*.mov;*.mpg"});
 
 		// Apply new set of file filters to the uploader.
 		uploader.setFileFilters(ff);
@@ -143,7 +140,7 @@ YAHOO.cuanto.ManualSubmit = function() {
 		prog = Math.round(100 * (event["bytesLoaded"] / event["bytesTotal"]));
 		progbar = "<div style='height:5px;width:100px;background-color:#CCC;'><div style='height:5px;background-color:#F00;width:100px;'></div></div>";
 		singleSelectDataTable.updateRow(rowNum, {name: dataArr[rowNum]["name"], size: dataArr[rowNum]["size"], progress: progbar});
-
+		
 		// if we reach the completion of the last row, we're done, so refresh.
 		if (rowNum == dataArr.length - 1)
 			location.reload(true);
