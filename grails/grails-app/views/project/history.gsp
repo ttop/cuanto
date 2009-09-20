@@ -63,11 +63,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
 			</span>
 			<br/>
-			<span class="smaller">(<a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> |
+			<span class="smaller">( <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> |
 			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
 			<g:if test="${project?.testType?.name == 'Manual'}">|
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-			</g:if></span>
+			</g:if>)</span>
 			<p/><br/>
 			Select a test run to view the detailed results and analysis:
 			<div id="testRunList">

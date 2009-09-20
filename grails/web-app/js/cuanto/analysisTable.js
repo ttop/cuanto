@@ -28,6 +28,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var analysisDialog;
 	var testRunDialog = new YAHOO.cuanto.TestRunDialog();
 	var bugColumnLabel = "Bug";
+	var noteColumnLabel = "Note";
 	var targetOutcomes = new Array();
 	var ovrlyMgr = new YAHOO.widget.OverlayManager();
 	var outputProxy = new YAHOO.cuanto.OutputProxy();
@@ -36,6 +37,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var historyImgUrl =  YAHOO.cuanto.urls.get('historyImg');
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
 	var anlzImgUrl = YAHOO.cuanto.urls.get('analysisImg');
+	var dataTableEventOverrides = {
+		"cellClickEvent": [
+			{
+				columnLabel: bugColumnLabel,
+				overriddenTarget: 'IMG'
+			},
+			{
+				columnLabel: noteColumnLabel,
+				overriddenTarget: 'A'
+			}
+		]
+	};
 
 	YAHOO.cuanto.events.outcomeChangeEvent.subscribe(function(e, args) {
 		YAHOO.cuanto.tables.updateDataTableRecord(e, args, dataTable);
@@ -61,14 +74,28 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataTable.handleDataReturnPayload = processPayload;
 
 		dataTable.set("selectionMode", "single");
+
+		// iterate over dataTableEventOverrides.cellClickEvent for any overridden events
 		dataTable.subscribe("cellClickEvent",
 			function(o) {
 				var eventTarget = getEventTargetTagname(o.event);
-				if (dataTable.getColumn(o.target).label == bugColumnLabel &&
-				    eventTarget == "IMG") {
-				} else {
-					dataTable.onEventShowCellEditor(o);
+				var eventOverriden = false;
+				var cellClickEventOverrides = dataTableEventOverrides.cellClickEvent;
+
+				for (var i = 0; i < cellClickEventOverrides.length; ++i)
+				{
+					var overrideInfo = cellClickEventOverrides[i];
+					if (dataTable.getColumn(o.target).label == overrideInfo.columnLabel &&
+					    eventTarget == overrideInfo.overriddenTarget)
+					{
+						eventOverriden = true;
+						break;
+					}
 				}
+
+				// invoke the cell editor only if the event is not overridden.
+				if (!eventOverriden)
+					dataTable.onEventShowCellEditor(o);
 			}, this);
 		dataTable.subscribe("editorSaveEvent", inlineEditHandler);
 		dataTable.subscribe("editorBlurEvent", function(oArgs) {
@@ -290,8 +317,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"bug", label: bugColumnLabel, formatter:YAHOO.cuanto.format.formatBug, sortable:true,
 				editor: bugEditor},
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
-			{key:"note", label:"Note", minWidth:150, resizeable:true, sortable:true,
-				editor: noteEditor}
+			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
+                editor: noteEditor}
 		];
 	}
 

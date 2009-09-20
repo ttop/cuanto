@@ -1,14 +1,22 @@
 .accordionMenu {
+	float: left;
 	margin-left: 20px;
+	width: 100px;
+	height: 450px;
+	overflow: auto;
 }
 
-.accordionMenu .toggler:hover {
-	cursor: pointer;
+/*.activeToggler:hover {*/
+	/*cursor: pointer;*/
+/*}*/
+
+.accordion {
+	padding-left: 10px;
+	float: left;
 }
 
 .accordion table {
-	width: 500px;
-	margin-left: 15px;
+	width: 400px;
 }
 
 .accordion table {
@@ -25,4 +33,16 @@
 
 .accordion .tdTitle {
 	font-style: italic;
+}
+
+.activeToggler {
+	/*font-weight: bold;*/
+	background-color: #dff7eb;
+}
+
+#rightColProjects {
+	float: left;
+	width: 450px;
+	height: 450px;
+	overflow: auto;
 }

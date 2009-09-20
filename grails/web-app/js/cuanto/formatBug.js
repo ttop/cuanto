@@ -23,6 +23,9 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.format = function() {
 
+	// number of characters to allow in note field before summarizing
+	var NOTE_SUMMARIZATION_THRESHOLD = 50;
+	
 	function getSplitPoint(str, max, token) {
 		var tokens = str.split(token);
 		var wkStr = new String();
@@ -128,6 +131,41 @@ YAHOO.cuanto.format = function() {
 		{
 			elCell.innerHTML = "";
 		}
+	};
+
+	pub.formatNote = function(elCell, oRecord, oColumn, oData)
+    {
+        if (!oData)
+            return;
+
+        var noteContainer = new Element('span');
+        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD);
+        var truncationToggler = new Element('a');
+        truncationToggler.className = 'truncationToggler';
+        truncationToggler.innerHTML = ' [more]';
+        truncationToggler.isTruncated = true;
+        elCell.innerHTML = '';
+        elCell.appendChild(noteContainer);
+        elCell.appendChild(truncationToggler);
+
+	    YAHOO.util.Event.addListener(truncationToggler, 'click', function(e) {
+	        pub.toggleSummary(e, truncationToggler, noteContainer, oData);
+		    return false;
+        });
+    };
+
+	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFIeldValue) {
+		YAHOO.util.Event.preventDefault(e);
+		if (truncationToggler.isTruncated) {
+			truncationToggler.innerHTML = ' [less]';
+			noteContainer.innerHTML = noteFIeldValue;
+		}
+		else {
+			truncationToggler.innerHTML = ' [more]';
+			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD);
+		}
+		truncationToggler.isTruncated = !truncationToggler.isTruncated;
+		return false;
 	};
 
 	pub.breakOnToken = function(str, token, maxLinePxls)
