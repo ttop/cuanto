@@ -41,11 +41,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		"cellClickEvent": [
 			{
 				columnLabel: bugColumnLabel,
-				overridenTarget: 'IMG'
+				overriddenTarget: 'IMG'
 			},
 			{
 				columnLabel: noteColumnLabel,
-				overridenTarget: 'A'
+				overriddenTarget: 'A'
 			}
 		]
 	};
@@ -86,7 +86,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				{
 					var overrideInfo = cellClickEventOverrides[i];
 					if (dataTable.getColumn(o.target).label == overrideInfo.columnLabel &&
-					    eventTarget == overrideInfo.overridenTarget)
+					    eventTarget == overrideInfo.overriddenTarget)
 					{
 						eventOverriden = true;
 						break;
