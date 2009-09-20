@@ -104,10 +104,7 @@ class TestRunController {
 	def submitFile = {
 		// get the testRun id from the header (CuantoClient) or the GET param (manual file upload)
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id") ?: params.testRunId)
-        def project = TestRun.get(testRunId).project
-        if (project.testType.name == 'Manual')
-            throw new IllegalAccessException("You may not submit testrun files for a manual project.")
-        
+
 		for (fileName in request.getFileNames()) {
 			def multipartFileRequest = request.getFile(fileName)
 			parsingService.parseFileFromStream(multipartFileRequest.getInputStream(), testRunId)

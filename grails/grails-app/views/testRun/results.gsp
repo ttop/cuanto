@@ -64,22 +64,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
-		<g:if test="${project?.testType?.name != 'Manual'}">
-			<g:javascript src="cuanto/manualSubmitDialog.js"/>
-			<g:javascript src="cuanto/manualSubmit.js"/>
-		</g:if>
+		<g:javascript src="cuanto/manualSubmitDialog.js"/>
+		<g:javascript src="cuanto/manualSubmit.js"/>
 
 		<script type="text/javascript">
 
-			YAHOO.util.Event.onDOMReady(function () {
+		YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="urls"/>
-				new YAHOO.cuanto.SummaryTab();
-				new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
-				<g:if test="${project?.testType?.name != 'Manual'}">
-					var manualSubmit = YAHOO.cuanto.ManualSubmit();
-					manualSubmit.initManualSubmitDialog(${testRun?.id});
-				</g:if>
-			});
+			new YAHOO.cuanto.SummaryTab();
+			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
+			var manualSubmit = YAHOO.cuanto.ManualSubmit();
+			manualSubmit.initManualSubmitDialog(${testRun?.id});
+		});
 		</script>
 	</head>
 	<body class=" yui-skin-sam">
@@ -106,8 +102,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<iframe id="yui-history-iframe" src="${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}"></iframe>
 		<input id="yui-history-field" type="hidden">
 		<g:render template="testRunDialog"/>
-		<g:if test="${project?.testType?.name != 'Manual'}">
-			<g:render template="manualSubmitDialog"/>
-		</g:if>
+		<g:render template="manualSubmitDialog"/>
 	</body>
 </html>

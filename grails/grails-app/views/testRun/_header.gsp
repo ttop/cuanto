@@ -25,21 +25,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="smaller">
 		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> |
 			<a id="editTestRun" href="#editTestRun">Edit</a></span> |
-		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>
-		<g:if test="${project?.testType?.name != 'Manual'}"> |
-			<span><a href="#manulSubmitDialog" id="manualSubmit">Submit Manual Test Run</a></span>
-		</g:if>
+		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span> |
+		<span><a href="#manulSubmitDialog" id="manualSubmit">Submit Manual Test Run</a></span>
 		)
 	</span>
 	<br/>
-	<g:render template="/project/header" model="[project:testRun.project]"/> |
-	<span class="heading">Test Run ID:</span><span class="text" id="trhId">${testRun?.id}</span> |
-	<span class="heading">Milestone:</span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> |
-	<span class="heading">Build:</span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> |
-	<span class="heading">Target Environment:</span><span class="text" id="trhTargetEnv">${testRun?.targetEnv?.encodeAsHTML()}</span>
+	<g:render template="/project/header" model="[project:testRun.project]"/> | 
+	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span> |
+	<span class="heading">Milestone: </span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> |
+	<span class="heading">Build: </span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> |
+	<span class="heading">Target Environment: </span><span class="text" id="trhTargetEnv">${testRun?.targetEnv?.encodeAsHTML()}</span>
 
 	<br/>
-	<span class="heading">Note</span>
+	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">
 		(<a id="cancelNote" href="#cancelNote" class="smaller">Cancel</a> |
