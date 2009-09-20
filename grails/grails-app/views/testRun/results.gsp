@@ -50,8 +50,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
 		<yui:javascript dir="history" file="history-min.js" version="2.6.0"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
-		<yui:javascript dir="uploader" file="uploader-experimental-min.js" version="2.6.0"/>
-		<yui:javascript dir="dragdrop" file="dragdrop-min.js" version="2.6.0"/>
 
 		<g:javascript src="cuanto/events.js"/>
 		<g:javascript src="cuanto/formatBug.js"/>
@@ -64,8 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
-		<g:javascript src="cuanto/manualSubmitDialog.js"/>
-		<g:javascript src="cuanto/manualSubmit.js"/>
 
 		<script type="text/javascript">
 
@@ -73,8 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<g:render template="urls"/>
 			new YAHOO.cuanto.SummaryTab();
 			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
-			var manualSubmit = YAHOO.cuanto.ManualSubmit();
-			manualSubmit.initManualSubmitDialog(${testRun?.id});
 		});
 		</script>
 	</head>
@@ -102,6 +96,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<iframe id="yui-history-iframe" src="${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}"></iframe>
 		<input id="yui-history-field" type="hidden">
 		<g:render template="testRunDialog"/>
-		<g:render template="manualSubmitDialog"/>
 	</body>
 </html>
