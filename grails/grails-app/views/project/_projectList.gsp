@@ -26,21 +26,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <g:set var="ungroupedProjects" value="${projects.findAll {!it.projectGroup}}" />
 
+<div class="clear"></div>
 <div id="accordionMenu" class="accordionMenu">
   <g:each var="group" in="${groups}">
-    <!-- togglers are inactive by default -->
-	<h3 class="inactiveToggler"><g:link controller="project" action="listGroup" params="['group': group]">${group}</g:link></h3>
+    %{-- togglers are inactive by default --}%
+	<h3 class="inactiveToggler tog"><g:link controller="project" action="listGroup" params="['group': group]">${group}</g:link></h3>
     <% groupsToProjectsMap[group] = projects.findAll { it.projectGroup?.name == group } %>
   </g:each>
 
   <g:if test="${ungroupedProjects}">
-    <h3 class="inactiveToggler">Ungrouped</h3>
+    <h3 class="inactiveToggler tog">Ungrouped</h3>
     <% groupsToProjectsMap["Ungrouped"] = ungroupedProjects %>
   </g:if>
 
 </div>
 
-<div id="rightColProjects">
+<div id="rightColProjects" style="display:none;">
   <g:each var="e" in="${groupsToProjectsMap}">
   <div class="accordion">
     <div>

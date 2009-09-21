@@ -3,7 +3,6 @@
 	margin-left: 10px;
 	height: 450px;
 	overflow: auto;
-	padding-right:25px;
 }
 
 .accordion {
@@ -41,8 +40,10 @@
 }
 
 #rightColProjects {
+	background-color:  #dff7eb;
 	float: left;
 	width: 450px;
 	height: 450px;
 	overflow: auto;
+	padding: 3px;
 }
