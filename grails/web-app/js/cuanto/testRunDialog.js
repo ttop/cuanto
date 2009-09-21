@@ -34,10 +34,11 @@ YAHOO.cuanto.TestRunDialog = function() {
 
 	var handleCancel = function() {
 		this.cancel();
-	}
+	};
+
 	var handleSubmit = function() {
 		this.submit();
-	}
+	};
 
 	var myButtons = [ { text:"Save", handler:handleSubmit, isDefault:true },
 	                  { text:"Cancel", handler:handleCancel } ];
@@ -78,7 +79,7 @@ YAHOO.cuanto.TestRunDialog = function() {
 				$('trdValid').checked = testRun["valid"];
 			}
 			$('trdLoading').hide();
-		})
+		});
 	}
 
 	function reloadTestRunInfo(fnAfter) {
@@ -99,6 +100,6 @@ YAHOO.cuanto.TestRunDialog = function() {
 	pub.show = function() {
 		trDialog.show();
 		refreshTestRunInfo();
-	}
+	};
 	return pub;
 };

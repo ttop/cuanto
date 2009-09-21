@@ -22,7 +22,7 @@ class YuiTagLib {
 
         def version = attrs.version ? attrs.remove('version') : Yui.version
             
-        def src = createLinkTo(dir: "js/yui/${version}/${attrs.dir}", file: attrs.file)
+        def src = resource(dir: "js/yui/${version}/${attrs.dir}", file: attrs.file)
         out << "<script type=\"text/javascript\" src=\"${src}\"></script>"
     }
     
@@ -44,7 +44,7 @@ class YuiTagLib {
 
         def version = attrs.version ? attrs.remove('version') : Yui.version
             
-        def href = createLinkTo(dir: "js/yui/${version}/${attrs.dir}", file: attrs.file)
+        def href = resource(dir: "js/yui/${version}/${attrs.dir}", file: attrs.file)
         out << "<link rel=\"stylesheet\" type=\"text/css\" href=\"${href}\" />"
     }
 }

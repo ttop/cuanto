@@ -17,6 +17,7 @@ environments {
 			url = application.config.dataSource.url
 			username = application.config.dataSource.username
 			password = application.config.dataSource.password
+//			lotsOfExtraProjects = true
 		}
 	}
 	test {

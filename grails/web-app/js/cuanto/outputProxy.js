@@ -46,10 +46,10 @@ YAHOO.cuanto.OutputProxy = function() {
 							'shortName': out.shortName, 'id': out.id});
 					});
 				}
-			}
+			};
 			YAHOO.util.Connect.asyncRequest('GET', url, callback);
 		}
-	}
+	};
 
 	/*
 	    Gets the output ID and calls the function userCallback with the item as an argument. If scope is provided,
@@ -76,14 +76,15 @@ YAHOO.cuanto.OutputProxy = function() {
 						var item = response["testOutputs"][0];
 						var output = item.output;
 						var testName = item.testName;
-						outputCache.addItem(outcomeId, { 'output': output, 'testName': testName, 'id': outcomeId});
+						outputCache.addItem(outcomeId, { 'output': output, 'testName': testName, 'id': outcomeId,
+							'shortName': item.shortName});
 						funcToCall(item);
 					}
 				}
-			}
+			};
 			var url = YAHOO.cuanto.urls.get('testOutputDataSource') + outcomeId + "?format=json";
 			YAHOO.util.Connect.asyncRequest('GET', url, processOutputJson);
 		}
-	}
+	};
 	return pub;
 };

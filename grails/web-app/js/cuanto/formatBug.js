@@ -23,6 +23,11 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.format = function() {
 
+	// number of characters to allow in note field before summarizing
+	var NOTE_SUMMARIZATION_THRESHOLD = 50;
+	var MORE = ' [more]';
+	var LESS = ' [less]';
+
 	function getSplitPoint(str, max, token) {
 		var tokens = str.split(token);
 		var wkStr = new String();
@@ -69,7 +74,7 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
@@ -82,11 +87,11 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name', 'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus)
 		{
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
-	}
+	};
 
 	pub.formatBug = function(elCell, oRecord, oColumn, oData)
 	{
@@ -130,6 +135,44 @@ YAHOO.cuanto.format = function() {
 		}
 	};
 
+	pub.formatNote = function(elCell, oRecord, oColumn, oData)
+    {
+	    if (!oData || oData.length <= NOTE_SUMMARIZATION_THRESHOLD)
+	    {
+		    elCell.innerHTML = oData;
+		    return;
+	    }
+
+        var noteContainer = new Element('span');
+        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
+        var truncationToggler = new Element('a');
+        truncationToggler.className = 'truncationToggler';
+        truncationToggler.innerHTML = MORE;
+        truncationToggler.isTruncated = true;
+        elCell.innerHTML = '';
+        elCell.appendChild(noteContainer);
+        elCell.appendChild(truncationToggler);
+
+	    YAHOO.util.Event.addListener(truncationToggler, 'click', function(e) {
+	        pub.toggleSummary(e, truncationToggler, noteContainer, oData);
+		    return false;
+        });
+    };
+
+	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFieldValue) {
+		YAHOO.util.Event.preventDefault(e);
+		if (truncationToggler.isTruncated) {
+			truncationToggler.innerHTML = LESS;
+			noteContainer.innerHTML = noteFieldValue;
+		}
+		else {
+			truncationToggler.innerHTML = MORE;
+			noteContainer.innerHTML = noteFieldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
+		}
+		truncationToggler.isTruncated = !truncationToggler.isTruncated;
+		return false;
+	};
+
 	pub.breakOnToken = function(str, token, maxLinePxls)
 	{
 		var dispStrs = new Array();
@@ -162,7 +205,7 @@ YAHOO.cuanto.format = function() {
 			}
 		}
 		return displayStr;
-	}
+	};
 
 	return pub;
 }();

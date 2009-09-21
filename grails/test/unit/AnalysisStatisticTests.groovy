@@ -7,7 +7,7 @@ import cuanto.AnalysisState
  * Time: 10:36:55 PM
  * 
  */
-class AnalysisStatisticTest extends GroovyTestCase {
+class AnalysisStatisticTests extends GroovyTestCase {
 
 	void testToString() {
 		def anState = new AnalysisState(name: "Investigate", isAnalyzed: true)

@@ -34,7 +34,7 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 
 	var handleCancel = function() {
 		this.cancel();
-	}
+	};
 	var handleDelete = function() {
 		if ($('dpdConfirmDelete').getValue() == "YES") {
 			dpDialog.getButtons().each(function(b) {
@@ -45,7 +45,7 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 		} else {
 			$('dpdMessage').innerHTML = "Deletion is <b>not</b> confirmed.";
 		}
-	}
+	};
 
 	var myButtons = [ { text:"Cancel", handler:handleCancel, isDefault:true },
 		{ text:"Delete", handler:handleDelete } ];
@@ -95,14 +95,14 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 
 
 	pub.show = function(projectId, projectName) {
-		$('dpdConfirmDelete').value = ""
+		$('dpdConfirmDelete').value = "";
 		$('dpdProjectId').value = projectId;
 		$('dpdProjectName').innerHTML = projectName;
 		dpDialog.getButtons().each(function(b) {
 			b.set('disabled', false);
 		});
 		dpDialog.show();
-	}
+	};
 
 	return pub;
 };

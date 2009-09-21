@@ -20,12 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --}%
 
-<%--
-  User: Todd Wells
-  Date: May 22, 2008
-  Time: 11:15:14 PM
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>

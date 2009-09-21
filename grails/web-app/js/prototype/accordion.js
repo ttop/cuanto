@@ -185,6 +185,14 @@ Fx.Accordion.prototype = Object.extend(new Fx.Base(), function() {
         }
 
         $(tog).onmouseover = function() {
+
+            // deactivate all togglers
+            that.togglers.each(function(toDeactivate, i) {
+                toDeactivate.className = 'inactiveToggler';
+            });
+
+            // activate the current toggler
+            tog.className = 'activeToggler';
             timer = setTimeout(function() {
                 tog.prevTrigger();
                 showThisHideOpen(i);

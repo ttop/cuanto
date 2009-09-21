@@ -25,6 +25,8 @@ import grails.util.GrailsUtil
 class InitializationService {
 
 	def authenticateService
+	def grailsApplication
+
 	boolean transactional = true
 
 
@@ -105,7 +107,6 @@ class InitializationService {
 			}
 		}
 	}
-
 
 	void initProjects() {
 		if (GrailsUtil.environment == "development") {
@@ -188,10 +189,35 @@ class InitializationService {
 			requestmaps.each {
 				it.save()
 			}
+
 			authenticateService.clearCachedRequestmaps()
+
+			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
+				createLotsOfExtraProjects()
 		}
 	}
 
+	void createLotsOfExtraProjects()
+	{
+		def rnd = new Random()
+		30.times { grpIndex ->
+			def grp = new ProjectGroup(name: "Sample$grpIndex").save()
+			(rnd.nextInt(9) + 1).times { prjIndex ->
+				if (!Project.findByName("CuantoProd$grpIndex-$prjIndex")) {
+					new Project(name: "CuantoProd$grpIndex-$prjIndex", projectKey: "CUANTO$grpIndex-$prjIndex", projectGroup: grp,
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+				}
+			}
+		}
+
+		50.times {
+			// create ungrouped projects
+			if (!Project.findByName("Ungrouped-$it")) {
+				new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
+				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+			}
+		}
+	}
 
 	void initializeAll() {
 		initTestResults()

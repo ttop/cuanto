@@ -310,8 +310,8 @@ form label.dialogLabel {
 	position:static;
 }
 
-/* user */
 
+/* user */
 .usertable {
 	width: 440px;
 }
@@ -330,3 +330,7 @@ form label.dialogLabel {
 }
 
 
+
+.cuanto tbody tr td {
+	padding: 0 5px;
+}

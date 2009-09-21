@@ -27,30 +27,40 @@ YAHOO.cuanto.ProjectList = function() {
 	var projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
 
 	pub.init = function() {
+		initHeight();
 		initAccordion();
 		initProjectDialog();
 		initDeleteProjectDialog();
 		YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
+		window.onresize = initHeight;
 	};
 
+	function initHeight() {
+		$('accordionMenu').setStyle({height: document.viewport.getHeight() - 136 + "px"});
+		$('rightColProjects').clonePosition($('accordionMenu'), {setLeft: false, setWidth: false});
+	}
+
 	function initAccordion(){
-		var stretchers = $$(".accordion");
-		var togglers = $$(".toggler");
-		new fx.Accordion(togglers, stretchers, {
-			trigger: 'hover',
-			triggerThreshold: 200,
-			opacity: true,
-			start: false,
-			duration: 300
+		$$('.tog').each(function(toggler) {
+			YAHOO.util.Event.addListener(toggler, 'mouseover', showProjectList);
 		});
 
-		// remove the hidden class for the accordion menus after initializing the accordion
-		var hiddenMenus = $$('div.accordionMenu > div.hidden');
-		for (var i = 0; i < hiddenMenus.length; ++i) {
-			var className = hiddenMenus[i].className;
-			if (className.indexOf('accordion'))
-				hiddenMenus[i].className = 'accordion';
-        }
+		var stretchers = $$(".accordion");
+		var togglers = $$(".inactiveToggler");
+		new fx.Accordion(togglers, stretchers, {
+			trigger: 'hover',
+			triggerThreshold: 0,
+			opacity: true,
+			start: false,
+			duration: 0
+		});
+	}
+
+	function showProjectList() {
+		$('rightColProjects').show();
+		$$('.tog').each(function(toggler) {
+			YAHOO.util.Event.removeListener(toggler, 'mouseover', showProjectList);
+		});
 	}
 
 	function initProjectDialog() {
@@ -92,7 +102,7 @@ YAHOO.cuanto.ProjectList = function() {
 	}
 
 	function showEditProject(e) {
-		projectDialog.setTitle("Edit Project")
+		projectDialog.setTitle("Edit Project");
 		projectDialog.show();
 		var target = YAHOO.util.Event.getTarget(e);
 		var projectId = target.id.match(/.+?(\d+)/)[1];
