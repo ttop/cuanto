@@ -34,6 +34,7 @@ YAHOO.cuanto.ProjectList = function() {
 	};
 
 	function initAccordion(){
+		$('accordionMenu').setStyle({height: document.viewport.getHeight() - 136 + "px"});
 		var stretchers = $$(".accordion");
 		var togglers = $$(".inactiveToggler");
 		new fx.Accordion(togglers, stretchers, {

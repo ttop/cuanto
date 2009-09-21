@@ -21,13 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --}%
 <span class="head1">Projects</span>
 <span class="smaller">(<a href="#addProject" id="addProject">Add Project</a>)</span>
-<h2>By Groups</h2>
+<h2>Groups</h2>
 
 <g:set var="groupsToProjectsMap" value="${[:]}" />
 
 <g:set var="ungroupedProjects" value="${projects.findAll {!it.projectGroup}}" />
 
-<div class="accordionMenu">
+<div id="accordionMenu" class="accordionMenu">
   <g:each var="group" in="${groups}">
     <!-- togglers are inactive by default -->
 	<h3 class="inactiveToggler"><g:link controller="project" action="listGroup" params="['group': group]">${group}</g:link></h3>
