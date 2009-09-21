@@ -42,19 +42,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </div>
 
 <div id="rightColProjects" style="display:none;">
-  <g:each var="e" in="${groupsToProjectsMap}">
-  <div class="accordion">
-    <div>
-    <table>
-      <tr>
-        <td class="tdTitle" width="70%">Name</td>
-        <td class="tdTitle" width="30%">Operations</td>
-      </tr>
-      <g:each var="proj" in="${e.value}">
-        <g:render template="projectRow" model="['proj': proj]"/>
-      </g:each>
-    </table>
-    </div>
-  </div>
-  </g:each>
+	<div id="projColInner">
+		<g:each var="e" in="${groupsToProjectsMap}">
+			<div class="accordion">
+				<div>
+					<table>
+						<tr>
+							<td class="tdTitle" width="70%">Name</td>
+							<td class="tdTitle" width="30%">Operations</td>
+						</tr>
+						<g:each var="proj" in="${e.value}">
+							<g:render template="projectRow" model="['proj': proj]"/>
+						</g:each>
+					</table>
+				</div>
+			</div>
+		</g:each>
+	</div>
 </div>

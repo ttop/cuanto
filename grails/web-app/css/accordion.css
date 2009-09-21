@@ -42,8 +42,15 @@
 #rightColProjects {
 	background-color:  #dff7eb;
 	float: left;
-	width: 450px;
+	width: 500px;
 	height: 450px;
 	overflow: auto;
 	padding: 3px;
+	/*margin: 5px;*/
+}
+
+#projColInner {
+	background-color: white;
+	margin: 15px;
+	padding: 15px;
 }
