@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 </div>
 
-<div id="rightColProjects" style="display:none;">
+<div id="rightColProjects" style="display:none;" class="round1">
 	<div id="projColInner">
 		<g:each var="e" in="${groupsToProjectsMap}">
 			<div class="accordion">
