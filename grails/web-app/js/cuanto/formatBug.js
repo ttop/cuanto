@@ -159,15 +159,15 @@ YAHOO.cuanto.format = function() {
         });
     };
 
-	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFIeldValue) {
+	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFieldValue) {
 		YAHOO.util.Event.preventDefault(e);
 		if (truncationToggler.isTruncated) {
 			truncationToggler.innerHTML = LESS;
-			noteContainer.innerHTML = noteFIeldValue;
+			noteContainer.innerHTML = noteFieldValue;
 		}
 		else {
 			truncationToggler.innerHTML = MORE;
-			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
+			noteContainer.innerHTML = noteFieldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
 		}
 		truncationToggler.isTruncated = !truncationToggler.isTruncated;
 		return false;
