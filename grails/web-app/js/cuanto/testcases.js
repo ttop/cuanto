@@ -96,35 +96,11 @@ YAHOO.cuanto.testCases = function() {
 		});
 	}
 
-	function handleTcPagination(state, dt){
-		var newState = {
-			startIndex: state.recordOffset,
-			pagination : {
-				recordOffset: state.recordOffset,
-				rowsPerPage: state.rowsPerPage // Keep current setting
-			}
-		};
-
-		var onDataLoad = {
-			success: dt.onDataReturnSetRows,
-			failure: dt.onDataReturnSetRows,
-			scope: dt,
-			argument: newState
-		};
-
-		var newQuery = buildTcRequest(newState);
-		dt.getDataSource().sendRequest(newQuery, onDataLoad);
-	}
-
-
 	function formatTestCase(elCell, oRecord, oColumn, oData) {
 		var tcId = oRecord.getData().id;
 		var link = YAHOO.cuanto.urls.get('singleOutcome') + tcId;
 		var displayStr = YAHOO.cuanto.format.breakOnToken(oData, '.',400);
-		//elCell.innerHTML = "<a id='tc" + tcId + "' href='" + link + "'>" + displayStr + "</a>";
 		elCell.innerHTML = displayStr;
-
-		//YAHOO.util.Event.addListener("tc" + tcId, "click", showOutcomeForLink);
 	}
 
 	function formatOperations(elCell, oRecord, oColumn, oData) {
@@ -136,14 +112,10 @@ YAHOO.cuanto.testCases = function() {
 	                       "'>Delete</a> | <a href='" + historyLink + "'>History</a>";
 	}
 
-	function inlineEditHandler(oArgs) {
-		saveRecord(oArgs.editor.record);
-	}
 
 	function onSaveRecordFailure(o) {
-		alert("Failed saving test case " + o.argument.getData("id")) +
-		"\n" + o.responseText;
-		//YAHOO.cuanto.events.outcomeChangeEvent.fire(o.argument.getData("id"));
+		alert("Failed saving test case " + o.argument.getData("id") +
+		"\n" + o.responseText);
 	}
 
 
@@ -177,7 +149,7 @@ YAHOO.cuanto.testCases = function() {
 
 			testCaseTable.handleDataReturnPayload = function (oRequest, oResponse, oPayload) {
 				if (!oPayload) {
-					oPayload = {}
+					oPayload = {};
 				}
 
 				oPayload.totalRecords = oResponse.meta.totalCount;
@@ -190,5 +162,5 @@ YAHOO.cuanto.testCases = function() {
 				return oPayload;
 			};
 		}
-	}
+	};
 }();

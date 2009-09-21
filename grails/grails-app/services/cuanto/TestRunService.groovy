@@ -620,7 +620,7 @@ class TestRunService {
 
 	def updateTestRunsWithoutAnalysisStats() {
 		def runs = dataService.getTestRunsWithoutAnalysisStatistics().collect {it.id}
-		log.info "${runs.size()} runs without stats"
+		log.debug "${runs.size()} runs without stats"
 
 		def num = 0
 		def numThreads = 20
@@ -643,9 +643,9 @@ class TestRunService {
 				it.join()
 			}
 			num += threads.size()
-			log.info "$num runs completed"
+			log.debug "$num runs completed"
 		}
 
-		log.info "Completed calculating analysis statistics"		
+		log.debug "Completed calculating analysis statistics"		
 	}
 }

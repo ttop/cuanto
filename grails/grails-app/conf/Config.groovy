@@ -53,7 +53,7 @@ log4j = {
 	root {
 		//info 'stdout', 'file'
 		//debug 'file'
-		error 'file', 'stdout'
+		info 'file', 'stdout'
 		//additivity = true
 	}
 

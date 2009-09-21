@@ -46,7 +46,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		this.cancel();
 		this.hide();
 		pub.clear();
-	}
+	};
 
 	var handleSubmit = function() {
 		if (validate()) {
@@ -54,7 +54,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		} else {
 			$('pdErrorDiv').show();
 		}
-	}
+	};
 
 	var myButtons = [ { text:"Save", handler:handleSubmit, isDefault:true },
 	                  { text:"Cancel", handler:handleCancel } ];
@@ -72,7 +72,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 			YAHOO.cuanto.events.projectChangeEvent.fire();
 		},
 		scope: projDialog
-	}
+	};
 
 	var enterKey = new YAHOO.util.KeyListener(document, { keys:13 },
 												  { fn:handleSubmit,
@@ -100,12 +100,12 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		autoComplete.queryDelay = .4;
 		autoComplete.generateRequest = function (qry) {
 			return "?rand=" + new Date().getTime() + "&query=" + qry;
-		}
+		};
 		autoComplete.doBeforeExpandContainer = function () {
 			var Dom = YAHOO.util.Dom;
 			Dom.setXY("pdAutoComplete", [Dom.getX("pdGroup"), Dom.getY("pdGroup") + Dom.get("pdGroup").offsetHeight]);
 			return true;
-		}
+		};
 		autoComplete.useIFrame = true;
 	}
 
@@ -143,7 +143,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 
 	pub.setTitle = function(title) {
 		$('pdHd').innerHTML = title;
-	}
+	};
 
 	pub.show = function(title) {
 		if (title) {
@@ -151,7 +151,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		}
 		projDialog.show();
 		initAutoComplete();
-	}
+	};
 
 	pub.loadProject = function(projectId) {
 	    $('pdLoading').show();
@@ -172,13 +172,13 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 				$('pdType').setValue(project['testType']['name']);
 				$('pdLoading').hide();
 			}
-		})
-	}
+		});
+	};
 
 	pub.clear = function() {
 		$('pdForm').reset();
 		$('pdErrorDiv').hide();
 		$('pdError').innerHTML = "";
-	}
+	};
 	return pub;
 };

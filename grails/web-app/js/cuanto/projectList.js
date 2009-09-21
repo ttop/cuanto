@@ -34,6 +34,7 @@ YAHOO.cuanto.ProjectList = function() {
 	};
 
 	function initAccordion(){
+		$('accordionMenu').setStyle({height: document.viewport.getHeight() - 136 + "px"});
 		var stretchers = $$(".accordion");
 		var togglers = $$(".inactiveToggler");
 		new fx.Accordion(togglers, stretchers, {
@@ -92,7 +93,7 @@ YAHOO.cuanto.ProjectList = function() {
 	}
 
 	function showEditProject(e) {
-		projectDialog.setTitle("Edit Project")
+		projectDialog.setTitle("Edit Project");
 		projectDialog.show();
 		var target = YAHOO.util.Event.getTarget(e);
 		var projectId = target.id.match(/.+?(\d+)/)[1];

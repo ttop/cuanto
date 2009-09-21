@@ -20,12 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 package cuanto
-/**
- * User: Todd Wells
- * Date: Jun 21, 2008
- * Time: 3:28:42 PM
- * 
- */
+
 class TestOutcomeComparator implements Comparator{
 
 	def sortBy = "testOutcome"

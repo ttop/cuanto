@@ -298,3 +298,7 @@ form label.dialogLabel {
     padding-bottom:2em;
 	position:static;
 }
+
+.cuanto tbody tr td {
+	padding: 0 5px;
+}

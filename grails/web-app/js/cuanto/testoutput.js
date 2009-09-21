@@ -48,7 +48,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 	}
 
 	function getLoadingDiv() {
-		return "<div>Loading... " + getProgressImg() + "</div>"
+		return "<div>Loading... " + getProgressImg() + "</div>";
 	}
 
 	function getProgressImg() {
@@ -116,7 +116,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 		var onOutputResponse = function(outputItem) {
 			populateContents(outputItem.output, outputItem['shortName']);
 			prefetchNextOutputs(outcomeId);
-		}
+		};
 
 		outputProxy.getOutputForId(outcomeId, onOutputResponse);
 		YAHOO.util.Event.preventDefault(e);
@@ -124,11 +124,11 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 
 	pub.prefetchNextOutputs = function (outcomeId) {
 		return prefetchNextOutputs(outcomeId);
-	}
+	};
 
 	pub.getOutputProxy = function() {
 		return outputProxy;
-	}
+	};
 
 	return pub;
 };

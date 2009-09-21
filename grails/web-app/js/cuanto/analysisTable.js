@@ -237,12 +237,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (searchQueryIsSpecified()) {
 			return "&qry=" + $F("searchTerm") + "|" + $F("searchQry");
 		} else {
-			return ""
+			return "";
 		}
 	}
 
 	function searchQueryIsSpecified() {
-		return $F("searchQry").search(/\S/) != -1
+		return $F("searchQry").search(/\S/) != -1;
 	}
 
 	function getEventTargetTagname(e) {
@@ -414,7 +414,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		var newwindow = window.open(YAHOO.cuanto.urls.get('testCaseHistory') + oid, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
-			newwindow.focus()
+			newwindow.focus();
 		}
 		return false;
 	}
@@ -435,7 +435,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				}
 
 				if (updatedData.fields.hasOwnProperty("analysisState")) {
-					record.setData('analysisState', updatedData.fields.analysisState.name)
+					record.setData('analysisState', updatedData.fields.analysisState.name);
 				}
 
 				if (updatedData.fields.hasOwnProperty("bug")) {
@@ -557,11 +557,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	function applyAnalysis(e, args) {
 		var sourceOutcome = args[0].sourceOutcome;
 		var postBdy = "src=" + sourceOutcome;
-		var fieldStr = ""
+		var fieldStr = "";
 
 		if (args[0].fields) {
 			args[0].fields.each(function(field) {
-				fieldStr += "&field=" + field
+				fieldStr += "&field=" + field;
 			});
 			postBdy += fieldStr;
 		}
@@ -586,7 +586,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				alert("failed applying analysis");
 				YAHOO.cuanto.events.analysisAppliedEvent.fire();
 			}
-		}
+		};
 
 		var url = YAHOO.cuanto.urls.get('applyAnalysis');
 		YAHOO.util.Connect.asyncRequest('POST', url, callback, postBdy);

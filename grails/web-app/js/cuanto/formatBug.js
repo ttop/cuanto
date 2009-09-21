@@ -74,7 +74,7 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
@@ -87,11 +87,11 @@ YAHOO.cuanto.format = function() {
 		var newwindow = window.open(this.href, 'name', 'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus)
 		{
-			newwindow.focus()
+			newwindow.focus();
 		}
 		YAHOO.util.Event.preventDefault(e);
 		return false;
-	}
+	};
 
 	pub.formatBug = function(elCell, oRecord, oColumn, oData)
 	{
@@ -159,15 +159,15 @@ YAHOO.cuanto.format = function() {
         });
     };
 
-	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFIeldValue) {
+	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFieldValue) {
 		YAHOO.util.Event.preventDefault(e);
 		if (truncationToggler.isTruncated) {
 			truncationToggler.innerHTML = LESS;
-			noteContainer.innerHTML = noteFIeldValue;
+			noteContainer.innerHTML = noteFieldValue;
 		}
 		else {
 			truncationToggler.innerHTML = MORE;
-			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
+			noteContainer.innerHTML = noteFieldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
 		}
 		truncationToggler.isTruncated = !truncationToggler.isTruncated;
 		return false;
@@ -205,7 +205,7 @@ YAHOO.cuanto.format = function() {
 			}
 		}
 		return displayStr;
-	}
+	};
 
 	return pub;
 }();
