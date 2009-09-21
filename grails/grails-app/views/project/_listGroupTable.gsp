@@ -23,13 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<g:if test="${projects}">
 		<tr>
 			<th>Name</th>
-			<th>Test Type</th>
 			<th>Operations</th>
 		</tr>
 		<g:each var="proj" in="${projects}">
 			<tr>
 				<td class="projName" id="pName${proj.id}">${proj.name?.encodeAsHTML()}</td>
-				<td>${proj.testType?.name?.encodeAsHTML()}</td>
 				<td><a href="#editProject" class="editProj" id="edit${proj.id}">Edit</a> |
 					<a href="#deleteProject" class="deleteProj" id="delete${proj.id}">Delete</a> |
 					<g:link controller="project" action="history" params="[projectKey: proj.projectKey]">Show</g:link>
