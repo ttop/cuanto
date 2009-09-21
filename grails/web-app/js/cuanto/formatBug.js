@@ -27,8 +27,7 @@ YAHOO.cuanto.format = function() {
 	var NOTE_SUMMARIZATION_THRESHOLD = 50;
 	var MORE = ' [more]';
 	var LESS = ' [less]';
-	var MORE_OR_LESS = Math.max(MORE.length, LESS.length);
-	
+
 	function getSplitPoint(str, max, token) {
 		var tokens = str.split(token);
 		var wkStr = new String();
@@ -145,7 +144,7 @@ YAHOO.cuanto.format = function() {
 	    }
 
         var noteContainer = new Element('span');
-        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE_OR_LESS);
+        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
         var truncationToggler = new Element('a');
         truncationToggler.className = 'truncationToggler';
         truncationToggler.innerHTML = MORE;
@@ -168,7 +167,7 @@ YAHOO.cuanto.format = function() {
 		}
 		else {
 			truncationToggler.innerHTML = MORE;
-			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE_OR_LESS);
+			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
 		}
 		truncationToggler.isTruncated = !truncationToggler.isTruncated;
 		return false;
