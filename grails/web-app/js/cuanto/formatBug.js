@@ -25,7 +25,9 @@ YAHOO.cuanto.format = function() {
 
 	// number of characters to allow in note field before summarizing
 	var NOTE_SUMMARIZATION_THRESHOLD = 50;
-	
+	var MORE = ' [more]';
+	var LESS = ' [less]';
+
 	function getSplitPoint(str, max, token) {
 		var tokens = str.split(token);
 		var wkStr = new String();
@@ -135,14 +137,17 @@ YAHOO.cuanto.format = function() {
 
 	pub.formatNote = function(elCell, oRecord, oColumn, oData)
     {
-        if (!oData)
-            return;
+	    if (!oData || oData.length <= NOTE_SUMMARIZATION_THRESHOLD)
+	    {
+		    elCell.innerHTML = oData;
+		    return;
+	    }
 
         var noteContainer = new Element('span');
-        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD);
+        noteContainer.innerHTML = oData.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
         var truncationToggler = new Element('a');
         truncationToggler.className = 'truncationToggler';
-        truncationToggler.innerHTML = ' [more]';
+        truncationToggler.innerHTML = MORE;
         truncationToggler.isTruncated = true;
         elCell.innerHTML = '';
         elCell.appendChild(noteContainer);
@@ -157,12 +162,12 @@ YAHOO.cuanto.format = function() {
 	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFIeldValue) {
 		YAHOO.util.Event.preventDefault(e);
 		if (truncationToggler.isTruncated) {
-			truncationToggler.innerHTML = ' [less]';
+			truncationToggler.innerHTML = LESS;
 			noteContainer.innerHTML = noteFIeldValue;
 		}
 		else {
-			truncationToggler.innerHTML = ' [more]';
-			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD);
+			truncationToggler.innerHTML = MORE;
+			noteContainer.innerHTML = noteFIeldValue.truncate(NOTE_SUMMARIZATION_THRESHOLD - MORE.length);
 		}
 		truncationToggler.isTruncated = !truncationToggler.isTruncated;
 		return false;
