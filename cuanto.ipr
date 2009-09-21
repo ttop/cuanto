@@ -36,6 +36,15 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="txt">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -54,6 +63,7 @@
     <option name="DEPLOY_AFTER_MAKE" value="0" />
     <excludeFromCompile>
       <file url="file:///../Library/Caches/IntelliJIDEA70/compiler/cuanto.cuanto530a3fed/.generated/Groovy_to_java_source_code_generator/cuanto-api.c62a9d6c/test/cuanto/CuantoObjects.java" />
+      <file url="file://$PROJECT_DIR$/grails/plugins/yui-2.6.0/src/groovy/org/codehaus/groovy/grails/plugins/yui/Yui.groovy" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
