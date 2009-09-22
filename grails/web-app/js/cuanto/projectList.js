@@ -36,8 +36,11 @@ YAHOO.cuanto.ProjectList = function() {
 	};
 
 	function initHeight() {
-		$('accordionMenu').setStyle({height: document.viewport.getHeight() - 136 + "px"});
+		var newHt = document.viewport.getHeight() - 136;
+		$('accordionMenu').setStyle({height: newHt + "px"});
 		$('rightColProjects').clonePosition($('accordionMenu'), {setLeft: false, setWidth: false});
+		$('projColInner').setStyle({height: newHt - 60 + "px", width: $('rightColProjects').getWidth() - 60 + "px"});
+
 	}
 
 	function initAccordion(){

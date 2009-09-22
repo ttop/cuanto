@@ -39,11 +39,27 @@
 	padding: 3px 7px;
 }
 
+.round1 {
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+.round2 {
+	-moz-border-radius: 6px 0px 0px 6px;
+	-webkit-border-radius: 6px 0px 0px 6px;
+}
+
 #rightColProjects {
 	background-color:  #dff7eb;
 	float: left;
-	width: 450px;
+	width: 500px;
 	height: 450px;
 	overflow: auto;
 	padding: 3px;
+}
+
+#projColInner {
+	background-color: white;
+	padding: 15px;
+	margin: 15px auto;
 }
