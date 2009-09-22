@@ -40,7 +40,6 @@ YAHOO.cuanto.ProjectList = function() {
 		$('accordionMenu').setStyle({height: newHt + "px"});
 		$('rightColProjects').clonePosition($('accordionMenu'), {setLeft: false, setWidth: false});
 		$('projColInner').setStyle({height: newHt - 60 + "px", width: $('rightColProjects').getWidth() - 60 + "px"});
-
 	}
 
 	function initAccordion(){

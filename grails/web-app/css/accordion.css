@@ -45,8 +45,8 @@
 }
 
 .round2 {
-	-moz-border-radius: 6px 0px 0px 6px;
-	-webkit-border-radius: 6px 0px 0px 6px;
+	-moz-border-radius: 6px 0 0 6px;
+	-webkit-border-radius: 6px 0 0 6px;
 }
 
 #rightColProjects {
@@ -62,4 +62,5 @@
 	background-color: white;
 	padding: 15px;
 	margin: 15px auto;
+	vertical-align:middle;
 }
