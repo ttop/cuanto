@@ -192,7 +192,7 @@ Fx.Accordion.prototype = Object.extend(new Fx.Base(), function() {
             });
 
             // activate the current toggler
-            tog.className = 'activeToggler';
+            tog.className = 'activeToggler round2';
             timer = setTimeout(function() {
                 tog.prevTrigger();
                 showThisHideOpen(i);
