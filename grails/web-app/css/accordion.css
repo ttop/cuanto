@@ -54,7 +54,6 @@
 	float: left;
 	width: 500px;
 	height: 450px;
-	overflow: auto;
 	padding: 3px;
 }
 
@@ -62,4 +61,5 @@
 	background-color: white;
 	padding: 15px;
 	margin: 15px auto;
+	overflow: auto;
 }
