@@ -124,23 +124,7 @@ class ManualParserTests extends GroovyTestCase{
 	Project getProject() {
 		Project proj = to.getProject()
 		proj.testType = testType
-		saveDomainObject(proj)
+		dataService.saveDomainObject(proj)
 		return proj
-	}
-
-
-	def reportError(domainObj) {
-		def errMsg = ""
-		domainObj.errors.allErrors.each {
-			errMsg += it.toString()
-		}
-		log.warning errMsg
-		fail(errMsg)
-	}
-
-	def saveDomainObject(domainObj) {
-		if (!domainObj.save(flush:true)) {
-			reportError domainObj
-		}
 	}
 }

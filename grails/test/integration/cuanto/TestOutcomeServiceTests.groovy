@@ -33,7 +33,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
 		if (!proj.addToTestCases(tc).save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		// create a test run with an outcome
@@ -74,7 +74,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
 		if (!proj.addToTestCases(tc).save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		// create a test run with an outcome
@@ -108,7 +108,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
 		if (!proj.addToTestCases(tc).save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		// create a test run with an outcome
@@ -118,7 +118,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
 
 		if (!testRun.addToOutcomes(outcome).save()) {
-			reportError testRun
+			dataService.reportSaveError testRun
 		}
 
 		testRunService.calculateTestRunStats(testRun)

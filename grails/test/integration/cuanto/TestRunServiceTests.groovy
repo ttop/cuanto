@@ -31,7 +31,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		TestRun testRun = to.getTestRun(proj, "foobar")
 
 		if (!testRun.save()) {
-			reportError testRun
+			dataService.reportSaveError testRun
 		}
 
 		for (x in 1..numCases) {
@@ -39,7 +39,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			tc.packageName = "a.b.c"
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -53,7 +53,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			}
 
 			if (!testRun.addToOutcomes(outcome).save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 		}
 
@@ -72,7 +72,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		final int numTests = 10
@@ -81,7 +81,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (x in 1..numTests) {
 			TestCase testCase = to.getTestCase(proj)
 			if (!proj.addToTestCases(testCase).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 			testCases.add(testCase)
 		}
@@ -92,7 +92,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
 			if (!testRunOne.addToOutcomes(out).save()) {
-				reportError testRunOne
+				dataService.reportSaveError testRunOne
 			}
 		}
 
@@ -102,7 +102,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
 			if (!testRunTwo.addToOutcomes(out).save()) {
-				reportError testRunTwo
+				dataService.reportSaveError testRunTwo
 			}
 		}
 
@@ -150,7 +150,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		final int numTests = 10
@@ -159,7 +159,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (x in 1..numTests) {
 			TestCase testCase = to.getTestCase(proj)
 			if (!proj.addToTestCases(testCase).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 			testCases.add(testCase)
 		}
@@ -170,7 +170,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
 			if (!testRunOne.addToOutcomes(out).save()) {
-				reportError testRunOne
+				dataService.reportSaveError testRunOne
 			}
 		}
 
@@ -180,7 +180,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
 			if (!testRunTwo.addToOutcomes(out).save()) {
-				reportError testRunTwo
+				dataService.reportSaveError testRunTwo
 			}
 		}
 
@@ -215,7 +215,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
 		if (!proj.save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		final int numTests = 10
@@ -224,7 +224,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (x in 1..numTests) {
 			TestCase testCase = to.getTestCase(proj)
 			if (!proj.addToTestCases(testCase).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 			testCases.add(testCase)
 		}
@@ -235,7 +235,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
 			if (!testRunOne.addToOutcomes(out).save()) {
-				reportError testRunOne
+				dataService.reportSaveError testRunOne
 			}
 		}
 
@@ -245,7 +245,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
 			if (!testRunTwo.addToOutcomes(out).save()) {
-				reportError testRunTwo
+				dataService.reportSaveError testRunTwo
 			}
 		}
 
