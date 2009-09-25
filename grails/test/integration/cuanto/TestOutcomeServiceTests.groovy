@@ -100,6 +100,56 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertEquals textWithSanitizedScriptTags, persistedOutcome.bug.title
 	}
 
+	void testApplyAnalysisStateToTestOutcome() {
+		// create a project
+		Project proj = to.getProject()
+		proj.save()
+
+		// create a test case
+		TestCase tc = to.getTestCase(proj)
+		if (!proj.addToTestCases(tc).save()) {
+			reportError proj
+		}
+
+		// create a test run with an outcome
+		TestRun testRun = to.getTestRun(proj, "foobar")
+		dataService.saveDomainObject testRun 
+
+		TestOutcome outcome = to.getTestOutcome(tc, testRun)
+
+		if (!testRun.addToOutcomes(outcome).save()) {
+			reportError testRun
+		}
+
+		testRunService.calculateTestRunStats(testRun)
+
+		def stateToApply = dataService.getAnalysisStateByName("Bug")
+
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [analysisState: stateToApply.id.toString()])
+		assertEquals "Wrong analysis state when applying by ID", stateToApply, outcome.analysisState
+
+		outcome.refresh()
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [analysisStateName: stateToApply.name])
+		assertEquals "Wrong analysis state when applying by name", stateToApply, outcome.analysisState
+
+		outcome.refresh()
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [:])
+		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
+
+		outcome.refresh()
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [testResult:"Pass"])
+		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
+
+		outcome.testResult = TestResult.findByName("Fail")
+		dataService.saveDomainObject outcome
+		outcome.refresh()
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [:])
+		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
+
+
+	}
+
+
 	def textWithoutScriptTags = '''
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 			Duis luctus erat ultrices ipsum mollis nec scelerisque nibh eleifend.

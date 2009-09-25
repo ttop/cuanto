@@ -79,7 +79,7 @@ class DataService {
 
 
 	def deleteStatisticsForTestRun(TestRun testRun) {
-		if (testRun.testRunStatistics) {
+		if (testRun?.testRunStatistics) {
 			testRun.testRunStatistics.delete()
 			testRun.testRunStatistics = null
 			saveDomainObject testRun
@@ -477,12 +477,12 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 	
 	def clearAnalysisStatistics(TestRun testRun) {
-		def statsToDelete = testRun.testRunStatistics.analysisStatistics.collect {it}
-		statsToDelete.each { stat ->
+		def statsToDelete = testRun?.testRunStatistics?.analysisStatistics?.collect {it}
+		statsToDelete?.each { stat ->
 			testRun.testRunStatistics.removeFromAnalysisStatistics(stat)
 			stat.delete()
 		}
-		testRun.save()
+		testRun?.save()
 	}
 
 
