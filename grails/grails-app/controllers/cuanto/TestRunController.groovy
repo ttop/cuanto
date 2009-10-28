@@ -317,8 +317,8 @@ class TestRunController {
 
 	private getFilterList() {
 		def filterList = []
-		filterList += [id: "allfailures", value: "All Failures"]
 		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
+		filterList += [id: "allfailures", value: "All Failures"]
 		filterList += [id: "newfailures", value: "New Failures"]
 		filterList += [id: "allresults", value: "All Results"]
 		return filterList
