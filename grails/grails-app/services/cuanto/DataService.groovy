@@ -396,6 +396,12 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}""",
 		return total[0]
 	}
 
+	def countUnanalyzedFailuresForTestRun(TestRun run) {
+		def total = TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and " +
+			"t.analysisState is not null and t.analysisState.isAnalyzed = false and t.testResult.isFailure = true  ", [run])
+		return total[0]
+	}
+
 
 	List<TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
 		def qry = "from cuanto.TestOutcome t where t.testCase = ?"

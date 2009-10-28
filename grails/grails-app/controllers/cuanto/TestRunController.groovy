@@ -116,9 +116,6 @@ class TestRunController {
 	def submitSingleTest = {
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
 		def testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId)
-		//def myJson = [:]
-		//myJson["testOutcomeId"] = testOutcome.id
-		//render myJson as JSON
 		render testOutcome.id
 	}
 
@@ -153,9 +150,12 @@ class TestRunController {
 			if (params.qry) {
 				totalCount = testRunService.countTestOutcomesBySearch(params)
 				outs = testRunService.searchTestOutcomes(params)
-			} else if (filter?.equalsIgnoreCase("allFailures") || filter?.equalsIgnoreCase("unanalyzedFailures")) {
+			} else if (filter?.equalsIgnoreCase("allFailures")) {
 				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
 				totalCount = dataService.countFailuresForTestRun(testRun)
+			} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
+				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
+				totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
 			} else if (filter?.equalsIgnoreCase("newFailures")) {
 				outs = testRunService.getNewFailures(testRun, queryParams)
 				totalCount = testRunService.countNewFailuresForTestRun(testRun)
