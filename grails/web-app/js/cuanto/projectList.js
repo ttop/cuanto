@@ -31,6 +31,10 @@ YAHOO.cuanto.ProjectList = function() {
 		initAccordion();
 		initProjectDialog();
 		initDeleteProjectDialog();
+		var initialAccordianMenuWidth = parseInt($('accordionMenu').getStyle('width'));
+		var scrollBarCompensatedWidth = initialAccordianMenuWidth + 20 + "px";
+		$('accordionMenu').setStyle({width : scrollBarCompensatedWidth});
+
 		YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 		window.onresize = initHeight;
 	};
@@ -42,7 +46,7 @@ YAHOO.cuanto.ProjectList = function() {
 		$('projColInner').setStyle({height: newHt - 60 + "px", width: $('rightColProjects').getWidth() - 60 + "px"});
 	}
 
-	function initAccordion(){
+	function initAccordion() {
 		$$('.tog').each(function(toggler) {
 			YAHOO.util.Event.addListener(toggler, 'mouseover', showProjectList);
 		});
