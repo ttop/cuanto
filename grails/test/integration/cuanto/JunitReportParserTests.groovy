@@ -47,7 +47,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		}
 		assertNotNull leCarre
 		assertEquals "Wrong result", dataService.result("fail"), leCarre.testResult
-		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Bug"), leCarre.analysisState
+		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), leCarre.analysisState
 		assertNotNull leCarre.bug
 		assertEquals "http://tpjira/browse/John", leCarre.bug.url
 		assertEquals "John", leCarre.bug.title
@@ -59,7 +59,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		}
 		assertNotNull bellow
 		assertEquals "Wrong result", dataService.result("error"), bellow.testResult
-		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Bug"), bellow.analysisState
+		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), bellow.analysisState
 		assertEquals "http://tpjira/browse/SAUL", bellow.bug.url
 		assertEquals "SAUL", bellow.bug.title
 

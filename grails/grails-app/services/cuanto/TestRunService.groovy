@@ -526,24 +526,16 @@ class TestRunService {
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
-        def project = Project.get(params.id)
-        
-        // if the project is a manual test project, populate the test cases.
-        // otherwise, create a blank test run, to allow fresh manual upload of test run files.
-        if (project.testType.name == 'Manual')
-        {
-			def testCases = projectService.getTestCases(testRun.project)
-			def testOutcomesToSave = []
-			testCases.each {tc ->
-				def testOutcome = new TestOutcome()
-				testOutcome.testCase = tc
-				testOutcome.testResult = dataService.result("Unexecuted")
-				testOutcomesToSave << testOutcome
-			}
-			dataService.saveTestOutcomes(testRun, testOutcomesToSave)
-			calculateTestRunStats testRun
+		def testCases = projectService.getTestCases(testRun.project)
+		def testOutcomesToSave = []
+		testCases.each {tc ->
+			def testOutcome = new TestOutcome()
+			testOutcome.testCase = tc
+			testOutcome.testResult = dataService.result("Unexecuted")
+			testOutcomesToSave << testOutcome
 		}
-
+		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
+		calculateTestRunStats testRun
 		return testRun
 	}
 
@@ -628,7 +620,7 @@ class TestRunService {
 
 	def updateTestRunsWithoutAnalysisStats() {
 		def runs = dataService.getTestRunsWithoutAnalysisStatistics().collect {it.id}
-		log.info "${runs.size()} runs without stats"
+		log.debug "${runs.size()} runs without stats"
 
 		def num = 0
 		def numThreads = 20
@@ -651,9 +643,9 @@ class TestRunService {
 				it.join()
 			}
 			num += threads.size()
-			log.info "$num runs completed"
+			log.debug "$num runs completed"
 		}
 
-		log.info "Completed calculating analysis statistics"		
+		log.debug "Completed calculating analysis statistics"		
 	}
 }

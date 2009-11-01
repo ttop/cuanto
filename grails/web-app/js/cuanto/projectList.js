@@ -27,13 +27,30 @@ YAHOO.cuanto.ProjectList = function() {
 	var projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
 
 	pub.init = function() {
+		initHeight();
 		initAccordion();
 		initProjectDialog();
 		initDeleteProjectDialog();
+		var initialAccordianMenuWidth = parseInt($('accordionMenu').getStyle('width'));
+		var scrollBarCompensatedWidth = initialAccordianMenuWidth + 20 + "px";
+		$('accordionMenu').setStyle({width : scrollBarCompensatedWidth});
+
 		YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
+		window.onresize = initHeight;
 	};
 
-	function initAccordion(){
+	function initHeight() {
+		var newHt = document.viewport.getHeight() - 136;
+		$('accordionMenu').setStyle({height: newHt + "px"});
+		$('rightColProjects').clonePosition($('accordionMenu'), {setLeft: false, setWidth: false});
+		$('projColInner').setStyle({height: newHt - 60 + "px", width: $('rightColProjects').getWidth() - 60 + "px"});
+	}
+
+	function initAccordion() {
+		$$('.tog').each(function(toggler) {
+			YAHOO.util.Event.addListener(toggler, 'mouseover', showProjectList);
+		});
+
 		var stretchers = $$(".accordion");
 		var togglers = $$(".inactiveToggler");
 		new fx.Accordion(togglers, stretchers, {
@@ -43,14 +60,13 @@ YAHOO.cuanto.ProjectList = function() {
 			start: false,
 			duration: 0
 		});
+	}
 
-		// remove the hidden class for the accordion menus after initializing the accordion
-//		var hiddenMenus = $$('div.accordionMenu > div.hidden');
-//		for (var i = 0; i < hiddenMenus.length; ++i) {
-//			var className = hiddenMenus[i].className;
-//			if (className.indexOf('accordion'))
-//				hiddenMenus[i].className = 'accordion';
-//        }
+	function showProjectList() {
+		$('rightColProjects').show();
+		$$('.tog').each(function(toggler) {
+			YAHOO.util.Event.removeListener(toggler, 'mouseover', showProjectList);
+		});
 	}
 
 	function initProjectDialog() {
@@ -92,7 +108,7 @@ YAHOO.cuanto.ProjectList = function() {
 	}
 
 	function showEditProject(e) {
-		projectDialog.setTitle("Edit Project")
+		projectDialog.setTitle("Edit Project");
 		projectDialog.show();
 		var target = YAHOO.util.Event.getTarget(e);
 		var projectId = target.id.match(/.+?(\d+)/)[1];

@@ -1,19 +1,17 @@
 .accordionMenu {
 	float: left;
-	margin-left: 20px;
-}
-
-.activeToggler:hover {
-	cursor: pointer;
+	margin-left: 10px;
+	height: 450px;
+	overflow: auto;
 }
 
 .accordion {
-	padding-left: 25px;
+	padding-left: 10px;
 	float: left;
 }
 
 .accordion table {
-	width: 500px;
+	width: 400px;
 }
 
 .accordion table {
@@ -33,5 +31,35 @@
 }
 
 .activeToggler {
-	font-weight: bold;
+	background-color: #dff7eb;
+	padding: 3px 7px;
+}
+
+.inactiveToggler {
+	padding: 3px 7px;
+}
+
+.round1 {
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+.round2 {
+	-moz-border-radius: 6px 0px 0px 6px;
+	-webkit-border-radius: 6px 0px 0px 6px;
+}
+
+#rightColProjects {
+	background-color:  #dff7eb;
+	float: left;
+	width: 500px;
+	height: 450px;
+	padding: 3px;
+}
+
+#projColInner {
+	background-color: white;
+	padding: 15px;
+	margin: 15px auto;
+	overflow: auto;
 }

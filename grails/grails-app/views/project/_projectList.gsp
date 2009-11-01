@@ -21,42 +21,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --}%
 <span class="head1">Projects</span>
 <span class="smaller">(<a href="#addProject" id="addProject">Add Project</a>)</span>
-<h2>By Group</h2>
 
 <g:set var="groupsToProjectsMap" value="${[:]}" />
 
-<div class="accordionMenu">
+<g:set var="ungroupedProjects" value="${projects.findAll {!it.projectGroup}}" />
+
+<div class="clear"></div>
+<div id="accordionMenu" class="accordionMenu">
   <g:each var="group" in="${groups}">
-    <!-- togglers are inactive by default -->
-	<h3 class="inactiveToggler"><g:link controller="project" action="listGroup" params="['group': group]">${group}</g:link></h3>
+    %{-- togglers are inactive by default --}%
+	<h3 class="inactiveToggler tog"><g:link controller="project" action="listGroup" params="['group': group]">${group}</g:link></h3>
     <% groupsToProjectsMap[group] = projects.findAll { it.projectGroup?.name == group } %>
   </g:each>
+
+  <g:if test="${ungroupedProjects}">
+    <h3 class="inactiveToggler tog">Ungrouped</h3>
+    <% groupsToProjectsMap["Ungrouped"] = ungroupedProjects %>
+  </g:if>
+
 </div>
 
-<%
-  def ungroupedProjects = projects.findAll { !it.projectGroup }
-  if (ungroupedProjects) {
-    groupsToProjectsMap["Ungrouped"] = ungroupedProjects
-  }
-%>
-
-<g:each var="e" in="${groupsToProjectsMap}">
-<div class="accordion">           
-  <div>
-  <table>
-	<tr>
-  	  <td class="tdTitle" width="70%">Name</td>
-      <td class="tdTitle" width="30%">Operations</td>
-	</tr>
-	<g:each var="proj" in="${e.value}">
-	  <g:render template="projectRow" model="['proj': proj]"/>
-	</g:each>
-  </table>
-  </div>
+<div id="rightColProjects" style="display:none;" class="round1">
+	<div id="projColInner">
+		<g:each var="e" in="${groupsToProjectsMap}">
+			<div class="accordion">
+				<div>
+					<table>
+						<tr>
+							<td class="tdTitle" width="70%">Name</td>
+							<td class="tdTitle" width="30%">Operations</td>
+						</tr>
+						<g:each var="proj" in="${e.value}">
+							<g:render template="projectRow" model="['proj': proj]"/>
+						</g:each>
+					</table>
+				</div>
+			</div>
+		</g:each>
+	</div>
 </div>
-</g:each>
-
-<g:if test="${ungroupedProjects}">
-  <div class="clear"></div>
-  <h2 class="inline inactiveToggler">Ungrouped</h2>
-</g:if>

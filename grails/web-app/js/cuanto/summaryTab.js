@@ -49,4 +49,4 @@ YAHOO.cuanto.SummaryTab = function() {
 		var img = YAHOO.cuanto.urls.get('progressImg');
 		return "<img src ='" + img + "'/>";
 	}
-}
+};

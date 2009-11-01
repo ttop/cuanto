@@ -179,7 +179,7 @@ YAHOO.cuanto.testCaseHistory = function() {
 					dir: (sortOrder === "asc") ? YAHOO.widget.DataTable.CLASS_ASC : YAHOO.widget.DataTable.CLASS_DESC
 				}
 			}
-		}
+		};
 
 		tcHistoryDataTable.getDataSource().sendRequest(newRequest, onSortedDataLoad);
 	}
@@ -219,7 +219,7 @@ YAHOO.cuanto.testCaseHistory = function() {
 				tcHistoryDataTable.handleDataReturnPayload = function (oRequest, oResponse, oPayload) {
 					cacheOutput();
 					if (!oPayload) {
-						oPayload = {}
+						oPayload = {};
 					}
 					if (!oRequest.match("outcome=")) {
 						oPayload.totalRecords = oResponse.meta.totalCount;
@@ -235,5 +235,5 @@ YAHOO.cuanto.testCaseHistory = function() {
 				tcHistoryDataTable.sortColumn = sortTcHistoryColumn;
 			}
 		}
-	}
+	};
 }();

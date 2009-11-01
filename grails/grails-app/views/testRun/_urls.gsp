@@ -28,6 +28,11 @@ YAHOO.cuanto.urls.set('projectHistory', "${createLink(controller: 'project', act
 YAHOO.cuanto.urls.set('groupHistory', "${createLink(controller: 'project', action:'groupHistory')}/" + "${group}");
 YAHOO.cuanto.urls.set('groupNames', "${createLink(controller: 'project', action:'groupNames')}/");
 YAHOO.cuanto.urls.set('groupTable', "${createLink(controller: 'project', action:'listGroupTable')}/");
+YAHOO.cuanto.urls.set('historyImg', "${resource(dir: 'images/tango/16x16', file: 'folder-saved-search.png')}");
+YAHOO.cuanto.urls.set('outputImg', "${resource(dir: 'images/tango/16x16', file: 'format-justify-left.png')}");
+YAHOO.cuanto.urls.set('analysisImg', "${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}");
+YAHOO.cuanto.urls.set('progressImg', "${resource(dir: 'images/progress', file: 'mozilla_blu.gif')}");
+YAHOO.cuanto.urls.set('shortcutImg', "${resource(dir: 'images/tango/16x16', file: 'shortcut.png')}");
 YAHOO.cuanto.urls.set('bugSummary', "${createLink(controller:'testRun', action: 'bugSummary')}/${testRun?.id}");
 YAHOO.cuanto.urls.set('failureChart', "${createLink(controller:'testRun', action: 'failureChart')}/${testRun?.id}");
 YAHOO.cuanto.urls.set('summaryTable', "${createLink(controller:'testRun', action: 'summaryTable')}/${testRun?.id}");
@@ -37,7 +42,6 @@ YAHOO.cuanto.urls.set('testRunInfo', "${createLink(controller: 'testRun', action
 YAHOO.cuanto.urls.set('testRunUpdate', "${createLink(controller: 'testRun', action:'update')}/");
 YAHOO.cuanto.urls.set('testRunUpdateNote', "${createLink(controller: 'testRun', action:'updateNote')}/");
 YAHOO.cuanto.urls.set('testRunDelete', "${createLink(controller: 'testRun', action:'delete')}/");
-YAHOO.cuanto.urls.set('testRunSubmitFile', "${createLink(controller: 'testRun', action:'submitFile')}/");
 YAHOO.cuanto.urls.set('singleOutcome', "${createLink(controller: 'testOutcome', action: 'get')}/");
 YAHOO.cuanto.urls.set('saveOutcome',"${createLink(controller: 'testOutcome', action: 'saveDetails')}/");
 YAHOO.cuanto.urls.set('testCaseHistory', "${createLink(controller: 'testCase', action: 'history')}/");
@@ -51,11 +55,5 @@ YAHOO.cuanto.urls.set('applyAnalysis', "${createLink(controller: 'testOutcome', 
 YAHOO.cuanto.urls.set('projectList', "${createLink(controller: 'project', action:'listOnly')}/");
 YAHOO.cuanto.urls.set('projectInfo', "${createLink(controller: 'project', action:'get')}/");
 
-/* Resources */
-YAHOO.cuanto.urls.set('historyImg', "${resource(dir: 'images/tango/16x16', file: 'folder-saved-search.png')}");
-YAHOO.cuanto.urls.set('outputImg', "${resource(dir: 'images/tango/16x16', file: 'format-justify-left.png')}");
-YAHOO.cuanto.urls.set('analysisImg', "${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}");
-YAHOO.cuanto.urls.set('progressImg', "${resource(dir: 'images/progress', file: 'mozilla_blu.gif')}");
-YAHOO.cuanto.urls.set('shortcutImg', "${resource(dir: 'images/tango/16x16', file: 'shortcut.png')}");
-YAHOO.cuanto.urls.set('uploaderSwf', "${resource(dir:'js/yui/2.6.0/uploader/assets/', file: 'uploader.swf')}");
+
 
