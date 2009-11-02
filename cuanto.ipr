@@ -884,6 +884,7 @@
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/grails/cuanto.iml" filepath="$PROJECT_DIR$/grails/cuanto.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/cuanto-api.iml" filepath="$PROJECT_DIR$/api/cuanto-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails/cuanto_grails.iml" filepath="$PROJECT_DIR$/grails/cuanto_grails.iml" />
       <module fileurl="file://$PROJECT_DIR$/dist/dist.iml" filepath="$PROJECT_DIR$/dist/dist.iml" />
