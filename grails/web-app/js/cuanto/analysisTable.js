@@ -37,6 +37,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var historyImgUrl =  YAHOO.cuanto.urls.get('historyImg');
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
 	var anlzImgUrl = YAHOO.cuanto.urls.get('analysisImg');
+	var columnDialog;
 	var dataTableEventOverrides = {
 		"cellClickEvent": [
 			{
@@ -116,6 +117,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener("cancelNote", "click", onCancelNote);
 		YAHOO.util.Event.addListener("editTestRun", "click", onEditTestRun);
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
+		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
 
 		new YAHOO.widget.Tooltip("feedtt", {context:"feedImg"});
@@ -739,6 +741,16 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		}, 5000);
 	}
 
+	function chooseColumns(e) {
+		YAHOO.util.Event.preventDefault(e);
+		if (!columnDialog)
+		{
+			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
+				["analysisState", "duration", "bug", "owner", "note"]);
+		}
+		columnDialog.show();
+
+	}
 
 	function deleteTestRun(e) {
 		YAHOO.util.Event.preventDefault(e);
