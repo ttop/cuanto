@@ -24,6 +24,8 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
+	var prefHiddenColumns = "hiddenColumns";
+
 	var dataTable;
 	var analysisDialog;
 	var testRunDialog = new YAHOO.cuanto.TestRunDialog();
@@ -71,6 +73,13 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener('tcFormat', "change", onTcFormatChange);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
+
+		var hiddenCols = getHiddenColumns();
+		dataTable.getColumnSet().flat.each(function(column) {
+			if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
+				dataTable.hideColumn(column.key);
+			}
+		});
 
 		dataTable.handleDataReturnPayload = processPayload;
 
@@ -306,6 +315,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		noteEditor.subscribe("showEvent", showNoteEditor);
 
 		var toolWidth = Prototype.Browser.IE ? 70 : 50;
+
+		var hiddenCols = getHiddenColumns();
+
 		return [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
@@ -625,6 +637,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		return tcFormat;
 	}
 
+
 	function onTableStateChange(e) {
 		var newRequest = generateNewRequest();
 		showCurrentSearchSpan();
@@ -801,6 +814,19 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function unescapeHtmlEntities(s) {
 		return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+	}
+
+	function getHiddenColumns() {
+		var cols = {};
+		var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, prefHiddenColumns);
+		if (cookie) {
+			var pairs = cookie.split(",");
+			pairs.each(function(pair) {
+				var items = pair.split(":");
+				cols[items[0]] = (/^true$/i).test(items[1]);
+			});
+		}
+		return cols;
 	}
 };
 

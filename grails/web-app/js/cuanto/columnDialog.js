@@ -24,7 +24,8 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 	var panel;
 	var pub = {}; // public methods
-
+	var analysisCookieName = "cuantoAnalysis";
+	var prefHiddenColumns = "hiddenColumns";
 
 	function getColumnPanel() {
 		if (!panel) {
@@ -53,8 +54,26 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 			// Shows a Column
 			datatable.showColumn(sKey);
 		}
+		setAnalysisColumnPref();
 	};
 
+
+
+	function setAnalysisColumnPref() {
+		var expDate = new Date();
+		expDate.setDate(expDate.getDate() + 30);
+
+		var colHidden = [];
+		datatable.getColumnSet().flat.each(function(column) {
+			if (!column.key.startsWith("yui-")) {
+				colHidden.push(column.key + ":" + column.hidden);
+				//colHidden[column.key] = column.hidden;
+			}
+		});
+		var colStr = colHidden.join(",");
+		
+		YAHOO.util.Cookie.setSub(analysisCookieName, prefHiddenColumns, colStr, {path: "/", expires: expDate});
+	}
 
 	pub.show = function(e) {
 		getColumnPanel().show();
