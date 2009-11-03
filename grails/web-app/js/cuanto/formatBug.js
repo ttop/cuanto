@@ -158,6 +158,18 @@ YAHOO.cuanto.format = function() {
 		    return false;
         });
     };
+	
+	pub.formatOutput = function(elCell, oRecord, oColumn, oData)
+	{
+		if (!oData)
+		{
+			elCell.innerHTML = oData;
+			return;
+		}
+		var outputContainer = new Element('span');
+		outputContainer.innerHTML = oData.replace(/[\n|\r\n]/g, "<br/>");
+		elCell.appendChild(outputContainer);
+	};
 
 	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFieldValue) {
 		YAHOO.util.Event.preventDefault(e);

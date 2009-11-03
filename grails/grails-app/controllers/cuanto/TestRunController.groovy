@@ -133,6 +133,7 @@ class TestRunController {
 		def totalCount
 		def recordStartIndex
 		def testRun = TestRun.get(params.id)
+		def outputChars = params.outputChars ? params.outputChars : 180
 
 		if (!testRun) {
 			redirect controller: 'project', action: 'list'
@@ -177,7 +178,9 @@ class TestRunController {
 						outcome.testCase.testName),	id:outcome.testCase.id],
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner,
-						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id]
+						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
+						output: outcome.testOutput[0..outputChars - 1]
+					]
 				}
 
 				def myJson = ['totalCount': totalCount, count: outs?.size(), testOutcomes: jsonOutcomes,

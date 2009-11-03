@@ -144,7 +144,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -332,7 +332,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				editor: bugEditor},
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
 			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
-                editor: noteEditor}
+                editor: noteEditor},
+			{key: "output", label: "Output", minWidth: 150, resizeable: true, sortable: true,
+				formatter:YAHOO.cuanto.format.formatOutput}
 		];
 	}
 
@@ -759,7 +761,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (!columnDialog)
 		{
 			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["analysisState", "duration", "bug", "owner", "note"]);
+				["result", "analysisState", "duration", "bug", "owner", "note", "output"]);
 		}
 		columnDialog.show();
 

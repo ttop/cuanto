@@ -18,7 +18,6 @@
 
  */
 
-
 YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
@@ -26,6 +25,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 	var pub = {}; // public methods
 	var analysisCookieName = "cuantoAnalysis";
 	var prefHiddenColumns = "hiddenColumns";
+	var newCols = true;
 
 	function getColumnPanel() {
 		if (!panel) {
@@ -41,22 +41,16 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 	}
 
 
-	// Shows dialog, creating one when necessary
-	var newCols = true;
-
 	var handleButtonClick = function(e, oSelf) {
 		var sKey = this.get("name");
 		if (this.get("value") === "Hide") {
-			// Hides a Column
 			datatable.hideColumn(sKey);
 		}
 		else {
-			// Shows a Column
 			datatable.showColumn(sKey);
 		}
 		setAnalysisColumnPref();
 	};
-
 
 
 	function setAnalysisColumnPref() {
@@ -67,13 +61,12 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 		datatable.getColumnSet().flat.each(function(column) {
 			if (!column.key.startsWith("yui-")) {
 				colHidden.push(column.key + ":" + column.hidden);
-				//colHidden[column.key] = column.hidden;
 			}
 		});
 		var colStr = colHidden.join(",");
-		
 		YAHOO.util.Cookie.setSub(analysisCookieName, prefHiddenColumns, colStr, {path: "/", expires: expDate});
 	}
+
 
 	pub.show = function(e) {
 		getColumnPanel().show();
@@ -83,9 +76,6 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 		}
 
 		if (newCols) {
-			// Populate Dialog
-			// Using a template to create elements for the SimpleDialog
-
 			var allColumns = [];
 			columnKeys.each(function(colKey) {
 				var col = datatable.getColumn(colKey);
@@ -101,19 +91,13 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 			YAHOO.util.Dom.addClass(elTemplateBtns, "columnPanel-pickerbtns");
 			var onclickObj = {fn:handleButtonClick, obj:this, scope:false };
 
-			// Create one section in the SimpleDialog for each Column
 			var elColumn, elKey, elButton, oButtonGrp;
 			for (var i = 0,l = allColumns.length; i < l; i++) {
 				var oColumn = allColumns[i];
-
-				// Use the template
 				elColumn = elTemplateCol.cloneNode(true);
-
-				// Write the Column key
 				elKey = elColumn.firstChild;
 				elKey.innerHTML = oColumn.label;
 
-				// Create a ButtonGroup
 				oButtonGrp = new YAHOO.widget.ButtonGroup({
 					id: "buttongrp" + i,
 					name: oColumn.getKey(),
@@ -138,7 +122,6 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 			}
 			newCols = false;
 		}
-
 	};
 	return pub;
 };
