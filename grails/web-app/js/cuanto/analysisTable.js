@@ -316,8 +316,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		var toolWidth = Prototype.Browser.IE ? 70 : 50;
 
-		var hiddenCols = getHiddenColumns();
-
 		return [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
@@ -626,7 +624,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function onTcFormatChange(e) {
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat());
+		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat(), {path: "/", expires: new Date().getDate() + 30});
 		setTcFormatPref();
 		onTableStateChange(e);
 	}
@@ -827,6 +825,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				var items = pair.split(":");
 				cols[items[0]] = (/^true$/i).test(items[1]);
 			});
+		}
+		else {
+			cols["output"] = true;
 		}
 		return cols;
 	}

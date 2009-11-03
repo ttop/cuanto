@@ -33,7 +33,7 @@ YAHOO.cuanto.format = function() {
 		var wkStr = new String();
 		var i = 0;
 		var splitPoint = -1;
-		while (getWidthForColumnText(wkStr + tokens[i]) < max)
+		while (getWidthForColumnText(wkStr + tokens[i]) < max && i < tokens.length)
 		{
 			wkStr += tokens[i];
 			if (i < tokens.length - 1) {
@@ -167,7 +167,10 @@ YAHOO.cuanto.format = function() {
 			return;
 		}
 		var outputContainer = new Element('span');
-		outputContainer.innerHTML = oData.replace(/[\n|\r\n]/g, "<br/>");
+
+		var removed = oData.replace(/[\n|\r\n]/g, " ");
+		var broken = pub.breakOnToken(removed, " ", 400);
+		outputContainer.innerHTML = broken.replace(/[\n|\r\n]/g, "<br/>");
 		elCell.appendChild(outputContainer);
 	};
 
