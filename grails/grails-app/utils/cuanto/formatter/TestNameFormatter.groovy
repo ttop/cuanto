@@ -20,8 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.formatter
 
+import cuanto.TestCase
+
 interface TestNameFormatter {
-	String getTestName(String packageName, String testName)
+	//String getTestName(String packageName, String testName)
+	String getTestName(TestCase testCase)
 	String getDescription()
 	String getKey()
 }

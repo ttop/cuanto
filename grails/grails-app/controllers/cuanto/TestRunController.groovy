@@ -182,8 +182,7 @@ class TestRunController {
 						output: outcome.testOutput[0..outputChars - 1]
 					]
 
-					def currentTestCase = [name:formatter.getTestName(outcome.testCase.packageName,
-						outcome.testCase.testName),	id:outcome.testCase.id]
+					def currentTestCase = [name:formatter.getTestName(outcome.testCase), id:outcome.testCase.id]
 
 					if (outcome.testCase.parameters) {
 						currentTestCase.parameters = outcome.testCase.parameters

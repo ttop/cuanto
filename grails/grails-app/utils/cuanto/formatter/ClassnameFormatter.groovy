@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.formatter
 
+import cuanto.TestCase
+
 /**
  * User: Todd Wells
  * Date: Apr 3, 2009
@@ -28,13 +30,16 @@ package cuanto.formatter
  */
 class ClassnameFormatter implements TestNameFormatter {
 
-	public String getTestName(String packageName, String testName) {
-		def pattern = ~/.+\.(.+$)/
+	public String getTestName(TestCase testCase) {
+		def packageName = testCase.packageName
+		def testName = testCase.testName
 		
+		def pattern = ~/.+\.(.+$)/
+
 		def matcher = pattern.matcher(packageName)
 		if (matcher.matches()) {
 			def className = matcher[0][1]
-			return "${className}.${testName}()" 
+			return "${className}.${testName}()"
 		} else {
 			return "${testName}()"
 		}
@@ -49,4 +54,7 @@ class ClassnameFormatter implements TestNameFormatter {
 	public String getKey() {
 		"classname"
 	}
+
+
+
 }

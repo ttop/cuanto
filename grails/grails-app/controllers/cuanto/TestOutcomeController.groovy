@@ -44,8 +44,7 @@ class TestOutcomeController {
 			id: outcome.id,
 			bug: [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id],
 			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
-			testCase: [name: formatter.getTestName(outcome?.testCase?.packageName,
-				outcome?.testCase?.testName), 'id': outcome.testCase?.id,
+			testCase: [name: formatter.getTestName(outcome?.testCase),'id': outcome.testCase?.id,
 				'testType': outcome.testCase?.testType?.name],
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
@@ -135,7 +134,7 @@ class TestOutcomeController {
 				output = "(No output available)"
 			}
 			outputJson += ['output': output, 'id': testOutcome.id, 'testName': testOutcome.testCase.fullName,
-			'shortName': formatter.getTestName(testOutcome.testCase.packageName, testOutcome.testCase.testName)]
+			'shortName': formatter.getTestName(testOutcome.testCase)]
 		}
 		withFormat {
 			json {

@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.formatter
 
+import cuanto.TestCase
+
 /**
  * User: Todd Wells
  * Date: Apr 3, 2009
@@ -28,7 +30,9 @@ package cuanto.formatter
  */
 class FullPackageFormatter implements TestNameFormatter {
 
-	public String getTestName(String packageName, String testName) {
+	public String getTestName(TestCase testCase) {
+		def packageName = testCase.packageName
+		def testName = testCase.testName
 		if (packageName) {
 			return "${packageName}.${testName}()"
 		} else {

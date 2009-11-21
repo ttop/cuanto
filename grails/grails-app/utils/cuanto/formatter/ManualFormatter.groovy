@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto.formatter
+
+import cuanto.TestCase
+
 /**
  * User: Todd Wells
  * Date: Apr 4, 2009
@@ -28,14 +31,15 @@ package cuanto.formatter
 class ManualFormatter implements TestNameFormatter {
 
 
-	public String getTestName(String packageName, String testName) {
+	public String getTestName(TestCase testCase) {
+		def packageName = testCase.packageName
+		def testName = testCase.testName
 		if (packageName) {
 			return "${packageName} $testName"
 		} else {
 			return testName
 		}
 	}
-
 
 	public String getDescription() {
 		"full.package.path testName"
