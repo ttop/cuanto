@@ -30,6 +30,7 @@ class TestCase implements Comparable{
 		fullName(nullable:false, blank: false)
 		description(nullable: true, blank: true, maxSize:2048)
 		packageName(nullable:true)
+		parameters(nullable:true)
 	}
 	static mapping = {
 		cache true
@@ -38,6 +39,7 @@ class TestCase implements Comparable{
 	String testName
 	String packageName
 	String fullName
+	String parameters
 	String description
 	Project project
 
@@ -54,6 +56,7 @@ class TestCase implements Comparable{
 		ParsableTestCase tc = new ParsableTestCase()
 		tc.testName = this.testName
 		tc.packageName = this.packageName
+		tc.parameters = this.parameters
 		tc.project = this.project.toString()
 		tc.description = this.description
 		tc.fullName = this.fullName

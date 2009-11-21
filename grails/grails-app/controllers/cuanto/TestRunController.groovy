@@ -174,13 +174,24 @@ class TestRunController {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
 				outs.each {outcome ->
-					jsonOutcomes += [testCase: [name:formatter.getTestName(outcome.testCase.packageName,
-						outcome.testCase.testName),	id:outcome.testCase.id],
+
+					def currentOutcome = [
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner,
 						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
 						output: outcome.testOutput[0..outputChars - 1]
 					]
+
+					def currentTestCase = [name:formatter.getTestName(outcome.testCase.packageName,
+						outcome.testCase.testName),	id:outcome.testCase.id]
+
+					if (outcome.testCase.parameters) {
+						currentTestCase.parameters = outcome.testCase.parameters
+					}
+
+					currentOutcome.testCase = currentTestCase
+					jsonOutcomes << currentOutcome
+
 				}
 
 				def myJson = ['totalCount': totalCount, count: outs?.size(), testOutcomes: jsonOutcomes,

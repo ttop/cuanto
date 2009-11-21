@@ -28,9 +28,10 @@ package cuanto
  */
 class ParsableTestCase implements Comparable {
 	String project
-	String packageName // todo: change to packageName
+	String packageName 
 	String testName
 	String fullName
+	String parameters
 	String description
 
 
@@ -46,6 +47,8 @@ class ParsableTestCase implements Comparable {
 			return this.fullName.compareTo(other.fullName)
 		if (this.description != other.description)
 			return this.description.compareTo(other.description)
+		if (this.parameters != other.parameters)
+		    return this.parameters.compareTo(other.parameters)
 		return 0
 	}
 
