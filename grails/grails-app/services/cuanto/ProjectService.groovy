@@ -29,7 +29,6 @@ class ProjectService {
 	boolean transactional = false
 
 	def dataService
-	def testCaseFormatterRegistry
 
 
 	def getProjectByFullName(String fullName) throws CuantoException {
