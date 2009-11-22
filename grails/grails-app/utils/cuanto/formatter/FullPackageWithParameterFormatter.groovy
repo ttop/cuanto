@@ -25,35 +25,27 @@ import cuanto.TestCase
 /**
  * User: Todd Wells
  * Date: Apr 3, 2009
- * Time: 6:22:01 PM
+ * Time: 5:59:37 PM
  * 
  */
-class ClassnameFormatter implements TestNameFormatter {
+class FullPackageWithParameterFormatter implements TestNameFormatter {
 
 	public String getTestName(TestCase testCase) {
 		def packageName = testCase.packageName
 		def testName = testCase.testName
-		
-		def pattern = ~/.+\.(.+$)/
-		def params = testCase.parameters ? testCase.parameters : ""
-
-		def matcher = pattern.matcher(packageName)
-		if (matcher.matches()) {
-			def className = matcher[0][1]
-			return "${className}.${testName}(${params})"
+		if (packageName) {
+			return "${packageName}.${testName}()"
 		} else {
-			return "${testName}(${params})"
-		}
-	}
-
+			return "${testName}()"
+		}	}
 
 	public String getDescription() {
-		"Class.testMethod(params)"
+		"full.package.Class.testMethod()"
 	}
 
 
 	public String getKey() {
-		"classname"
+		"fullpackage"
 	}
 
 

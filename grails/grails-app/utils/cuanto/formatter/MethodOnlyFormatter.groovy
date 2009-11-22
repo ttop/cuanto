@@ -31,12 +31,13 @@ import cuanto.TestCase
 class MethodOnlyFormatter implements TestNameFormatter {
 
 	public String getTestName(TestCase testCase) {
-		return "${testCase.testName}()"
+		def params = testCase.parameters ? testCase.parameters : ""
+		return "${testCase.testName}($params)"
 	}
 
 
 	public String getDescription() {
-		"testMethod()"
+		"testMethod(params)"
 	}
 
 

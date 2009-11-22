@@ -34,15 +34,16 @@ class ManualFormatter implements TestNameFormatter {
 	public String getTestName(TestCase testCase) {
 		def packageName = testCase.packageName
 		def testName = testCase.testName
+		def params = ": ${testCase.parameters}" ? testCase.parameters : ""
 		if (packageName) {
-			return "${packageName} $testName"
+			return "${packageName} $testName${params}"
 		} else {
-			return testName
+			return testName + params
 		}
 	}
 
 	public String getDescription() {
-		"full.package.path testName"
+		"full.package.path testName: params"
 	}
 
 

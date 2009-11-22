@@ -36,12 +36,13 @@ class ParentPackageFormatter implements TestNameFormatter {
 		def testName = testCase.testName
 		def parentPattern = ~/.+\.(.+)\.(.+$)/
 		def classPattern =  ~/(.+\.)?(.+$)/
+		def params = testCase.parameters ? testCase.parameters : ""
 
 		def parentMatcher = parentPattern.matcher(packageName)
 		if (parentMatcher.matches()) {
 			def parentPackage = parentMatcher[0][1]
 			def className = parentMatcher[0][2]
-			return "${parentPackage}.${className}.${testName}()"
+			return "${parentPackage}.${className}.${testName}($params)"
 		}
 
 		def classMatcher = classPattern.matcher(packageName)
@@ -52,14 +53,14 @@ class ParentPackageFormatter implements TestNameFormatter {
 			}
 			parentName += classMatcher[0][2]
 			
-			return "${parentName}.${testName}()"
+			return "${parentName}.${testName}($params)"
 		} else {
-			return "${testName}()"
+			return "${testName}($params)"
 		}
 	}
 
 	public String getDescription() {
-		"parentPackage.Class.testMethod()"
+		"parentPackage.Class.testMethod(params)"
 	}
 
 
