@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<div id="pdBd" class="bd">
 		<div>
 			<form id="pdForm" name="projectDialog" method="POST" action="${createLink(controller: 'project', action: 'save')}">
-				<g:hiddenField id="pdProjectId" name="project" value="${project?.id}"/>
+				<g:hiddenField id="pdProjectId" name="project" value=""/>
 				<input type="hidden" name="format" value="json"/>
 				<div class="projectLine">
 					<label class="wideLabel" for="pdName">Project Name:</label>
