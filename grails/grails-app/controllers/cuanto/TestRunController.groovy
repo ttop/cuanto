@@ -179,8 +179,15 @@ class TestRunController {
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner,
 						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
-						output: outcome.testOutput[0..outputChars - 1]
 					]
+
+					if (outcome.testOutput) {
+						def maxChars = outcome.testOutput.size() > outputChars ? outputChars : outcome.testOutput.size()
+						currentOutcome.output = outcome.testOutput[0..outputChars - 1]
+					} else {
+						currentOutcome.output = null
+					}
+
 
 					def currentTestCase = [name:formatter.getTestName(outcome.testCase), id:outcome.testCase.id]
 
