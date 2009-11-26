@@ -145,10 +145,17 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		$('pdHd').innerHTML = title;
 	};
 
-	pub.show = function(title) {
+	pub.show = function(title, projectId) {
 		if (title) {
 			setTitle(title);
 		}
+
+		if (projectId) {
+			$('pdProjectId').setValue(projectId);
+		} else {
+			$('pdProjectId').setValue("");
+		}
+
 		projDialog.show();
 		initAutoComplete();
 	};
