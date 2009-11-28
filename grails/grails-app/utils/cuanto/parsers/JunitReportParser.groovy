@@ -134,7 +134,7 @@ class JunitReportParser implements CuantoTestParser {
 		if (matcher.matches()) {
 			return matcher[0][1] as String
 		} else {
-			return baseName
+			return ""
 		}
 	}
 

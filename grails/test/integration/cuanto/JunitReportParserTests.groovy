@@ -116,6 +116,7 @@ class JunitReportParserTests extends GroovyTestCase{
 				 assertEquals "Wrong result", dataService.result("pass"), it.testResult
 				 assertNull "No analysis state should've been set", it.analysisState
 			 }
+			assertEquals "Wrong parameters", null, it.testCase.parameters
 		}
 	}
 
@@ -153,6 +154,7 @@ class JunitReportParserTests extends GroovyTestCase{
 			assertNotNull failedTest
 			assertEquals "Wrong result for ${testName}", dataService.result("fail"), failedTest.testResult
 			assertEquals "Wrong analysis state for ${testName}", dataService.getAnalysisStateByName("Unanalyzed"), failedTest.analysisState
+			assertEquals "Wrong parameters", null, failedTest.testCase.parameters
 		}
 
 		expectedErrors.each { testName ->
@@ -162,6 +164,7 @@ class JunitReportParserTests extends GroovyTestCase{
 			assertNotNull errorTest
 			assertEquals "Wrong result", dataService.result("error"), errorTest.testResult
 			assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), errorTest.analysisState
+			assertEquals "Wrong parameters", null, errorTest.testCase.parameters
 		}
 
 
