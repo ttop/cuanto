@@ -7,7 +7,7 @@
 	<target name="init">
 		<path id="api.class.path">
 		   <fileset dir="target">
-		     <include name="cuanto-api-2.2.4.jar"/>
+		     <include name="cuanto-api-2.2.6.jar"/>
 		     <include name="dependency/*.jar"/>
 		   </fileset>
 		 </path>
@@ -29,4 +29,8 @@
 
 	</target>
 
+	<target name="submitTestNG" depends="init">
+		<cuanto url="${cuanto.url}" testProject="Sample/CuantoNG" milestone="1.1" build="352442" targetEnv="test lab"
+			resultfile="../grails/test/resources/testng-results-params.xml"/>
+	</target>
 </project>

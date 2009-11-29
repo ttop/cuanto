@@ -23,6 +23,8 @@ package cuanto.parsers
 import cuanto.ParsableTestCase
 import cuanto.ParsableTestOutcome
 import cuanto.ParsingException
+import java.util.regex.Pattern
+import java.util.regex.Matcher
 
 /**
  * User: Todd Wells
@@ -76,7 +78,8 @@ class JunitReportParser implements CuantoTestParser {
 			outcome.duration = new BigDecimal(tc.'@time')
 			outcome.testCase = new ParsableTestCase()
 			outcome.testCase.packageName = testsuite.'@name'
-			outcome.testCase.testName = tc.'@name'
+			outcome.testCase.testName = getTestName(tc.'@name')
+			outcome.testCase.parameters = getTestParameters(tc.'@name')
 			outcome.testCase.fullName = outcome.testCase.packageName + "." + outcome.testCase.testName
 			outcomes.add(outcome)
 		}
@@ -95,7 +98,8 @@ class JunitReportParser implements CuantoTestParser {
 				if (!outcome.testCase.packageName) {
 					outcome.testCase.packageName = testsuite.'@package'
 				}
-				outcome.testCase.testName = testcase.'@name'
+				outcome.testCase.testName = getTestName(testcase.'@name')
+				outcome.testCase.parameters = getTestParameters(testcase.'@name')
 				outcome.testCase.fullName = outcome.testCase.packageName + "." + outcome.testCase.testName
 
 				def tTime = testcase.'@time'.replaceAll(",", "")
@@ -116,6 +120,23 @@ class JunitReportParser implements CuantoTestParser {
 		return outcomes
 	}
 
+	String getTestName(String baseName) {
+		def matcher = baseName =~ /.*\[\d+\]/
+		if (matcher.matches()) {
+			return baseName.replaceAll("\\[\\d+\\]", "")
+		} else {
+			return baseName
+		}
+	}
+
+	String getTestParameters(String baseName) {
+		def matcher = baseName =~ /.*(\[\d+\])/
+		if (matcher.matches()) {
+			return matcher[0][1] as String
+		} else {
+			return ""
+		}
+	}
 
 	public String getTestType() {
 		return "JUnit"

@@ -77,6 +77,67 @@ class TestNgParserTests extends GroovyTestCase {
 	}
 
 
+	void testTestNgParsingWithParams() {
+		def parser = new TestNgParser()
+		List<ParsableTestOutcome> outcomes = parser.parseFile(getFile("testng-results-params.xml"))
+
+		ParsableTestOutcome pto1 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod1",
+			fullName: "cuanto.test.TestNgOne.testMethod1", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Pass", duration:3)
+		assertTestOutcomeEquals(pto1, outcomes[0] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto2 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"passingParameterTestOne",
+			fullName: "cuanto.test.TestNgOne.passingParameterTestOne", packageName:"cuanto.test.TestNgOne", parameters: "one"),
+			testResult: "Pass", duration:0)
+		assertTestOutcomeEquals(pto2, outcomes[1] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto3 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"dependencySample",
+			fullName: "cuanto.test.TestNgOne.dependencySample", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Fail", duration:102)
+		assertTestOutcomeEquals(pto3, outcomes[2] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto4 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"skippableTest",
+			fullName: "cuanto.test.TestNgOne.skippableTest", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Skip", duration:2)
+		assertTestOutcomeEquals(pto4, outcomes[3] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto5 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"failingParameterTestOne",
+			fullName: "cuanto.test.TestNgOne.failingParameterTestOne", packageName:"cuanto.test.TestNgOne", parameters: "one"),
+			testResult: "Fail", duration:0)
+		assertTestOutcomeEquals(pto5, outcomes[4] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto6 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod2",
+			fullName: "cuanto.test.TestNgOne.testMethod2", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Fail", duration:34)
+		assertTestOutcomeEquals(pto6, outcomes[5] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto7 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"passingParameterTestTwo",
+			fullName: "cuanto.test.TestNgOne.passingParameterTestTwo", packageName:"cuanto.test.TestNgOne",
+			parameters: "one, two, three"),	testResult: "Pass", duration:0)
+		assertTestOutcomeEquals(pto7, outcomes[6] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto8 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod3",
+			fullName: "cuanto.test.TestNgOne.testMethod3", packageName:"cuanto.test.TestNgOne",
+			description: "testMethod3 Description"), testResult: "Fail", duration:4)
+		assertTestOutcomeEquals(pto8, outcomes[7] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto9 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"parametersNonExistent",
+			fullName: "cuanto.test.TestNgOne.parametersNonExistent", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Fail", duration:0)
+		assertTestOutcomeEquals(pto9, outcomes[8] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto10 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"failingParameterTestTwo",
+			fullName: "cuanto.test.TestNgOne.failingParameterTestTwo", packageName:"cuanto.test.TestNgOne",
+			parameters: "one, two, three"), testResult: "Fail", duration:0)
+		assertTestOutcomeEquals(pto10, outcomes[9] as ParsableTestOutcome)
+
+		ParsableTestOutcome pto11 = new ParsableTestOutcome(testCase: new ParsableTestCase(testName:"testMethod4",
+			fullName: "cuanto.test.TestNgOne.testMethod4", packageName:"cuanto.test.TestNgOne"),
+			testResult: "Pass", duration:0)
+		assertTestOutcomeEquals(pto11, outcomes[10] as ParsableTestOutcome)
+	}
+
+
 	File getFile(fileName) {
 		File testFile = new File("test/resources/${fileName}")
 		if (!testFile.exists()) {
@@ -92,6 +153,7 @@ class TestNgParserTests extends GroovyTestCase {
 		assertEquals "Wrong owner", a.owner, b.owner
 		assertEquals "Wrong result", a.testResult, b.testResult
 		assertEquals "Wrong duration", a.duration, b.duration
-		assertEquals "Wrong test case", a.testCase, b.testCase
+		//assertEquals "Wrong test case", a.testCase, b.testCase
+		assertTrue "Test cases are unequal", a.testCase.equals(b.testCase)
 	}
 }

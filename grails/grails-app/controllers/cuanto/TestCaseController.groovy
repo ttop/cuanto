@@ -253,7 +253,7 @@ class TestCaseController {
 			jsonOutcomes << outcome
 		}
 		def formatter = testOutcomeService.getTestCaseFormatter("methodonly")
-		def shortName = formatter.getTestName(currentOutcome.testCase.packageName, currentOutcome.testCase.testName)
+		def shortName = formatter.getTestName(currentOutcome.testCase)
 		def myJson = [testCase: [id: currentOutcome.testCase.id, name: currentOutcome.testCase.fullName,
 			'shortName': shortName], 'outcomes': jsonOutcomes, 'count': jsonOutcomes.size(), 'offset': currentIndex]
 		render myJson as JSON

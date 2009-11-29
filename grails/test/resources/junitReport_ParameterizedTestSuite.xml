@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+  <testsuite errors="0" failures="0" hostname="macbook-toddw.local" id="0" name="MultiplierTest" package="" tests="9" time="0.104" timestamp="2009-11-28T15:11:06">
+      <properties>
+          <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+
+          <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries" />
+
+          <property name="java.vm.version" value="14.1-b02-90" />
+
+          <property name="awt.nativeDoubleBuffering" value="true" />
+
+          <property name="ant.library.dir" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib" />
+
+          <property name="gopherProxySet" value="false" />
+
+          <property name="ant.version" value="Apache Ant version 1.7.0 compiled on December 13 2006" />
+
+          <property name="ant.java.version" value="1.6" />
+
+          <property name="java.vm.vendor" value="Apple Inc." />
+
+          <property name="java.vendor.url" value="http://www.apple.com/" />
+
+          <property name="path.separator" value=":" />
+
+          <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+
+          <property name="file.encoding.pkg" value="sun.io" />
+
+          <property name="user.country" value="US" />
+
+          <property name="sun.java.launcher" value="SUN_STANDARD" />
+
+          <property name="sun.os.patch.level" value="unknown" />
+
+          <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+
+          <property name="user.dir" value="/Users/ttop/sources/junit4_sample" />
+
+          <property name="java.runtime.version" value="1.6.0_15-b03-219" />
+
+          <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
+
+          <property name="basedir" value="/Users/ttop/sources/junit4_sample" />
+
+          <property name="java.endorsed.dirs" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/endorsed" />
+
+          <property name="os.arch" value="x86_64" />
+
+          <property name="java.io.tmpdir" value="/var/folders/6p/6p29Dt7tGM88UpaYWR+QSU+++TI/-Tmp-/" />
+
+          <property name="ant.core.lib" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant.jar" />
+
+          <property name="line.separator" value=" " />
+
+          <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+
+          <property name="ant.file.junit4" value="/Users/ttop/sources/junit4_sample/build.xml" />
+
+          <property name="os.name" value="Mac OS X" />
+
+          <property name="ant.home" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0" />
+
+          <property name="ant.project.name" value="junit4" />
+
+          <property name="sun.jnu.encoding" value="MacRoman" />
+
+          <property name="java.library.path" value=".:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+
+          <property name="java.specification.name" value="Java Platform API Specification" />
+
+          <property name="java.class.version" value="50.0" />
+
+          <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler" />
+
+          <property name="os.version" value="10.6.1" />
+
+          <property name="ant.file" value="/Users/ttop/sources/junit4_sample/build.xml" />
+
+          <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="user.home" value="/Users/ttop" />
+
+          <property name="user.timezone" value="" />
+
+          <property name="java.awt.printerjob" value="apple.awt.CPrinterJob" />
+
+          <property name="file.encoding" value="MacRoman" />
+
+          <property name="java.specification.version" value="1.6" />
+
+          <property name="java.class.path" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-launcher.jar:/Users/ttop/.ant/lib/ivy-2.0.0.jar:/Users/ttop/.ant/lib/ivy.jar:/Users/ttop/.ant/lib/test-1.0.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-antlr.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-bcel.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-bsf.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-log4j.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-oro.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-regexp.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-resolver.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-commons-logging.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-commons-net.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-contrib-1.0b3.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jai.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-javamail.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jdepend.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jmf.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jsch.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-junit.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-launcher.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-netrexx.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-nodeps.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-starteam.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-stylebook.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-swing.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-testutil.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-trax.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-weblogic.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/bcel-5.1.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/commons-net-1.4.0.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/gnu-regexp-1.1.4.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/jakarta-oro-2.0.3.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/jtidy-r7-xmlc-2.1.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/junit-addons-1.4.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/junit.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/mail.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/maven-artifact-ant-2.1-SNAPSHOT-dep.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/tptasks.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/xercesImpl.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/xml-apis.jar" />
+
+          <property name="user.name" value="ttop" />
+
+          <property name="java.vm.specification.version" value="1.0" />
+
+          <property name="sun.arch.data.model" value="64" />
+
+          <property name="java.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home" />
+
+          <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+
+          <property name="user.language" value="en" />
+
+          <property name="awt.toolkit" value="apple.awt.CToolkit" />
+
+          <property name="java.vm.info" value="mixed mode" />
+
+          <property name="java.version" value="1.6.0_15" />
+
+          <property name="java.ext.dirs" value="/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
+
+          <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
+
+          <property name="java.vendor" value="Apple Inc." />
+
+          <property name="file.separator" value="/" />
+
+          <property name="java.vendor.url.bug" value="http://bugreport.apple.com/" />
+
+          <property name="sun.cpu.endian" value="little" />
+
+          <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+
+          <property name="mrj.version" value="1060.1.6.0_15-219" />
+
+          <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="jikes.class.path" value=":/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/alt-rt.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/charsets.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/dt.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jconsole.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/management-agent.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/ui.jar" />
+
+          <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="sun.cpu.isalist" value="" />
+
+      </properties>
+
+      <testcase classname="MultiplierTest" name="positivesFixed[0]" time="0.0030" />
+
+      <testcase classname="MultiplierTest" name="positivesParameterized[0]" time="0.0010" />
+
+      <testcase classname="MultiplierTest" name="negativesParameterized[0]" time="0.0020" />
+
+      <testcase classname="MultiplierTest" name="positivesFixed[1]" time="0.0010" />
+
+      <testcase classname="MultiplierTest" name="positivesParameterized[1]" time="0.0010" />
+
+      <testcase classname="MultiplierTest" name="negativesParameterized[1]" time="0.0010" />
+
+      <testcase classname="MultiplierTest" name="positivesFixed[2]" time="0.0" />
+
+      <testcase classname="MultiplierTest" name="positivesParameterized[2]" time="0.0010" />
+
+      <testcase classname="MultiplierTest" name="negativesParameterized[2]" time="0.0010" />
+
+      <system-out />
+
+      <system-err />
+
+  </testsuite>
+  <testsuite errors="1" failures="0" hostname="macbook-toddw.local" id="1" name="ParameterizedSampleTest" package="test.groovy" tests="4" time="0.191" timestamp="2009-11-28T15:11:07">
+      <properties>
+          <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+
+          <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries" />
+
+          <property name="java.vm.version" value="14.1-b02-90" />
+
+          <property name="awt.nativeDoubleBuffering" value="true" />
+
+          <property name="ant.library.dir" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib" />
+
+          <property name="gopherProxySet" value="false" />
+
+          <property name="ant.version" value="Apache Ant version 1.7.0 compiled on December 13 2006" />
+
+          <property name="ant.java.version" value="1.6" />
+
+          <property name="java.vm.vendor" value="Apple Inc." />
+
+          <property name="java.vendor.url" value="http://www.apple.com/" />
+
+          <property name="path.separator" value=":" />
+
+          <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+
+          <property name="file.encoding.pkg" value="sun.io" />
+
+          <property name="user.country" value="US" />
+
+          <property name="sun.java.launcher" value="SUN_STANDARD" />
+
+          <property name="sun.os.patch.level" value="unknown" />
+
+          <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+
+          <property name="user.dir" value="/Users/ttop/sources/junit4_sample" />
+
+          <property name="java.runtime.version" value="1.6.0_15-b03-219" />
+
+          <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
+
+          <property name="basedir" value="/Users/ttop/sources/junit4_sample" />
+
+          <property name="java.endorsed.dirs" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/endorsed" />
+
+          <property name="os.arch" value="x86_64" />
+
+          <property name="java.io.tmpdir" value="/var/folders/6p/6p29Dt7tGM88UpaYWR+QSU+++TI/-Tmp-/" />
+
+          <property name="ant.core.lib" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant.jar" />
+
+          <property name="line.separator" value=" " />
+
+          <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+
+          <property name="ant.file.junit4" value="/Users/ttop/sources/junit4_sample/build.xml" />
+
+          <property name="os.name" value="Mac OS X" />
+
+          <property name="ant.home" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0" />
+
+          <property name="ant.project.name" value="junit4" />
+
+          <property name="sun.jnu.encoding" value="MacRoman" />
+
+          <property name="java.library.path" value=".:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+
+          <property name="java.specification.name" value="Java Platform API Specification" />
+
+          <property name="java.class.version" value="50.0" />
+
+          <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler" />
+
+          <property name="os.version" value="10.6.1" />
+
+          <property name="ant.file" value="/Users/ttop/sources/junit4_sample/build.xml" />
+
+          <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="user.home" value="/Users/ttop" />
+
+          <property name="user.timezone" value="" />
+
+          <property name="java.awt.printerjob" value="apple.awt.CPrinterJob" />
+
+          <property name="file.encoding" value="MacRoman" />
+
+          <property name="java.specification.version" value="1.6" />
+
+          <property name="java.class.path" value="/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-launcher.jar:/Users/ttop/.ant/lib/ivy-2.0.0.jar:/Users/ttop/.ant/lib/ivy.jar:/Users/ttop/.ant/lib/test-1.0.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-antlr.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-bcel.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-bsf.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-log4j.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-oro.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-regexp.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-apache-resolver.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-commons-logging.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-commons-net.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-contrib-1.0b3.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jai.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-javamail.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jdepend.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jmf.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-jsch.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-junit.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-launcher.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-netrexx.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-nodeps.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-starteam.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-stylebook.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-swing.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-testutil.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-trax.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant-weblogic.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/ant.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/bcel-5.1.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/commons-net-1.4.0.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/gnu-regexp-1.1.4.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/jakarta-oro-2.0.3.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/jtidy-r7-xmlc-2.1.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/junit-addons-1.4.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/junit.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/mail.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/maven-artifact-ant-2.1-SNAPSHOT-dep.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/tptasks.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/xercesImpl.jar:/Users/ttop/sources/depot/thePlatform/tools/apache-ant/ant-1.7.0/lib/xml-apis.jar" />
+
+          <property name="user.name" value="ttop" />
+
+          <property name="java.vm.specification.version" value="1.0" />
+
+          <property name="sun.arch.data.model" value="64" />
+
+          <property name="java.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home" />
+
+          <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+
+          <property name="user.language" value="en" />
+
+          <property name="awt.toolkit" value="apple.awt.CToolkit" />
+
+          <property name="java.vm.info" value="mixed mode" />
+
+          <property name="java.version" value="1.6.0_15" />
+
+          <property name="java.ext.dirs" value="/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
+
+          <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
+
+          <property name="java.vendor" value="Apple Inc." />
+
+          <property name="file.separator" value="/" />
+
+          <property name="java.vendor.url.bug" value="http://bugreport.apple.com/" />
+
+          <property name="sun.cpu.endian" value="little" />
+
+          <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+
+          <property name="mrj.version" value="1060.1.6.0_15-219" />
+
+          <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="jikes.class.path" value=":/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/alt-rt.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/charsets.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/dt.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jconsole.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/management-agent.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/../Classes/ui.jar" />
+
+          <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
+
+          <property name="sun.cpu.isalist" value="" />
+
+      </properties>
+
+      <testcase classname="test.groovy.ParameterizedSampleTest" name="passTest[0]" time="0.0020" />
+
+      <testcase classname="test.groovy.ParameterizedSampleTest" name="failTest[0]" time="0.153" />
+
+      <testcase classname="test.groovy.ParameterizedSampleTest" name="passTest[1]" time="0.0010" />
+
+      <testcase classname="test.groovy.ParameterizedSampleTest" name="failTest[1]" time="0.0050">
+          <error message="expected:&lt;[fe]e&gt; but was:&lt;[humbl]e&gt;" type="org.junit.ComparisonFailure">	at test.groovy.ParameterizedSampleTest.failTest(ParameterizedSampleTest.groovy:47)
+</error>
+
+      </testcase>
+
+      <system-out />
+
+      <system-err />
+
+  </testsuite>
+</testsuites>

@@ -73,6 +73,15 @@ class TestNgParser implements CuantoTestParser{
 					    if (testMethod.exception.size()) {
 						    out.testOutput = testMethod.exception[0].'full-stacktrace'.text()
 					    }
+
+					    def params = []
+					    testMethod.params?.param?.each { param ->
+						    params << param.value.text()
+					    }
+					    if (params) {
+						    out.testCase.parameters = params.join(", ")
+					    }
+
 					    parsableOutcomes << out
 				    }
 				}

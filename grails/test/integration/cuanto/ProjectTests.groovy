@@ -36,11 +36,11 @@ class ProjectTests extends GroovyTestCase {
 
 		groupNames.each { groupName ->
 			def group = fakes.getProjectGroup(groupName)
-			saveDomainObject(group)
+			dataService.saveDomainObject(group)
 			1.upto(projectsPerGroup) {
 				def proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 					projectGroup: group, 'testType': testType)
-				saveDomainObject(proj)
+				dataService.saveDomainObject(proj)
 				projects << proj
 			}
 		}
@@ -53,7 +53,7 @@ class ProjectTests extends GroovyTestCase {
 
 		def proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 			'testType': testType)
-		saveDomainObject(proj)
+		dataService.saveDomainObject(proj)
 
 		def nullGroupProject = projectService.getProjectByFullName(proj.name)
 		assertNotNull nullGroupProject
@@ -78,9 +78,9 @@ class ProjectTests extends GroovyTestCase {
 			'testType': testType)
 		def groupName = "Test Group"
 		def group = fakes.getProjectGroup(groupName)
-		saveDomainObject(group)
+		dataService.saveDomainObject(group)
 		proj.projectGroup = group
-		saveDomainObject(proj)
+		dataService.saveDomainObject(proj)
 
 		Project found = Project.findByProjectGroup(group)
 		assertNotNull "Didn't find project", found
@@ -98,11 +98,11 @@ class ProjectTests extends GroovyTestCase {
 		def projectsPerGroup = 3
 		groupNames.each { group ->
 			def projGroup = fakes.getProjectGroup(group)
-			saveDomainObject(projGroup)
+			dataService.saveDomainObject(projGroup)
 			1.upto(projectsPerGroup) {
 				Project proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 					projectGroup: projGroup, 'testType': testType)
-				saveDomainObject(proj)
+				dataService.saveDomainObject(proj)
 			}
 		}
 		
@@ -131,11 +131,11 @@ class ProjectTests extends GroovyTestCase {
 		def projectsPerGroup = 3
 		groupNames.each { groupName ->
 			def group = fakes.getProjectGroup(groupName)
-			saveDomainObject(group)
+			dataService.saveDomainObject(group)
 			1.upto(projectsPerGroup) {
 				Project proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 					projectGroup: group, 'testType': testType)
-				saveDomainObject(proj)
+				dataService.saveDomainObject(proj)
 			}
 		}
 
@@ -158,11 +158,11 @@ class ProjectTests extends GroovyTestCase {
 
 		groupNames.each { groupName ->
 			def group = fakes.getProjectGroup(groupName)
-			saveDomainObject(group)
+			dataService.saveDomainObject(group)
 			1.upto(projectsPerGroup) {
 				def proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 					projectGroup: group, 'testType': testType)
-				saveDomainObject(proj)
+				dataService.saveDomainObject(proj)
 				projects << proj
 			}   
 		}
@@ -176,7 +176,7 @@ class ProjectTests extends GroovyTestCase {
 
 		def proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 			'testType': testType)
-		saveDomainObject(proj)
+		dataService.saveDomainObject(proj)
 
 		def nullGroupProject = dataService.getProject(null, proj.name)
 		assertNotNull nullGroupProject
@@ -502,19 +502,6 @@ class ProjectTests extends GroovyTestCase {
 	}
 	
 
-	def reportError(domainObj) {
-		def errMsg = ""
-		domainObj.errors.allErrors.each {
-			errMsg += it.toString()
-		}
-		log.warning errMsg
-		fail(errMsg)
-	}
 
-	def saveDomainObject(domainObj) {
-		if (!domainObj.save(flush:true)) {
-			reportError domainObj
-		}
-	}
 
 }

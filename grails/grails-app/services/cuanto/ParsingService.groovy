@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
+import cuanto.formatter.FullPackageFormatter
+import cuanto.formatter.ManualFormatter
 
 
 /**
@@ -36,6 +38,8 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 
+	def fullPackageFormatter = new FullPackageFormatter()
+	def manualFormatter = new ManualFormatter()
 
 	TestRun parseFileFromStream(stream, testRunId) {
 		def testRun = getTestRun(testRunId)
@@ -74,7 +78,7 @@ class ParsingService {
 
 
 	private TestOutcome processParsableOutcome(testRun, ParsableTestOutcome parsableTestOutcome) {
-		TestCase testCase = parseTestCase(parsableTestOutcome)
+		TestCase testCase = parseTestCase(parsableTestOutcome, testRun)
 
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
 		if (matchingTestCase) {
@@ -105,18 +109,23 @@ class ParsingService {
 	}
 
 
-	private TestCase parseTestCase(parsableTestOutcome) {
+	private TestCase parseTestCase(parsableTestOutcome, testRun) {
 		TestCase testCase = new TestCase(
 			testName: parsableTestOutcome.testCase.testName,
-			packageName: parsableTestOutcome.testCase.packageName
+			packageName: parsableTestOutcome.testCase.packageName,
+			parameters: parsableTestOutcome.testCase.parameters
 		)
 
-		if (testCase.packageName) {
-			testCase.fullName = testCase.packageName + "." + testCase.testName
-		} else {
+		if (testCase.packageName == null) {
 			testCase.packageName = ""
-			testCase.fullName = testCase.testName
 		}
+
+		if (testRun?.project?.testType?.name == "Manual") {
+			testCase.fullName = manualFormatter.getTestName(testCase)
+		} else {
+			testCase.fullName = fullPackageFormatter.getTestName(testCase)
+		}
+
 		return testCase
 	}
 

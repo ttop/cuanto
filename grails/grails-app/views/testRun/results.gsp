@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
+		<g:javascript src="cuanto/columnDialog.js"/>
 
 		<script type="text/javascript">
 
@@ -91,6 +92,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</div>
 				<div class="ft"></div>
 			</div>
+		</div>
+		<div id="columnPanel" style="visibility:hidden">
+			<div class="hd">Columns</div>
+			<div id="columnPanel-picker" class="bd">
+			</div>
+
 		</div>
 		<div id="failContainer"></div>
 		<iframe id="yui-history-iframe" src="${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}"></iframe>

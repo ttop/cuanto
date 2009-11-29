@@ -37,7 +37,7 @@ class TestCaseTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(projectOne)
 			if (!projectOne.addToTestCases(tc).save()) {
-				reportError projectOne
+				dataService.reportSaveError projectOne
 			}
 		}
 
@@ -49,7 +49,7 @@ class TestCaseTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(projectTwo)
 			if (!projectTwo.addToTestCases(tc).save()) {
-				reportError projectTwo
+				dataService.reportSaveError projectTwo
 			}
 		}
 

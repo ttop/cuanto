@@ -85,7 +85,7 @@ class TestOutcomeService {
 			analysisState = dataService.getAnalysisStateByName(params.analysisStateName)
 		} else {
 			def result = dataService.result(params.testResult)
-			if (result == dataService.result("Pass")) {
+			if (result == dataService.result("Pass") || !result) {
 				analysisState = null
 			} else {
 				analysisState = unanalyzed

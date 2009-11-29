@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto.formatter
+
+import cuanto.TestCase
+
 /**
  * User: Todd Wells
  * Date: Apr 4, 2009
@@ -27,14 +30,14 @@ package cuanto.formatter
  */
 class MethodOnlyFormatter implements TestNameFormatter {
 
-
-	public String getTestName(String packageName, String testName) {
-		return "${testName}()"
+	public String getTestName(TestCase testCase) {
+		def params = testCase.parameters ? testCase.parameters : ""
+		return "${testCase.testName}($params)"
 	}
 
 
 	public String getDescription() {
-		"testMethod()"
+		"testMethod(params)"
 	}
 
 

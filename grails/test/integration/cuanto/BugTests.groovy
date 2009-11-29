@@ -5,7 +5,7 @@ import cuanto.*
 
 class BugTests extends GroovyTestCase {
 
-	def dataService
+	DataService dataService
 	def initializationService
 	def testRunService
 	def bugService
@@ -31,7 +31,7 @@ class BugTests extends GroovyTestCase {
 		TestRun testRun = to.getTestRun(proj, "foobar")
 
 		if (!testRun.save()) {
-			reportError testRun
+			dataService.reportSaveError testRun
 		}
 
 		def bugs = []
@@ -45,7 +45,7 @@ class BugTests extends GroovyTestCase {
 			tc.packageName = "a.b.c"
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -71,7 +71,7 @@ class BugTests extends GroovyTestCase {
 			}
 
 			if (!testRun.addToOutcomes(outcome).save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 		}
 

@@ -28,10 +28,41 @@ package cuanto
  */
 class ParsableTestCase implements Comparable {
 	String project
-	String packageName // todo: change to packageName
+	String packageName 
 	String testName
 	String fullName
+	String parameters
 	String description
+
+
+	boolean equals(o) {
+		if (this.is(o)) return true;
+
+		if (!(o instanceof ParsableTestCase)) return false;
+
+		ParsableTestCase that = (ParsableTestCase) o;
+
+		if (description ? !description.equals(that.description) : that.description != null) return false;
+		if (fullName ? !fullName.equals(that.fullName) : that.fullName != null) return false;
+		if (packageName ? !packageName.equals(that.packageName) : that.packageName != null) return false;
+		if (parameters ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+		if (project ? !project.equals(that.project) : that.project != null) return false;
+		if (testName ? !testName.equals(that.testName) : that.testName != null) return false;
+
+		return true;
+	}
+
+	int hashCode() {
+		int result;
+
+		result = (project ? project.hashCode() : 0);
+		result = 31 * result + (packageName ? packageName.hashCode() : 0);
+		result = 31 * result + (testName ? testName.hashCode() : 0);
+		result = 31 * result + (fullName ? fullName.hashCode() : 0);
+		result = 31 * result + (parameters ? parameters.hashCode() : 0);
+		result = 31 * result + (description ? description.hashCode() : 0);
+		return result;
+	}
 
 
 	public int compareTo(Object t) {
@@ -46,6 +77,8 @@ class ParsableTestCase implements Comparable {
 			return this.fullName.compareTo(other.fullName)
 		if (this.description != other.description)
 			return this.description.compareTo(other.description)
+		if (this.parameters != other.parameters)
+		    return this.parameters.compareTo(other.parameters)
 		return 0
 	}
 

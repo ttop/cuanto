@@ -116,6 +116,7 @@ class JunitReportParserTests extends GroovyTestCase{
 				 assertEquals "Wrong result", dataService.result("pass"), it.testResult
 				 assertNull "No analysis state should've been set", it.analysisState
 			 }
+			assertEquals "Wrong parameters", null, it.testCase.parameters
 		}
 	}
 
@@ -153,6 +154,7 @@ class JunitReportParserTests extends GroovyTestCase{
 			assertNotNull failedTest
 			assertEquals "Wrong result for ${testName}", dataService.result("fail"), failedTest.testResult
 			assertEquals "Wrong analysis state for ${testName}", dataService.getAnalysisStateByName("Unanalyzed"), failedTest.analysisState
+			assertEquals "Wrong parameters", null, failedTest.testCase.parameters
 		}
 
 		expectedErrors.each { testName ->
@@ -162,6 +164,7 @@ class JunitReportParserTests extends GroovyTestCase{
 			assertNotNull errorTest
 			assertEquals "Wrong result", dataService.result("error"), errorTest.testResult
 			assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), errorTest.analysisState
+			assertEquals "Wrong parameters", null, errorTest.testCase.parameters
 		}
 
 
@@ -214,6 +217,86 @@ class JunitReportParserTests extends GroovyTestCase{
 				 assertNull "No analysis state should've been set", it.analysisState
 			 }
 		}
+	}
+
+
+	void testJUnitReportOfJUnit44ParameterizedTest() {
+		Project proj = getProject()
+		proj.bugUrlPattern = "http://tpjira/browse/{BUG}"
+		TestRun run = testRunService.createTestRun([project:proj.toString()])
+		def testResultFile = getFile("junitReport_ParameterizedSingleTest.xml")
+		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		assertEquals run, returnedRun
+
+		// should be 4 tests
+		List outcomes = testRunService.getOutcomesForTestRun(run, null)
+		assertEquals 4, outcomes.size()
+
+		def passingTests = outcomes.findAll {
+			it.testCase.testName == "passTest"
+		}
+
+		assertEquals "Wrong number of tests named passTest", 2, passingTests.size()
+
+		passingTests.eachWithIndex { it, indx ->
+			assertEquals "Wrong result for test", dataService.result("pass"), it.testResult
+			assertNull "Wrong analysis state for test $indx - should be null", it.analysisState
+			assertNotNull "Parameters should not be null", it.testCase.parameters
+			assertTrue "Parameters should not be blank", it.testCase.parameters != ""
+		}
+
+		def failTests = outcomes.findAll {
+			it.testCase.testName == "failTest"
+		}
+		assertEquals "Wrong number of tests named failTest", 2, failTests.size()
+
+		def failTest = outcomes.findAll {
+			it.testCase.testName == "failTest" && it.testCase.parameters == "[1]"
+		}
+		assertEquals "Wrong number of failed tests", 1, failTest.size()
+		assertEquals "Wrong analysis state", dataService.result("error"), failTest[0].testResult
+		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), failTest[0].analysisState
+		assertEquals "Wrong parameters", "[1]", failTest[0].testCase.parameters
+	}
+
+
+	void testJUnitReportOfJUnit44ParameterizedSuite() {
+		Project proj = getProject()
+		proj.bugUrlPattern = "http://tpjira/browse/{BUG}"
+		TestRun run = testRunService.createTestRun([project:proj.toString()])
+		def testResultFile = getFile("junitReport_ParameterizedTestSuite.xml")
+		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		assertEquals run, returnedRun
+
+		// should be 13 tests
+		List outcomes = testRunService.getOutcomesForTestRun(run, null)
+		assertEquals 13, outcomes.size()
+
+		def passingTests = outcomes.findAll {
+			it.testCase.testName == "passTest"
+		}
+
+		assertEquals "Wrong number of tests named passTest", 2, passingTests.size()
+
+		passingTests.eachWithIndex { it, indx ->
+			assertEquals "Wrong result for test", dataService.result("pass"), it.testResult
+			assertNull "Wrong analysis state for test $indx - should be null", it.analysisState
+			assertNotNull "Parameters should not be null", it.testCase.parameters
+			assertTrue "Parameters should not be blank", it.testCase.parameters != ""
+		}
+
+		def failTests = outcomes.findAll {
+			it.testCase.testName == "failTest"
+		}
+		assertEquals "Wrong number of tests named failTest", 2, failTests.size()
+
+		def failTest = outcomes.findAll {
+			it.testCase.testName == "failTest" && it.testCase.parameters == "[1]"
+		}
+		assertEquals "Wrong number of failed tests", 1, failTest.size()
+		assertEquals "Wrong analysis state", dataService.result("error"), failTest[0].testResult
+		assertEquals "Wrong analysis state", dataService.getAnalysisStateByName("Unanalyzed"), failTest[0].analysisState
+		assertEquals "Wrong parameters", "[1]", failTest[0].testCase.parameters
 	}
 
 

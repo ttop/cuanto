@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto.formatter
+
+import cuanto.TestCase
+
 /**
  * User: Todd Wells
  * Date: Apr 4, 2009
@@ -28,15 +31,18 @@ package cuanto.formatter
 class ParentPackageFormatter implements TestNameFormatter {
 
 
-	public String getTestName(String packageName, String testName) {
+	public String getTestName(TestCase testCase) {
+		def packageName = testCase.packageName
+		def testName = testCase.testName
 		def parentPattern = ~/.+\.(.+)\.(.+$)/
 		def classPattern =  ~/(.+\.)?(.+$)/
+		def params = testCase.parameters ? testCase.parameters : ""
 
 		def parentMatcher = parentPattern.matcher(packageName)
 		if (parentMatcher.matches()) {
 			def parentPackage = parentMatcher[0][1]
 			def className = parentMatcher[0][2]
-			return "${parentPackage}.${className}.${testName}()"
+			return "${parentPackage}.${className}.${testName}($params)"
 		}
 
 		def classMatcher = classPattern.matcher(packageName)
@@ -47,14 +53,14 @@ class ParentPackageFormatter implements TestNameFormatter {
 			}
 			parentName += classMatcher[0][2]
 			
-			return "${parentName}.${testName}()"
+			return "${parentName}.${testName}($params)"
 		} else {
-			return "${testName}()"
+			return "${testName}($params)"
 		}
 	}
 
 	public String getDescription() {
-		"parentPackage.Class.testMethod()"
+		"parentPackage.Class.testMethod(params)"
 	}
 
 

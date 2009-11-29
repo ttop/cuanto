@@ -32,7 +32,7 @@ class TestOutcomeTests extends GroovyTestCase {
 	void testGetOutcomesByTestRun() {
 		Project proj = to.getProject()
 		if (!proj.save()) {
-			reportError proj
+			dataService.reportSaveError proj
 		}
 
 		final int numTests = 10
@@ -41,7 +41,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (x in 1..numTests) {
 			TestCase testCase = to.getTestCase(proj)
 			if (!proj.addToTestCases(testCase).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 			testCases.add(testCase)
 		}
@@ -52,7 +52,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
 			if (!testRunOne.addToOutcomes(out).save()) {
-				reportError testRunOne
+				dataService.reportSaveError testRunOne
 			}
 		}
 
@@ -62,7 +62,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
 			if (!testRunTwo.addToOutcomes(out).save()) {
-				reportError testRunTwo
+				dataService.reportSaveError testRunTwo
 			}
 		}
 
@@ -91,20 +91,20 @@ class TestOutcomeTests extends GroovyTestCase {
 		TestRun testRun = to.getTestRun(proj, "foobar")
 
 		if (!testRun.save()) {
-			reportError testRun
+			dataService.reportSaveError testRun
 		}
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "a.b.c"
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 1
 			if (!testRun.addToOutcomes(outcome).save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 		}
 
@@ -112,7 +112,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "x.y.z"
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -125,7 +125,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 
 			if (!testRun.addToOutcomes(outcome).save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 		}
 
@@ -134,7 +134,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			tc.packageName = "a.b."
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -145,7 +145,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("error")
 			}
 			if (!testRun.addToOutcomes(outcome).save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 		}
 
@@ -169,7 +169,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 			testCases += tc
 		}
@@ -186,7 +186,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				TestOutcome outcome = to.getTestOutcome(tc, testRun)
 				outcome.duration = 1
 				if (!testRun.addToOutcomes(outcome).save()) {
-					reportError testRun
+					dataService.reportSaveError testRun
 				}
 			}
 		}
@@ -294,7 +294,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			proj.addToTestCases(tc)
 
 			if (!proj.save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 		}
 
@@ -330,7 +330,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		1.upto(3){
 			def testRun = to.getTestRun(proj, "foobar")
 			if (!testRun.save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 			testRuns << testRun
 		}
@@ -339,13 +339,13 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[0])
 			outcome.duration = 1
 			if (!testRuns[0].addToOutcomes(outcome).save()) {
-				reportError testRuns[0]
+				dataService.reportSaveError testRuns[0]
 			}
 		}
 
@@ -353,7 +353,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(proj)
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[1])
@@ -366,7 +366,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 
 			if (!testRuns[1].addToOutcomes(outcome).save()) {
-				reportError testRuns[1]
+				dataService.reportSaveError testRuns[1]
 			}
 		}
 
@@ -377,7 +377,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(proj)
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[2])
@@ -396,7 +396,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				targetOutcomes << outcome
 			}
 			if (!testRuns[2].addToOutcomes(outcome).save()) {
-				reportError testRuns[2]
+				dataService.reportSaveError testRuns[2]
 			}
 		}
 
@@ -424,7 +424,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		1.upto(3){
 			def testRun = to.getTestRun(proj, "foobar")
 			if (!testRun.save()) {
-				reportError testRun
+				dataService.reportSaveError testRun
 			}
 			testRuns << testRun
 		}
@@ -433,13 +433,13 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[0])
 			outcome.duration = 1
 			if (!testRuns[0].addToOutcomes(outcome).save()) {
-				reportError testRuns[0]
+				dataService.reportSaveError testRuns[0]
 			}
 		}
 
@@ -447,7 +447,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(proj)
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[1])
@@ -460,7 +460,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 
 			if (!testRuns[1].addToOutcomes(outcome).save()) {
-				reportError testRuns[1]
+				dataService.reportSaveError testRuns[1]
 			}
 		}
 
@@ -471,7 +471,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(proj)
 
 			if (!proj.addToTestCases(tc).save()) {
-				reportError proj
+				dataService.reportSaveError proj
 			}
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[2])
@@ -490,7 +490,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				targetOutcomes << outcome
 			}
 			if (!testRuns[2].addToOutcomes(outcome).save()) {
-				reportError testRuns[2]
+				dataService.reportSaveError testRuns[2]
 			}
 		}
 
@@ -689,13 +689,5 @@ class TestOutcomeTests extends GroovyTestCase {
 	}
 
 
-	def reportError(domainObj) {
-		def errMsg = ""
-		domainObj.errors.allErrors.each {
-			errMsg += it.toString()
-		}
-		log.warning errMsg
-		fail(errMsg)
-	}
 
 }

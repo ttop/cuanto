@@ -60,11 +60,11 @@ class TestRunService {
 
 
 	def calculateAnalysisStats(TestRun testRun) {
-		def calculatedStats = testRun.testRunStatistics
+		def calculatedStats = testRun?.testRunStatistics
 		dataService.clearAnalysisStatistics(testRun)
 		def analysisStats = dataService.getAnalysisStatistics(testRun)
-		analysisStats.each { stat ->
-			calculatedStats.addToAnalysisStatistics(stat)
+		analysisStats?.each { stat ->
+			calculatedStats?.addToAnalysisStatistics(stat)
 		}
 		def analyzedStats = analysisStats.findAll { it.state.isAnalyzed }
 		def sum = analyzedStats.collect { it.qty }.sum()

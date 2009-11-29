@@ -116,9 +116,6 @@ class TestRunController {
 	def submitSingleTest = {
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
 		def testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId)
-		//def myJson = [:]
-		//myJson["testOutcomeId"] = testOutcome.id
-		//render myJson as JSON
 		render testOutcome.id
 	}
 
@@ -136,6 +133,7 @@ class TestRunController {
 		def totalCount
 		def recordStartIndex
 		def testRun = TestRun.get(params.id)
+		def outputChars = params.outputChars ? params.outputChars : 180
 
 		if (!testRun) {
 			redirect controller: 'project', action: 'list'
@@ -153,9 +151,12 @@ class TestRunController {
 			if (params.qry) {
 				totalCount = testRunService.countTestOutcomesBySearch(params)
 				outs = testRunService.searchTestOutcomes(params)
-			} else if (filter?.equalsIgnoreCase("allFailures") || filter?.equalsIgnoreCase("unanalyzedFailures")) {
+			} else if (filter?.equalsIgnoreCase("allFailures")) {
 				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
 				totalCount = dataService.countFailuresForTestRun(testRun)
+			} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
+				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
+				totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
 			} else if (filter?.equalsIgnoreCase("newFailures")) {
 				outs = testRunService.getNewFailures(testRun, queryParams)
 				totalCount = testRunService.countNewFailuresForTestRun(testRun)
@@ -173,11 +174,27 @@ class TestRunController {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
 				outs.each {outcome ->
-					jsonOutcomes += [testCase: [name:formatter.getTestName(outcome.testCase.packageName,
-						outcome.testCase.testName),	id:outcome.testCase.id],
+					def currentOutcome = [
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner,
-						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id]
+						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
+					]
+
+					if (outcome.testOutput) {
+						def maxChars = outcome.testOutput.size() > outputChars ? outputChars : outcome.testOutput.size()
+						currentOutcome.output = outcome.testOutput[0..maxChars - 1]
+					} else {
+						currentOutcome.output = null
+					}
+
+					def currentTestCase = [name:formatter.getTestName(outcome.testCase), id:outcome.testCase.id]
+
+					if (outcome.testCase.parameters) {
+						currentTestCase.parameters = outcome.testCase.parameters
+					}
+
+					currentOutcome.testCase = currentTestCase
+					jsonOutcomes << currentOutcome
 				}
 
 				def myJson = ['totalCount': totalCount, count: outs?.size(), testOutcomes: jsonOutcomes,
@@ -318,8 +335,8 @@ class TestRunController {
 	private getFilterList() {
 		def filterList = []
 		filterList += [id: "allfailures", value: "All Failures"]
-		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
 		filterList += [id: "newfailures", value: "New Failures"]
+		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
 		filterList += [id: "allresults", value: "All Results"]
 		return filterList
 	}
