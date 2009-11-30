@@ -33,7 +33,7 @@ YAHOO.cuanto.format = function() {
 		var wkStr = new String();
 		var i = 0;
 		var splitPoint = -1;
-		while (getWidthForColumnText(wkStr + tokens[i]) < max)
+		while (getWidthForColumnText(wkStr + tokens[i]) < max && i < tokens.length)
 		{
 			wkStr += tokens[i];
 			if (i < tokens.length - 1) {
@@ -158,6 +158,21 @@ YAHOO.cuanto.format = function() {
 		    return false;
         });
     };
+	
+	pub.formatOutput = function(elCell, oRecord, oColumn, oData)
+	{
+		if (!oData)
+		{
+			elCell.innerHTML = oData;
+			return;
+		}
+		var outputContainer = new Element('span');
+
+		var removed = oData.replace(/[\n|\r\n]/g, " ");
+		var broken = pub.breakOnToken(removed, " ", 400);
+		outputContainer.innerHTML = broken.replace(/[\n|\r\n]/g, "<br/>");
+		elCell.appendChild(outputContainer);
+	};
 
 	pub.toggleSummary = function(e, truncationToggler, noteContainer, noteFieldValue) {
 		YAHOO.util.Event.preventDefault(e);

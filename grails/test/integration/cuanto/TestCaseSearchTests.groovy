@@ -36,7 +36,7 @@ class TestCaseSearchTests extends GroovyTestCase {
 		Project project = getProject()
 		project.testType = testType
 		TestRun run = to.getTestRun(project, wordGen.getWord())
-		saveDomainObject(run)
+		dataService.saveDomainObject(run)
 
 		def names = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "Motel"]
 
@@ -45,9 +45,9 @@ class TestCaseSearchTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(project)
 			tc.testName = name
 			tc.fullName = tc.packageName + "." + tc.testName
-			saveDomainObject(project.addToTestCases(tc))
+			dataService.saveDomainObject(project.addToTestCases(tc))
 			TestOutcome outcome = to.getTestOutcome(tc, run)
-			saveDomainObject(run.addToOutcomes(outcome))
+			dataService.saveDomainObject(run.addToOutcomes(outcome))
 			outcomes += outcome
 		}
 
@@ -62,23 +62,8 @@ class TestCaseSearchTests extends GroovyTestCase {
 
 	Project getProject() {
 		Project proj = to.getProject()
-		saveDomainObject(proj)
+		dataService.saveDomainObject(proj)
 		return proj
 	}
 
-
-	def reportError(domainObj) {
-		def errMsg = ""
-		domainObj.errors.allErrors.each {
-			errMsg += it.toString()
-		}
-		log.warning errMsg
-		fail(errMsg)
-	}
-
-	def saveDomainObject(domainObj) {
-		if (!domainObj.save(flush:true)) {
-			reportError domainObj
-		}
-	}
 }

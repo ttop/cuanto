@@ -53,6 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					    <a id="deselectAll" alt="Deselect All" href="#selectNone">Deselect All</a> |
 					    <span id="currentSelected" alt="Currently Selected">0 Tests Selected</span>
 				    </span>
+					<a id="chooseColumns" class="selectCmd" alt="Choose Columns" href="#chooseColumns">Choose Columns</a>
 				<br/>
 				</div>
 				<div id='trDetailsTable'>Loading...</div>

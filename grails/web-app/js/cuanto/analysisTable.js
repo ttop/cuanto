@@ -24,6 +24,8 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
+	var prefHiddenColumns = "hiddenColumns";
+
 	var dataTable;
 	var analysisDialog;
 	var testRunDialog = new YAHOO.cuanto.TestRunDialog();
@@ -37,6 +39,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var historyImgUrl =  YAHOO.cuanto.urls.get('historyImg');
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
 	var anlzImgUrl = YAHOO.cuanto.urls.get('analysisImg');
+	var columnDialog;
 	var dataTableEventOverrides = {
 		"cellClickEvent": [
 			{
@@ -70,6 +73,13 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener('tcFormat', "change", onTcFormatChange);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
+
+		var hiddenCols = getHiddenColumns();
+		dataTable.getColumnSet().flat.each(function(column) {
+			if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
+				dataTable.hideColumn(column.key);
+			}
+		});
 
 		dataTable.handleDataReturnPayload = processPayload;
 
@@ -116,6 +126,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener("cancelNote", "click", onCancelNote);
 		YAHOO.util.Event.addListener("editTestRun", "click", onEditTestRun);
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
+		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
 
 		new YAHOO.widget.Tooltip("feedtt", {context:"feedImg"});
@@ -133,7 +144,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -304,6 +315,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		noteEditor.subscribe("showEvent", showNoteEditor);
 
 		var toolWidth = Prototype.Browser.IE ? 70 : 50;
+
 		return [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
@@ -318,7 +330,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				editor: bugEditor},
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
 			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
-                editor: noteEditor}
+                editor: noteEditor},
+			{key: "output", label: "Output", minWidth: 150, resizeable: true, sortable: true,
+				formatter:YAHOO.cuanto.format.formatOutput}
 		];
 	}
 
@@ -610,7 +624,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function onTcFormatChange(e) {
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat());
+		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat(), {path: "/", expires: new Date().getDate() + 30});
 		setTcFormatPref();
 		onTableStateChange(e);
 	}
@@ -622,6 +636,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, tcFormat, {path: "/", expires: expDate});
 		return tcFormat;
 	}
+
 
 	function onTableStateChange(e) {
 		var newRequest = generateNewRequest();
@@ -739,6 +754,16 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		}, 5000);
 	}
 
+	function chooseColumns(e) {
+		YAHOO.util.Event.preventDefault(e);
+		if (!columnDialog)
+		{
+			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
+				["result", "analysisState", "duration", "bug", "owner", "note", "output"]);
+		}
+		columnDialog.show();
+
+	}
 
 	function deleteTestRun(e) {
 		YAHOO.util.Event.preventDefault(e);
@@ -789,6 +814,22 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function unescapeHtmlEntities(s) {
 		return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+	}
+
+	function getHiddenColumns() {
+		var cols = {};
+		var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, prefHiddenColumns);
+		if (cookie) {
+			var pairs = cookie.split(",");
+			pairs.each(function(pair) {
+				var items = pair.split(":");
+				cols[items[0]] = (/^true$/i).test(items[1]);
+			});
+		}
+		else {
+			cols["output"] = true;
+		}
+		return cols;
 	}
 };
 

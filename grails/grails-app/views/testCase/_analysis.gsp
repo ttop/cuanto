@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<col class="fieldSelect"/>
 			<col class="fieldName"/>
 			<tr><th colspan="2" class="smaller" id="fieldHdr">Include fields</th><th></th></tr>
-			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="testResult"/></td><td class="intable">Result:</td>
+			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="testResult" checked="false"/></td><td class="intable">Result:</td>
 				<td id="testResult"/></tr>
 			<tr><td class="fieldSelect"><g:checkBox name="srcfield" value="analysisState"/></td>
 				<td class="intable">Reason:</td>

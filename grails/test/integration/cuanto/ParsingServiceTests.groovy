@@ -28,9 +28,7 @@ class ParsingServiceTests extends GroovyTestCase {
 	void testFindCases() {
 		Project project = new Project(name: "ParsingServiceTestProject", projectKey: fakes.getProjectKey())
 		project.testType = TestType.findByName("JUnit")
-		if (!project.save()) {
-			reportErrors project
-		}
+		dataService.saveDomainObject(project)
 
 		TestCase tCase = new TestCase()
 		tCase.packageName = "foo"
@@ -40,11 +38,11 @@ class ParsingServiceTests extends GroovyTestCase {
 		tCase.project = project
 
 		if (!project.addToTestCases(tCase).save()) {
-			reportErrors project
+			dataService.reportSaveError project
 		}
 
 		if (!project.addToTestCases(tCase).save(flush: true)) {
-			reportErrors project
+			dataService.reportSaveError project
 		}
 
 		TestCase t2 = new TestCase()
@@ -73,9 +71,7 @@ class ParsingServiceTests extends GroovyTestCase {
 
 		TestRun testRun = fakes.getTestRun(proj, "foobar")
 
-		if (!testRun.save()) {
-			reportError testRun
-		}
+		dataService.saveDomainObject(testRun)
 
 		getFile("junitReport_single_suite.xml").withInputStream {
 			TestRun tr = parsingService.parseFileFromStream(it, testRun.id)
@@ -95,12 +91,5 @@ class ParsingServiceTests extends GroovyTestCase {
 		assertTrue("Couldn't find file: ${file.toString()}", file.exists())
 		return file
 	}
-
-	def reportErrors(obj) {
-		def message = ""
-		obj.errors.allErrors.each {
-			message += it.toString() + "\n"
-		}
-		fail message
-	}
+	
 }
