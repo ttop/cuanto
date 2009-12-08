@@ -30,25 +30,34 @@ import cuanto.TestCase
  */
 class ClassnameFormatter implements TestNameFormatter {
 
+	Boolean showParams = false
+
 	public String getTestName(TestCase testCase) {
 		def packageName = testCase.packageName
 		def testName = testCase.testName
-		
-		def pattern = ~/.+\.(.+$)/
-		def params = testCase.parameters ? testCase.parameters : ""
 
+		def params = ""
+		if (showParams) {
+			params = testCase.parameters ? "(${testCase.parameters})" : "()"
+		}
+
+		def pattern = ~/.+\.(.+$)/
 		def matcher = pattern.matcher(packageName)
 		if (matcher.matches()) {
 			def className = matcher[0][1]
-			return "${className}.${testName}(${params})"
+			return "${className}.${testName + params}"
 		} else {
-			return "${testName}(${params})"
+			return testName + params
 		}
 	}
 
 
 	public String getDescription() {
-		"Class.testMethod(params)"
+		if (showParams) {
+			return "Class.testMethod(params)"
+		} else {
+			return "Class.testMethod"
+		}
 	}
 
 

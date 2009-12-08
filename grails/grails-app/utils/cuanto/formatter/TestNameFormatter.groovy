@@ -23,8 +23,9 @@ package cuanto.formatter
 import cuanto.TestCase
 
 interface TestNameFormatter {
-	//String getTestName(String packageName, String testName)
 	String getTestName(TestCase testCase)
 	String getDescription()
 	String getKey()
+	void setShowParams(Boolean showParams)
+	Boolean getShowParams()
 }

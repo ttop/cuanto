@@ -149,7 +149,16 @@ class DataService {
 
 
 	def findMatchingTestCaseForProject(Project project, TestCase testcase) {
-		TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?", [project, testcase.fullName])
+		def query = "from cuanto.TestCase as tc where tc.project=? and tc.fullName=? "
+		if (testcase.parameters == null) {
+			query += "and is null (tc.parameters)"
+			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?",
+				[project, testcase.fullName])
+		} else {
+			query += "and tc.parameters=?"
+			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=? and tc.parameters=?",
+				[project, testcase.fullName, testcase.parameters])
+		}
 	}
 
 

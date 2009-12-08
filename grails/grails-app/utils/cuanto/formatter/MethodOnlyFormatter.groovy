@@ -30,14 +30,23 @@ import cuanto.TestCase
  */
 class MethodOnlyFormatter implements TestNameFormatter {
 
+	Boolean showParams = false
+	
 	public String getTestName(TestCase testCase) {
-		def params = testCase.parameters ? testCase.parameters : ""
-		return "${testCase.testName}($params)"
+		def params = ""
+		if (showParams) {
+			params = testCase.parameters ? "(${testCase.parameters})" : "()"
+		}
+		return testCase.testName + params
 	}
 
 
 	public String getDescription() {
-		"testMethod(params)"
+		if (showParams) {
+			return "testMethod(params)"
+		} else {
+			return "testMethod"
+		}
 	}
 
 
