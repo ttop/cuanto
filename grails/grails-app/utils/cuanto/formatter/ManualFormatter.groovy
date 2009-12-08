@@ -30,20 +30,30 @@ import cuanto.TestCase
  */
 class ManualFormatter implements TestNameFormatter {
 
+	Boolean showParams = false
 
 	public String getTestName(TestCase testCase) {
 		def packageName = testCase.packageName
 		def testName = testCase.testName
-		def params = testCase.parameters == null ? "" : ": ${testCase.parameters}"
+
+		def params = ""
+		if (showParams) {
+			params = testCase.parameters ? ": ${testCase.parameters}" : ""
+		}
+
 		if (packageName) {
-			return "${packageName} $testName${params}"
+			return "${packageName} ${testName + params}"
 		} else {
 			return testName + params
 		}
 	}
 
 	public String getDescription() {
-		"full.package.path testName: params"
+		if (showParams) {
+			return "full.package.path testName: params"
+		} else {
+			return "full.package.path testName"
+		}
 	}
 
 

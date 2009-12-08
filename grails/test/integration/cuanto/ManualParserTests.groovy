@@ -54,7 +54,7 @@ class ManualParserTests extends GroovyTestCase{
 			}
 			assertNotNull "${name} not found", outcome
 			assertEquals "birds", outcome.testCase.packageName
-			assertEquals "Wrong fullname", "birds ${name}", outcome.testCase.fullName
+			assertEquals "Wrong fullname", "birds.${name}", outcome.testCase.fullName
 		}
 
 		def cherryStOutcome = outcomes.find { it.testCase.testName == "Cherry Street Test" }

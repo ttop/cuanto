@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
-import cuanto.formatter.FullPackageFormatter
-import cuanto.formatter.ManualFormatter
 
 
 /**
@@ -38,8 +36,6 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 
-	def fullPackageFormatter = new FullPackageFormatter()
-	def manualFormatter = new ManualFormatter()
 
 	TestRun parseFileFromStream(stream, testRunId) {
 		def testRun = getTestRun(testRunId)
@@ -116,14 +112,11 @@ class ParsingService {
 			parameters: parsableTestOutcome.testCase.parameters
 		)
 
-		if (testCase.packageName == null) {
-			testCase.packageName = ""
-		}
-
-		if (testRun?.project?.testType?.name == "Manual") {
-			testCase.fullName = manualFormatter.getTestName(testCase)
+		if (testCase.packageName) {
+			testCase.fullName = testCase.packageName + "." + testCase.testName
 		} else {
-			testCase.fullName = fullPackageFormatter.getTestName(testCase)
+			testCase.packageName = ""
+			testCase.fullName = testCase.testName
 		}
 
 		return testCase

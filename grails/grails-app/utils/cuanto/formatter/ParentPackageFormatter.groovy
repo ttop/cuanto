@@ -30,19 +30,24 @@ import cuanto.TestCase
  */
 class ParentPackageFormatter implements TestNameFormatter {
 
+	Boolean showParams = false
 
 	public String getTestName(TestCase testCase) {
 		def packageName = testCase.packageName
 		def testName = testCase.testName
 		def parentPattern = ~/.+\.(.+)\.(.+$)/
 		def classPattern =  ~/(.+\.)?(.+$)/
-		def params = testCase.parameters ? testCase.parameters : ""
+
+		def params = ""
+		if (showParams) {
+			params = testCase.parameters ? "(${testCase.parameters})" : "()"
+		}
 
 		def parentMatcher = parentPattern.matcher(packageName)
 		if (parentMatcher.matches()) {
 			def parentPackage = parentMatcher[0][1]
 			def className = parentMatcher[0][2]
-			return "${parentPackage}.${className}.${testName}($params)"
+			return "${parentPackage}.${className}.${testName + params}"
 		}
 
 		def classMatcher = classPattern.matcher(packageName)
@@ -53,14 +58,18 @@ class ParentPackageFormatter implements TestNameFormatter {
 			}
 			parentName += classMatcher[0][2]
 			
-			return "${parentName}.${testName}($params)"
+			return "${parentName}.${testName + params}"
 		} else {
-			return "${testName}($params)"
+			return "${testName + params}"
 		}
 	}
 
 	public String getDescription() {
-		"parentPackage.Class.testMethod(params)"
+		if (showParams) {
+			return "parentPackage.Class.testMethod(params)"
+		} else {
+			return "parentPackage.Class.testMethod"
+		}
 	}
 
 
