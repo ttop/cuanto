@@ -96,17 +96,10 @@ class DataService {
 
 
 	def getProject(groupName, projectName) throws CuantoException {  //todo: optimize
+		def project = null
 		def group = findProjectGroupByName(groupName)
-		def project = Project.findByProjectGroupAndName(group, projectName)
-		if (project) {
-			return project
-		} else {
-			def msg = "Couldn't find project named ${projectName}"
-			if (groupName) {
-				msg += " with group ${groupName}"
-			}
-			throw new CuantoException(msg)
-		}
+		project = Project.findByProjectGroupAndName(group, projectName)
+		return project
 	}
 
 

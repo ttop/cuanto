@@ -29,7 +29,7 @@
 	</target>
 
 	<target name="submitTestNG" depends="init">
-		<cuanto url="${cuanto.url}" testProject="Sample/CuantoNG" milestone="1.1" build="352442" targetEnv="test lab"
+		<cuanto url="${cuanto.url}" testProject="CNG" milestone="1.1" build="352442" targetEnv="test lab"
 			resultfile="../grails/test/resources/testng-results-params.xml"/>
 	</target>
 </project>

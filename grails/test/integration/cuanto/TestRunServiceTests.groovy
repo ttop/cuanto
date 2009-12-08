@@ -274,6 +274,29 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals "Wrong number of outcomes returned", 2, searchResults.size()
 		assertEquals "Wrong outcome", runOneOutcomes[0], searchResults[0]
 		assertEquals "Wrong outcome", runOneOutcomes[1], searchResults[1]
-	}	
+	}
+
+	void testGetProject() {
+		def groupNames = ["aa", "bb", "cc"]
+		def projectsPerGroup = 3
+		def projects = []
+
+		groupNames.each { groupName ->
+			def group = to.getProjectGroup(groupName)
+			dataService.saveDomainObject(group)
+			1.upto(projectsPerGroup) {
+				def proj = new Project(name: to.wordGen.getSentence(3), projectKey: to.getProjectKey(),
+					projectGroup: group, 'testType': TestType.findByName("JUnit"))
+				dataService.saveDomainObject(proj)
+				projects << proj
+			}
+		}
+
+		projects.each { proj ->
+			def foundProj = testRunService.getProject(proj.projectKey)
+			assertNotNull foundProj
+			assertEquals proj, foundProj
+		}
+	}
 }
 

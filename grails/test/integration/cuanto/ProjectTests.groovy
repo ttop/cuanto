@@ -59,17 +59,9 @@ class ProjectTests extends GroovyTestCase {
 		assertNotNull nullGroupProject
 		assertEquals proj, nullGroupProject
 
-		shouldFail(CuantoException) {
-			projectService.getProjectByFullName(null)
-		}
-
-		shouldFail(CuantoException) {
-			projectService.getProjectByFullName("")
-		}
-
-		shouldFail(CuantoException) {
-			projectService.getProjectByFullName("foo/bar/baz")
-		}
+		assertEquals null, projectService.getProjectByFullName(null)
+		assertEquals null, projectService.getProjectByFullName("")
+		assertEquals null, projectService.getProjectByFullName("foo/bar/baz")
 	}
 
 
@@ -181,23 +173,10 @@ class ProjectTests extends GroovyTestCase {
 		def nullGroupProject = dataService.getProject(null, proj.name)
 		assertNotNull nullGroupProject
 		assertEquals proj, nullGroupProject
-
-		shouldFail(CuantoException) {
-			dataService.getProject(null, null)
-		}
-
-		shouldFail(CuantoException) {
-			dataService.getProject("foobar", null)
-		}
-
-		shouldFail(CuantoException) {
-			dataService.getProject(groupNames[0], null)
-		}
-
-		shouldFail(CuantoException) {
-			dataService.getProject(groupNames[1], fakes.wordGen.getSentence(3))
-		}
-
+		assertEquals null, dataService.getProject(null, null)
+		assertEquals null, dataService.getProject("foobar", null)
+		assertEquals null, dataService.getProject(groupNames[0], null)
+		assertEquals null, dataService.getProject(groupNames[1], fakes.wordGen.getSentence(3))
 	}
 
 
