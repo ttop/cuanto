@@ -321,6 +321,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
 				formatter: formatTestCase, sortable:true},
+			{key:"parameters", label:"Parameters", resizeable:true, formatter:formatParameters, sortable: false},
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
@@ -380,6 +381,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		elCell.innerHTML = displayStr;
 	}
 
+	function formatParameters(elCell, oRecord, oColumn, oData) {
+		var tc = oRecord.getData('testCase');
+		var out = "";
+		if (tc && tc.parameters) {
+			out = tc.parameters;
+		}
+		elCell.innerHTML = out;
+	}
 
 	function formatActionCol(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = "";
@@ -759,7 +768,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (!columnDialog)
 		{
 			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["result", "analysisState", "duration", "bug", "owner", "note", "output"]);
+				["parameters", "result", "analysisState", "duration", "bug", "owner", "note", "output"]);
 		}
 		columnDialog.show();
 
@@ -828,6 +837,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		}
 		else {
 			cols["output"] = true;
+			cols["parameters"] = true;
 		}
 		return cols;
 	}
