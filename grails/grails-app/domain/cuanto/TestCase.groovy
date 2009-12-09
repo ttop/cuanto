@@ -26,9 +26,9 @@ class TestCase implements Comparable{
 
 	static constraints = {
 		project(nullable: false)
-		testName(nullable: false, blank: false)
-		fullName(nullable:false, blank: false)
-		description(nullable: true, blank: true, maxSize:2048)
+		testName(nullable: false, blank: false, maxSize: 1024)
+		fullName(nullable:false, blank: false, index:"full_name_idx")
+		description(nullable: true, blank: true, maxSize: 2048)
 		packageName(nullable:true)
 		parameters(nullable:true)
 	}
