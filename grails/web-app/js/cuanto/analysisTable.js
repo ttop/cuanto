@@ -82,7 +82,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		});
 
 		dataTable.handleDataReturnPayload = processPayload;
-
 		dataTable.set("selectionMode", "single");
 
 		// iterate over dataTableEventOverrides.cellClickEvent for any overridden events
@@ -111,7 +110,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataTable.subscribe("editorBlurEvent", function(oArgs) {
 			this.cancelCellEditor();
 		});
-
 		analysisDialog = new YAHOO.cuanto.analysisDialog(ovrlyMgr, outputProxy);
 
 		YAHOO.util.Event.addListener("showSelectCol", "click", showSelectColumn);
@@ -413,7 +411,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		YAHOO.util.Event.addListener(outputLinkId, "click", showOutput);
 		YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
-		YAHOO.util.Event.addListener(anlzLink, "click", analysisDialog.showAnalysisDialog, null,
+		YAHOO.util.Event.addListener(anlzLink, "click", showAnalysisDialog, null,
 			analysisDialog);
 		setTimeout(function() {
 			setImgTitleAndAlt(historyImg, "Test History (new window)");
@@ -427,13 +425,30 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		imgElem.setAttribute('alt', title);
 	}
 
-	
-	function showOutput(e) {
-		outputPanel.showOutputForLink(e, ovrlyMgr);
+	function showAnalysisDialog(e) {
+		analysisDialog.showAnalysisDialog(e);
+		highlightRowForEvent(e);
 	}
 
 
+	function showOutput(e) {
+		outputPanel.showOutputForLink(e, ovrlyMgr);
+		highlightRowForEvent(e);
+	}
+
+	function highlightRowForEvent(e) {
+		dataTable.unselectAllRows();
+		var row = getRowFromEvent(e);
+		dataTable.selectRow(row);
+	}
+
+	function getRowFromEvent(e) {
+		var targ = YAHOO.util.Event.getTarget(e);
+		return dataTable.getTrEl(targ);
+	}
+
 	function showHistoryForLink(e, oid) {
+		highlightRowForEvent(e);
 		var newwindow = window.open(YAHOO.cuanto.urls.get('testCaseHistory') + oid, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
