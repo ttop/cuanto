@@ -14,27 +14,19 @@ class TestNgParserTests extends GroovyTestCase {
 		def parser = new TestNgParser()
 		List<ParsableTestOutcome> outcomes = parser.parseFile(getFile("testng_output.xml"))
 
-		assertEquals "Wrong number of test outcomes", 3, outcomes.size()
+		assertEquals "Wrong number of test outcomes", 2, outcomes.size()
+
 		assertEquals "Wrong result", "Fail", outcomes[0].testResult
-		assertEquals "Wrong result", "Pass", outcomes[1].testResult
-		assertEquals "Wrong result", "Pass", outcomes[2].testResult
-
 		assertEquals "Wrong fullname", "com.test.TestOne.test1", outcomes[0].testCase.fullName
-		assertEquals "Wrong fullname", "com.test.TestOne.test2", outcomes[1].testCase.fullName
-		assertEquals "Wrong fullname", "com.test.TestOne.setUp", outcomes[2].testCase.fullName
-
 		assertEquals "Wrong name", "test1", outcomes[0].testCase.testName
-		assertEquals "Wrong name", "test2", outcomes[1].testCase.testName
-		assertEquals "Wrong name", "setUp", outcomes[2].testCase.testName
-
 		assertEquals "Wrong duration", 23, outcomes[0].duration
-		assertEquals "Wrong duration", 0, outcomes[1].duration
-		assertEquals "Wrong duration", 15, outcomes[2].duration
-
 		assertEquals "Wrong description", "someDescription2", outcomes[0].testCase.description
-		assertEquals "Wrong description", "someDescription1", outcomes[1].testCase.description
-		assertNull "Wrong description", outcomes[2].testCase.description
 
+		assertEquals "Wrong result", "Pass", outcomes[1].testResult
+		assertEquals "Wrong fullname", "com.test.TestOne.test2", outcomes[1].testCase.fullName
+		assertEquals "Wrong name", "test2", outcomes[1].testCase.testName
+		assertEquals "Wrong duration", 0, outcomes[1].duration
+		assertEquals "Wrong description", "someDescription1", outcomes[1].testCase.description
 		assertEquals "Wrong filetype", "TestNG", parser.testType
 	}
 
