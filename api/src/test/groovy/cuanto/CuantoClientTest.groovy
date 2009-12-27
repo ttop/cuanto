@@ -115,7 +115,7 @@ class CuantoClientTest extends GroovyTestCase{
 		def msg = shouldFail(IllegalArgumentException) {
 			client.getTestRunId(projName, null, null, null, null)
 		}
-		assertEquals "Wrong error message", "Couldn't find project named ${projName}", msg 
+		assertEquals "Wrong error message", "Unable to locate project with the project key or full title of ${projName}", msg 
 	}
 
 
