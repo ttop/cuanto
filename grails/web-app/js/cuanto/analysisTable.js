@@ -103,8 +103,16 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				}
 
 				// invoke the cell editor only if the event is not overridden.
-				if (!eventOverriden)
+				if (!eventOverriden){
 					dataTable.onEventShowCellEditor(o);
+				}
+
+				var col = dataTable.getColumn(o.target);
+				if (col.getKeyIndex() != 0)
+				{
+					highlightRowForEvent(o);
+				}
+
 			}, this);
 		dataTable.subscribe("editorSaveEvent", inlineEditHandler);
 		dataTable.subscribe("editorBlurEvent", function(oArgs) {
@@ -427,13 +435,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function showAnalysisDialog(e) {
 		analysisDialog.showAnalysisDialog(e);
-		highlightRowForEvent(e);
 	}
 
 
 	function showOutput(e) {
 		outputPanel.showOutputForLink(e, ovrlyMgr);
-		highlightRowForEvent(e);
 	}
 
 	function highlightRowForEvent(e) {
@@ -448,7 +454,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	}
 
 	function showHistoryForLink(e, oid) {
-		highlightRowForEvent(e);
 		var newwindow = window.open(YAHOO.cuanto.urls.get('testCaseHistory') + oid, 'name',
 			'height=400,width=900, status=1, toolbar=1, resizable=1, scrollbars=1, menubar=1, location=1');
 		if (window.focus) {
