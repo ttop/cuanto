@@ -96,17 +96,10 @@ class DataService {
 
 
 	def getProject(groupName, projectName) throws CuantoException {  //todo: optimize
+		def project = null
 		def group = findProjectGroupByName(groupName)
-		def project = Project.findByProjectGroupAndName(group, projectName)
-		if (project) {
-			return project
-		} else {
-			def msg = "Couldn't find project named ${projectName}"
-			if (groupName) {
-				msg += " with group ${groupName}"
-			}
-			throw new CuantoException(msg)
-		}
+		project = Project.findByProjectGroupAndName(group, projectName)
+		return project
 	}
 
 
@@ -149,7 +142,16 @@ class DataService {
 
 
 	def findMatchingTestCaseForProject(Project project, TestCase testcase) {
-		TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?", [project, testcase.fullName])
+		def query = "from cuanto.TestCase as tc where tc.project=? and tc.fullName=? "
+		if (testcase.parameters == null) {
+			query += "and is null (tc.parameters)"
+			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?",
+				[project, testcase.fullName])
+		} else {
+			query += "and tc.parameters=?"
+			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=? and tc.parameters=?",
+				[project, testcase.fullName, testcase.parameters])
+		}
 	}
 
 
@@ -249,7 +251,7 @@ class DataService {
 			sort = "t.testCase.fullName"
 		}
 
-		def query = "from cuanto.TestOutcome t where t.testRun = ? order by ${sort} ${order}"
+		def query = "from cuanto.TestOutcome t where t.testRun = ? order by ${sort} ${order}, t.testCase.parameters asc"
 
 		def results
 		if (paging) {
@@ -264,7 +266,7 @@ class DataService {
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
-		return TestOutcome.executeQuery("from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true order by ${sort} ${order}",
+		return TestOutcome.executeQuery("from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true order by ${sort} ${order}, t.testCase.parameters asc",
 			[run], paging)
 	}
 
@@ -273,7 +275,7 @@ class DataService {
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeUnanalyzedFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
 		return TestOutcome.executeQuery("""from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true
-and t.analysisState.isAnalyzed = false order by ${sort} ${order}""",
+and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.parameters asc""",
 			[run], paging)
 	}
 
@@ -295,7 +297,7 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}""",
 			order = "asc"
 		}
 
-		query += "order by t.testCase.fullName ${order} "
+		query += "order by t.testCase.fullName ${order}, t.testCase.parameters asc "
 		def outcomes
 		if (paging) {
 			outcomes = TestOutcome.executeQuery(query, queryArgs, paging)
@@ -548,7 +550,7 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 	def getTestCases(project, offset, max) {
 		def testCases = TestCase.executeQuery(
-			"from cuanto.TestCase as tc where tc.project = ? order by tc.packageName asc, tc.testName asc", [project],
+			"from cuanto.TestCase as tc where tc.project = ? order by tc.packageName asc, tc.testName asc, tc.parameters asc", [project],
 			['max': max, 'offset': offset])
 		return testCases
 	}

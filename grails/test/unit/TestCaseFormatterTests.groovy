@@ -13,18 +13,17 @@ class TestCaseFormatterTests extends GroovyTestCase {
 	final static String BAD_FORMAT = "Wrong format"
 	final static String BAD_KEY = "Wrong key"
 	
-	void testFullPackageFormatter() {
+	void testFullPackageFormatterWithoutParams() {
 		def formatter = new FullPackageFormatter()
-		assertEquals BAD_DESCRIPTION, "full.package.Class.testMethod(params)", formatter.description
 		assertEquals BAD_KEY, "fullpackage", formatter.key
-
-		assertEquals BAD_FORMAT, "Spinal.tap()", formatter.getTestName(new TestCase(packageName: 'Spinal', testName: 'tap')) 
-		assertEquals BAD_FORMAT, "goes.to.eleven()", formatter.getTestName(new TestCase(packageName: 'goes.to', testName: 'eleven')) 
-		assertEquals BAD_FORMAT, "stonehenge()", formatter.getTestName(new TestCase(packageName: '', testName: 'stonehenge')) 
+		assertEquals BAD_DESCRIPTION, "full.package.Class.testMethod", formatter.description
+		assertEquals BAD_FORMAT, "Spinal.tap", formatter.getTestName(new TestCase(packageName: 'Spinal', testName: 'tap'))
+		assertEquals BAD_FORMAT, "goes.to.eleven", formatter.getTestName(new TestCase(packageName: 'goes.to', testName: 'eleven'))
+		assertEquals BAD_FORMAT, "stonehenge", formatter.getTestName(new TestCase(packageName: '', testName: 'stonehenge'))
 	}
 
 	void testFullPackageFormatterWithParams() {
-		def formatter = new FullPackageFormatter()
+		def formatter = new FullPackageFormatter(showParams: true)
 		assertEquals BAD_DESCRIPTION, "full.package.Class.testMethod(params)", formatter.description
 		assertEquals BAD_KEY, "fullpackage", formatter.key
 
@@ -38,18 +37,18 @@ class TestCaseFormatterTests extends GroovyTestCase {
 
 	void testClassnameFormatter() {
 		def formatter = new ClassnameFormatter()
-		assertEquals BAD_DESCRIPTION, "Class.testMethod(params)", formatter.description
+		assertEquals BAD_DESCRIPTION, "Class.testMethod", formatter.description
 		assertEquals BAD_KEY, "classname", formatter.key
 
-		assertEquals BAD_FORMAT, "Dwight.Schrute()", formatter.getTestName(new TestCase(packageName: 'office.Dwight', testName: 'Schrute')) 
-		assertEquals BAD_FORMAT, "liz.Lemon()", formatter.getTestName(new TestCase(packageName: '30.rock.liz', testName: 'Lemon')) 
-		assertEquals BAD_FORMAT, "joelMcHale()", formatter.getTestName(new TestCase(packageName: '', testName: "joelMcHale")) 
-		assertEquals BAD_FORMAT, "you.up()", formatter.getTestName(new TestCase(packageName: 'never.gonna.give.you', testName: 'up')) 
-		assertEquals BAD_FORMAT, "boring()", formatter.getTestName(new TestCase(packageName: '', testName: 'boring')) 
+		assertEquals BAD_FORMAT, "Dwight.Schrute", formatter.getTestName(new TestCase(packageName: 'office.Dwight', testName: 'Schrute'))
+		assertEquals BAD_FORMAT, "liz.Lemon", formatter.getTestName(new TestCase(packageName: '30.rock.liz', testName: 'Lemon'))
+		assertEquals BAD_FORMAT, "joelMcHale", formatter.getTestName(new TestCase(packageName: '', testName: "joelMcHale"))
+		assertEquals BAD_FORMAT, "you.up", formatter.getTestName(new TestCase(packageName: 'never.gonna.give.you', testName: 'up'))
+		assertEquals BAD_FORMAT, "boring", formatter.getTestName(new TestCase(packageName: '', testName: 'boring'))
 	}
 
 	void testClassnameFormatterWithParams() {
-		def formatter = new ClassnameFormatter()
+		def formatter = new ClassnameFormatter(showParams: true)
 		assertEquals BAD_DESCRIPTION, "Class.testMethod(params)", formatter.description
 		assertEquals BAD_KEY, "classname", formatter.key
 
@@ -67,16 +66,16 @@ class TestCaseFormatterTests extends GroovyTestCase {
 
 	void testParentPackageFormatter() {
 		def formatter = new ParentPackageFormatter()
-		assertEquals BAD_DESCRIPTION, "parentPackage.Class.testMethod(params)", formatter.description
+		assertEquals BAD_DESCRIPTION, "parentPackage.Class.testMethod", formatter.description
 		assertEquals BAD_KEY, "parentpackage", formatter.key
 
-		assertEquals BAD_FORMAT, "not.A.contract()", formatter.getTestName(new TestCase(packageName: "a.kiss.is.not.A", testName: "contract")) 
-		assertEquals BAD_FORMAT, "business.time()", formatter.getTestName(new TestCase(packageName: "business", testName: "time")) 
-		assertEquals BAD_FORMAT, "inner.City.pressure()", formatter.getTestName(new TestCase(packageName: "inner.City", testName: "pressure")) 
+		assertEquals BAD_FORMAT, "not.A.contract", formatter.getTestName(new TestCase(packageName: "a.kiss.is.not.A", testName: "contract"))
+		assertEquals BAD_FORMAT, "business.time", formatter.getTestName(new TestCase(packageName: "business", testName: "time"))
+		assertEquals BAD_FORMAT, "inner.City.pressure", formatter.getTestName(new TestCase(packageName: "inner.City", testName: "pressure"))
 	}
 
 	void testParentPackageFormatterWithParameters() {
-		def formatter = new ParentPackageFormatter()
+		def formatter = new ParentPackageFormatter(showParams: true)
 		assertEquals BAD_DESCRIPTION, "parentPackage.Class.testMethod(params)", formatter.description
 		assertEquals BAD_KEY, "parentpackage", formatter.key
 
@@ -88,16 +87,16 @@ class TestCaseFormatterTests extends GroovyTestCase {
 
 	void testMethodOnlyFormatter() {
 		def formatter = new MethodOnlyFormatter()
-		assertEquals BAD_DESCRIPTION, "testMethod(params)", formatter.description
+		assertEquals BAD_DESCRIPTION, "testMethod", formatter.description
 		assertEquals BAD_KEY, "methodonly", formatter.key
 
-		assertEquals BAD_FORMAT, "testFoo()", formatter.getTestName(new TestCase(packageName: "blah.blah.blah", testName: "testFoo")) 
-		assertEquals BAD_FORMAT, "testFoo()", formatter.getTestName(new TestCase(packageName: "blah", testName: "testFoo")) 
-		assertEquals BAD_FORMAT, "testFoo()", formatter.getTestName(new TestCase(packageName: "", testName: "testFoo")) 
+		assertEquals BAD_FORMAT, "testFoo", formatter.getTestName(new TestCase(packageName: "blah.blah.blah", testName: "testFoo"))
+		assertEquals BAD_FORMAT, "testFoo", formatter.getTestName(new TestCase(packageName: "blah", testName: "testFoo"))
+		assertEquals BAD_FORMAT, "testFoo", formatter.getTestName(new TestCase(packageName: "", testName: "testFoo"))
 	}
 
 	void testMethodOnlyFormatterWithParameters() {
-		def formatter = new MethodOnlyFormatter()
+		def formatter = new MethodOnlyFormatter(showParams: true)
 		assertEquals BAD_DESCRIPTION, "testMethod(params)", formatter.description
 		assertEquals BAD_KEY, "methodonly", formatter.key
 
@@ -111,7 +110,7 @@ class TestCaseFormatterTests extends GroovyTestCase {
 
 	void testManualFormatter() {
 		def formatter = new ManualFormatter()
-		assertEquals BAD_DESCRIPTION, "full.package.path testName: params", formatter.description
+		assertEquals BAD_DESCRIPTION, "full.package.path testName", formatter.description
 		assertEquals BAD_KEY, "manual", formatter.key
 
 		assertEquals BAD_FORMAT, "My Manual Test", formatter.getTestName(new TestCase(packageName: "My Manual", testName: "Test")) 
@@ -119,7 +118,7 @@ class TestCaseFormatterTests extends GroovyTestCase {
 	}
 
 	void testManualFormatterWithParameters() {
-		def formatter = new ManualFormatter()
+		def formatter = new ManualFormatter(showParams: true)
 		assertEquals BAD_DESCRIPTION, "full.package.path testName: params", formatter.description
 		assertEquals BAD_KEY, "manual", formatter.key
 

@@ -54,35 +54,39 @@ class TestNgParser implements CuantoTestParser{
 				    testClass.'test-method'.each { testMethod ->
 					    def out = new ParsableTestOutcome()
 
-					    def resultText = testMethod.'@status'
+					    def isConfigMethod = testMethod.'@is-config' == "true"
+                        if (!isConfigMethod)
+                        {
+							def resultText = testMethod.'@status'
 
-					    if (resultText == "FAIL") {
-						    out.testResult = "Fail"
-					    } else if (resultText == "PASS") {
-						    out.testResult = "Pass"
-					    } else if (resultText == "SKIP") {
-						    out.testResult = "Skip"
-					    }
+							if (resultText == "FAIL") {
+								out.testResult = "Fail"
+							} else if (resultText == "PASS") {
+								out.testResult = "Pass"
+							} else if (resultText == "SKIP") {
+								out.testResult = "Skip"
+							}
 
-					    out.testCase = new ParsableTestCase()
-					    out.testCase.packageName = testClass.'@name'
-					    out.testCase.fullName = testClass.'@name' + "." + testMethod.'@name'
-					    out.testCase.testName = testMethod.'@name'
-					    out.testCase.description = testMethod.@description
-					    out.duration = Integer.valueOf(testMethod.'@duration-ms')
-					    if (testMethod.exception.size()) {
-						    out.testOutput = testMethod.exception[0].'full-stacktrace'.text()
-					    }
+							out.testCase = new ParsableTestCase()
+							out.testCase.packageName = testClass.'@name'
+							out.testCase.fullName = testClass.'@name' + "." + testMethod.'@name'
+							out.testCase.testName = testMethod.'@name'
+							out.testCase.description = testMethod.@description
+							out.duration = Integer.valueOf(testMethod.'@duration-ms')
+							if (testMethod.exception.size()) {
+								out.testOutput = testMethod.exception[0].'full-stacktrace'.text()
+							}
 
-					    def params = []
-					    testMethod.params?.param?.each { param ->
-						    params << param.value.text()
-					    }
-					    if (params) {
-						    out.testCase.parameters = params.join(", ")
-					    }
+							def params = []
+							testMethod.params?.param?.each { param ->
+								params << param.value.text()
+							}
+							if (params) {
+								out.testCase.parameters = params.join(", ")
+							}
 
-					    parsableOutcomes << out
+							parsableOutcomes << out
+                        }
 				    }
 				}
 			}

@@ -96,6 +96,7 @@ YAHOO.cuanto.ProjectList = function() {
 				initAccordion();
 				initProjectDialog();
 				initDeleteProjectDialog();
+				initHeight();
 			}
 		});
 		YAHOO.util.Event.preventDefault(e);

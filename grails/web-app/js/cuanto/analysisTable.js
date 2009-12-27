@@ -82,7 +82,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		});
 
 		dataTable.handleDataReturnPayload = processPayload;
-
 		dataTable.set("selectionMode", "single");
 
 		// iterate over dataTableEventOverrides.cellClickEvent for any overridden events
@@ -104,14 +103,21 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				}
 
 				// invoke the cell editor only if the event is not overridden.
-				if (!eventOverriden)
+				if (!eventOverriden){
 					dataTable.onEventShowCellEditor(o);
+				}
+
+				var col = dataTable.getColumn(o.target);
+				if (col.getKeyIndex() != 0)
+				{
+					highlightRowForEvent(o);
+				}
+
 			}, this);
 		dataTable.subscribe("editorSaveEvent", inlineEditHandler);
 		dataTable.subscribe("editorBlurEvent", function(oArgs) {
 			this.cancelCellEditor();
 		});
-
 		analysisDialog = new YAHOO.cuanto.analysisDialog(ovrlyMgr, outputProxy);
 
 		YAHOO.util.Event.addListener("showSelectCol", "click", showSelectColumn);
@@ -321,6 +327,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
 				formatter: formatTestCase, sortable:true},
+			{key:"parameters", label:"Parameters", resizeable:true, formatter:formatParameters, sortable: false},
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
@@ -380,6 +387,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		elCell.innerHTML = displayStr;
 	}
 
+	function formatParameters(elCell, oRecord, oColumn, oData) {
+		var tc = oRecord.getData('testCase');
+		var out = "";
+		if (tc && tc.parameters) {
+			out = tc.parameters;
+		}
+		elCell.innerHTML = out;
+	}
 
 	function formatActionCol(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = "";
@@ -404,7 +419,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		YAHOO.util.Event.addListener(outputLinkId, "click", showOutput);
 		YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
-		YAHOO.util.Event.addListener(anlzLink, "click", analysisDialog.showAnalysisDialog, null,
+		YAHOO.util.Event.addListener(anlzLink, "click", showAnalysisDialog, null,
 			analysisDialog);
 		setTimeout(function() {
 			setImgTitleAndAlt(historyImg, "Test History (new window)");
@@ -418,11 +433,25 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		imgElem.setAttribute('alt', title);
 	}
 
-	
+	function showAnalysisDialog(e) {
+		analysisDialog.showAnalysisDialog(e);
+	}
+
+
 	function showOutput(e) {
 		outputPanel.showOutputForLink(e, ovrlyMgr);
 	}
 
+	function highlightRowForEvent(e) {
+		dataTable.unselectAllRows();
+		var row = getRowFromEvent(e);
+		dataTable.selectRow(row);
+	}
+
+	function getRowFromEvent(e) {
+		var targ = YAHOO.util.Event.getTarget(e);
+		return dataTable.getTrEl(targ);
+	}
 
 	function showHistoryForLink(e, oid) {
 		var newwindow = window.open(YAHOO.cuanto.urls.get('testCaseHistory') + oid, 'name',
@@ -759,7 +788,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (!columnDialog)
 		{
 			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["result", "analysisState", "duration", "bug", "owner", "note", "output"]);
+				["parameters", "result", "analysisState", "duration", "bug", "owner", "note", "output"]);
 		}
 		columnDialog.show();
 
@@ -828,6 +857,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		}
 		else {
 			cols["output"] = true;
+			cols["parameters"] = true;
 		}
 		return cols;
 	}

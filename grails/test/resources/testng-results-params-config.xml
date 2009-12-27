@@ -1,0 +1,366 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Suite1">
+    <groups>
+      <group name="functest">
+        <method signature="cuanto.test.TestNgOne.testMethod1()" name="testMethod1" class="cuanto.test.TestNgOne"/>
+        <method signature="cuanto.test.TestNgOne.testMethod3()" name="testMethod3" class="cuanto.test.TestNgOne"/>
+        <method signature="cuanto.test.TestNgOne.testMethod4()" name="testMethod4" class="cuanto.test.TestNgOne"/>
+        <method signature="cuanto.test.TestNgOne.testMethod2()" name="testMethod2" class="cuanto.test.TestNgOne"/>
+      </group>
+      <group name="checkintest">
+        <method signature="cuanto.test.TestNgOne.testMethod1()" name="testMethod1" class="cuanto.test.TestNgOne"/>
+        <method signature="cuanto.test.TestNgOne.testMethod2()" name="testMethod2" class="cuanto.test.TestNgOne"/>
+      </group>
+    </groups>
+    <test name="Regression1">
+      <class name="cuanto.test.TestNgOne">
+        <test-method status="FAIL" signature="failingParameterTestOne(java.lang.String)" name="failingParameterTestOne" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[one]]>
+              </value>
+            </param>
+          </params>
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[fail one!]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: fail one!
+	at org.testng.AssertJUnit.fail(AssertJUnit.java:55)
+	at org.testng.AssertJUnit$fail.callStatic(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:167)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:175)
+	at cuanto.test.TestNgOne.failingParameterTestOne(TestNgOne.groovy:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testMethod2()" name="testMethod2" duration-ms="51" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[method 2 failed]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: method 2 failed
+	at org.testng.AssertJUnit.fail(AssertJUnit.java:55)
+	at org.testng.AssertJUnit$fail.callStatic(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:167)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:175)
+	at cuanto.test.TestNgOne.testMethod2(TestNgOne.groovy:76)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="1" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="1" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterSuite()" name="doAfterSuite" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:21Z" finished-at="2009-12-09T17:45:21Z">
+        </test-method>
+        <test-method status="FAIL" signature="parametersNonExistent(java.lang.String)" name="parametersNonExistent" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <exception class="org.testng.TestNGException">
+            <message>
+              <![CDATA[
+Parameter 'nonExistent' is required by @Test on method parametersNonExistent
+but has not been marked @Optional or defined in /Users/ttop/sources/depot/QA/cuanto/main/generator/testng.xml]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[org.testng.TestNGException: 
+Parameter 'nonExistent' is required by @Test on method parametersNonExistent
+but has not been marked @Optional or defined in /Users/ttop/sources/depot/QA/cuanto/main/generator/testng.xml
+	at org.testng.internal.Parameters.createParameters(Parameters.java:117)
+	at org.testng.internal.Parameters.createParameters(Parameters.java:274)
+	at org.testng.internal.Parameters.handleParameters(Parameters.java:351)
+	at org.testng.internal.Invoker.handleParameters(Invoker.java:987)
+	at org.testng.internal.Invoker.createParameters(Invoker.java:775)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:853)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testMethod3()" name="testMethod3" duration-ms="3" started-at="2009-12-09T17:45:20Z" description="testMethod3 Description" finished-at="2009-12-09T17:45:20Z">
+          <exception class="java.lang.IllegalArgumentException">
+            <message>
+              <![CDATA[you're merely contradicting me!]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.IllegalArgumentException: you're merely contradicting me!
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:77)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:107)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:52)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:192)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:200)
+	at cuanto.test.TestNgOne.testMethod3(TestNgOne.groovy:83)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="testMethod4()" name="testMethod4" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="passingParameterTestOne(java.lang.String)" name="passingParameterTestOne" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[one]]>
+              </value>
+            </param>
+          </params>
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeTestOne()" name="doBeforeTestOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="1" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="passingParameterTestTwo(java.lang.String, java.lang.String, java.lang.String)" name="passingParameterTestTwo" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[one]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[two]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[three]]>
+              </value>
+            </param>
+          </params>
+        </test-method>
+        <test-method status="PASS" signature="doBeforeTestTwo()" name="doBeforeTestTwo" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="testMethod1()" name="testMethod1" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="SKIP" signature="skippableTest()" name="skippableTest" duration-ms="1" started-at="2009-12-09T17:45:20Z" depends-on-methods="cuanto.test.TestNgOne.dependencySample" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeSuite()" name="doBeforeSuite" is-config="true" duration-ms="116" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doBeforeMethodOne()" name="doBeforeMethodOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="1" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="FAIL" signature="failingParameterTestTwo(java.lang.String, java.lang.String, java.lang.String)" name="failingParameterTestTwo" duration-ms="1" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[one]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[two]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[three]]>
+              </value>
+            </param>
+          </params>
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[fail two!]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: fail two!
+	at org.testng.AssertJUnit.fail(AssertJUnit.java:55)
+	at org.testng.AssertJUnit$fail.callStatic(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:167)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:175)
+	at cuanto.test.TestNgOne.failingParameterTestTwo(TestNgOne.groovy:124)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterTestOne()" name="doAfterTestOne" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterTestTwo()" name="doAfterTestTwo" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="FAIL" signature="dependencySample()" name="dependencySample" duration-ms="6" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+          <exception class="java.lang.RuntimeException">
+            <message>
+              <![CDATA[dependencySample method failed]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.RuntimeException: dependencySample method failed
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:77)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:107)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:52)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:192)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:200)
+	at cuanto.test.TestNgOne.dependencySample(TestNgOne.groovy:100)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+        <test-method status="PASS" signature="doAfterMethod()" name="doAfterMethod" is-config="true" duration-ms="0" started-at="2009-12-09T17:45:20Z" finished-at="2009-12-09T17:45:20Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

@@ -24,3 +24,9 @@ grails/web-app/js/application.js
 grails/test/reports
 #grails/web-app/plugins/
 grails/lib/cuanto-api*
+grails/web-app/images/grails_logo.png
+grails/web-app/images/leftnav_btm.png
+grails/web-app/images/leftnav_midstretch.png
+grails/web-app/images/leftnav_top.png
+grails/web-app/images/springsource.png
+grails/web-app/plugins/

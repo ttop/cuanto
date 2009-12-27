@@ -483,19 +483,18 @@ class TestRunService {
 	TestRun createTestRun(Map params) {
 		def project
 		if (params.containsKey("project")) {
-			project = projectService.getProjectByFullName(params.project)
+			project = getProject(params.project)
 			if (!project) {
-				project = dataService.getProjectByKey(params.project)
-				if (!project) {
-					throw new CuantoException("Unable to locate ${params.project}")
-				}
+				throw new CuantoException("Unable to locate project with the project key or full title of ${params.project}")
 			}
 		} else if (params.containsKey("id")) {
 			project = dataService.getProject(Long.valueOf(params.id))
+			if (!project) {
+				throw new CuantoException("Unable to locate project with the id ${params.id}")
+			}
 		} else {
 			throw new CuantoException("project or id parameter is required")
 		}
-
 
 		def testRun = new TestRun('project': project)
 
@@ -528,6 +527,14 @@ class TestRunService {
 		return testRun
 	}
 
+	def getProject(projectString) {
+		def project = Project.findByProjectKey(projectString)
+		if (!project) {
+			project = projectService.getProjectByFullName(projectString)
+		}
+		return project
+
+	}
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
