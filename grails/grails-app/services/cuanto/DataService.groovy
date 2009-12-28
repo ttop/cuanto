@@ -128,9 +128,6 @@ class DataService {
 		def criteria = TestRunStats.createCriteria()
 		def trStats = criteria.list {
 			and {
-				testRun {
-					isNotEmpty("outcomes")
-				}
 				isEmpty("analysisStatistics")
 				gt("failed", 0)
 			}
@@ -157,18 +154,16 @@ class DataService {
 
 	def addTestCases(Project project, List testCases) {
 		for (testCase in testCases) {
-			project.addToTestCases(testCase)
+			testCase.project = project
+			saveDomainObject testCase
 		}
-		saveDomainObject project
 	}
 
 
 	def saveTestOutcomes(TestRun testRun, List outcomes) {
 		for (outcome in outcomes) {
-			testRun.addToOutcomes outcome
+			saveDomainObject outcome 
 		}
-
-		saveDomainObject testRun, true
 	}
 
 
@@ -579,16 +574,11 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 	def deleteTestCase(testCase) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome out where out.testCase = ?", [testCase])
-		testCase.project.removeFromTestCases(testCase).save()
 		testCase.delete(flush: true)
 	}
 
 
 	def deleteTestCasesForProject(project) {
-		def testCases = TestCase.findAllByProject(project)
-		testCases.each {testCase ->
-			project.removeFromTestCases(testCase)
-		}
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
 	}
 

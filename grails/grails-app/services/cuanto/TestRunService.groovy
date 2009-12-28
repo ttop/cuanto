@@ -538,7 +538,7 @@ class TestRunService {
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
-		def testCases = projectService.getTestCases(testRun.project)
+		def testCases = projectService.getSortedTestCases(testRun.project)
 		def testOutcomesToSave = []
 		testCases.each {tc ->
 			def testOutcome = new TestOutcome()

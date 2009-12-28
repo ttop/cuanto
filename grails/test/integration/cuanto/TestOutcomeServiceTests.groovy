@@ -32,9 +32,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
-		if (!proj.addToTestCases(tc).save()) {
-			dataService.reportSaveError proj
-		}
+		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
 		TestRun testRun = to.getTestRun(proj, "foobar")
@@ -73,9 +71,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
-		if (!proj.addToTestCases(tc).save()) {
-			dataService.reportSaveError proj
-		}
+		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
 		TestRun testRun = to.getTestRun(proj, "foobar")
@@ -107,20 +103,14 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
-		if (!proj.addToTestCases(tc).save()) {
-			dataService.reportSaveError proj
-		}
+		dataService.saveDomainObject tc 
 
 		// create a test run with an outcome
 		TestRun testRun = to.getTestRun(proj, "foobar")
 		dataService.saveDomainObject testRun 
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
-
-		if (!testRun.addToOutcomes(outcome).save()) {
-			dataService.reportSaveError testRun
-		}
-
+		dataService.saveDomainObject outcome 
 		testRunService.calculateTestRunStats(testRun)
 
 		def stateToApply = dataService.getAnalysisStateByName("Bug")

@@ -8,7 +8,7 @@ import cuanto.test.TestObjects
  * 
  */
 class ParseFileTests extends GroovyTestCase {
-	def parsingService
+	ParsingService parsingService
 	def initializationService
 
 	def fakes = new TestObjects()
@@ -30,11 +30,17 @@ class ParseFileTests extends GroovyTestCase {
 
 
 	void testBadTestRunId() {
-		[98783, "foobar", "23398", null, "foo bar"].each { runId ->
+		[98783, "foobar", "23398","foo bar"].each { runId ->
 			def msg = shouldFail(ParsingException) {
-				parsingService.parseFile(tempFile, runId)
+				parsingService.parseFileWithTestRun(tempFile, runId)
 			}
 			assertEquals "Wrong error message", ("Unable to locate test run ID ${runId}"), msg
 		}
+
+		def msg = shouldFail(ParsingException) {
+			parsingService.parseFileWithTestRun(tempFile, null)
+		}
+		assertEquals "Wrong error message", ("No TestRun ID or Project ID was provided"), msg
+
 	}
 }

@@ -45,9 +45,9 @@ class TestCaseSearchTests extends GroovyTestCase {
 			TestCase tc = to.getTestCase(project)
 			tc.testName = name
 			tc.fullName = tc.packageName + "." + tc.testName
-			dataService.saveDomainObject(project.addToTestCases(tc))
+			dataService.saveDomainObject(tc)
 			TestOutcome outcome = to.getTestOutcome(tc, run)
-			dataService.saveDomainObject(run.addToOutcomes(outcome))
+			dataService.saveDomainObject outcome
 			outcomes += outcome
 		}
 

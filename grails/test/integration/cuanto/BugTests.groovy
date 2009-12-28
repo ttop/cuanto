@@ -43,10 +43,7 @@ class BugTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "a.b.c"
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc 
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 1
@@ -70,9 +67,7 @@ class BugTests extends GroovyTestCase {
 				outcome.bug = bugService.getBug(bugs[3][0], bugs[3][1])
 			}
 
-			if (!testRun.addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRun
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		def bugSummary = testRunService.getBugSummary(testRun)

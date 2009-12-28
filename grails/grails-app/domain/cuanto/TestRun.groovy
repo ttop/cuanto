@@ -24,8 +24,6 @@ import java.text.SimpleDateFormat
 
 class TestRun {
 
-	static hasMany = [outcomes:TestOutcome]
-
 	static constraints = {
 		project(nullable: false)
 		milestone(nullable: true, blank: true)
@@ -33,7 +31,6 @@ class TestRun {
 		targetEnv(nullable: true, blank: true)
 		note(nullable: true, blank: true)
 		valid(nullable: true)
-		outcomes(nullable:true)
 		testRunStatistics(nullable:true)
 	}
 	
