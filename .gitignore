@@ -7,8 +7,6 @@ grails/.classpath
 grails/.project
 grails/cuanto-test.launch
 grails/cuanto.tmproj
-grails/ivy.xml
-grails/ivysettings.xml
 grails/lib/cuanto-api-*
 grails/lib/mysql-connector-java*
 grails/stacktrace.log
