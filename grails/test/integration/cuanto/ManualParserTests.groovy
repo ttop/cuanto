@@ -75,7 +75,7 @@ class ManualParserTests extends GroovyTestCase{
 
 		TestRun updatedRun = testRunService.createTestRun([project:proj.toString()])
 		def updatedResultFile = getFile("manual_tests_update.xml")
-		parsingService.parseFile(updatedResultFile, updatedRun.id,)
+		parsingService.parseFile(updatedResultFile, updatedRun.id)
 
 		def outcomes = testRunService.getOutcomesForTestRun(updatedRun, null)
 		assertEquals 9, outcomes.size()
