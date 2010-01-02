@@ -13,6 +13,7 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 	TestRunService testRunService
 	InitializationService initializationService
 	DataService dataService
+	StatisticService statisticService
 
 	TestObjects to
 	WordGenerator wordGen
@@ -38,7 +39,7 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 		1.upto(numTestRuns) {
 			def testRun = to.getTestRun(proj, "my milestone")
 			dataService.saveDomainObject testRun
-			testRunService.calculateTestRunStats(testRun)
+			statisticService.calculateTestRunStats(testRun)
 			runs << testRun
 		}
 

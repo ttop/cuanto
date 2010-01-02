@@ -29,6 +29,7 @@ class TestOutcomeService {
 	def dataService
 	def testRunService
 	def bugService
+	def statisticService
 	def testCaseFormatterRegistry
 
 	def updateTestOutcome(Map params) {
@@ -55,7 +56,7 @@ class TestOutcomeService {
 
 			testOutcome.testResult = testResult
 			if (recalc) {
-				testRunService.calculateTestRunStats(testOutcome.testRun)
+				statisticService.queueTestRunStats(testOutcome.testRun)
 			}
 		}
 	}
@@ -101,7 +102,7 @@ class TestOutcomeService {
 
 		if (analysisState != outcome.analysisState) {
 			outcome.analysisState = analysisState
-			testRunService.calculateAnalysisStats(outcome.testRun)
+			statisticService.calculateAnalysisStats(outcome.testRun)
 		}
 	}
 
@@ -171,7 +172,7 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		testRunService.calculateTestRunStats(sourceTestOutcome.testRun)
+		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
 	}
 
 
@@ -185,7 +186,7 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		testRunService.calculateTestRunStats(sourceTestOutcome.testRun)
+		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
 	}
 
 

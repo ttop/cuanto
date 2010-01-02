@@ -9,6 +9,8 @@ class TestRunServiceTests extends GroovyTestCase {
 	def initializationService
 	def testRunService
 	def testResultService
+	StatisticService statisticService
+
 	TestObjects to
 	WordGenerator wordGen = new WordGenerator()
 
@@ -57,7 +59,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			}
 		}
 
-		testRunService.calculateTestRunStats(testRun)
+		statisticService.calculateTestRunStats(testRun)
 
 		assertNotNull "results not found", testRun.testRunStatistics
 		TestRunStats result = testRun.testRunStatistics

@@ -29,6 +29,7 @@ class TestRunController {
 	def testOutcomeService
 	def testRunService
 	def testCaseFormatterRegistry
+	def statisticService
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
@@ -108,7 +109,7 @@ class TestRunController {
 			def multipartFileRequest = request.getFile(fileName)
 			parsingService.parseFileFromStream(multipartFileRequest.getInputStream(), testRunId)
 		}
-		testRunService.calculateTestRunStats(TestRun.get(testRunId))
+		statisticService.queueTestRunStats(TestRun.get(testRunId))
 		render ""
 	}
 
@@ -217,7 +218,7 @@ class TestRunController {
 		}
 
 		if (params.calculate) {
-			testRunService.calculateTestRunStats(testRun)
+			statisticService.queueTestRunStats(testRun)
 		}
 		
 		withFormat {
@@ -231,7 +232,7 @@ class TestRunController {
 				myJson['results'] = []
 				if (params.header) {
 					if (!testRun.testRunStatistics) {
-						testRunService.calculateTestRunStats(testRun)
+						statisticService.queueTestRunStats(testRun)
 					}
 					myJson['results'] += testRun.testRunStatistics.toJsonMap()
 				}

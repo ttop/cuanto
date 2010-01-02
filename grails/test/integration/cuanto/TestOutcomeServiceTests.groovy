@@ -12,6 +12,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 	def initializationService
 	def testRunService
 	def bugService
+	StatisticService statisticService
 
 	TestObjects to
 	WordGenerator wordGen
@@ -121,7 +122,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 			dataService.reportSaveError testRun
 		}
 
-		testRunService.calculateTestRunStats(testRun)
+		statisticService.calculateTestRunStats(testRun)
 
 		def stateToApply = dataService.getAnalysisStateByName("Bug")
 

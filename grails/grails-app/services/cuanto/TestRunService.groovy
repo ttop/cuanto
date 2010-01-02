@@ -26,57 +26,13 @@ import java.text.SimpleDateFormat
 class TestRunService {
 	def dataService
 	def projectService
+	def statisticService
 
 	boolean transactional = false
 
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
 
 
-	def calculateTestRunStats(TestRun testRun) {
-		dataService.deleteStatisticsForTestRun(testRun)
-
-		TestRunStats calculatedStats = new TestRunStats(testRun: testRun)
-
-		def rawTestRunStats = dataService.getRawTestRunStats(testRun)
-		calculatedStats.tests = rawTestRunStats[0]
-		calculatedStats.totalDuration = rawTestRunStats[1]
-		calculatedStats.averageDuration = rawTestRunStats[2]
-		calculatedStats.averageDuration = calculatedStats.averageDuration?.round(new MathContext(4))
-		calculatedStats.failed = dataService.getTestRunFailureCount(testRun)
-		calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
-
-		if (calculatedStats.tests > 0) {
-			BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
-			calculatedStats.successRate = successRate.round(new MathContext(4))
-		}
-
-		dataService.saveDomainObject(calculatedStats)
-
-		//testRun.testRunStatistics = calculatedStats   //todo: what is this here for?
-		testRun.testRunStatistics = calculateAnalysisStats(testRun)
-		dataService.saveTestRun(testRun)
-		return testRun.testRunStatistics
-	}
-
-
-	def calculateAnalysisStats(TestRun testRun) {
-		def calculatedStats = testRun?.testRunStatistics
-		dataService.clearAnalysisStatistics(testRun)
-		def analysisStats = dataService.getAnalysisStatistics(testRun)
-		analysisStats?.each { stat ->
-			calculatedStats?.addToAnalysisStatistics(stat)
-		}
-		def analyzedStats = analysisStats.findAll { it.state.isAnalyzed }
-		def sum = analyzedStats.collect { it.qty }.sum()
-		if (sum) {
-			calculatedStats.analyzed = sum
-		} else {
-			calculatedStats.analyzed = 0
-		}
-
-		dataService.saveDomainObject(calculatedStats, true)
-		return calculatedStats
-	}
 
 
 	/**
@@ -162,20 +118,19 @@ class TestRunService {
 			testRuns.eachWithIndex {testRun, indx ->
 				def stats = testRun.testRunStatistics
 
-				if (!stats) {
-					stats = calculateTestRunStats(testRun)
-				}
+				if (stats) {
 
-				passedDataSet.append stats.passed?.toString()
-				failedDataSet.append stats.failed?.toString()
+					passedDataSet.append stats.passed?.toString()
+					failedDataSet.append stats.failed?.toString()
 
-				if (indx < (testRuns.size() - 1)) {
-					passedDataSet.append ","
-					failedDataSet.append ","
-				}
+					if (indx < (testRuns.size() - 1)) {
+						passedDataSet.append ","
+						failedDataSet.append ","
+					}
 
-				if (stats.tests > maxTests) {
-					maxTests = stats.tests
+					if (stats.tests > maxTests) {
+						maxTests = stats.tests
+					}
 				}
 			}
 
@@ -187,7 +142,7 @@ class TestRunService {
 			chartString.append("&chd=t:").append(passedDataSet).append("|").append(failedDataSet)
 			chartString.append("&chds=0,${topYScale},0,${topYScale}")
 
-			if (testRuns.size() >= minimumResultsForXAxisLabels) {
+			if (passedDataSet.size() >= minimumResultsForXAxisLabels) {
 				chartString.append("&chxl=0:").append(getDateLegend(testRuns)) // date legend
 				chartString.append "|1:|0|${topYScale}"
 				chartString.append "|2:|0|${topYScale}"
@@ -475,11 +430,6 @@ class TestRunService {
 	}
 
 
-	Map getAnalysisStateStats(TestRun testRun) {
-		dataService.getAnalysisStateStats(testRun)
-	}
-
-
 	TestRun createTestRun(Map params) {
 		def project
 		if (params.containsKey("project")) {
@@ -547,7 +497,7 @@ class TestRunService {
 			testOutcomesToSave << testOutcome
 		}
 		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
-		calculateTestRunStats testRun
+		statisticService.queueTestRunStats testRun
 		return testRun
 	}
 
@@ -630,34 +580,5 @@ class TestRunService {
 	}
 
 
-	def updateTestRunsWithoutAnalysisStats() {
-		def runs = dataService.getTestRunsWithoutAnalysisStatistics().collect {it.id}
-		log.debug "${runs.size()} runs without stats"
 
-		def num = 0
-		def numThreads = 20
-		while (runs.size()) {
-
-			def threads = []
-			for (i in 1..numThreads) {
-				if (runs.size() > 0) {
-					def runid = runs.pop()
-					threads << Thread.start {
-						TestRun.withTransaction {
-							def testRun = TestRun.get(runid)
-							calculateAnalysisStats(testRun)
-						}
-					}
-				}
-			}
-
-			threads.each {
-				it.join()
-			}
-			num += threads.size()
-			log.debug "$num runs completed"
-		}
-
-		log.debug "Completed calculating analysis statistics"		
-	}
 }
