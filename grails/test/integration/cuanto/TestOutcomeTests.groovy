@@ -40,9 +40,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		def testCases = []
 		for (x in 1..numTests) {
 			TestCase testCase = to.getTestCase(proj)
-			if (!proj.addToTestCases(testCase).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject testCase
 			testCases.add(testCase)
 		}
 
@@ -51,9 +49,7 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
-			if (!testRunOne.addToOutcomes(out).save()) {
-				dataService.reportSaveError testRunOne
-			}
+			dataService.saveDomainObject out
 		}
 
 		def testRunTwo = to.getTestRun(proj, "mile1")
@@ -61,9 +57,7 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (testCase in testCases) {
 			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
-			if (!testRunTwo.addToOutcomes(out).save()) {
-				dataService.reportSaveError testRunTwo
-			}
+			dataService.saveDomainObject out
 		}
 
 		def outcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
@@ -97,23 +91,17 @@ class TestOutcomeTests extends GroovyTestCase {
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "a.b.c"
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 1
-			if (!testRun.addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRun
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "x.y.z"
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 2
@@ -124,18 +112,13 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("ignore")
 			}
 
-			if (!testRun.addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRun
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
 			tc.packageName = "a.b."
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 3
@@ -144,9 +127,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			} else if (x == 3) {
 				outcome.testResult = dataService.result("error")
 			}
-			if (!testRun.addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRun
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		def abOutcomes = testRunService.getOutcomesForTestRun(testRun, "a.b", null, false)
@@ -168,9 +149,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		def testCases = []
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 			testCases += tc
 		}
 
@@ -185,9 +164,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			testCases.each {tc ->
 				TestOutcome outcome = to.getTestOutcome(tc, testRun)
 				outcome.duration = 1
-				if (!testRun.addToOutcomes(outcome).save()) {
-					dataService.reportSaveError testRun
-				}
+				dataService.saveDomainObject outcome
 			}
 		}
 
@@ -291,11 +268,7 @@ class TestOutcomeTests extends GroovyTestCase {
 			tc.packageName = "cuanto.foo"
 			tc.fullName = tc.packageName + "." + tc.testName
 			tc.setDescription wordGen.getSentence(10)
-			proj.addToTestCases(tc)
-
-			if (!proj.save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 		}
 
 		List<TestCase> bobs = testOutcomeService.findTestCaseByName("bob", proj.id.toString())
@@ -338,23 +311,16 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[0])
 			outcome.duration = 1
-			if (!testRuns[0].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[0]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[1])
 			outcome.duration = 2
@@ -365,9 +331,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("ignore")
 			}
 
-			if (!testRuns[1].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[1]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		def sourceOutcome
@@ -375,10 +339,7 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[2])
 			outcome.duration = 3
@@ -395,9 +356,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("fail")
 				targetOutcomes << outcome
 			}
-			if (!testRuns[2].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[2]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		// apply analysis to one outcome
@@ -432,23 +391,16 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[0])
 			outcome.duration = 1
-			if (!testRuns[0].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[0]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[1])
 			outcome.duration = 2
@@ -459,9 +411,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("ignore")
 			}
 
-			if (!testRuns[1].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[1]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		def sourceOutcome
@@ -469,10 +419,7 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(proj)
-
-			if (!proj.addToTestCases(tc).save()) {
-				dataService.reportSaveError proj
-			}
+			dataService.saveDomainObject tc
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRuns[2])
 			outcome.duration = 3
@@ -489,9 +436,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				outcome.testResult = dataService.result("fail")
 				targetOutcomes << outcome
 			}
-			if (!testRuns[2].addToOutcomes(outcome).save()) {
-				dataService.reportSaveError testRuns[2]
-			}
+			dataService.saveDomainObject outcome
 		}
 
 		// apply analysis to one outcome
@@ -559,8 +504,7 @@ class TestOutcomeTests extends GroovyTestCase {
 				if (testCase == testCases[0]) {
 					outcome.testResult = dataService.result("Ignore")
 				}
-				testRun.addToOutcomes(outcome)
-				dataService.saveDomainObject(testRun, true)
+				dataService.saveDomainObject outcome
 			}
 		}
 
@@ -625,9 +569,9 @@ class TestOutcomeTests extends GroovyTestCase {
 		testOutcomeService.applyTestResultToTestOutcome(null, null) // should succeed without error
 
 		Project proj = to.project
-		TestCase tc = to.getTestCase(proj)
-		proj.addToTestCases(tc)
 		dataService.saveDomainObject proj
+		TestCase tc = to.getTestCase(proj)
+		dataService.saveDomainObject tc
 
 		TestRun run = to.getTestRun(proj, "foo")
 		dataService.saveDomainObject run
@@ -636,8 +580,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		testOutcomeService.applyTestResultToTestOutcome(null, result)
 
 		TestOutcome outcome = to.getTestOutcome(tc, run)
-		run.addToOutcomes(outcome)
-		dataService.saveDomainObject run
+		dataService.saveDomainObject outcome
 
 		assertEquals "Wrong initial result", dataService.result("pass"), outcome.testResult
 		def outcomeId = outcome.id
@@ -658,16 +601,15 @@ class TestOutcomeTests extends GroovyTestCase {
 
 	void testApplyBugParametersToTestOutcome() {
 		Project proj = to.project
-		TestCase tc = to.getTestCase(proj)
-		proj.addToTestCases(tc)
 		dataService.saveDomainObject proj
+		TestCase tc = to.getTestCase(proj)
+		dataService.saveDomainObject tc
 
 		TestRun run = to.getTestRun(proj, "foo")
 		dataService.saveDomainObject run
 
 		TestOutcome outcome = to.getTestOutcome(tc, run)
-		run.addToOutcomes(outcome)
-		dataService.saveDomainObject run
+		dataService.saveDomainObject outcome
 
 		testOutcomeService.applyBugParametersToTestOutcome(null, null)
 

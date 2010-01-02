@@ -24,7 +24,7 @@ class TestOutcome {
 	static constraints = {
 	    testCase(nullable:false)
 	    testResult(nullable:false)
-		testRun(nullable:false)
+		testRun(nullable:true)
 	    analysisState(nullable:true)
 	    duration(nullable:true)
 	    bug(nullable:true)

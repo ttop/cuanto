@@ -35,7 +35,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		proj.bugUrlPattern = "http://tpjira/browse/{BUG}"
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("junitReport_single_suite.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
 		// should be 34 tests
@@ -136,7 +136,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		Project proj = getProject()
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("junitReport_multiple_suite.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
 		// should be 56 tests
@@ -225,7 +225,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		proj.bugUrlPattern = "http://tpjira/browse/{BUG}"
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("junitReport_ParameterizedSingleTest.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
 		// should be 4 tests
@@ -265,7 +265,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		proj.bugUrlPattern = "http://tpjira/browse/{BUG}"
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("junitReport_ParameterizedTestSuite.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
 		// should be 13 tests

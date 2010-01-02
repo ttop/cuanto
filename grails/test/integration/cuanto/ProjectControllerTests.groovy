@@ -8,8 +8,8 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 class ProjectControllerTests extends GroovyTestCase {
 
-	def dataService
-	def initializationService
+	DataService dataService
+	InitializationService initializationService
 
 	TestObjects to
 
@@ -23,11 +23,18 @@ class ProjectControllerTests extends GroovyTestCase {
 	void testGet() {
 		def proj = to.getProject()
 		proj.projectGroup = to.getProjectGroup("Sample")
+		dataService.saveDomainObject proj.projectGroup, true
+		
 		proj.projectKey = "foo&bar!"
 		proj.bugUrlPattern = "http://foo.com:1337/bar?bug={BUG}"
-		proj.testCases = [to.getTestCase(proj), to.getTestCase(proj)]
+		dataService.saveDomainObject proj, true
+
+		1.upto(2) {
+			dataService.saveDomainObject to.getTestCase(proj)
+		}
+
 		proj.testType = TestType.findByName("JUnit")
-		proj.save()
+		dataService.saveDomainObject proj, true 
 
 		def projectController = new ProjectController()
 

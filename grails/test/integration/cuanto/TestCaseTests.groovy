@@ -14,6 +14,7 @@ class TestCaseTests extends GroovyTestCase {
 	TestRunService testRunService
 	InitializationService initializationService
 	DataService dataService
+	ProjectService projectService
 
 	TestObjects to
 	WordGenerator wordGen
@@ -36,9 +37,7 @@ class TestCaseTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(projectOne)
-			if (!projectOne.addToTestCases(tc).save()) {
-				dataService.reportSaveError projectOne
-			}
+			dataService.saveDomainObject tc
 		}
 
 		assertEquals "Wrong number of test cases", numCases, dataService.getTestCases(projectOne).size()
@@ -48,9 +47,7 @@ class TestCaseTests extends GroovyTestCase {
 
 		for (x in 1..numCases) {
 			TestCase tc = to.getTestCase(projectTwo)
-			if (!projectTwo.addToTestCases(tc).save()) {
-				dataService.reportSaveError projectTwo
-			}
+			dataService.saveDomainObject tc
 		}
 
 		// re-check total of project one
@@ -65,8 +62,7 @@ class TestCaseTests extends GroovyTestCase {
 		def testCases = 2
 		1.upto(testCases) {
 			def testCase = to.getTestCase(project)
-			project.addToTestCases(testCase)
-			dataService.saveDomainObject project
+			dataService.saveDomainObject testCase
 		}
 
 		def numTestRuns = 10
@@ -78,7 +74,7 @@ class TestCaseTests extends GroovyTestCase {
 			runs << testRun
 		}
 
-		project.testCases.each {testCase ->
+		dataService.getTestCases(project).each {testCase ->
 			runs.each {testRun ->
 				def testOutcome = to.getTestOutcome(testCase, testRun)
 				if (runs.indexOf(testRun) % 2 == 0) {
@@ -87,12 +83,11 @@ class TestCaseTests extends GroovyTestCase {
 					testOutcome.testResult = dataService.result("Ignore")
 				}
 
-				testRun.addToOutcomes(testOutcome)
-				dataService.saveDomainObject testRun
+				dataService.saveDomainObject testOutcome
 			}
 		}
 
-		assertEquals "Wrong failure count", 5, dataService.countTestCaseFailures(project.testCases[0])
+		assertEquals "Wrong failure count", 5, dataService.countTestCaseFailures(dataService.getTestCases(project)[0])
 	}
 
 
@@ -103,8 +98,7 @@ class TestCaseTests extends GroovyTestCase {
 		def testCases = 12
 		1.upto(testCases) {
 			def testCase = to.getTestCase(project)
-			project.addToTestCases(testCase)
-			dataService.saveDomainObject project
+			dataService.saveDomainObject testCase
 		}
 
 		assertEquals "Wrong number of test cases", testCases, dataService.getTestCases(project, 0, 20).size()
@@ -121,8 +115,7 @@ class TestCaseTests extends GroovyTestCase {
 		def testCases = 2
 		1.upto(testCases) {
 			def testCase = to.getTestCase(project)
-			project.addToTestCases(testCase)
-			dataService.saveDomainObject project
+			dataService.saveDomainObject testCase
 		}
 
 		def numTestRuns = 10
@@ -134,7 +127,7 @@ class TestCaseTests extends GroovyTestCase {
 			runs << testRun
 		}
 
-		project.testCases.each {testCase ->
+		dataService.getTestCases(project).each {testCase ->
 			runs.each {testRun ->
 				def testOutcome = to.getTestOutcome(testCase, testRun)
 				if (runs.indexOf(testRun) % 2 == 0) {
@@ -143,21 +136,20 @@ class TestCaseTests extends GroovyTestCase {
 					testOutcome.testResult = dataService.result("Ignore")
 				}
 
-				testRun.addToOutcomes(testOutcome)
-				dataService.saveDomainObject testRun
+				dataService.saveDomainObject testOutcome
 			}
 		}
-		def testCase = project.testCases[0]
+		def testCase = dataService.getTestCases(project)[0]
 		assertEquals "wrong outcome total for test case", numTestRuns, TestOutcome.findAllByTestCase(testCase).size()
 
-		def testCaseId = project.testCases[0].id
-		dataService.deleteTestCase(project.testCases[0])
+		def testCaseId = dataService.getTestCases(project)[0].id
+		dataService.deleteTestCase(dataService.getTestCases(project)[0])
 		assertNull "Test case found", TestCase.get(testCaseId)
 
 		assertEquals "No outcomes should exist for test case", 0, TestOutcome.findAllByTestCase(testCase).size()
 
 		def fetchedProj = Project.get(project.id)
-		assertEquals "Wrong number of test cases", 1, fetchedProj.testCases.size()
+		assertEquals "Wrong number of test cases", 1, dataService.getTestCases(fetchedProj).size()
 	}
 
 
@@ -168,8 +160,7 @@ class TestCaseTests extends GroovyTestCase {
 		def testCases = 10
 		1.upto(testCases) {
 			def testCase = to.getTestCase(project)
-			project.addToTestCases(testCase)
-			dataService.saveDomainObject project
+			dataService.saveDomainObject testCase
 		}
 
 		assertEquals "Wrong number of test cases", testCases, TestCase.list().size()

@@ -9,7 +9,7 @@ import cuanto.ParsingException
 
 class ParsingServiceTests extends GroovyTestCase {
 	def parsingService
-	def dataService
+	DataService dataService
 	def initializationService
 	def testOutcomeService
 	def testRunService
@@ -36,15 +36,8 @@ class ParsingServiceTests extends GroovyTestCase {
 		tCase.fullName = tCase.packageName + "." + tCase.testName
 
 		tCase.project = project
-
-		if (!project.addToTestCases(tCase).save()) {
-			dataService.reportSaveError project
-		}
-
-		if (!project.addToTestCases(tCase).save(flush: true)) {
-			dataService.reportSaveError project
-		}
-
+		dataService.saveDomainObject tCase
+		
 		TestCase t2 = new TestCase()
 		t2.packageName = "foo"
 

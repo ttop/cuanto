@@ -13,12 +13,11 @@ import org.springframework.orm.hibernate3.HibernateSystemException
  */
 class ProjectTests extends GroovyTestCase {
 
-	def dataService
-	def initializationService
-	def projectService
-	def testResultService
+	DataService dataService
+	InitializationService initializationService
+	ProjectService projectService
 
-	def fakes = new TestObjects()
+	TestObjects fakes = new TestObjects()
 	def testType;
 
 	@Override
@@ -191,23 +190,19 @@ class ProjectTests extends GroovyTestCase {
 		1.upto(numCases) {
 			def tc = fakes.getTestCase(proj)
 			testCases << tc
-			proj.addToTestCases(tc)
+			dataService.saveDomainObject tc
 		}
-		dataService.saveDomainObject proj
 
 		def testRuns = []
 		1.upto(3) {
 			def tr = fakes.getTestRun(proj, "foobar")
 			testRuns << tr
-			proj.addToTestRuns(tr)
-			dataService.saveDomainObject proj
+			dataService.saveDomainObject tr
 			testCases.each { tc ->
 				def to = fakes.getTestOutcome(tc, tr)
-				tr.addToOutcomes(to)
+				dataService.saveDomainObject to 
 			}
-			//dataService.saveDomainObject tr
 		}
-		dataService.saveDomainObject proj, true
 
 		assertEquals "Wrong number of projects", 1, Project.list().size()
 		assertEquals "Wrong number of test outcomes", testRuns.size() * numCases, TestOutcome.list().size()
@@ -430,24 +425,23 @@ class ProjectTests extends GroovyTestCase {
 
 	void testGetTestCasesOnlyName() {
 
-		assertEquals "No test cases should've been returned for null project", 0, projectService.getTestCases(null).size()
+		assertEquals "No test cases should've been returned for null project", 0, projectService.getSortedTestCases(null).size()
 
 		def proj = fakes.project
 		dataService.saveDomainObject(proj)
 		assertEquals "Wrong number of projects", 1, Project.list().size()
 
-		assertEquals "No test cases should've been returned", 0, projectService.getTestCases(proj).size()
+		assertEquals "No test cases should've been returned", 0, projectService.getSortedTestCases(proj).size()
 
 		def testCaseNames = ["a", "b", "c", "d", "e"].reverse()
 		def testCases = []
 		testCaseNames.each { name ->
-			def tc = new TestCase(testName: name)
+			def tc = new TestCase(testName: name, fullName: name, project: proj)
 			testCases << tc
-			proj.addToTestCases(tc)
+			dataService.saveDomainObject tc
 		}
-		dataService.saveDomainObject proj
 
-		def fetchedCases = projectService.getTestCases(proj)
+		def fetchedCases = projectService.getSortedTestCases(proj)
 		assertEquals "Wrong number of test cases", testCases.size(), fetchedCases.size()
 		testCaseNames.reverse().eachWithIndex { name, indx ->
 			assertEquals "Wrong title/order", name, fetchedCases[indx].testName
@@ -456,8 +450,7 @@ class ProjectTests extends GroovyTestCase {
 
 
 	void testGetTestCasesWithPackage() {
-
-		assertEquals "No test cases should've been returned", 0, projectService.getTestCases(null).size()
+		assertEquals "No test cases should've been returned", 0, projectService.getSortedTestCases(null).size()
 
 		def proj = fakes.project
 		dataService.saveDomainObject(proj)
@@ -466,21 +459,18 @@ class ProjectTests extends GroovyTestCase {
 
 		def testPackageNames = ["a", "b", "c", "d", "e"].reverse()
 		def testCases = []
-		testPackageNames.each { name ->
-			def tc = projectService.createTestCase([testName: fakes.wordGen.getCamelWords(2), packageName: name,
-				project: proj.id])
+		testPackageNames.each { pkgName ->
+			def tName = fakes.wordGen.getCamelWords(2)
+			def tc = projectService.createTestCase([testName: tName, packageName: pkgName,
+				fullName: pkgName + "." + tName, project: proj.id])
 			testCases << tc
+			dataService.saveDomainObject tc
 		}
-		dataService.saveDomainObject proj
 
-		def fetchedCases = projectService.getTestCases(proj)
+		def fetchedCases = projectService.getSortedTestCases(proj)
 		assertEquals "Wrong number of test cases", testCases.size(), fetchedCases.size()
 		testPackageNames.reverse().eachWithIndex { name, indx ->
 			assertEquals "Wrong title/order", name, fetchedCases[indx].packageName
 		}
 	}
-	
-
-
-
 }

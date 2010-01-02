@@ -37,9 +37,19 @@ class ParsingService {
 	def testParserRegistry
 
 
-	TestRun parseFileFromStream(stream, testRunId) {
-		def testRun = getTestRun(testRunId)
-		def parser = getParser(testRun.project.testType)
+	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
+		def testRun = null
+		def project
+		if (testRunId) {
+			testRun = getTestRun(testRunId)
+			project = testRun.project
+		} else if (projectId) {
+			project = Project.get(projectId)
+		} else {
+			throw new ParsingException("No TestRun ID or Project ID was provided")
+		}
+
+		def parser = getParser(project.testType)
 		def outcomes = parser.parseStream(stream)
 
 		def testOutcomesToSave = []
@@ -47,7 +57,7 @@ class ParsingService {
 
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
-			def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
+			def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
 			testOutcomesToSave.add(testOutcome)
 		}
 
@@ -57,12 +67,21 @@ class ParsingService {
 	}
 
 
-	TestOutcome parseTestOutcome(inputStream, testRunId) {
+	TestOutcome parseTestOutcome(inputStream, testRunId, projectId = null) {
 		def testRun = dataService.getTestRun(testRunId)
+		def project
+		if (testRun) {
+			project = testRun.project
+		} else if (projectId) {
+			project = Project.get(projectId)
+		} else {
+			throw new ParsingException("No TestRun ID or Project ID was provided")
+		}
+
 
 		XStream xstream = new XStream()
 		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome) xstream.fromXML(inputStream)
-		def testOutcome = processParsableOutcome(testRun, parsableTestOutcome)
+		def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
 
 		if (parsableTestOutcome.bug) {
 			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
@@ -73,26 +92,22 @@ class ParsingService {
 	}
 
 
-	private TestOutcome processParsableOutcome(testRun, ParsableTestOutcome parsableTestOutcome) {
-		TestCase testCase = parseTestCase(parsableTestOutcome, testRun)
+	private TestOutcome processParsableOutcome(ParsableTestOutcome parsableTestOutcome, TestRun testRun, Project project = null) {
+		if (!project) {
+			project = testRun?.project
+		}
 
-		def matchingTestCase = dataService.findMatchingTestCaseForProject(testRun.project, testCase)
+		TestCase testCase = parseTestCase(parsableTestOutcome, project)
+		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
+		
 		if (matchingTestCase) {
 			testCase = matchingTestCase
 		} else {
-			dataService.addTestCases(testRun.project, [testCase])
+			dataService.addTestCases(project, [testCase])
 		}
 
 		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
-
-		TestOutcome testOutcome = null
-		if (matchingTestCase) {
-			testOutcome = dataService.findOutcomeForTestCase(testCase, testRun)
-		}
-
-		if (!testOutcome) {
-			testOutcome = new TestOutcome('testCase': testCase)
-		}
+		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
 
 		testOutcome.testResult = dataService.result(parsableTestOutcome.testResult.toLowerCase())
 		testOutcome.duration = parsableTestOutcome.duration
@@ -100,16 +115,18 @@ class ParsingService {
 		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
 		testOutcome.owner = parsableTestOutcome.owner
 		testOutcome.note = parsableTestOutcome.note
+		testOutcome.testRun = testRun
 		processTestFailure(testOutcome, testRun.project)
 		return testOutcome
 	}
 
 
-	private TestCase parseTestCase(parsableTestOutcome, testRun) {
+	private TestCase parseTestCase(parsableTestOutcome, project) {
 		TestCase testCase = new TestCase(
 			testName: parsableTestOutcome.testCase.testName,
 			packageName: parsableTestOutcome.testCase.packageName,
-			parameters: parsableTestOutcome.testCase.parameters
+			parameters: parsableTestOutcome.testCase.parameters,
+			'project': project
 		)
 
 		if (testCase.packageName) {
@@ -123,8 +140,12 @@ class ParsingService {
 	}
 
 
-	TestRun parseFile(file, testRunId) {
+	TestRun parseFileWithTestRun(file, testRunId) {
 		parseFileFromStream(file.newInputStream(), testRunId)
+	}
+
+	TestRun parseFileWithoutTestRun(file,  projectId) {
+		parseFileFromStream(file.newInputStream(), null, projectId)
 	}
 
 

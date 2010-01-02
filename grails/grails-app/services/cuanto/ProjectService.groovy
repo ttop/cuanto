@@ -96,13 +96,8 @@ class ProjectService {
 	}
 
 
-	def getTestCases(project) {
-		def cases = []
-		if (project && project.testCases) {
-			cases = project.testCases
-			Collections.sort(cases)
-		}
-		return cases  
+	def getSortedTestCases(project) {
+		TestCase.findAllByProject(project, [sort: "fullName"])
 	}
 
 
