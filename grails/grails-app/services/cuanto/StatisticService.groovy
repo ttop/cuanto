@@ -9,9 +9,10 @@ class StatisticService {
 
 	boolean transactional = false
 	def dataService
+	def grailsApplication
 
 	ConcurrentLinkedQueue<TestRun> testRunStatQueue = new ConcurrentLinkedQueue<TestRun>();
-
+	Boolean processingTestRunStats = false;
 
 	def queueTestRunStats(TestRun testRun) {
 		synchronized (testRunStatQueue) {
@@ -26,19 +27,25 @@ class StatisticService {
 
 
 	def processTestRunStats() {
-		def testRun = testRunStatQueue.poll()
-		if (testRun) {
-			try {
-				TestRun.withTransaction {
-					calculateTestRunStats(testRun)
+		setProcessingTestRunStats(true)
+		while (testRunStatQueue.size() > 0) {
+			def testRun = testRunStatQueue.poll()
+			if (testRun) {
+				try {
+					TestRun.withTransaction {
+						calculateTestRunStats(testRun)
+					}
+				} catch (OptimisticLockingFailureException e) {
+					log.info "OptimisticLockingFailureException for test run ${testRun.id}"
+					// re-queue
+					queueTestRunStats(testRun)
 				}
-			} catch (OptimisticLockingFailureException e) {
-				log.info "OptimisticLockingFailureException for test run ${testRun.id}"
-				// re-queue
-				queueTestRunStats(testRun)
 			}
+			sleep(grailsApplication.config.statSleep)
 		}
+		setProcessingTestRunStats(false) 
 	}
+
 
 
 	def calculateTestRunStats(TestRun testRun) {
@@ -115,4 +122,19 @@ class StatisticService {
 
 		log.debug "Completed calculating analysis statistics"
 	}
+
+
+	public Boolean getProcessingTestRunStats() {
+		synchronized (processingTestRunStats) {
+			return processingTestRunStats
+		}
+
+	}
+
+	public void setProcessingTestRunStats(Boolean processing) {
+		synchronized (processingTestRunStats) {
+			processingTestRunStats = processing
+		}
+	}
+
 }

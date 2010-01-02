@@ -79,3 +79,5 @@ uiperformance.processJS = false
 uiperformance.processImages = false
 uiperformance.html.compress = false                                                 
 uiperformance.determineVersion = { -> appVersion }
+
+statSleep = 3000
