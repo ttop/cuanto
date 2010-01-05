@@ -61,33 +61,29 @@ class StatisticService {
 			if (!testRun) {
 				log.error "Couldn't find test run ${testRunId}"
 			} else {
-				try {
-					dataService.deleteStatisticsForTestRun(testRun)
-					TestRunStats calculatedStats = new TestRunStats(testRun: testRun)
+				dataService.deleteStatisticsForTestRun(testRun)
+				TestRunStats calculatedStats = new TestRunStats(testRun: testRun)
 
-					def rawTestRunStats = dataService.getRawTestRunStats(testRun)
-					calculatedStats.tests = rawTestRunStats[0]
-					calculatedStats.totalDuration = rawTestRunStats[1]
-					calculatedStats.averageDuration = rawTestRunStats[2]
-					calculatedStats.averageDuration = calculatedStats.averageDuration?.round(new MathContext(4))
-					calculatedStats.failed = dataService.getTestRunFailureCount(testRun)
-					calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
+				def rawTestRunStats = dataService.getRawTestRunStats(testRun)
+				calculatedStats.tests = rawTestRunStats[0]
+				calculatedStats.totalDuration = rawTestRunStats[1]
+				calculatedStats.averageDuration = rawTestRunStats[2]
+				calculatedStats.averageDuration = calculatedStats.averageDuration?.round(new MathContext(4))
+				calculatedStats.failed = dataService.getTestRunFailureCount(testRun)
+				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
 
-					if (calculatedStats.tests > 0) {
-						BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
-						calculatedStats.successRate = successRate.round(new MathContext(4))
-					}
-
-					testRun.testRunStatistics = calculatedStats
-					testRun.testRunStatistics = calculateAnalysisStats(testRun)
-					dataService.saveDomainObject(testRun, true)
-
-				} catch (StaleObjectStateException e) {
-					log.error "StaleObjectStateException while calculating stats for test run ${testRunId}"
-					queueTestRunStats(testRunId)
+				if (calculatedStats.tests > 0) {
+					BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
+					calculatedStats.successRate = successRate.round(new MathContext(4))
 				}
+
+				testRun.testRunStatistics = calculatedStats
+				testRun.testRunStatistics = calculateAnalysisStats(testRun)
+				dataService.saveDomainObject(testRun, true)
+
 			}
 		}
+
 	}
 
 
