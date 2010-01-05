@@ -34,12 +34,11 @@ class SubmitMultipleResultTest extends GroovyTestCase {
 
 	void testSubmitThousands() {
 		def testRunId = client.getTestRunId(projectName, null, wordGen.getSentence(2), null, null)
-		Random rand = new Random()
 		Long submitTime = 0
 		int idx = 0
-		int numThreads = 8
+		int numThreads = 5
 		def totalStart = new Date().time
-		while (idx < 3000) {
+		while (idx < 2000) {
 			def th = []
 			1.upto(numThreads){
 				th << Thread.start {
