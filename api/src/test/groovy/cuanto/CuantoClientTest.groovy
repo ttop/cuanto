@@ -140,7 +140,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		client.submit(fileToSubmit, testRunId)
-		def stats = client.getTestRunStats(testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "34")
 		assertEquals "34", stats.tests
 		assertEquals "3", stats.failed
 		assertEquals "31", stats.passed
@@ -151,7 +151,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submit(fileToSubmit, testRunId)
-		def stats = client.getTestRunStats(testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "56")
 		assertEquals "56", stats.tests
 		assertEquals "15", stats.failed
 		assertEquals "41", stats.passed
@@ -165,7 +165,7 @@ class CuantoClientTest extends GroovyTestCase{
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
 
 		client.submit(filesToSubmit, testRunId)
-		def stats = client.getTestRunStats(testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "68")
 		assertEquals "68", stats.tests
 		assertEquals "6", stats.failed
 		assertEquals "62", stats.passed
@@ -194,5 +194,17 @@ class CuantoClientTest extends GroovyTestCase{
 		File myFile = new File("${path}/${filename}")
 		assertTrue "file not found: ${myFile.absoluteFile}", myFile.exists()
 		return myFile
+	}
+
+	Map waitForTestRunStats(CuantoClient client, Long testRunId, String totalTests) {
+		def secToWait = 30
+		def interval = 500
+		def start = new Date().time
+		Map stats = client.getTestRunStats(testRunId)
+		while (stats.tests != totalTests && new Date().time - start < secToWait * 1000) {
+			sleep interval
+			stats = client.getTestRunStats(testRunId)
+		}
+		return stats
 	}
 }

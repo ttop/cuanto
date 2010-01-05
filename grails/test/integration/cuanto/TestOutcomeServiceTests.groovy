@@ -112,7 +112,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
 		dataService.saveDomainObject outcome
-		statisticService.calculateTestRunStats(testRun)
+		statisticService.calculateTestRunStats(testRun.id)
 
 		def stateToApply = dataService.getAnalysisStateByName("Bug")
 

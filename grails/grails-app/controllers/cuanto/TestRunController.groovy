@@ -22,6 +22,7 @@ package cuanto
 
 import grails.converters.JSON
 import java.text.SimpleDateFormat
+import grails.util.Environment
 
 class TestRunController {
 	def parsingService
@@ -106,10 +107,10 @@ class TestRunController {
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
 
 		for (fileName in request.getFileNames()) {
+			log.info "Parsing ${fileName}"
 			def multipartFileRequest = request.getFile(fileName)
 			parsingService.parseFileFromStream(multipartFileRequest.getInputStream(), testRunId)
 		}
-		statisticService.queueTestRunStats(TestRun.get(testRunId))
 		render ""
 	}
 
@@ -219,6 +220,11 @@ class TestRunController {
 
 		if (params.calculate) {
 			statisticService.queueTestRunStats(testRun)
+		}
+
+		if (Environment.current == Environment.DEVELOPMENT) {
+			// this is here for testability from the client while in dev mode
+			statisticService.processTestRunStats()
 		}
 		
 		withFormat {

@@ -51,7 +51,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject outcome
 		}
 
-		statisticService.calculateTestRunStats(testRun)
+		statisticService.calculateTestRunStats(testRun.id)
 
 		assertNotNull "results not found", testRun.testRunStatistics
 		TestRunStats result = testRun.testRunStatistics

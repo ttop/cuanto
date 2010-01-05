@@ -35,6 +35,7 @@ class ParsingService {
 	def testRunService
 	def bugService
 	def testParserRegistry
+	def statisticService
 
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
@@ -63,6 +64,9 @@ class ParsingService {
 
 		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
+		if (testRun) {
+			statisticService.queueTestRunStats(testRun)
+		}
 		return testRun
 	}
 
@@ -88,6 +92,9 @@ class ParsingService {
 		}
 
 		dataService.saveTestOutcomes(testRun, [testOutcome])
+		if (testRun) {
+			statisticService.queueTestRunStats(testRun)
+		}
 		return testOutcome
 	}
 

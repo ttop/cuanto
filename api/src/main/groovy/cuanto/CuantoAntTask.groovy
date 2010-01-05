@@ -35,7 +35,6 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	String build
 	String date
 	String dateFormat
-	Boolean calculate = true
 	String action = "submit"
 
 	List<FileSet> filesets = []
@@ -53,6 +52,7 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		}
 	}
 
+	
 	private def getCuantoClient() {
 		def cuantoClient = new CuantoClient(url.toString())
 		if (dateFormat) {
@@ -66,6 +66,7 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		return cuantoClient
 	}
 
+
 	private void submit() {
 		def cuantoClient = getCuantoClient()
 		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
@@ -76,23 +77,8 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		def endTime = new Date()
 		def duration = (endTime.time - startTime.time) / 1000
 		log "Submitting results took ${duration} second(s)"
-		if (calculate) {
-			calculateStats(testRunId)
-		}
 	}
 
-	private void calculateStats(testRunId) {
-		def cuantoClient = getCuantoClient()
-		def startTime = new Date()
-		def endTime = new Date()
-		def duration = (endTime.time - startTime.time) / 1000
-		if (duration == 0) {
-			duration = "less than one"
-		}
-		log "Calculating statistics"
-		cuantoClient.getTestRunStats(testRunId)
-		log "Calculating statistics took ${duration} second(s)"
-	}
 
 	private def getFilesToSubmit() {
 		def files = []

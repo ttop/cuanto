@@ -80,4 +80,5 @@ uiperformance.processImages = false
 uiperformance.html.compress = false                                                 
 uiperformance.determineVersion = { -> appVersion }
 
-statSleep = 3000
+// statSleep is the time to sleep between calculating test run stats
+statSleep = 1000

@@ -45,11 +45,22 @@ class SubmitSingleResultTest extends GroovyTestCase {
 		def outcomeId = client.submit(outcome, testRunId)
 		assertNotNull outcomeId
 		
-		def stats = client.getTestRunStats(testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "1")
 		assertNotNull stats
 		assertEquals "Wrong total tests", "1", stats?.tests
 		assertEquals "Wrong passed", "1", stats?.passed
 		assertEquals "Wrong failed", "0", stats?.failed
 	}
 
+	Map waitForTestRunStats(CuantoClient client, Long testRunId, String totalTests) {
+		def secToWait = 30
+		def interval = 500
+		def start = new Date().time
+		Map stats = client.getTestRunStats(testRunId)
+		while (stats.tests != totalTests && new Date().time - start < secToWait * 1000) {
+			sleep interval
+			stats = client.getTestRunStats(testRunId)
+		}
+		return stats
+	}
 }
