@@ -21,6 +21,7 @@ credentials, JDBC driver and the JDBC URL for your SQL server.  Make sure you ed
 
 
 Deploying the application
+=========================
 
 Unzip the WAR into your application server's webapps directory into a subdirectory named "cuanto". Copy the
 cuanto-db.groovy you customized into the cuanto/WEB-INF/classes directory.  Put your JDBC driver in the
@@ -29,3 +30,10 @@ cuanto/WEB-INF/lib directory.
 The application should be ready to run now -- start your application server and go to the appropriate URL
 for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu
 link to read about how to use Cuanto.
+
+
+Upgrading
+=========
+If you are upgrading from an existing Cuanto installation, you'll want to execute the SQL scripts
+found in the sql directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may
+be needed if using a different database configuration.

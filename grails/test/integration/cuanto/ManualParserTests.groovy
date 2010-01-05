@@ -34,7 +34,7 @@ class ManualParserTests extends GroovyTestCase{
 		Project proj = getProject()
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("manual_tests.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
 		def outcomes = testRunService.getOutcomesForTestRun(run, null)
@@ -71,11 +71,11 @@ class ManualParserTests extends GroovyTestCase{
 
 		TestRun run = testRunService.createTestRun([project:proj.toString()])
 		def testResultFile = getFile("manual_tests.xml")
-		TestRun returnedRun = parsingService.parseFile(testResultFile, run.id)
+		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 
 		TestRun updatedRun = testRunService.createTestRun([project:proj.toString()])
 		def updatedResultFile = getFile("manual_tests_update.xml")
-		parsingService.parseFile(updatedResultFile, updatedRun.id,)
+		parsingService.parseFileWithTestRun(updatedResultFile, updatedRun.id,)
 
 		def outcomes = testRunService.getOutcomesForTestRun(updatedRun, null)
 		assertEquals 9, outcomes.size()

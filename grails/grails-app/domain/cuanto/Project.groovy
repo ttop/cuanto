@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import cuanto.ProjectGroup
-import cuanto.TestCase
-import cuanto.TestRun
 import cuanto.TestType
 
 class Project implements Comparable {
@@ -30,7 +28,6 @@ class Project implements Comparable {
 	ProjectGroup projectGroup
 	String projectKey
 	String bugUrlPattern
-	List testCases
 	TestType testType
 
 	static constraints = {
@@ -45,18 +42,9 @@ class Project implements Comparable {
 				}
 			}
 		)
-		testCases(nullable: true)
 		bugUrlPattern(nullable: true)
 		testType(nullable: false)
 	}
-
-	static mapping = {
-		testCases column:'TestCase', cache:true
-		cache true
-	}
-
-	static hasMany = [testCases: TestCase, testRuns: TestRun]
-
 
 	Project(){}
 

@@ -21,6 +21,7 @@
 def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
 def apiDir = "${cuantoBase}/api"
+def sqlDir = "${cuantoBase}/grails/sql"
 
 def propfileName = "${cuantoBase}/grails/application.properties"
 ant.property(file: propfileName)
@@ -30,6 +31,9 @@ println "Grails app version is $cuantoVersion"
 def targetDir = "${cuantoBase}/dist/target"
 def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
 def targetApiDir = "${zipDir}/api"
+def targetSqlDir = "${zipDir}/sql"
+
+def sqlFileCount;
 
 def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
@@ -70,6 +74,23 @@ target(cuantowar: "Build the Cuanto WAR") {
 	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: zipDir)
 }
 
+target(cuantosql: "Copy the Cuanto SQL files") {
+	ant.resourcecount(property: "sql.count") {
+		fileset(dir: cuantoBase, includes:"grails/sql/*.sql")
+	}
+	sqlFileCount = Integer.valueOf(ant.project.properties["sql.count"])
+	
+	if (sqlFileCount > 0) {
+		println "Copying the Cuanto SQL files"
+		ant.mkdir(dir: targetSqlDir)
+		ant.copy(todir: targetSqlDir, verbose: "true") {
+			fileset(dir:"sql", includes: "*")
+		}
+	} else {
+		println "No SQL files were found for including in the distribution"
+	}
+}
+
 
 target(cuantopackage: "Build the Cuanto distributable") {
 
@@ -82,7 +103,7 @@ target(cuantopackage: "Build the Cuanto distributable") {
 	ant.mkdir(dir: releaseDir)
 	ant.mkdir(dir: targetApiDir)
 
-	depends(cuantoapi, cuantowar)
+	depends(cuantoapi, cuantowar, cuantosql)
 
 	println "Packaging the Cuanto distribution"
 
@@ -101,3 +122,9 @@ target(cuantopackage: "Build the Cuanto distributable") {
 	ant.zip(basedir:targetDir, destfile: "${releaseDir}/${zipfile}")
 }
 
+target(name: "sqlCount") {
+	ant.resourcecount(property: "sql.count") {
+		fileset(dir: cuantoBase, includes:"grails/sql/*.sql")
+	}
+	sqlFileCount = Integer.valueOf(ant.project.properties["sql.count"])
+}

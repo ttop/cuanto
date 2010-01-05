@@ -22,6 +22,7 @@ package cuanto
 
 import grails.converters.JSON
 import java.text.SimpleDateFormat
+import grails.util.Environment
 
 class TestRunController {
 	def parsingService
@@ -29,6 +30,7 @@ class TestRunController {
 	def testOutcomeService
 	def testRunService
 	def testCaseFormatterRegistry
+	def statisticService
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
@@ -105,10 +107,10 @@ class TestRunController {
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
 
 		for (fileName in request.getFileNames()) {
+			log.info "Parsing ${fileName}"
 			def multipartFileRequest = request.getFile(fileName)
 			parsingService.parseFileFromStream(multipartFileRequest.getInputStream(), testRunId)
 		}
-		testRunService.calculateTestRunStats(TestRun.get(testRunId))
 		render ""
 	}
 
@@ -217,9 +219,9 @@ class TestRunController {
 		}
 
 		if (params.calculate) {
-			testRunService.calculateTestRunStats(testRun)
+			statisticService.queueTestRunStats(testRun)
 		}
-		
+
 		withFormat {
 			json {
 				def myJson = [:]
@@ -231,7 +233,7 @@ class TestRunController {
 				myJson['results'] = []
 				if (params.header) {
 					if (!testRun.testRunStatistics) {
-						testRunService.calculateTestRunStats(testRun)
+						statisticService.queueTestRunStats(testRun)
 					}
 					myJson['results'] += testRun.testRunStatistics.toJsonMap()
 				}

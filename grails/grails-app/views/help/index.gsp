@@ -113,12 +113,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <h2>Submitting test results with the ant task</h2>
 		  <p>After tests have executed and the XML test report files have been created, submit the reports to Cuanto
 		    by using the Cuanto ant task:</p>
-		  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="Sample/CuantoProd" milestone="1.0"
+		  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="CUANTO" milestone="1.0"
    build="30343" targetEnv="test lab"&gt;
 	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
 &lt;/cuanto&gt;</pre>
 		  <br/>
-
+		  Use the project key as the testProject value.
+		  
 		  <h1><a name="test_run_history">Test Run History</a></h1>
 		  <p>The Test Run History page shows the history of test runs for a project. The feed icon links to an RSS feed
 		     of the Test Run History so that you can subscribe to new results. Clicking on a Test Run row will take you

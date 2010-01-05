@@ -24,9 +24,8 @@ class BootStrap {
 
 	def dataService
 	def initializationService
-	def testRunService
+	def statisticService
 	def grailsApplication
-
 
 	def init = {servletContext ->
 		def ds = grailsApplication.config.dataSource
@@ -45,7 +44,7 @@ class BootStrap {
 		}
 
 		initializationService.initializeAll()
-		testRunService.updateTestRunsWithoutAnalysisStats()
+		statisticService.updateTestRunsWithoutAnalysisStats()
 	}
 
 	def destroy = {

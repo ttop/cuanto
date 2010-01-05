@@ -82,3 +82,7 @@ uiperformance.determineVersion = { -> appVersion }
 
 
 //log4j.logger.org.springframework.security='off,stdout'
+
+// statSleep is the time to sleep between calculating test run stats
+statSleep = 1000
+
