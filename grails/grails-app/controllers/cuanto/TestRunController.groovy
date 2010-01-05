@@ -222,11 +222,6 @@ class TestRunController {
 			statisticService.queueTestRunStats(testRun)
 		}
 
-		if (Environment.current == Environment.DEVELOPMENT) {
-			// this is here for testability from the client while in dev mode
-			statisticService.processTestRunStats()
-		}
-		
 		withFormat {
 			json {
 				def myJson = [:]
