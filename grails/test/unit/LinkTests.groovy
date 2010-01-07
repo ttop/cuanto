@@ -32,4 +32,13 @@ class LinkTests extends GrailsUnitTestCase {
 			assertFalse it.equals(linkOne)
 		}
 	}
+
+	void testSort() {
+		def links = [linkTwo, linkOne, linkFour, linkThree]
+		Collections.sort(links)
+		assertEquals linkFour, links[0]
+		assertEquals linkOne, links[1]
+		assertEquals linkThree, links[2]
+		assertEquals linkTwo, links[3]
+	}
 }
