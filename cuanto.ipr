@@ -66,6 +66,7 @@
       <file url="file://$PROJECT_DIR$/grails/plugins/yui-2.6.0/src/groovy/org/codehaus/groovy/grails/plugins/yui/Yui.groovy" />
       <file url="file://$PROJECT_DIR$/../../Library/Caches/IntelliJIDEA8x/compiler/cuanto.cuantoe3ca605d/.generated/Groovy_to_java_source_code_generator/cuanto.9382c8c3/production/org/codehaus/groovy/grails/plugins/web/taglib/YuiProvider.java" />
       <file url="file://$PROJECT_DIR$/grails/plugins/quartz-0.4.1-SNAPSHOT/src/java/org/codehaus/groovy/grails/plugins/quartz/DefaultGrailsTaskClass.java" />
+      <file url="file://$PROJECT_DIR$/../../.grails/1.2.0/projects/grails/plugins/quartz-0.4.1/src/java/org/codehaus/groovy/grails/plugins/quartz/TaskArtefactHandler.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
