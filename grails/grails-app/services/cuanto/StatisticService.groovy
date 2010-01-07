@@ -1,10 +1,8 @@
 package cuanto
 
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.math.MathContext
 import org.springframework.dao.OptimisticLockingFailureException
 import grails.util.Environment
-import org.hibernate.StaleObjectStateException
 
 class StatisticService {
 
@@ -12,8 +10,9 @@ class StatisticService {
 	def dataService
 	def grailsApplication
 
-	ConcurrentLinkedQueue<Long> testRunStatQueue = new ConcurrentLinkedQueue<Long>();
 	Boolean processingTestRunStats = false;
+	final private static String queueLock = "Test Run Stat Queue Lock"
+	final private static String calcLock = "Test Run Calculation Lock"
 
 	void queueTestRunStats(TestRun testRun) {
 		queueTestRunStats testRun.id
@@ -21,10 +20,11 @@ class StatisticService {
 
 
 	void queueTestRunStats(Long testRunId) {
-		synchronized (testRunStatQueue) {
-			if (!testRunStatQueue.contains(testRunId)) {
-				log.info "*** adding test run ${testRunId} to stat queue"
-				testRunStatQueue.add(testRunId);
+		synchronized (queueLock) {
+			if (!queueHasTestRun(testRunId)) {
+				log.info "adding test run ${testRunId} to stat queue"
+				def queuedItem = new QueuedTestRunStat('testRunId': testRunId)
+				dataService.saveDomainObject queuedItem, true
 			}
 			if (Environment.current == Environment.TEST) {
 				calculateTestRunStats(testRunId)
@@ -33,28 +33,46 @@ class StatisticService {
 	}
 
 
-	def processTestRunStats() {
-		setProcessingTestRunStats(true)
-		while (testRunStatQueue.size() > 0) {
-			log.info "*** ${testRunStatQueue.size()} items in stat queue"
-			def testRunId = testRunStatQueue.poll()
-			if (testRunId) {
-				try {
-					calculateTestRunStats(testRunId)
-				} catch (OptimisticLockingFailureException e) {
-					log.info "OptimisticLockingFailureException for test run ${testRunId}"
-					// re-queue
-					queueTestRunStats(testRunId)
-				}
-			}
-			if (grailsApplication.config.statSleep) {
-				sleep(grailsApplication.config.statSleep)
-			}
-		}
-		setProcessingTestRunStats(false) 
+	Boolean queueHasTestRun(Long testRunId) {
+		def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId)
+		return queuedItem != null
 	}
 
 
+	def processTestRunStats() {
+		synchronized (calcLock) {
+			def queueSize = QueuedTestRunStat.list().size()
+			while ( queueSize > 0) {
+				log.debug "${queueSize} items in stat queue"
+				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
+				if (queuedItem) {
+					try {
+						calculateTestRunStats(queuedItem.testRunId)
+						queuedItem.delete(flush: true)
+					} catch (OptimisticLockingFailureException e) {
+						log.info "OptimisticLockingFailureException for test run ${testRunId}"
+						// leave it in queue so it gets tried again
+					}
+					queueSize = QueuedTestRunStat.list().size()
+				}
+				if (grailsApplication.config.statSleep) {
+					sleep(grailsApplication.config.statSleep)
+				}
+			}
+		}
+	}
+
+
+	QueuedTestRunStat getFirstTestRunIdInQueue() {
+		def latest = QueuedTestRunStat.listOrderByDateCreated(max: 1)
+		if (latest.size() == 0) {
+			return null
+		} else {
+			return latest[0]
+		}
+	}
+
+	
 	void calculateTestRunStats(Long testRunId) {
 		TestRun.withTransaction {
 			def testRun = TestRun.get(testRunId)
@@ -80,10 +98,8 @@ class StatisticService {
 				testRun.testRunStatistics = calculatedStats
 				testRun.testRunStatistics = calculateAnalysisStats(testRun)
 				dataService.saveDomainObject(testRun, true)
-
 			}
 		}
-
 	}
 
 
@@ -139,20 +155,4 @@ class StatisticService {
 		}
 		log.debug "Completed calculating analysis statistics"
 	}
-
-
-	public Boolean getProcessingTestRunStats() {
-		synchronized (processingTestRunStats) {
-			return processingTestRunStats
-		}
-
-	}
-	
-
-	public void setProcessingTestRunStats(Boolean processing) {
-		synchronized (processingTestRunStats) {
-			processingTestRunStats = processing
-		}
-	}
-
 }
