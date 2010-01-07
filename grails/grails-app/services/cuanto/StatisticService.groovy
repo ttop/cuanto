@@ -22,7 +22,7 @@ class StatisticService {
 	void queueTestRunStats(Long testRunId) {
 		synchronized (queueLock) {
 			if (!queueHasTestRun(testRunId)) {
-				log.info "*** adding test run ${testRunId} to stat queue"
+				log.info "adding test run ${testRunId} to stat queue"
 				def queuedItem = new QueuedTestRunStat('testRunId': testRunId)
 				dataService.saveDomainObject queuedItem, true
 			}
@@ -43,7 +43,7 @@ class StatisticService {
 		synchronized (calcLock) {
 			def queueSize = QueuedTestRunStat.list().size()
 			while ( queueSize > 0) {
-				log.info "*** ${queueSize} items in stat queue"
+				log.debug "${queueSize} items in stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
 					try {
