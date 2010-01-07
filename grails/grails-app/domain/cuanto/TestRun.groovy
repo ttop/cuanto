@@ -33,9 +33,12 @@ class TestRun {
 		valid(nullable: true)
 		testRunStatistics(nullable:true)
 	}
+
+	static hasMany = [links:Link]
 	
 	static mapping = {
 		cache true
+		link fetch: "join"
 	}
 	
 	String build
@@ -48,7 +51,7 @@ class TestRun {
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-
+	List links
 
 	def beforeInsert = {
 
