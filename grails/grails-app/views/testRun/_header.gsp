@@ -33,8 +33,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="heading">Milestone: </span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> |
 	<span class="heading">Build: </span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> |
 	<span class="heading">Target Environment: </span><span class="text" id="trhTargetEnv">${testRun?.targetEnv?.encodeAsHTML()}</span>
-
 	<br/>
+
+	<g:if test="${testRun?.links}">Links:
+		<g:each in="${testRun?.links}" var="link" status="idx">
+			<a href="${link.url}">${link.description}</a>
+			<g:if test="${idx < testRun.links.size() - 1}"> &bull; </g:if>
+		</g:each>
+		<br/>
+	</g:if>
 	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">

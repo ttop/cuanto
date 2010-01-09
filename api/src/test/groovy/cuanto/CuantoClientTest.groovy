@@ -138,6 +138,7 @@ class CuantoClientTest extends GroovyTestCase{
 			"Code Coverage": "http://cobertura"] as Map<String, String>;
 		testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv, links)
 		runInfo = client.getTestRunInfo(testRunId)
+
 		ParsableTestRun testRun = client.getTestRun(testRunId)
 		assertEquals projectKey, testRun.project
 		assertNotNull testRun.dateExecuted
@@ -145,7 +146,7 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals build, testRun.build
 		assertEquals targetEnv, testRun.targetEnv
 		assertNotNull testRun.links
-
+		assertTrue "Valid", testRun.valid
 		assertEquals 2, testRun.links.size()
 
 		def codeCov = testRun.links.find {

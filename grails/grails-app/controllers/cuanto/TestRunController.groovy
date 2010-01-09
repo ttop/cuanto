@@ -257,7 +257,7 @@ class TestRunController {
 
 	def get = {
 		def testRun = TestRun.get(Long.valueOf(params.id))
-		def testRunMap = testRun.toJSONWithDateFormat(dateFormat)
+		def testRunMap = testRun?.toJSONWithDateFormat(dateFormat)
 		withFormat {
 			text {
 				['testRunMap': testRunMap]

@@ -516,7 +516,9 @@ class TestRunService {
 		testRun.milestone = pTestRun.milestone
 		testRun.targetEnv = pTestRun.targetEnv
 		testRun.note = pTestRun.note
-		testRun.valid = pTestRun.valid
+		if (pTestRun.valid != null) {
+			testRun.valid = pTestRun.valid
+		}
 
 		if (pTestRun.dateExecuted) {
 			testRun.dateExecuted = pTestRun.dateExecuted
