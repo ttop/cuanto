@@ -17,16 +17,38 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cuanto.api
+package cuanto
 
-public class Property {
+public class TestProperty implements Comparable {
+
 	String name
 	String value
 
-	Property(){}
+	TestProperty(){}
 
-	Property(String name, String value) {
+
+	TestProperty(String name, String value) {
 		this.name = name
 		this.value = value
+	}
+
+
+
+
+	public int compareTo(Object t) {
+		TestProperty otherProp = (TestProperty) t
+
+		def nameComp = this.name.compareTo(otherProp.name)
+		if (nameComp == 0) {
+			return this.value.compareTo(other.value)
+		} else {
+			return nameComp
+		}
+	}
+
+
+	public boolean equals(Object t) {
+		TestProperty otherProp = (TestProperty) t
+		return this.name == otherProp.name && this.value == otherProp.value
 	}
 }
