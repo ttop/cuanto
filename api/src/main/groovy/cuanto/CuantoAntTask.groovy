@@ -22,6 +22,10 @@ package cuanto
 
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.types.FileSet
+import cuanto.api.Link
+import java.text.SimpleDateFormat
+import org.apache.tools.ant.taskdefs.Property
+import cuanto.api.Property as CuantoProperty
 
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
@@ -36,9 +40,11 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	String date
 	String dateFormat
 	String action = "submit"
+	protected static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
 	List<FileSet> filesets = []
-
+	List<Link> links = []
+	List<Property> properties = []
 
 	public void execute() {
 		if (!testProject) {
@@ -69,7 +75,27 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 
 	private void submit() {
 		def cuantoClient = getCuantoClient()
-		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
+
+		ParsableTestRun testRun = new ParsableTestRun()
+		testRun.project = testProject
+
+		if (date) {
+			def dateFormatToUse = dateFormat ? dateFormat : DEFAULT_DATE_FORMAT
+			testRun.dateExecuted = new SimpleDateFormat(dateFormatToUse).parse(date)
+		}
+		testRun.milestone = milestone
+		testRun.build = build
+		testRun.targetEnv = targetEnv
+		testRun.links = links
+
+		if (properties) {
+			testRun.properties = new ArrayList<CuantoProperty>()
+			properties.each { Property prop ->
+				testRun.properties << new CuantoProperty(prop.name, prop.value)
+			}
+		}
+
+		def testRunId = cuantoClient.createTestRun(testRun)
 		log "Submitting results to ${url}"
 
 		def startTime = new Date()
@@ -105,5 +131,19 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		FileSet fset = new FileSet()
 		filesets.add fset
 		return fset
+	}
+
+
+	public Link createLink() {
+		def link = new Link()
+		links << link
+		return link
+	}
+
+	
+	public Property createProperty(){
+		def prop = new Property()
+		properties << prop
+		return prop
 	}
 }

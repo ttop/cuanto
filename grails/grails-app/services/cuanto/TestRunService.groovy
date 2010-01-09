@@ -22,6 +22,7 @@ package cuanto
 
 import java.math.MathContext
 import java.text.SimpleDateFormat
+import cuanto.api.Link as ApiLink
 
 class TestRunService {
 	def dataService
@@ -31,7 +32,6 @@ class TestRunService {
 	boolean transactional = false
 
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
-
 
 
 
@@ -526,13 +526,9 @@ class TestRunService {
 			testRun.dateExecuted = new Date()
 		}
 
-
-		pTestRun.links?.each {key, value ->
+		pTestRun.links?.each {ApiLink aLink->
 			try {
-				Link link = new Link()
-				link.description = key
-				link.url = getUrlFromString(value)
-				testRun.addToLinks(link)
+				testRun.addToLinks(new Link(aLink.description, aLink.url))
 			} catch (MalformedURLException e) {
 				// Don't persist the link, just log an error
 				log.error "Malformed URL: ${e.message}"

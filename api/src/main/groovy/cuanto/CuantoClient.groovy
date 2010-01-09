@@ -31,6 +31,7 @@ import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.HttpStatus
 import java.text.SimpleDateFormat
+import cuanto.api.Link
 
 /**
  * User: Todd Wells
@@ -139,7 +140,7 @@ class CuantoClient {
 
 
 	public Long getTestRunId(String project, String dateExecuted, String milestone, String build, String targetEnv,
-		Map<String, String> links = null) {
+		List<Link>links = null) {
 		if (!project) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
 		}

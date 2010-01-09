@@ -17,36 +17,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cuanto
+package cuanto.api
 
-class Link implements Comparable {
+public class Property {
+	String name
+	String value
 
-    static constraints = {
+	Property(){}
 
-    }
-
-	String description
-	String url
-
-	public Link(){}
-	
-	public Link(String description, String url) {
-		this.description = description
-		this.url = url
-	}
-
-	public int compareTo(Object t) {
-		Link other = (Link) t
-		int descriptionCompare = this.description.compareTo(other.description)
-		if (descriptionCompare == 0) {
-			return this.url.compareTo(other.url)
-		} else {
-			return descriptionCompare
-		}
-	}
-
-	public boolean equals(Object t) {
-		Link other = (Link) t
-		return this.description == other.description && this.url == other.url
+	Property(String name, String value) {
+		this.name = name
+		this.value = value
 	}
 }

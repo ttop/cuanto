@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import cuanto.api.Link as ApiLink
 
 class TestRun {
 
@@ -51,7 +52,7 @@ class TestRun {
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-	List links
+	List<Link> links
 
 	def beforeInsert = {
 
@@ -118,9 +119,9 @@ class TestRun {
 		pTestRun.valid = this.valid
 		pTestRun.project = this.project.projectKey
 		pTestRun.targetEnv = this.targetEnv
-		pTestRun.links = [:]
+		pTestRun.links = new ArrayList<ApiLink>()
 		this.links?.each {
-			pTestRun.links[it.description] = it.url
+			pTestRun.links << new ApiLink(it.description, it.url)
 		}
 		return pTestRun
 	}

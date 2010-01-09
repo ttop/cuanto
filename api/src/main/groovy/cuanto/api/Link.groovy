@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2019 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -17,28 +17,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+package cuanto.api
 
+public class Link {
+	String description
+	String url
 
-package cuanto
+	public Link() {}
+	
+	public Link(String description, String url) {
+		this.description = description
+		this.url = url
+	}
 
-import cuanto.api.Link
-import cuanto.api.Property
-
-/**
- * User: Todd Wells
- * Date: Sep 28, 2008
- * Time: 12:55:50 PM
- *
- */
-class ParsableTestRun {
-	String project
-	String build
-	String targetEnv
-	String milestone
-	String note
-	String dateCreated // todo: remove?
-	Date dateExecuted
-	Boolean valid
-	List<Link> links
-	List<Property> properties
 }

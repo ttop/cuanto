@@ -5,6 +5,7 @@ import cuanto.WordGenerator
 import groovy.mock.interceptor.StubFor
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.PostMethod
+import cuanto.api.Link
 
 /**
  * User: Todd Wells
@@ -134,8 +135,10 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals build, runInfo.build
 		assertEquals targetEnv, runInfo.targetEnv
 
-		Map<String, String> links = ["Info":"http://projectInfo",
-			"Code Coverage": "http://cobertura"] as Map<String, String>;
+		def links = []
+		links << new Link("Info", "http://projectInfo")
+		links << new Link("Code Coverage", "http://cobertura")
+
 		testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv, links)
 		runInfo = client.getTestRunInfo(testRunId)
 
@@ -145,25 +148,17 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals milestone, testRun.milestone
 		assertEquals build, testRun.build
 		assertEquals targetEnv, testRun.targetEnv
-		assertNotNull testRun.links
 		assertTrue "Valid", testRun.valid
+
+		assertNotNull testRun.links
 		assertEquals 2, testRun.links.size()
 
-		def codeCov = testRun.links.find {
-			it.key == "Code Coverage"
+		links.eachWithIndex { link, index ->
+			assertEquals links[index].description, link.description
 		}
-		assertNotNull codeCov
-		assertEquals "http://cobertura", codeCov.value
-
-		def info = testRun.links.find {
-			it.key == "Info"
-		}
-		assertNotNull info
-		assertEquals "http://projectInfo", info.value
 	}
 
 
-	/*  boolean submit(File file, Long testRunId)  */
 	void testSubmitSingleSuite() {
 		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
