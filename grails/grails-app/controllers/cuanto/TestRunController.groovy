@@ -23,6 +23,7 @@ package cuanto
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import grails.util.Environment
+import com.thoughtworks.xstream.XStream
 
 class TestRunController {
 	def parsingService
@@ -34,7 +35,7 @@ class TestRunController {
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
-		submitFile: 'POST']
+		submitFile: 'POST', createXml:'POST']
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
@@ -267,6 +268,11 @@ class TestRunController {
 		}
 	}
 
+	def getXml = {
+		TestRun testRun = TestRun.get(Long.valueOf(params.id))
+		XStream xstream = new XStream()
+		render xstream.toXML(testRun.toParsableTestRun())
+	}
 
 	def results = {
 		def testRun = null
@@ -357,6 +363,13 @@ class TestRunController {
 				render e.getMessage()
 			}
 		}
+	}
+
+	def createXml = {
+		XStream xstream = new XStream()
+		def testRun = (ParsableTestRun)xstream.fromXML(request.inputStream)
+		def parsedTestRun = testRunService.createTestRun(testRun)
+		render(view: "create", model: ['testRunId': parsedTestRun.id])
 	}
 
 	def createManual = {

@@ -274,5 +274,43 @@ class TestRunServiceTests extends GroovyTestCase {
 			assertEquals proj, foundProj
 		}
 	}
+
+
+	void testCreateAndDeleteTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true 
+
+		def params = [:]
+		params.project = proj.projectKey
+		params.build = to.wordGen.getSentence(2)
+		params.milestone = to.wordGen.getSentence(2)
+		params.targetEnv = to.wordGen.getSentence(2)
+		params.note = to.wordGen.getSentence(5)
+
+		def links = ["http://gurdy|hurdy", "http://easy|squeezy", "malformed"]
+
+		assertEquals 0, Link.list().size()
+
+		params.link = links
+		TestRun createdTr = testRunService.createTestRun(params)
+
+		assertEquals 2, Link.list().size()
+
+		TestRun fetchedTr = TestRun.get(createdTr.id)
+		assertEquals "Wrong build", params.build, fetchedTr.build
+		assertEquals "Wrong milestone", params.milestone, fetchedTr.milestone
+		assertEquals "Wrong targetEnv", params.targetEnv, fetchedTr.targetEnv
+		assertEquals "Wrong note", params.note, fetchedTr.note
+
+		assertEquals "Wrong number of links", 2, fetchedTr.links.size()
+		assertEquals "http://gurdy", fetchedTr.links[0].url
+		assertEquals "hurdy", fetchedTr.links[0].description
+		assertEquals "http://easy", fetchedTr.links[1].url
+		assertEquals "squeezy", fetchedTr.links[1].description
+
+		dataService.deleteTestRun(fetchedTr)
+		assertNull TestRun.get(fetchedTr.id)
+		assertEquals 0, Link.list().size()
+	}
 }
 

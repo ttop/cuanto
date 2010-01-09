@@ -433,7 +433,7 @@ class TestRunService {
 	TestRun createTestRun(Map params) {
 		def project
 		if (params.containsKey("project")) {
-			project = getProject(params.project)
+			project = projectService.getProject(params.project)
 			if (!project) {
 				throw new CuantoException("Unable to locate project with the project key or full title of ${params.project}")
 			}
@@ -472,9 +472,78 @@ class TestRunService {
 		else {
 			testRun.dateExecuted = new Date()
 		}
+
+		if (params.link) {
+			def links = [params.link].flatten()
+			links.each {String linkParam ->
+				try {
+					if (linkParam.contains("|")) {  // Should contain a description
+						Link link = new Link()
+						def linkSplit = linkParam.split('\\|', 3)
+						if (linkSplit.length > 1) {
+							link.url = getUrlFromString(linkSplit[0]) // todo: URI-encode and HTML escape
+							link.description = linkSplit[1] // todo: URI-encode and HTML escape
+							testRun.addToLinks(link)
+						} else {
+							log.error "Incomplete URL"
+						}
+					} else { // just a URL
+						log.error "No description included for URL"
+					}
+				} catch (MalformedURLException e) {
+					// Don't persist the link, just log an error
+					log.error "Malformed URL: ${e.message}"
+				}
+			}
+		}
+
 		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
 		dataService.saveTestRun(testRun)
 		return testRun
+	}
+
+	
+	TestRun createTestRun(ParsableTestRun pTestRun) {
+
+		def project = projectService.getProject(pTestRun.project)
+		if (!project) {
+			throw new CuantoException("Unable to locate project with the project key or full title of ${params.project}")
+		}
+
+		def testRun = new TestRun('project': project)
+
+		testRun.build = pTestRun.build
+		testRun.milestone = pTestRun.milestone
+		testRun.targetEnv = pTestRun.targetEnv
+		testRun.note = pTestRun.note
+		testRun.valid = pTestRun.valid
+
+		if (pTestRun.dateExecuted) {
+			testRun.dateExecuted = pTestRun.dateExecuted
+		} else {
+			testRun.dateExecuted = new Date()
+		}
+
+
+		pTestRun.links?.each {key, value ->
+			try {
+				Link link = new Link()
+				link.description = key
+				link.url = getUrlFromString(value)
+				testRun.addToLinks(link)
+			} catch (MalformedURLException e) {
+				// Don't persist the link, just log an error
+				log.error "Malformed URL: ${e.message}"
+			}
+		}
+
+		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
+		dataService.saveTestRun(testRun)
+		return testRun
+	}
+
+	def getUrlFromString(String urlString) {
+		return new URL(urlString).toString()
 	}
 
 	def getProject(projectString) {

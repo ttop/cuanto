@@ -100,6 +100,28 @@ class TestRun {
 		jsonMap.milestone = this.milestone
 		jsonMap.project = this.project.toString()
 		jsonMap.note = this.note
+		def jsonLinks = []
+		this.links.each {
+			jsonLinks << [description: it.description, url: it.url]
+		}
+		jsonMap.links = jsonLinks
 		return jsonMap
+	}
+
+	ParsableTestRun toParsableTestRun(dateFormat = Defaults.dateFormat) {
+		ParsableTestRun pTestRun = new ParsableTestRun()
+		pTestRun.build = this.build
+		pTestRun.dateCreated =  new SimpleDateFormat(dateFormat).format(this.dateCreated)
+		pTestRun.dateExecuted = this.dateExecuted
+		pTestRun.milestone = this.milestone
+		pTestRun.note = this.note
+		pTestRun.valid = this.valid
+		pTestRun.project = this.project.projectKey
+		pTestRun.targetEnv = this.targetEnv
+		pTestRun.links = [:]
+		this.links?.each {
+			pTestRun.links[it.description] = it.url
+		}
+		return pTestRun
 	}
 }

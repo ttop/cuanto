@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.methods.multipart.Part
 import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.HttpStatus
+import java.text.SimpleDateFormat
 
 /**
  * User: Todd Wells
@@ -118,27 +119,49 @@ class CuantoClient {
 	}
 
 
-	public Long getTestRunId(String project, String dateExecuted, String milestone, String build, String targetEnv) {
+	ParsableTestRun getTestRun(Long testRunId) {
+		def get = new GetMethod("${cuantoUrl}/testRun/getXml/${testRunId.toString()}")
+		get.addRequestHeader "Accept", "text/xml"
+
+		def responseCode
+		def responseText
+		ParsableTestRun testRun
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			XStream xstream = new XStream()
+			testRun = (ParsableTestRun) xstream.fromXML(responseText)
+		} finally {
+			get.releaseConnection()
+		}
+		return testRun
+	}
+
+
+	public Long getTestRunId(String project, String dateExecuted, String milestone, String build, String targetEnv,
+		Map<String, String> links = null) {
 		if (!project) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
 		}
 
-		def post = new PostMethod("${cuantoUrl}/testRun/create")
-		post.addParameter "project", project
+		def post = new PostMethod("${cuantoUrl}/testRun/createXml")
+		def testRun = new ParsableTestRun()
 
+		testRun.project = project
 		if (dateExecuted) {
-			post.addParameter "dateExecuted", dateExecuted
-			post.addParameter "dateFormat", dateFormat
+			testRun.dateExecuted = new SimpleDateFormat(dateFormat).parse(dateExecuted)
+		} else {
+			testRun.dateExecuted = null
 		}
-		if (milestone) {
-			post.addParameter "milestone", milestone
-		}
-		if (build) {
-			post.addParameter "build", build
-		}
-		if (targetEnv) {
-			post.addParameter "targetEnv", targetEnv
-		}
+		testRun.milestone = milestone
+		testRun.build = build
+		testRun.targetEnv = targetEnv
+		testRun.links = links
+		XStream xstream = new XStream();
+		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
+
+		post.requestEntity = request
+
 
 		def testRunId = null
 		try {
@@ -155,8 +178,8 @@ class CuantoClient {
 			post.releaseConnection()
 		}
 		return testRunId
-
 	}
+
 
 	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"

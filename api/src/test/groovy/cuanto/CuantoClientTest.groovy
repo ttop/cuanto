@@ -20,11 +20,12 @@ class CuantoClientTest extends GroovyTestCase{
 	WordGenerator wordGen = new WordGenerator()
 	def projectName
 	def projectId
+	def projectKey
 
 	@Override
 	void setUp() {
 		projectName = wordGen.getSentence(3).trim()
-		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
+		projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
 		if (projectKey.length() > 25) {
 			projectKey = projectKey.substring(0, 24)
 		}
@@ -132,6 +133,32 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals milestone, runInfo.milestone
 		assertEquals build, runInfo.build
 		assertEquals targetEnv, runInfo.targetEnv
+
+		Map<String, String> links = ["Info":"http://projectInfo",
+			"Code Coverage": "http://cobertura"] as Map<String, String>;
+		testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv, links)
+		runInfo = client.getTestRunInfo(testRunId)
+		ParsableTestRun testRun = client.getTestRun(testRunId)
+		assertEquals projectKey, testRun.project
+		assertNotNull testRun.dateExecuted
+		assertEquals milestone, testRun.milestone
+		assertEquals build, testRun.build
+		assertEquals targetEnv, testRun.targetEnv
+		assertNotNull testRun.links
+
+		assertEquals 2, testRun.links.size()
+
+		def codeCov = testRun.links.find {
+			it.key == "Code Coverage"
+		}
+		assertNotNull codeCov
+		assertEquals "http://cobertura", codeCov.value
+
+		def info = testRun.links.find {
+			it.key == "Info"
+		}
+		assertNotNull info
+		assertEquals "http://projectInfo", info.value
 	}
 
 

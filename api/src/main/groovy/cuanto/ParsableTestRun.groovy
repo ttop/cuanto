@@ -24,7 +24,7 @@ package cuanto
  * User: Todd Wells
  * Date: Sep 28, 2008
  * Time: 12:55:50 PM
- * 
+ *
  */
 class ParsableTestRun {
 	String project
@@ -32,6 +32,9 @@ class ParsableTestRun {
 	String targetEnv
 	String milestone
 	String note
-	String dateCreated
-	Map properties
+	String dateCreated // todo: remove?
+	Date dateExecuted
+	Boolean valid
+	Map<String, String> links // Description -> url
+	Map<String, String> properties // Name -> value
 }
