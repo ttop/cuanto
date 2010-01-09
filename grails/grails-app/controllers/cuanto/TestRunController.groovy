@@ -367,9 +367,14 @@ class TestRunController {
 
 	def createXml = {
 		XStream xstream = new XStream()
-		def testRun = (ParsableTestRun)xstream.fromXML(request.inputStream)
-		def parsedTestRun = testRunService.createTestRun(testRun)
-		render(view: "create", model: ['testRunId': parsedTestRun.id])
+		def testRun = (ParsableTestRun) xstream.fromXML(request.inputStream)
+		try {
+			def parsedTestRun = testRunService.createTestRun(testRun)
+			render(view: "create", model: ['testRunId': parsedTestRun.id])
+		} catch (CuantoException e) {
+			response.status = 403
+			render e.getMessage()
+		}
 	}
 
 	def createManual = {

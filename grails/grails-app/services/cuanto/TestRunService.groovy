@@ -507,7 +507,7 @@ class TestRunService {
 
 		def project = projectService.getProject(pTestRun.project)
 		if (!project) {
-			throw new CuantoException("Unable to locate project with the project key or full title of ${params.project}")
+			throw new CuantoException("Unable to locate project with the project key or full title of ${pTestRun.project}")
 		}
 
 		def testRun = new TestRun('project': project)

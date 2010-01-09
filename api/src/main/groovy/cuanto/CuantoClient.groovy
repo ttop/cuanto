@@ -144,7 +144,6 @@ class CuantoClient {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
 		}
 
-		def post = new PostMethod("${cuantoUrl}/testRun/createXml")
 		def testRun = new ParsableTestRun()
 
 		testRun.project = project
@@ -157,12 +156,18 @@ class CuantoClient {
 		testRun.build = build
 		testRun.targetEnv = targetEnv
 		testRun.links = links
+		return createTestRun(testRun)
+	}
+
+	public Long createTestRun(ParsableTestRun testRun) {
+		if (!testRun.project) {
+			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
+		}
+
+		def post = new PostMethod("${cuantoUrl}/testRun/createXml")
 		XStream xstream = new XStream();
 		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
-
 		post.requestEntity = request
-
-
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
