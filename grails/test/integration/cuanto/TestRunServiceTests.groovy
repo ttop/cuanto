@@ -27,7 +27,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 		def numCases = 11
 
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 
 		if (!testRun.save()) {
 			dataService.reportSaveError testRun
@@ -78,7 +78,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -86,7 +86,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -150,7 +150,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -158,7 +158,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -209,7 +209,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -217,7 +217,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -277,14 +277,13 @@ class TestRunServiceTests extends GroovyTestCase {
 
 
 	void testCreateAndDeleteTestRun() {
+
+		//todo add test properties
 		Project proj = to.project
 		dataService.saveDomainObject proj, true 
 
 		def params = [:]
 		params.project = proj.projectKey
-		params.build = to.wordGen.getSentence(2)
-		params.milestone = to.wordGen.getSentence(2)
-		params.targetEnv = to.wordGen.getSentence(2)
 		params.note = to.wordGen.getSentence(5)
 
 		def links = ["http://gurdy|hurdy", "http://easy|squeezy", "malformed"]
@@ -297,9 +296,6 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals 2, Link.list().size()
 
 		TestRun fetchedTr = TestRun.get(createdTr.id)
-		assertEquals "Wrong build", params.build, fetchedTr.build
-		assertEquals "Wrong milestone", params.milestone, fetchedTr.milestone
-		assertEquals "Wrong targetEnv", params.targetEnv, fetchedTr.targetEnv
 		assertEquals "Wrong note", params.note, fetchedTr.note
 
 		assertEquals "Wrong number of links", 2, fetchedTr.links.size()

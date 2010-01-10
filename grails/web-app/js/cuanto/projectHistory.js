@@ -36,8 +36,8 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunDataSource.connXhrMode = "queueRequests";
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
-			fields: ["dateExecuted", "build", "targetEnv", "milestone", "note", "valid", "tests", "passed", "failed",
-				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed"],
+			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed",
+				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
 		return testRunDataSource;
@@ -47,7 +47,6 @@ YAHOO.cuanto.projectHistory = function() {
 	function getTestRunTableConfig() {
 		return {
 			initialRequest:buildTestRunTableQueryString(),
-			//initialLoad: false,
 			generateRequest: buildTestRunTableQueryString,
 			paginator: getTestRunTablePaginator(),
 			sortedBy: {key:"dateExecuted", dir:YAHOO.widget.DataTable.CLASS_DESC},
@@ -66,9 +65,7 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true},
 			{key:"averageDuration", label: "Avg Duration", sortable:true},
-			{key:"milestone", label:"Milestone", sortable:true},
-			{key:"build", label:"Build", sortable:true},
-			{key:"targetEnv", label:"Environment", sortable:true}
+			{key:"testProperties", label: "Properties", sortable:false, formatter: propertyFormatter}
 		];
 	}
 
@@ -112,6 +109,19 @@ YAHOO.cuanto.projectHistory = function() {
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = oData + " %";
 	}
+
+
+	function propertyFormatter(elCell, oRecord, oColumn, oData) {
+		var out = "";
+		oData.each(function(item, indx) {
+			out += item["name"] + ": " + item["value"];
+			if (indx < oData.length - 1) {
+				out += ", ";
+			}
+		});
+		elCell.innerHTML = out;
+	}
+
 
 	return {
 		initHistoryTable: function() {

@@ -37,7 +37,7 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 
 		def runs = []
 		1.upto(numTestRuns) {
-			def testRun = to.getTestRun(proj, "my milestone")
+			def testRun = to.getTestRun(proj)
 			dataService.saveDomainObject testRun
 			statisticService.calculateTestRunStats(testRun.id)
 			runs << testRun

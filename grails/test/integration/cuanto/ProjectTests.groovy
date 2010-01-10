@@ -195,7 +195,7 @@ class ProjectTests extends GroovyTestCase {
 
 		def testRuns = []
 		1.upto(3) {
-			def tr = fakes.getTestRun(proj, "foobar")
+			def tr = fakes.getTestRun(proj)
 			testRuns << tr
 			dataService.saveDomainObject tr
 			testCases.each { tc ->

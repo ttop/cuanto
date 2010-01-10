@@ -711,14 +711,15 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function onTestRunChanged(e, args) {
 		var testRun = args[0];
-		if (testRun["milestone"]) {
-			$('trhMilestone').innerHTML = testRun["milestone"];
-		}
-		if (testRun["build"]) {
-			$('trhBuild').innerHTML = testRun["build"];
-		}
-		if (testRun["targetEnv"]) {
-			$('trhTargetEnv').innerHTML = testRun["targetEnv"];
+		if (testRun["testProperties"]) {
+			var out = "";
+			testRun["testProperties"].each(function(item, indx) {
+				out += item["name"] + ": " + item["value"];
+				if (indx < oData.length - 1) {
+					out += ", ";
+				}
+			});
+			$('trhTestProperties').innerHTML = out;
 		}
 		if (testRun["note"]) {
 			$('trhNote').innerHTML = testRun["note"];

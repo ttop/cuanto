@@ -33,12 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	    <g:set var="fieldSize" value="30"/>
         <form name="testRunForm" method="POST" action="${createLink(controller: 'testRun', action: 'update')}">
 	        <input class="trInput" id="trdId" name="id" type="hidden" value="${testRun?.id}"/>
-            <label for="trdMilestone" class="dialogLabel">Milestone:</label>
-	    <input id="trdMilestone" class="trInput" type="text" name="milestone" value="${testRun?.milestone}" size="${fieldSize}"/><br/>
-            <label for="trdBuild" class="dialogLabel">Build:</label>
-	    <input id="trdBuild" class="trInput" type="text" name="build" value="${testRun?.build}" size="${fieldSize}"/><br/>
-            <label for="trdTargetEnv" class="dialogLabel">Target Environment:</label>
-	    <input id="trdTargetEnv" class="trInput" type="text" name="targetEnv" value="${testRun?.targetEnv}" size="${fieldSize}"/><br/>
             <label for="trdNote" class="dialogLabel">Note:</label>
 	    <input id="trdNote" class="trInput" type="text" name="note" value="${testRun?.note}" size="${fieldSize}"/><br/>
 	        <label for="trdValid" class="dialogLabel">Test Run Valid: </label>

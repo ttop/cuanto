@@ -24,7 +24,7 @@ public class TestRunTests extends GroovyTestCase {
 
 
 	void testLinks() {
-		TestRun tr = to.getTestRun(proj, "1.0")
+		TestRun tr = to.getTestRun(proj)
 
 		def links = [
 			new Link(description: to.wordGen.getWord(), url: "http://linkOne"),

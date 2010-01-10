@@ -35,7 +35,7 @@ class TestCaseSearchTests extends GroovyTestCase {
 
 		Project project = getProject()
 		project.testType = testType
-		TestRun run = to.getTestRun(project, wordGen.getWord())
+		TestRun run = to.getTestRun(project)
 		dataService.saveDomainObject(run)
 
 		def names = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "Motel"]

@@ -36,7 +36,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 		testRun.save()
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -75,7 +75,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 		testRun.save()
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
@@ -107,7 +107,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject tc 
 
 		// create a test run with an outcome
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 		dataService.saveDomainObject testRun 
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)

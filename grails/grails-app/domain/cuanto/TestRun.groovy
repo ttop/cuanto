@@ -28,9 +28,6 @@ class TestRun {
 
 	static constraints = {
 		project(nullable: false)
-		milestone(nullable: true, blank: true)
-		build(nullable: true, blank: true)
-		targetEnv(nullable: true, blank: true)
 		note(nullable: true, blank: true)
 		valid(nullable: true)
 		testRunStatistics(nullable:true)
@@ -44,11 +41,8 @@ class TestRun {
 		testProperty fetch: "join"
 	}
 	
-	String build
-	String targetEnv
 	Date dateCreated // date the record was added to the database
 	Date dateExecuted // date the test run was executed
-	String milestone
 	String note
 	Boolean valid = true
 	Date lastUpdated  // for calculations
@@ -72,12 +66,6 @@ class TestRun {
 			return false
 		} else if (this.project != testRun.project) {
 			return false
-		} else if (this.build != testRun.build) {
-			return false
-		} else if (this.targetEnv != testRun.targetEnv) {
-			return false
-		} else if (this.milestone != testRun.milestone) {
-			return false
 		} else if (this.note != testRun.note) {
  			return false
 
@@ -97,11 +85,8 @@ class TestRun {
 	Map toJSONMap() {
 		def jsonMap = [:]
 		jsonMap.id = this.id
-		jsonMap.build = this.build
 		jsonMap.dateExecuted = this.dateExecuted.toString()
 		jsonMap.valid = this.valid
-		jsonMap.targetEnv = this.targetEnv
-		jsonMap.milestone = this.milestone
 		jsonMap.project = this.project.toString()
 		jsonMap.note = this.note
 
@@ -111,25 +96,29 @@ class TestRun {
 		}
 		jsonMap.links = jsonLinks
 
-		def jsonProps = []
-		this.testProperties.each {
-			jsonProps << [name: it.name, value: it.value]
-		}
+		List jsonProps = getJsonTestProperties()
 		jsonMap.properties = jsonProps
 
 		return jsonMap
 	}
 
+
+	List getJsonTestProperties() {
+		def jsonProps = []
+		this.testProperties.each {
+			jsonProps << [name: it.name, value: it.value]
+		}
+		return jsonProps
+	}
+
+
 	ParsableTestRun toParsableTestRun(dateFormat = Defaults.dateFormat) {
 		ParsableTestRun pTestRun = new ParsableTestRun()
-		pTestRun.build = this.build
 		pTestRun.dateCreated =  new SimpleDateFormat(dateFormat).format(this.dateCreated)
 		pTestRun.dateExecuted = this.dateExecuted
-		pTestRun.milestone = this.milestone
 		pTestRun.note = this.note
 		pTestRun.valid = this.valid
-		pTestRun.project = this.project.projectKey
-		pTestRun.targetEnv = this.targetEnv
+		pTestRun.projectKey = this.project.projectKey
 
 		pTestRun.links = new ArrayList<ApiLink>()
 		this.links?.each {

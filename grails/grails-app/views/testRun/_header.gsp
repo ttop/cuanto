@@ -31,16 +31,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
-	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span> ${bullet}
-	<span class="heading">Milestone: </span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> ${bullet}
-	<span class="heading">Build: </span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> ${bullet}
-	<span class="heading">Target Environment: </span><span class="text" id="trhTargetEnv">${testRun?.targetEnv?.encodeAsHTML()}</span>
-	<g:if test="${testRun?.testProperties}"> ${bullet}
-		<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
-			<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
-			<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
-		</g:each>
-	</g:if>
+	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span>
+	<span id="trhTestProps">
+		<g:if test="${testRun?.testProperties}"> ${bullet}
+			<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
+				<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
+				<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
+			</g:each>
+		</g:if>
+	</span>
 	<br/>
 
 	<g:if test="${testRun?.links}"><span class="heading">Links:</span>

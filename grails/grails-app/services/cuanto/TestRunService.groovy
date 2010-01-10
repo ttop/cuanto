@@ -447,10 +447,6 @@ class TestRunService {
 		}
 
 		def testRun = new TestRun('project': project)
-
-		testRun.build = params.build
-		testRun.milestone = params.milestone
-		testRun.targetEnv = params.targetEnv
 		testRun.note = params.note
 		if (params.valid) {
 			testRun.valid = Boolean.valueOf(params.valid)
@@ -505,16 +501,12 @@ class TestRunService {
 	
 	TestRun createTestRun(ParsableTestRun pTestRun) {
 
-		def project = projectService.getProject(pTestRun.project)
+		def project = projectService.getProject(pTestRun.projectKey)
 		if (!project) {
-			throw new CuantoException("Unable to locate project with the project key or full title of ${pTestRun.project}")
+			throw new CuantoException("Unable to locate project with the project key or full title of ${pTestRun.projectKey}")
 		}
 
 		def testRun = new TestRun('project': project)
-
-		testRun.build = pTestRun.build
-		testRun.milestone = pTestRun.milestone
-		testRun.targetEnv = pTestRun.targetEnv
 		testRun.note = pTestRun.note
 		if (pTestRun.valid != null) {
 			testRun.valid = pTestRun.valid

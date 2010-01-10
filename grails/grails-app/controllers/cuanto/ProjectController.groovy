@@ -292,8 +292,9 @@ class ProjectController {
 			}
 
 			return [projectName: testRun?.project?.name, projectKey: testRun?.project?.projectKey, id: testRun?.id,
-				dateExecuted: friendlyDate, build: testRun?.build, targetEnv: testRun?.targetEnv,
-				dateCreated: testRun?.dateCreated, milestone: testRun?.milestone, note: testRun?.note,
+				dateExecuted: friendlyDate,
+				testProperties: testRun.getJsonTestProperties(),
+				dateCreated: testRun?.dateCreated, note: testRun?.note,
 				valid: testRun?.valid, successRate: stats?.successRate ? stats?.successRate : 0,
 				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,
 				averageDuration: stats?.averageDuration, 'numAnalyzed' : numAnalyzed]

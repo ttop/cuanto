@@ -34,9 +34,9 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	File resultFile
 	String testType // here just for backward compatibility
 	String testProject
-	String milestone
-	String targetEnv
-	String build
+	String milestone // deprecated
+	String targetEnv // deprecated
+	String build // deprecated
 	String date
 	String dateFormat
 	String action = "submit"
@@ -77,22 +77,27 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		def cuantoClient = getCuantoClient()
 
 		ParsableTestRun testRun = new ParsableTestRun()
-		testRun.project = testProject
+		testRun.projectKey = testProject
 
 		if (date) {
 			def dateFormatToUse = dateFormat ? dateFormat : DEFAULT_DATE_FORMAT
 			testRun.dateExecuted = new SimpleDateFormat(dateFormatToUse).parse(date)
 		}
-		testRun.milestone = milestone
-		testRun.build = build
-		testRun.targetEnv = targetEnv
+
 		testRun.links = links
 
-		if (properties) {
-			testRun.testProperties = new ArrayList<TestProperty>()
-			properties.each { Property prop ->
-				testRun.testProperties << new TestProperty(prop.name, prop.value)
+		// process deprecated attributes
+		["build", "milestone", "targetEnv"].each { String propName ->
+			def propVal = getProperty(propName) as String
+			if (propVal) {
+				testRun.testProperties << new TestProperty(propName, propVal)
+				log "cuanto task attribute ${propName} is deprecated, use a nested property node instead",
+					this.project.MSG_WARN
 			}
+		}
+
+		properties.each {Property prop ->
+			testRun.testProperties << new TestProperty(prop.name, prop.value)
 		}
 
 		def testRunId = cuantoClient.createTestRun(testRun)

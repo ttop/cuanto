@@ -63,14 +63,10 @@ YAHOO.cuanto.TestRunDialog = function() {
 	function refreshTestRunInfo() {
 		$('trdLoading').show();
 		reloadTestRunInfo(function(testRun) {
-			if (testRun["milestone"]){
-				$('trdMilestone').value = testRun["milestone"];
-			}
-			if (testRun["build"]) {
-				$('trdBuild').value = testRun["build"];
-			}
-			if (testRun["targetEnv"]) {
-				$('trdTargetEnv').value = testRun["targetEnv"];
+			if (testRun["testProperties"]) {
+				testRun["testProperties"].each(function(item, indx) {
+					//todo render properties
+				});
 			}
 			if (testRun["note"]) {
 				$('trdNote').value = testRun["note"];

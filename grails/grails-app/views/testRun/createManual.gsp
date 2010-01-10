@@ -52,21 +52,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 
 			<div>
-				<label for="milestone">Milestone:</label>
-				<input type="text" id="milestone" name="milestone"/>
-			</div>
-
-			<div>
-				<label for="build">Build:</label>
-				<input type="text" id="build" name="build" value=""/>
-			</div>
-
-			<div>
-				<label for="targetEnv">Target Env:</label>
-				<input type="text" id="targetEnv" name="targetEnv" value=""/>
-			</div>
-
-			<div>
 				<label for="note">Note:</label>
 				<input type="text" id="note" name="note"/>
 			</div>

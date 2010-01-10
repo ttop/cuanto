@@ -32,6 +32,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.HttpStatus
 import java.text.SimpleDateFormat
 import cuanto.api.Link
+import cuanto.api.TestProperty
 
 /**
  * User: Todd Wells
@@ -138,31 +139,10 @@ class CuantoClient {
 		return testRun
 	}
 
-
-	public Long getTestRunId(String project, String dateExecuted, String milestone, String build, String targetEnv,
-		List<Link>links = null) {
-		if (!project) {
-			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
-		}
-
-		def testRun = new ParsableTestRun()
-
-		testRun.project = project
-		if (dateExecuted) {
-			testRun.dateExecuted = new SimpleDateFormat(dateFormat).parse(dateExecuted)
-		} else {
-			testRun.dateExecuted = null
-		}
-		testRun.milestone = milestone
-		testRun.build = build
-		testRun.targetEnv = targetEnv
-		testRun.links = links
-		return createTestRun(testRun)
-	}
-
+	
 	public Long createTestRun(ParsableTestRun testRun) {
-		if (!testRun.project) {
-			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
+		if (!testRun.projectKey) {
+			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
 
 		def post = new PostMethod("${cuantoUrl}/testRun/createXml")

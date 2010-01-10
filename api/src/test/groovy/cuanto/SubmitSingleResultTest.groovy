@@ -15,13 +15,14 @@ class SubmitSingleResultTest extends GroovyTestCase {
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
-	def projectName
-	def projectId
+	String projectName
+	String projectKey
+	Long projectId
 
 	@Override
 	void setUp() {
 		projectName = wordGen.getSentence(3)
-		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "")
+		projectKey = wordGen.getSentence(3).replaceAll("\\s+", "")
 		projectId = client.createProject(projectName, projectKey, 'JUnit')
 	}
 
@@ -32,7 +33,7 @@ class SubmitSingleResultTest extends GroovyTestCase {
 	}
 
 	void testSubmitOneResult() {
-		def testRunId = client.getTestRunId(projectName, null, wordGen.getSentence(2), null, null)
+		def testRunId = client.createTestRun(new ParsableTestRun(projectKey))
 
 		ParsableTestCase testCase = new ParsableTestCase()
 		testCase.packageName = "foo.bar.blah"

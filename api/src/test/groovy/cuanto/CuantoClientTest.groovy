@@ -16,13 +16,13 @@ import cuanto.api.TestProperty
  */
 class CuantoClientTest extends GroovyTestCase{
 
-	def serverUrl = "http://localhost:8080/cuanto"
+	String serverUrl = "http://localhost:8080/cuanto"
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
-	def projectName
+	String projectName
 	def projectId
-	def projectKey
+	String projectKey
 
 	@Override
 	void setUp() {
@@ -88,134 +88,95 @@ class CuantoClientTest extends GroovyTestCase{
 	}
 
 	
-	void testGetTestRunId() {
-		/* getTestRunID(String project, String dateExecuted, String milestone, String build, String
-			 targetEnv) //everything but project can be null */
-
-		Long testRunId = client.getTestRunId(projectName, null, null, null, null)
+	void testGetTestRun() {
+		Long testRunId = client.createTestRun(new ParsableTestRun(projectKey: projectName))
 		assertNotNull "No testRunId returned", testRunId
-
-		Map runInfo = client.getTestRunInfo(testRunId)
-		assertEquals projectName, runInfo.project
-		assertNotNull runInfo.dateExecuted
-		assertTrue runInfo != ""
-		assertNull  runInfo.milestone
-		assertNull runInfo.build
-		assertNull runInfo.targetEnv
+		def fetchedTestRun = client.getTestRun(testRunId)
+		assertEquals projectKey, fetchedTestRun.projectKey
+		assertNotNull fetchedTestRun.dateExecuted
 	}
 
 
-	void testGetTestRunIdWithoutProject() {
+	void testCreateTestRunWithoutProject() {
 		def msg = shouldFail(IllegalArgumentException) {
-			client.getTestRunId(null, null, null, null, null)
+			client.createTestRun(new ParsableTestRun())
 		}
-		assertEquals "Wrong error message", "Project argument must be a valid cuanto project", msg
+		assertEquals "Wrong error message", "Project argument must be a valid cuanto project key", msg
 	}
 
 
-	void testGetTestRunIdWithBogusProject() {
+	void testCreateTestRunWithBogusProject() {
 		def projName = "Bogus Foobar"
 		def msg = shouldFail(IllegalArgumentException) {
-			client.getTestRunId(projName, null, null, null, null)
+			client.createTestRun(new ParsableTestRun(projName))
 		}
 		assertEquals "Wrong error message", "Unable to locate project with the project key or full title of ${projName}", msg 
 	}
 
 
-	void testGetTestRunWithParams() {
-		def milestone = wordGen.getSentence(2)
-		def build = wordGen.word
-		def targetEnv = wordGen.getSentence(2)
-		Long testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv)
+	void testGetTestRunWithPropertiesAndLinks() {
+		ParsableTestRun run = new ParsableTestRun(projectName)
+		run.links << new Link("Info", "http://projectInfo")
+		run.links << new Link("Code Coverage", "http://cobertura")
+
+		run.testProperties << new TestProperty("Artist", "Da Vinci")
+		run.testProperties << new TestProperty("Musician", "Paul McCartney")
+
+		Long testRunId = client.createTestRun(run)
 		assertNotNull "No testRunId returned", testRunId
 
-		Map runInfo = client.getTestRunInfo(testRunId)
-		assertEquals projectName, runInfo.project
-		assertNotNull runInfo.dateExecuted
-		assertEquals milestone, runInfo.milestone
-		assertEquals build, runInfo.build
-		assertEquals targetEnv, runInfo.targetEnv
-
-		def links = []
-		links << new Link("Info", "http://projectInfo")
-		links << new Link("Code Coverage", "http://cobertura")
-
-		def props = []
-		props << new TestProperty("Artist", "Da Vinci")
-		props << new TestProperty("Musician", "Paul McCartney")
-
-		testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv, links)
-		runInfo = client.getTestRunInfo(testRunId)
-
 		ParsableTestRun testRun = client.getTestRun(testRunId)
-		assertEquals projectKey, testRun.project
+		assertEquals projectKey, testRun.projectKey
 		assertNotNull testRun.dateExecuted
-		assertEquals milestone, testRun.milestone
-		assertEquals build, testRun.build
-		assertEquals targetEnv, testRun.targetEnv
 		assertTrue "Valid", testRun.valid
 
 		assertNotNull testRun.links
 		assertEquals 2, testRun.links.size()
 
 		testRun.links.eachWithIndex { link, index ->
-			assertEquals links[index].description, link.description
-			assertEquals links[index].url, link.url
+			assertEquals run.links[index].description, link.description
+			assertEquals run.links[index].url, link.url
 		}
 
 		assertEquals 2, testRun.testProperties?.size()
 		testRun.testProperties.eachWithIndex { prop, index ->
-			assertEquals props[index].name, prop.name
-			assertEquals props[index].value, prop.value
+			assertEquals run.testProperties[index].name, prop.name
+			assertEquals run.testProperties[index].value, prop.value
 		}
 	}
 
+
 	void testCreateTestRun() {
-		def milestone = wordGen.getSentence(2)
-		def build = wordGen.word
-		def targetEnv = wordGen.getSentence(2)
-
-		def createdTestRun = new ParsableTestRun(project: projectKey, 'milestone': milestone, 'build': build,
-			'targetEnv': targetEnv)
-		def links = []
-			links << new Link("Info", "http://projectInfo")
-			links << new Link("Code Coverage", "http://cobertura")
-
-			def props = []
-			props << new TestProperty("Artist", "Da Vinci")
-			props << new TestProperty("Musician", "Paul McCartney")
-
-		createdTestRun.links = links
-		createdTestRun.testProperties = props
+		def createdTestRun = new ParsableTestRun(projectKey)
+		createdTestRun.links << new Link("Info", "http://projectInfo")
+		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
+		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
+		createdTestRun.testProperties << new TestProperty("Musician", "Paul McCartney")
 
 		Long testRunId = client.createTestRun(createdTestRun)
 		assertNotNull "No testRunId returned", testRunId
 
 		ParsableTestRun testRun = client.getTestRun(testRunId)
-		assertEquals projectKey, testRun.project
+		assertEquals projectKey, testRun.projectKey
 		assertNotNull testRun.dateExecuted
-		assertEquals milestone, testRun.milestone
-		assertEquals build, testRun.build
-		assertEquals targetEnv, testRun.targetEnv
 		assertTrue "Valid", testRun.valid
 
 		assertEquals 2, testRun.links?.size()
-		testRun.links.eachWithIndex { link, index ->
-			assertEquals links[index].description, link.description
-			assertEquals links[index].url, link.url
+		testRun.links.eachWithIndex {link, index ->
+			assertEquals createdTestRun.links[index].description, link.description
+			assertEquals createdTestRun.links[index].url, link.url
 		}
 
 		assertEquals 2, testRun.testProperties?.size()
-		testRun.testProperties.eachWithIndex { prop, index ->
-			assertEquals props[index].name, prop.name
-			assertEquals props[index].value, prop.value
+		testRun.testProperties.eachWithIndex {prop, index ->
+			assertEquals createdTestRun.testProperties[index].name, prop.name
+			assertEquals createdTestRun.testProperties[index].value, prop.value
 		}
-
 	}
 
 
 	void testSubmitSingleSuite() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "34")
@@ -226,7 +187,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	
 	void testSubmitMultipleSuite() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "56")
@@ -237,7 +198,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testSubmitMultipleFiles() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
 		def filesToSubmit = []
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
@@ -249,30 +210,14 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "62", stats.passed
 	}
 
-	
-	void testDefaultDateFormat() {
-		def expDate = "2008-03-05 20:55:00"
-		Long testRunId = client.getTestRunId(projectName, expDate, "test milestone", "test build", "test env")
-		def runInfo = client.getTestRunInfo(testRunId)
-		assertEquals "Wrong date", expDate, runInfo.dateExecuted
-	}
 
-
-	void testDifferentDateFormat() {
-		CuantoClient altDateClient = new CuantoClient(dateFormat: "MM-dd-yyyy HH:mm:ss", cuantoUrl: serverUrl)
-		def altFormattedDate = "03-05-2008 20:55:00"
-		Long testRunId = altDateClient.getTestRunId(projectName, altFormattedDate, "test milestone", "test build", "test env")
-		def runInfo = client.getTestRunInfo(testRunId)
-		assertEquals "Wrong date", "2008-03-05 20:55:00", runInfo.dateExecuted
-	}
-
-	
 	File getFile(String filename) {
 		def path = "grails/test/resources"
 		File myFile = new File("${path}/${filename}")
 		assertTrue "file not found: ${myFile.absoluteFile}", myFile.exists()
 		return myFile
 	}
+
 
 	Map waitForTestRunStats(CuantoClient client, Long testRunId, String totalTests) {
 		def secToWait = 30

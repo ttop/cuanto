@@ -15,13 +15,14 @@ class SubmitMultipleResultTest extends GroovyTestCase {
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
-	def projectName
-	def projectId
+	String projectName
+	String projectKey
+	Long projectId
 
 	@Override
 	void setUp() {
 		projectName = wordGen.getSentence(3)
-		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "")
+		projectKey = wordGen.getSentence(3).replaceAll("\\s+", "")
 		projectId = client.createProject(projectName, projectKey, 'JUnit')
 	}
 
@@ -33,7 +34,7 @@ class SubmitMultipleResultTest extends GroovyTestCase {
 	}
 
 	void testSubmitThousands() {
-		def testRunId = client.getTestRunId(projectName, null, wordGen.getSentence(2), null, null)
+		def testRunId = client.createTestRun(new ParsableTestRun(projectKey))
 		Long submitTime = 0
 		int idx = 0
 		int numThreads = 5

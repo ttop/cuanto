@@ -26,14 +26,17 @@ import cuanto.api.TestProperty
 
 
 class ParsableTestRun {
-	String project
-	String build
-	String targetEnv
-	String milestone
+	String projectKey
 	String note
 	String dateCreated // todo: remove?
 	Date dateExecuted
 	Boolean valid
-	List<Link> links
-	List<TestProperty> testProperties
+	List<Link> links = []
+	List<TestProperty> testProperties = []
+
+	ParsableTestRun() {}
+
+	ParsableTestRun(String projectKey) {
+		this.projectKey = projectKey
+	}
 }
