@@ -51,6 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		</script>
 	</head>
+
+	<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
+
 	<body class=" yui-skin-sam">
 		<div class="body yui-skin-sam">
 			<span class="head1">Test Run History for
@@ -63,9 +66,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
 			</span>
 			<br/>
-			<span class="smaller">( <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> |
+			<span class="smaller">( <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> ${bullet}
 			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
-			<g:if test="${project?.testType?.name == 'Manual'}">|
+			<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
 			</g:if>)</span>
 			<p/><br/>

@@ -76,6 +76,14 @@ class DataService {
 				link.delete()
 			}
 		}
+
+		if (run.testProperties) {
+			def propsToRemove = new ArrayList(run.testProperties)
+			propsToRemove.each { prop ->
+				run.removeFromTestProperties(prop)
+				prop.delete()
+			}
+		}
 		run.delete()
 	}
 

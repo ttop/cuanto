@@ -82,3 +82,5 @@ uiperformance.determineVersion = { -> appVersion }
 
 // statSleep is the time to sleep between calculating test run stats
 statSleep = 1000
+
+bullet = "&bull;"

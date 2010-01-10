@@ -21,7 +21,10 @@
 
 		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="233093" targetEnv="test lab"
 		        resultfile="../grails/test/resources/junitReport_single_suite.xml">
-			<link description="Test Link" url="http://testlink"/>
+			<link description="Test Link 1" url="http://testlink1"/>
+			<link description="Test Link 2" url="http://testlink2"/>
+			<property name="Custom Property 1" value="Custom value 1"/>
+			<property name="Custom Property 2" value="Custom value 2"/>
 		</cuanto>
 
 		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab">

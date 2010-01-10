@@ -19,12 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 --}%
+
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
+
 <tr class="projRow">
 	<td class="projName">
 		<g:link controller="project" action="history" params="[projectKey: proj.projectKey]"><span class="pName" id="pName${proj.id}">${proj.name}</span></g:link>
 	</td>
-	<td><a id="edit${proj.id}" class="editProj" href="#editProj">Edit</a> |
-		<a id="delete${proj.id}" class="deleteProj" href="#deleteProj">Delete</a> |
+	<td><a id="edit${proj.id}" class="editProj" href="#editProj">Edit</a> ${bullet}
+		<a id="delete${proj.id}" class="deleteProj" href="#deleteProj">Delete</a> ${bullet}
 	<g:link controller="project" action="history" params="[projectKey: proj.projectKey]">Show</g:link>
 	</td>
 </tr>

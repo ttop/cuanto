@@ -6,6 +6,7 @@ import groovy.mock.interceptor.StubFor
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.PostMethod
 import cuanto.api.Link
+import cuanto.api.TestProperty
 
 /**
  * User: Todd Wells
@@ -139,6 +140,10 @@ class CuantoClientTest extends GroovyTestCase{
 		links << new Link("Info", "http://projectInfo")
 		links << new Link("Code Coverage", "http://cobertura")
 
+		def props = []
+		props << new TestProperty("Artist", "Da Vinci")
+		props << new TestProperty("Musician", "Paul McCartney")
+
 		testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv, links)
 		runInfo = client.getTestRunInfo(testRunId)
 
@@ -153,9 +158,59 @@ class CuantoClientTest extends GroovyTestCase{
 		assertNotNull testRun.links
 		assertEquals 2, testRun.links.size()
 
-		links.eachWithIndex { link, index ->
+		testRun.links.eachWithIndex { link, index ->
 			assertEquals links[index].description, link.description
+			assertEquals links[index].url, link.url
 		}
+
+		assertEquals 2, testRun.testProperties?.size()
+		testRun.testProperties.eachWithIndex { prop, index ->
+			assertEquals props[index].name, prop.name
+			assertEquals props[index].value, prop.value
+		}
+	}
+
+	void testCreateTestRun() {
+		def milestone = wordGen.getSentence(2)
+		def build = wordGen.word
+		def targetEnv = wordGen.getSentence(2)
+
+		def createdTestRun = new ParsableTestRun(project: projectKey, 'milestone': milestone, 'build': build,
+			'targetEnv': targetEnv)
+		def links = []
+			links << new Link("Info", "http://projectInfo")
+			links << new Link("Code Coverage", "http://cobertura")
+
+			def props = []
+			props << new TestProperty("Artist", "Da Vinci")
+			props << new TestProperty("Musician", "Paul McCartney")
+
+		createdTestRun.links = links
+		createdTestRun.testProperties = props
+
+		Long testRunId = client.createTestRun(createdTestRun)
+		assertNotNull "No testRunId returned", testRunId
+
+		ParsableTestRun testRun = client.getTestRun(testRunId)
+		assertEquals projectKey, testRun.project
+		assertNotNull testRun.dateExecuted
+		assertEquals milestone, testRun.milestone
+		assertEquals build, testRun.build
+		assertEquals targetEnv, testRun.targetEnv
+		assertTrue "Valid", testRun.valid
+
+		assertEquals 2, testRun.links?.size()
+		testRun.links.eachWithIndex { link, index ->
+			assertEquals links[index].description, link.description
+			assertEquals links[index].url, link.url
+		}
+
+		assertEquals 2, testRun.testProperties?.size()
+		testRun.testProperties.eachWithIndex { prop, index ->
+			assertEquals props[index].name, prop.name
+			assertEquals props[index].value, prop.value
+		}
+
 	}
 
 

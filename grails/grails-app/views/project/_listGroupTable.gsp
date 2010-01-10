@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 --}%
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
+
 <table class="cuanto ">
 	<g:if test="${projects}">
 		<tr>
@@ -28,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:each var="proj" in="${projects}">
 			<tr>
 				<td class="projName" id="pName${proj.id}">${proj.name?.encodeAsHTML()}</td>
-				<td><a href="#editProject" class="editProj" id="edit${proj.id}">Edit</a> |
-					<a href="#deleteProject" class="deleteProj" id="delete${proj.id}">Delete</a> |
+				<td><a href="#editProject" class="editProj" id="edit${proj.id}">Edit</a> ${bullet}
+					<a href="#deleteProject" class="deleteProj" id="delete${proj.id}">Delete</a> ${bullet}
 					<g:link controller="project" action="history" params="[projectKey: proj.projectKey]">Show</g:link>
 			</tr>
 		</g:each>

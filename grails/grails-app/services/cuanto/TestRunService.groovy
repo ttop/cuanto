@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import java.math.MathContext
 import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
+import cuanto.api.TestProperty as ApiProperty
 
 class TestRunService {
 	def dataService
@@ -528,11 +528,17 @@ class TestRunService {
 
 		pTestRun.links?.each {ApiLink aLink->
 			try {
+				// todo: make description and link HTML-safe?
 				testRun.addToLinks(new Link(aLink.description, aLink.url))
 			} catch (MalformedURLException e) {
 				// Don't persist the link, just log an error
 				log.error "Malformed URL: ${e.message}"
 			}
+		}
+
+		pTestRun.testProperties?.each { ApiProperty aProperty ->
+			// todo: make name and value HTML-safe?
+			testRun.addToTestProperties(new TestProperty(aProperty.name, aProperty.value))
 		}
 
 		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?

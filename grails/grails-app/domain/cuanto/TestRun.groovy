@@ -22,6 +22,7 @@ package cuanto
 
 import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
+import cuanto.api.TestProperty as ApiProperty
 
 class TestRun {
 
@@ -35,11 +36,12 @@ class TestRun {
 		testRunStatistics(nullable:true)
 	}
 
-	static hasMany = [links:Link]
-	
+	static hasMany = [links:Link, testProperties:TestProperty]
+
 	static mapping = {
 		cache true
 		link fetch: "join"
+		testProperty fetch: "join"
 	}
 	
 	String build
@@ -53,6 +55,7 @@ class TestRun {
 	TestRunStats testRunStatistics
 	Project project
 	List<Link> links
+	List<TestProperty> testProperties
 
 	def beforeInsert = {
 
@@ -81,7 +84,7 @@ class TestRun {
 		} else if (this.valid != testRun.valid) {
 			return false
 		}
-
+		//todo: compare links and properties?
 		return true
 	}
 
@@ -101,11 +104,19 @@ class TestRun {
 		jsonMap.milestone = this.milestone
 		jsonMap.project = this.project.toString()
 		jsonMap.note = this.note
+
 		def jsonLinks = []
 		this.links.each {
 			jsonLinks << [description: it.description, url: it.url]
 		}
 		jsonMap.links = jsonLinks
+
+		def jsonProps = []
+		this.testProperties.each {
+			jsonProps << [name: it.name, value: it.value]
+		}
+		jsonMap.properties = jsonProps
+
 		return jsonMap
 	}
 
@@ -119,9 +130,15 @@ class TestRun {
 		pTestRun.valid = this.valid
 		pTestRun.project = this.project.projectKey
 		pTestRun.targetEnv = this.targetEnv
+
 		pTestRun.links = new ArrayList<ApiLink>()
 		this.links?.each {
 			pTestRun.links << new ApiLink(it.description, it.url)
+		}
+
+		pTestRun.testProperties = new ArrayList<TestProperty>()
+		this.testProperties?.each {
+			pTestRun.testProperties << new ApiProperty(it.name, it.value)
 		}
 		return pTestRun
 	}

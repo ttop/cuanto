@@ -24,6 +24,7 @@ public class TestProperty implements Comparable {
 	String name
 	String value
 
+
 	TestProperty(){}
 
 
@@ -31,8 +32,6 @@ public class TestProperty implements Comparable {
 		this.name = name
 		this.value = value
 	}
-
-
 
 
 	public int compareTo(Object t) {

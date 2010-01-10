@@ -20,22 +20,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --}%
 
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
+
 <div id="testRunHeader">
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
 	<span class="smaller">
-		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> |
-			<a id="editTestRun" href="#editTestRun">Edit</a></span> |
+		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
+			<a id="editTestRun" href="#editTestRun">Edit</a></span> ${bullet}
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
 	</span>
 	<br/>
-	<g:render template="/project/header" model="[project:testRun.project]"/> | 
-	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span> |
-	<span class="heading">Milestone: </span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> |
-	<span class="heading">Build: </span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> |
+	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
+	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span> ${bullet}
+	<span class="heading">Milestone: </span><span class="text" id="trhMilestone">${testRun?.milestone?.encodeAsHTML()}</span> ${bullet}
+	<span class="heading">Build: </span><span class="text" id="trhBuild">${testRun?.build?.encodeAsHTML()}</span> ${bullet}
 	<span class="heading">Target Environment: </span><span class="text" id="trhTargetEnv">${testRun?.targetEnv?.encodeAsHTML()}</span>
+	<g:if test="${testRun?.testProperties}"> ${bullet}
+		<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
+			<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
+			<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
+		</g:each>
+	</g:if>
 	<br/>
 
-	<g:if test="${testRun?.links}">Links:
+	<g:if test="${testRun?.links}"><span class="heading">Links:</span>
 		<g:each in="${testRun?.links}" var="link" status="idx">
 			<a href="${link.url}">${link.description}</a>
 			<g:if test="${idx < testRun.links.size() - 1}"> &bull; </g:if>
@@ -45,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">
-		(<a id="cancelNote" href="#cancelNote" class="smaller">Cancel</a> |
+		(<a id="cancelNote" href="#cancelNote" class="smaller">Cancel</a> ${bullet}
 		<a id="saveNote" href="#saveNote" class="smaller">Save</a>)
 	</span>:
 	<span id="noteContainer" class="text"><span id="trhNote">${testRun?.note}</span></span>

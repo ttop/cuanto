@@ -25,7 +25,7 @@ import org.apache.tools.ant.types.FileSet
 import cuanto.api.Link
 import java.text.SimpleDateFormat
 import org.apache.tools.ant.taskdefs.Property
-import cuanto.api.Property as CuantoProperty
+import cuanto.api.TestProperty
 
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
@@ -89,9 +89,9 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		testRun.links = links
 
 		if (properties) {
-			testRun.properties = new ArrayList<CuantoProperty>()
+			testRun.testProperties = new ArrayList<TestProperty>()
 			properties.each { Property prop ->
-				testRun.properties << new CuantoProperty(prop.name, prop.value)
+				testRun.testProperties << new TestProperty(prop.name, prop.value)
 			}
 		}
 
