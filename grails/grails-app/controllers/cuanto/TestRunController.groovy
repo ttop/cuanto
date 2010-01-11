@@ -265,15 +265,14 @@ class TestRunController {
 			json {
 				render testRunMap as JSON
 			}
+			xml {
+				XStream xstream = new XStream()
+				render xstream.toXML(testRun.toParsableTestRun())
+			}
 		}
 	}
 
-	def getXml = {
-		TestRun testRun = TestRun.get(Long.valueOf(params.id))
-		XStream xstream = new XStream()
-		render xstream.toXML(testRun.toParsableTestRun())
-	}
-
+	
 	def results = {
 		def testRun = null
 		if (params.id) {

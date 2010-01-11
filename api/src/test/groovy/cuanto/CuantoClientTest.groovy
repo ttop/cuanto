@@ -11,6 +11,8 @@ import cuanto.api.TestRun
 import cuanto.api.TestRun
 import cuanto.api.CuantoClient
 import cuanto.api.CuantoClientException
+import cuanto.api.TestCase
+import cuanto.api.TestOutcome
 
 /**
  * User: Todd Wells
@@ -212,6 +214,67 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "68", stats.tests
 		assertEquals "6", stats.failed
 		assertEquals "62", stats.passed
+	}
+
+
+	void testSubmitOneResult() {
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+
+		TestCase testCase = new TestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
+
+		TestOutcome outcome = new TestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Pass"
+
+		def outcomeId = client.submit(outcome, testRunId)
+		assertNotNull outcomeId
+
+		def stats = waitForTestRunStats(client, testRunId, "1")
+		assertNotNull stats
+		assertEquals "Wrong total tests", "1", stats?.tests
+		assertEquals "Wrong passed", "1", stats?.passed
+		assertEquals "Wrong failed", "0", stats?.failed
+	}
+
+	void testSubmitManyMultiThreaded() {
+		final int numSubmissions = 100
+		final int numThreads = 5
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		Long submitTime = 0
+		int idx = 0
+		def totalStart = new Date().time
+		while (idx < numSubmissions) {
+			def th = []
+			1.upto(numThreads){
+				th << Thread.start {
+					TestCase testCase = new TestCase()
+					testCase.packageName = "foo.bar.blah"
+					testCase.testName = wordGen.getSentence(3).replaceAll(" ", "")
+
+					TestOutcome outcome = new TestOutcome()
+					outcome.testCase = testCase
+					outcome.testResult = "Pass"
+
+					long start = System.currentTimeMillis();
+					client.submit(outcome, testRunId)
+					long duration = System.currentTimeMillis() - start;
+
+					synchronized(idx) {
+						submitTime += duration;
+						System.out.println(String.format("${idx + 1} done in %d ms - Total lapse: %d ms", duration, submitTime));
+						idx++
+					}
+				}
+			}
+			th.each { Thread it ->
+				it.join()
+			}
+		}
+		def totalEnd = new Date().time
+		println "total time is ${totalEnd - totalStart}"
 	}
 
 

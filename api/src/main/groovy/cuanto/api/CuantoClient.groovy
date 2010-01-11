@@ -93,7 +93,7 @@ class CuantoClient {
 	}
 
 
-	void deleteProject(Long id) {
+	public void deleteProject(Long id) {
 		def post = new PostMethod("${cuantoUrl}/project/delete")
 		post.addParameter "id", id.toString()
 		post.addParameter "client", ""
@@ -113,19 +113,19 @@ class CuantoClient {
 	}
 
 
-	Map getProject(Long projectId) {
+	public Map getProject(Long projectId) {
 		return getValueMap("${cuantoUrl}/project/get/${projectId.toString()}")
 	}
 
 
-	Map getTestRunInfo(Long testRunId) {
+	public Map getTestRunInfo(Long testRunId) {
 		return getValueMap("${cuantoUrl}/testRun/get/${testRunId.toString()}")
 	}
 
 
-	TestRun getTestRun(Long testRunId) {
-		def get = new GetMethod("${cuantoUrl}/testRun/getXml/${testRunId.toString()}")
-		get.addRequestHeader "Accept", "text/xml"
+	public TestRun getTestRun(Long testRunId) {
+		def get = new GetMethod("${cuantoUrl}/testRun/get/${testRunId.toString()}")
+		get.addRequestHeader "Accept", "application/xml"
 
 		def responseCode
 		def responseText
@@ -191,6 +191,7 @@ class CuantoClient {
 		}
 
 	}
+
 
 	public void submit(File file, Long testRunId) {
 		submit([file], testRunId)
