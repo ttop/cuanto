@@ -27,8 +27,8 @@ public class TestRunTests extends GroovyTestCase {
 		TestRun tr = to.getTestRun(proj)
 
 		def links = [
-			new Link(description: to.wordGen.getWord(), url: "http://linkOne"),
-			new Link(description: to.wordGen.getWord(), url: "http://linkTwo"),
+			new Link(description: "a b c", url: "http://linkOne"),
+			new Link(description: "d e f", url: "http://linkTwo"),
 		]
 
 		links.each {
@@ -38,14 +38,16 @@ public class TestRunTests extends GroovyTestCase {
 
 		def fetchedRun = TestRun.get(tr.id)
 		assertEquals "Wrong number of links", 2, fetchedRun.links.size()
-		assertEquals "Wrong link 0", links[0], fetchedRun.links[0]
-		assertEquals "Wrong link 1", links[1], fetchedRun.links[1]
+		
+		fetchedRun.links.eachWithIndex { Link item, index ->
+			assertEquals item.description, links[index].description
+			assertEquals item.url, links[index].url
+		}
 
-		tr.removeFromLinks(fetchedRun.links[1])
+		tr.removeFromLinks(links[1])
 		dataService.saveDomainObject tr
 
 		fetchedRun = TestRun.get(tr.id)
 		assertEquals "Wrong number of links", 1, fetchedRun.links.size()
-		assertEquals "Wrong link 0", links[0], fetchedRun.links[0]
 	}
 }

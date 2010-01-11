@@ -39,7 +39,7 @@ public class TestProperty implements Comparable {
 
 		def nameComp = this.name.compareTo(otherProp.name)
 		if (nameComp == 0) {
-			return this.value.compareTo(other.value)
+			return this.value.compareTo(otherProp.value)
 		} else {
 			return nameComp
 		}

@@ -26,13 +26,18 @@ url = "jdbc:mysql://localhost:3306/cuanto?autoreconnect=true"
 
 
 sql = Sql.newInstance(url, username, password, driverClassName)
-sql.execute("CREATE TABLE test_property (id bigint(20) NOT NULL AUTO_INCREMENT, version bigint(20) NOT NULL,  name varchar(255) NOT NULL,  value varchar(255) NOT NULL,  PRIMARY KEY (id))")
+sql.execute("""CREATE TABLE test_property (
+id bigint(20) NOT NULL AUTO_INCREMENT,
+version bigint(20) NOT NULL,
+name varchar(255) NOT NULL,
+value varchar(255) NOT NULL,
+PRIMARY KEY (id))""")
+
 sql.execute("""CREATE TABLE test_run_test_property (
   test_run_test_properties_id bigint(20) DEFAULT NULL,
   test_property_id bigint(20) DEFAULT NULL,
   test_properties_idx int(11) DEFAULT NULL,
-  KEY fk_test_property (test_property_id),
-  CONSTRAINT fk_test_property FOREIGN KEY (test_property_id) REFERENCES test_property (id))""")
+""")
 
 
 sql.eachRow("select id, milestone, build, target_env from test_run") {

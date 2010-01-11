@@ -26,6 +26,7 @@ import cuanto.api.TestProperty as ApiProperty
 import cuanto.api.TestRun as ParsableTestRun
 
 class TestRunService {
+
 	def dataService
 	def projectService
 	def statisticService
@@ -470,28 +471,12 @@ class TestRunService {
 			testRun.dateExecuted = new Date()
 		}
 
-		if (params.link) {
-			def links = [params.link].flatten()
-			links.each {String linkParam ->
-				try {
-					if (linkParam.contains("|")) {  // Should contain a description
-						Link link = new Link()
-						def linkSplit = linkParam.split('\\|', 3)
-						if (linkSplit.length > 1) {
-							link.url = getUrlFromString(linkSplit[0]) // todo: URI-encode and HTML escape
-							link.description = linkSplit[1] // todo: URI-encode and HTML escape
-							testRun.addToLinks(link)
-						} else {
-							log.error "Incomplete URL"
-						}
-					} else { // just a URL
-						log.error "No description included for URL"
-					}
-				} catch (MalformedURLException e) {
-					// Don't persist the link, just log an error
-					log.error "Malformed URL: ${e.message}"
-				}
-			}
+		parseLinksFromParams(params).each {
+			testRun.addToLinks(it)
+		}
+
+		parseTestPropertiesFromParams(params).each {
+			testRun.addToTestProperties(it)
 		}
 
 		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
@@ -499,7 +484,49 @@ class TestRunService {
 		return testRun
 	}
 
+
+	List parseLinksFromParams(Map params) {
+		def linksToAdd = []
+		if (params.link) {
+			def links = [params.link].flatten()
+			links.each {String linkParam ->
+				try {
+					Link link = new Link()
+					def linkSplit = linkParam.split('\\|\\|', 3)
+					link.url = getUrlFromString(linkSplit[0])
+
+					if (linkSplit.length > 1) {
+						link.description = linkSplit[1]
+					} else {
+						link.description = linkSplit[0]
+					}
+					linksToAdd << link
+
+				} catch (MalformedURLException e) {
+					// Don't persist the link, just log an error
+					log.error "Malformed URL: ${e.message}"
+				}
+			}
+		}
+		return linksToAdd
+	}
+
 	
+	List parseTestPropertiesFromParams(Map params) {
+		def propsToAdd = []
+		if (params.testProperty) {
+			def props = [params.testProperty].flatten()
+			props.each { String propParam ->
+				def propSplit = propParam.split('\\|\\|')
+				if (propSplit.length > 1) {
+					propsToAdd << new TestProperty(propSplit[0], propSplit[1])
+				}
+			}
+		}
+		return propsToAdd
+	}
+
+
 	TestRun createTestRun(ParsableTestRun pTestRun) {
 
 		def project = projectService.getProject(pTestRun.projectKey)

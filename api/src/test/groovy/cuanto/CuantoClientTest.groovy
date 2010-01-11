@@ -122,8 +122,8 @@ class CuantoClientTest extends GroovyTestCase{
 
 	void testGetTestRunWithPropertiesAndLinks() {
 		TestRun run = new TestRun(projectName)
-		run.links << new Link("Info", "http://projectInfo")
 		run.links << new Link("Code Coverage", "http://cobertura")
+		run.links << new Link("Info", "http://projectInfo")
 
 		run.testProperties << new TestProperty("Artist", "Da Vinci")
 		run.testProperties << new TestProperty("Musician", "Paul McCartney")
@@ -154,8 +154,8 @@ class CuantoClientTest extends GroovyTestCase{
 
 	void testCreateTestRun() {
 		def createdTestRun = new TestRun(projectKey)
-		createdTestRun.links << new Link("Info", "http://projectInfo")
 		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
+		createdTestRun.links << new Link("Info", "http://projectInfo")
 		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
 		createdTestRun.testProperties << new TestProperty("Musician", "Paul McCartney")
 

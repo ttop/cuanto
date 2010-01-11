@@ -49,8 +49,8 @@ class TestRun {
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-	List<Link> links
-	List<TestProperty> testProperties
+	SortedSet<Link> links
+	SortedSet<TestProperty> testProperties
 
 	def beforeInsert = {
 
