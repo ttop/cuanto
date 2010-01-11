@@ -26,28 +26,7 @@ url = "jdbc:mysql://localhost:3306/cuanto?autoreconnect=true"
 
 
 sql = Sql.newInstance(url, username, password, driverClassName)
-
-// todo: create test_property table
-/*
- CREATE TABLE `test_property` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `version` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `value` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) 
-* */
 sql.execute("CREATE TABLE test_property (id bigint(20) NOT NULL AUTO_INCREMENT, version bigint(20) NOT NULL,  name varchar(255) NOT NULL,  value varchar(255) NOT NULL,  PRIMARY KEY (id))")
-
-// todo: create test_run_test_property
-/*
-* CREATE TABLE `test_run_test_property` (
-  `test_run_test_properties_id` bigint(20) DEFAULT NULL,
-  `test_property_id` bigint(20) DEFAULT NULL,
-  `test_properties_idx` int(11) DEFAULT NULL,
-  KEY `fk_test_property` (`test_property_id`),
-  CONSTRAINT `fk_test_property` FOREIGN KEY (`test_property_id`) REFERENCES `test_property` (`id`)
-* */
 sql.execute("""CREATE TABLE test_run_test_property (
   test_run_test_properties_id bigint(20) DEFAULT NULL,
   test_property_id bigint(20) DEFAULT NULL,
@@ -73,15 +52,15 @@ sql.eachRow("select id, milestone, build, target_env from test_run") {
 		sql.execute("insert into test_run_test_property (test_run_test_properties_id, test_property_id, test_properties_idx) values (${it.id}, ${milestoneId}, ${index++})")
 	}
 
-
-
 	// TargetEnv
 	if (it.target_env) {
 		sql.execute("insert into test_property (name, value, version) values ('Target Environment', ${it.target_env}, 0)")
 		def targId = sql.firstRow("select LAST_INSERT_ID()")[0]
 		sql.execute("insert into test_run_test_property (test_run_test_properties_id, test_property_id, test_properties_idx) values (${it.id}, ${targId}, ${index++})")
 	}
-
 }
 
+sql.execute("alter table test_run drop column build")
+sql.execute("alter table test_run drop column milestone")
+sql.execute("alter table test_run drop column target_env")
 
