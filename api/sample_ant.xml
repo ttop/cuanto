@@ -12,7 +12,7 @@
 		   </fileset>
 		 </path>
 
-		<taskdef name="cuanto" classname="cuanto.api.CuantoAntTaskTask" classpathref="api.class.path"/>
+		<taskdef name="cuanto" classname="cuanto.api.CuantoAntTask" classpathref="api.class.path"/>
 	</target>
 
 	<target name="submitResults" depends="init">
