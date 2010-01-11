@@ -18,9 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.api
 
 import java.math.BigDecimal
+import cuanto.api.TestCase
+import cuanto.api.TestCase
 
 /**
  * User: Todd Wells
@@ -28,8 +30,8 @@ import java.math.BigDecimal
  * Time: 9:15:31 PM
  *
  */
-class ParsableTestOutcome {
-	ParsableTestCase testCase
+class TestOutcome {
+	TestCase testCase
 	String testResult
     String testOutput
     BigDecimal duration

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package cuanto
+package cuanto.api
 
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.GetMethod
@@ -33,6 +33,11 @@ import org.apache.commons.httpclient.HttpStatus
 import java.text.SimpleDateFormat
 import cuanto.api.Link
 import cuanto.api.TestProperty
+import cuanto.api.TestOutcome
+import cuanto.api.TestOutcome
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClientException
 
 /**
  * User: Todd Wells
@@ -43,14 +48,11 @@ import cuanto.api.TestProperty
 class CuantoClient {
 
 	String cuantoUrl
-	String dateFormat
 	String proxyHost
 	Integer proxyPort
 
 
-	public CuantoClient() {
-		dateFormat = "yyyy-MM-dd HH:mm:ss"
-	}
+	public CuantoClient() {}
 
 
 	public CuantoClient(String cuantoUrl) {
@@ -121,18 +123,18 @@ class CuantoClient {
 	}
 
 
-	ParsableTestRun getTestRun(Long testRunId) {
+	TestRun getTestRun(Long testRunId) {
 		def get = new GetMethod("${cuantoUrl}/testRun/getXml/${testRunId.toString()}")
 		get.addRequestHeader "Accept", "text/xml"
 
 		def responseCode
 		def responseText
-		ParsableTestRun testRun
+		TestRun testRun
 		try {
 			responseCode = httpClient.executeMethod(get)
 			responseText = get.getResponseBodyAsStream().text
 			XStream xstream = new XStream()
-			testRun = (ParsableTestRun) xstream.fromXML(responseText)
+			testRun = (TestRun) xstream.fromXML(responseText)
 		} finally {
 			get.releaseConnection()
 		}
@@ -140,7 +142,7 @@ class CuantoClient {
 	}
 
 	
-	public Long createTestRun(ParsableTestRun testRun) {
+	public Long createTestRun(TestRun testRun) {
 		if (!testRun.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
@@ -167,7 +169,7 @@ class CuantoClient {
 	}
 
 
-	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
+	public TestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
 		def get = new GetMethod(url)
 		get.addRequestHeader "Accept", "text/xml"
@@ -181,7 +183,7 @@ class CuantoClient {
 				return null
 			} else {
 				XStream xstream = new XStream()
-				def outcome = (ParsableTestOutcome)xstream.fromXML(responseText)
+				def outcome = (TestOutcome)xstream.fromXML(responseText)
 				return outcome
 			}
 		} finally {
@@ -221,7 +223,7 @@ class CuantoClient {
 	}
 
 
-	public Long submit(ParsableTestOutcome testOutcome, Long testRunId) {
+	public Long submit(TestOutcome testOutcome, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = new PostMethod(fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()

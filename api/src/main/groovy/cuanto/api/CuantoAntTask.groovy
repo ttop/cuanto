@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.api
 
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.types.FileSet
@@ -26,6 +26,9 @@ import cuanto.api.Link
 import java.text.SimpleDateFormat
 import org.apache.tools.ant.taskdefs.Property
 import cuanto.api.TestProperty
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClient
 
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
@@ -76,7 +79,7 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	private void submit() {
 		def cuantoClient = getCuantoClient()
 
-		ParsableTestRun testRun = new ParsableTestRun()
+		TestRun testRun = new TestRun()
 		testRun.projectKey = testProject
 
 		if (date) {
@@ -91,7 +94,7 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 			def propVal = getProperty(propName) as String
 			if (propVal) {
 				testRun.testProperties << new TestProperty(propName, propVal)
-				log "cuanto task attribute ${propName} is deprecated, use a nested property node instead",
+				log "cuanto task attribute '${propName}' is deprecated, use a nested property node instead",
 					this.project.MSG_WARN
 			}
 		}

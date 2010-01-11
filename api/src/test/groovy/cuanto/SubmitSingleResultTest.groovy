@@ -1,7 +1,11 @@
 package cuanto
 
-import cuanto.CuantoClient
+import cuanto.api.CuantoClient
 import cuanto.WordGenerator
+import cuanto.api.TestCase
+import cuanto.api.TestOutcome
+import cuanto.api.TestOutcome
+import cuanto.api.TestRun
 
 /**
  * User: Todd Wells
@@ -33,13 +37,13 @@ class SubmitSingleResultTest extends GroovyTestCase {
 	}
 
 	void testSubmitOneResult() {
-		def testRunId = client.createTestRun(new ParsableTestRun(projectKey))
+		def testRunId = client.createTestRun(new TestRun(projectKey))
 
-		ParsableTestCase testCase = new ParsableTestCase()
+		TestCase testCase = new TestCase()
 		testCase.packageName = "foo.bar.blah"
 		testCase.testName = "submitOneTest"
 
-		ParsableTestOutcome outcome = new ParsableTestOutcome()
+		TestOutcome outcome = new TestOutcome()
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 

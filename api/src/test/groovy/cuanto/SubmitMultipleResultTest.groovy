@@ -1,7 +1,12 @@
 package cuanto
 
-import cuanto.CuantoClient
+import cuanto.api.CuantoClient
 import cuanto.WordGenerator
+import cuanto.api.TestCase
+import cuanto.api.TestOutcome
+import cuanto.api.TestOutcome
+import cuanto.api.TestRun
+import cuanto.api.TestRun
 
 /**
  * User: Todd Wells
@@ -34,7 +39,7 @@ class SubmitMultipleResultTest extends GroovyTestCase {
 	}
 
 	void testSubmitThousands() {
-		def testRunId = client.createTestRun(new ParsableTestRun(projectKey))
+		def testRunId = client.createTestRun(new TestRun(projectKey))
 		Long submitTime = 0
 		int idx = 0
 		int numThreads = 5
@@ -43,11 +48,11 @@ class SubmitMultipleResultTest extends GroovyTestCase {
 			def th = []
 			1.upto(numThreads){
 				th << Thread.start {
-					ParsableTestCase testCase = new ParsableTestCase()
+					TestCase testCase = new TestCase()
 					testCase.packageName = "foo.bar.blah"
 					testCase.testName = wordGen.getSentence(3).replaceAll(" ", "")
 
-					ParsableTestOutcome outcome = new ParsableTestOutcome()
+					TestOutcome outcome = new TestOutcome()
 					outcome.testCase = testCase
 					outcome.testResult = "Pass"
 

@@ -1,12 +1,16 @@
 package cuanto
 
-import cuanto.CuantoClient
+import cuanto.api.CuantoClient
 import cuanto.WordGenerator
 import groovy.mock.interceptor.StubFor
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.PostMethod
 import cuanto.api.Link
 import cuanto.api.TestProperty
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClient
+import cuanto.api.CuantoClientException
 
 /**
  * User: Todd Wells
@@ -89,7 +93,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	
 	void testGetTestRun() {
-		Long testRunId = client.createTestRun(new ParsableTestRun(projectKey: projectName))
+		Long testRunId = client.createTestRun(new TestRun(projectKey: projectName))
 		assertNotNull "No testRunId returned", testRunId
 		def fetchedTestRun = client.getTestRun(testRunId)
 		assertEquals projectKey, fetchedTestRun.projectKey
@@ -99,7 +103,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	void testCreateTestRunWithoutProject() {
 		def msg = shouldFail(IllegalArgumentException) {
-			client.createTestRun(new ParsableTestRun())
+			client.createTestRun(new TestRun())
 		}
 		assertEquals "Wrong error message", "Project argument must be a valid cuanto project key", msg
 	}
@@ -108,14 +112,14 @@ class CuantoClientTest extends GroovyTestCase{
 	void testCreateTestRunWithBogusProject() {
 		def projName = "Bogus Foobar"
 		def msg = shouldFail(IllegalArgumentException) {
-			client.createTestRun(new ParsableTestRun(projName))
+			client.createTestRun(new TestRun(projName))
 		}
 		assertEquals "Wrong error message", "Unable to locate project with the project key or full title of ${projName}", msg 
 	}
 
 
 	void testGetTestRunWithPropertiesAndLinks() {
-		ParsableTestRun run = new ParsableTestRun(projectName)
+		TestRun run = new TestRun(projectName)
 		run.links << new Link("Info", "http://projectInfo")
 		run.links << new Link("Code Coverage", "http://cobertura")
 
@@ -125,7 +129,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.createTestRun(run)
 		assertNotNull "No testRunId returned", testRunId
 
-		ParsableTestRun testRun = client.getTestRun(testRunId)
+		TestRun testRun = client.getTestRun(testRunId)
 		assertEquals projectKey, testRun.projectKey
 		assertNotNull testRun.dateExecuted
 		assertTrue "Valid", testRun.valid
@@ -147,7 +151,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testCreateTestRun() {
-		def createdTestRun = new ParsableTestRun(projectKey)
+		def createdTestRun = new TestRun(projectKey)
 		createdTestRun.links << new Link("Info", "http://projectInfo")
 		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
 		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
@@ -156,7 +160,7 @@ class CuantoClientTest extends GroovyTestCase{
 		Long testRunId = client.createTestRun(createdTestRun)
 		assertNotNull "No testRunId returned", testRunId
 
-		ParsableTestRun testRun = client.getTestRun(testRunId)
+		TestRun testRun = client.getTestRun(testRunId)
 		assertEquals projectKey, testRun.projectKey
 		assertNotNull testRun.dateExecuted
 		assertTrue "Valid", testRun.valid
@@ -176,7 +180,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testSubmitSingleSuite() {
-		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "34")
@@ -187,7 +191,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	
 	void testSubmitMultipleSuite() {
-		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "56")
@@ -198,7 +202,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testSubmitMultipleFiles() {
-		Long testRunId = client.createTestRun(new ParsableTestRun(projectName))
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		def filesToSubmit = []
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")

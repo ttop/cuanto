@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package cuanto
+package cuanto.api
 
 import cuanto.api.Link
 import cuanto.api.TestProperty
 
 
-class ParsableTestRun {
+class TestRun {
 	String projectKey
 	String note
 	String dateCreated // todo: remove?
@@ -34,9 +34,11 @@ class ParsableTestRun {
 	List<Link> links = []
 	List<TestProperty> testProperties = []
 
-	ParsableTestRun() {}
 
-	ParsableTestRun(String projectKey) {
+
+	TestRun() {}
+
+	TestRun(String projectKey) {
 		this.projectKey = projectKey
 	}
 }

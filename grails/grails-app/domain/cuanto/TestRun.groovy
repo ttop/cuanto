@@ -23,6 +23,7 @@ package cuanto
 import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
 import cuanto.api.TestProperty as ApiProperty
+import cuanto.api.TestRun as ParsableTestRun
 
 class TestRun {
 

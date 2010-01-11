@@ -1,4 +1,12 @@
 package cuanto
+
+import cuanto.api.TestCase
+import cuanto.api.TestCase
+import cuanto.api.TestOutcome
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClient
+
 /**
  * User: Todd Wells
  * Date: Sep 3, 2009
@@ -32,12 +40,12 @@ public class OutputParsingTest extends GroovyTestCase {
 
 
 	void testOutputWithNewLinesAndNodes() {
-		def testRunId = client.createTestRun(new ParsableTestRun(projectKey))
-		ParsableTestCase testCase = new ParsableTestCase()
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		TestCase testCase = new TestCase()
 		testCase.packageName = "foo.bar.blah"
 		testCase.testName = wordGen.getSentence(3).replaceAll(" ", "")
 
-		ParsableTestOutcome outcome = new ParsableTestOutcome()
+		TestOutcome outcome = new TestOutcome()
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 		outcome.testOutput = """
