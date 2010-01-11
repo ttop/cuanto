@@ -12,11 +12,11 @@ class SampleAntTest extends GroovyTestCase {
 		def pom = new File("${apiPath}/pom.xml")
 		println "Looking for pom at ${pom.absolutePath}"
 		def pomXml = new XmlSlurper().parse(pom)
-		def expectedJarName = "target/${pomXml.artifactId}-${pomXml.version}.jar"
+		def expectedJarName = "${pomXml.artifactId}-${pomXml.version}.jar"
 
 		def sampleAnt = new File("${apiPath}/sample_ant.xml")
 		def sampleAntXml = new XmlSlurper().parse(sampleAnt)
-		def antValue = sampleAntXml.target.find {it.@name == "init"}.taskdef.@classpath
+		def antValue = sampleAntXml.target.path.fileset.include[0].@name.toString()
 
 		assertEquals "${sampleAnt.toString()} taskdef jar name doesn't match the pom version", expectedJarName, antValue
 	}
