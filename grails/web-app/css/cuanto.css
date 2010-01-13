@@ -271,15 +271,14 @@ label.wideLabel {
 	margin-right: 10px;
 }
 
-<<<<<<< HEAD
 label.widerLabel {
 	width: 70%;
 	margin-right: 0px;
-=======
+}
+
 label.narrowLabel {
 	width: 120px;
 	margin-right: 10px;
->>>>>>> master
 }
 
 .formHeader {
