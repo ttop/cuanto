@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
-
+import cuanto.api.TestOutcome as ParsableTestOutcome
+import cuanto.api.TestCase as ParsableTestCase
 
 /**
  * User: Todd Wells

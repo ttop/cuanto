@@ -30,6 +30,15 @@ class ProjectService {
 
 	def dataService
 
+	def getProject(projectString) {
+		def project = Project.findByProjectKey(projectString)
+		if (!project) {
+			project = getProjectByFullName(projectString)
+		}
+		//todo: fall back to ID?
+		return project
+	}
+
 
 	def getProjectByFullName(String fullName) throws CuantoException {
 		def groupName = null
@@ -53,8 +62,8 @@ class ProjectService {
 
 		testRuns.each { testRun ->
 			dataService.deleteOutcomesForTestRun(testRun)
+			dataService.deleteTestRun(testRun)
 		}
-		dataService.deleteTestRunsForProject(project)
         dataService.deleteTestCasesForProject(project)
 		dataService.deleteProject(project)
 	}

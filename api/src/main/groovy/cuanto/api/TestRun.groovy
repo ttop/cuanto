@@ -18,19 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.parsers
 
-import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.TestCase as ParsableTestCase
+package cuanto.api
 
-/**
- * User: Todd Wells
- * Date: Sep 24, 2008
- * Time: 4:38:31 PM
- * 
- */
-interface CuantoTestParser {
-	public List<ParsableTestOutcome> parseFile(File file)
-	public String getTestType()
-	public List<ParsableTestOutcome> parseStream(InputStream stream)
+import cuanto.api.Link
+import cuanto.api.TestProperty
+
+
+class TestRun {
+	String projectKey
+	String note
+	String dateCreated // todo: remove?
+	Date dateExecuted
+	Boolean valid
+	List<Link> links = []
+	List<TestProperty> testProperties = []
+
+
+
+	TestRun() {}
+
+	TestRun(String projectKey) {
+		this.projectKey = projectKey
+	}
 }

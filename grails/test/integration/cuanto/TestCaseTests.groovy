@@ -69,7 +69,7 @@ class TestCaseTests extends GroovyTestCase {
 
 		def runs = []
 		1.upto(numTestRuns) {
-			def testRun = to.getTestRun(project, "my milestone")
+			def testRun = to.getTestRun(project)
 			dataService.saveDomainObject testRun
 			runs << testRun
 		}
@@ -122,7 +122,7 @@ class TestCaseTests extends GroovyTestCase {
 
 		def runs = []
 		1.upto(numTestRuns) {
-			def testRun = to.getTestRun(project, "my milestone")
+			def testRun = to.getTestRun(project)
 			dataService.saveDomainObject testRun
 			runs << testRun
 		}

@@ -19,17 +19,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package cuanto
+package cuanto.api
 
+import com.thoughtworks.xstream.XStream
+import cuanto.api.CuantoClientException
+import cuanto.api.TestOutcome
+import cuanto.api.TestRun
 import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
+import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
-import com.thoughtworks.xstream.XStream
-import org.apache.commons.httpclient.methods.StringRequestEntity
-import org.apache.commons.httpclient.HttpStatus
 import sun.misc.BASE64Encoder
 
 /**
@@ -41,16 +44,13 @@ import sun.misc.BASE64Encoder
 class CuantoClient {
 
 	String cuantoUrl
-	String dateFormat
 	String proxyHost
 	Integer proxyPort
 	String userId
 	String password
 
 
-	public CuantoClient() {
-		dateFormat = "yyyy-MM-dd HH:mm:ss"
-	}
+	public CuantoClient() {}
 
 
 	public CuantoClient(String cuantoUrl) {
@@ -91,7 +91,7 @@ class CuantoClient {
 	}
 
 
-	void deleteProject(Long id) {
+	public void deleteProject(Long id) {
 		def post = getMethod("post", "${cuantoUrl}/project/delete")
 		post.addParameter "id", id.toString()
 		post.addParameter "client", ""
@@ -111,38 +111,44 @@ class CuantoClient {
 	}
 
 
-	Map getProject(Long projectId) {
+	public Map getProject(Long projectId) {
 		return getValueMap("${cuantoUrl}/project/get/${projectId.toString()}")
 	}
 
 
-	Map getTestRunInfo(Long testRunId) {
+	public Map getTestRunInfo(Long testRunId) {
 		return getValueMap("${cuantoUrl}/testRun/get/${testRunId.toString()}")
 	}
 
 
-	public Long getTestRunId(String project, String dateExecuted, String milestone, String build, String targetEnv) {
-		if (!project) {
-			throw new IllegalArgumentException("Project argument must be a valid cuanto project")
+	public TestRun getTestRun(Long testRunId) {
+		def get = getMethod("get", "${cuantoUrl}/testRun/get/${testRunId.toString()}")
+		get.addRequestHeader "Accept", "application/xml"
+
+		def responseCode
+		def responseText
+		TestRun testRun
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			XStream xstream = new XStream()
+			testRun = (TestRun) xstream.fromXML(responseText)
+		} finally {
+			get.releaseConnection()
+		}
+		return testRun
+	}
+
+	
+	public Long createTestRun(TestRun testRun) {
+		if (!testRun.projectKey) {
+			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
 
-		def post = getMethod("post", "${cuantoUrl}/testRun/create")
-		post.addParameter "project", project
-
-		if (dateExecuted) {
-			post.addParameter "dateExecuted", dateExecuted
-			post.addParameter "dateFormat", dateFormat
-		}
-		if (milestone) {
-			post.addParameter "milestone", milestone
-		}
-		if (build) {
-			post.addParameter "build", build
-		}
-		if (targetEnv) {
-			post.addParameter "targetEnv", targetEnv
-		}
-
+		def post = getMethod("post", "${cuantoUrl}/testRun/createXml")
+		XStream xstream = new XStream();
+		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
+		post.requestEntity = request
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
@@ -158,10 +164,10 @@ class CuantoClient {
 			post.releaseConnection()
 		}
 		return testRunId
-
 	}
 
-	public ParsableTestOutcome getTestOutcome(Long testOutcomeId) {
+
+	public TestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
 		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
@@ -175,7 +181,7 @@ class CuantoClient {
 				return null
 			} else {
 				XStream xstream = new XStream()
-				def outcome = (ParsableTestOutcome)xstream.fromXML(responseText)
+				def outcome = (TestOutcome)xstream.fromXML(responseText)
 				return outcome
 			}
 		} finally {
@@ -183,6 +189,7 @@ class CuantoClient {
 		}
 
 	}
+
 
 	public void submit(File file, Long testRunId) {
 		submit([file], testRunId)
@@ -215,7 +222,7 @@ class CuantoClient {
 	}
 
 
-	public Long submit(ParsableTestOutcome testOutcome, Long testRunId) {
+	public Long submit(TestOutcome testOutcome, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()

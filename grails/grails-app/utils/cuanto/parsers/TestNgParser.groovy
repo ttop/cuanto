@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.parsers
 
-import cuanto.ParsableTestOutcome
-import cuanto.ParsableTestCase
+import cuanto.api.TestOutcome as ParsableTestOutcome
+import cuanto.api.TestCase as ParsableTestCase
 
 /**
  * User: Todd Wells

@@ -28,7 +28,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	var dataTable;
 	var analysisDialog;
-	var testRunDialog = new YAHOO.cuanto.TestRunDialog();
 	var bugColumnLabel = "Bug";
 	var noteColumnLabel = "Note";
 	var targetOutcomes = new Array();
@@ -130,7 +129,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener("editNote", "click", onEditNote);
 		YAHOO.util.Event.addListener("saveNote", "click", onSaveNote);
 		YAHOO.util.Event.addListener("cancelNote", "click", onCancelNote);
-		YAHOO.util.Event.addListener("editTestRun", "click", onEditTestRun);
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
 		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
@@ -701,24 +699,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		return false;
 	}
 
-
-	function onEditTestRun(e) {
-		YAHOO.util.Event.preventDefault(e);
-	    clearEditNoteField();
-		testRunDialog.show();
-	}
-
-
+	//todo: still needed?
 	function onTestRunChanged(e, args) {
 		var testRun = args[0];
-		if (testRun["milestone"]) {
-			$('trhMilestone').innerHTML = testRun["milestone"];
-		}
-		if (testRun["build"]) {
-			$('trhBuild').innerHTML = testRun["build"];
-		}
-		if (testRun["targetEnv"]) {
-			$('trhTargetEnv').innerHTML = testRun["targetEnv"];
+		if (testRun["testProperties"]) {
+			var out = "";
+			testRun["testProperties"].each(function(item, indx) {
+				out += item["name"] + ": " + item["value"];
+				if (indx < oData.length - 1) {
+					out += ", ";
+				}
+			});
+			$('trhTestProperties').innerHTML = out;
 		}
 		if (testRun["note"]) {
 			$('trhNote').innerHTML = testRun["note"];

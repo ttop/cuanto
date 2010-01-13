@@ -67,12 +67,27 @@ class DataService {
 	/**
 	 Delete all outcomes for a testrun, then delete the testrun
 	 */
-
 	def deleteTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
+		if (run.links) {
+			def linksToRemove = new ArrayList(run.links)
+			linksToRemove.each { link ->
+				run.removeFromLinks(link)
+				link.delete()
+			}
+		}
+
+		if (run.testProperties) {
+			def propsToRemove = new ArrayList(run.testProperties)
+			propsToRemove.each { prop ->
+				run.removeFromTestProperties(prop)
+				prop.delete()
+			}
+		}
 		run.delete()
 	}
 
+	
 	def deleteOutcomesForTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
 	}
@@ -86,10 +101,7 @@ class DataService {
 		}
 	}
 
-	def deleteTestRunsForProject(Project project) {
-		TestRun.executeUpdate("delete cuanto.TestRun t where t.project = ?", [project])
-	}
-
+	
 	def getProject(id) {
 		Project.get(id)
 	}

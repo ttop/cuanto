@@ -36,7 +36,7 @@ YAHOO.cuanto.groupHistory = function() {
 		testRunDataSource.connXhrMode = "queueRequests";
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
-			fields: ["projectName", "projectKey","dateExecuted", "build", "targetEnv", "milestone", "note", "valid",
+			fields: ["projectName", "projectKey","dateExecuted", "note", "valid", "testProperties",
 				"tests", "passed", "failed","totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
@@ -62,9 +62,7 @@ YAHOO.cuanto.groupHistory = function() {
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true},
 			{key:"averageDuration", label: "Avg Duration", sortable:true},
-			{key:"milestone", label:"Milestone", sortable:true},
-			{key:"build", label:"Build", sortable:true},
-			{key:"targetEnv", label:"Environment", sortable:true}
+			{key:"testProperties", label: "Properties", sortable:false, formatter: propertyFormatter}
 		];
 	}
 
@@ -72,6 +70,19 @@ YAHOO.cuanto.groupHistory = function() {
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = oData + " %";
 	}
+
+
+	function propertyFormatter(elCell, oRecord, oColumn, oData) {
+		var out = "";
+		oData.each(function(item, indx) {
+			out += item["name"] + ": " + item["value"];
+			if (indx < oData.length - 1) {
+				out += ", ";
+			}
+		});
+		elCell.innerHTML = out;
+	}
+
 
 	return {
 		initGroupHistoryTable: function() {

@@ -113,9 +113,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <h2>Submitting test results with the ant task</h2>
 		  <p>After tests have executed and the XML test report files have been created, submit the reports to Cuanto
 		    by using the Cuanto ant task:</p>
-		  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="CUANTO" milestone="1.0"
-   build="30343" targetEnv="test lab"&gt;
+		  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="CUANTO"&gt;
 	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
+	&lt;property name="build" value="823"/&gt;
+	&lt;property name="milestone" value="1.0"/&gt;
+	&lt;property name="environment" value="test lab"/&gt;
 &lt;/cuanto&gt;</pre>
 		  <br/>
 		  Use the project key as the testProject value.
@@ -198,7 +200,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <p>After test cases have been specified, you can create a test run or test pass of them by going to the
 		  Test Run History page for the project and selecting "Create Manual Test Run". <em>Note: this option is only
 		  available if the project has manual test cases enabled.</em> Creating a manual run allows you to manually
-		  enter the date executed, milestone, build, and other information about the test run.  After creating the
+		  enter information about the test run.  After creating the
 		  manual test run, you will see it show up in the project's test run history as having 0 tests. This is because
 		  no test results have actually been entered. Proceed to the analysis page for the test run, and change the
 		  view filter to "All Results." Now you can see all of the tests have a result of "Unexecuted".  You can

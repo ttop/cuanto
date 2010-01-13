@@ -17,13 +17,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cuanto
+package cuanto.api
 
-public class QueuedTestRunStat {
-	// This class represents a test run that is queued for stat calculation -- we'll just use the ID rather than
-	// a reference to the actual TestRun object. If the TestRun is not present at the time the calculation is
-	// attempted, it will just be ignored. This way we don't have to manage the case where TestRuns are deleted
-	// while in the queue
-	Long testRunId
-	Date dateCreated
+public class TestProperty {
+	String name
+	String value
+
+
+
+	TestProperty(){}
+
+	TestProperty(String name, String value) {
+		this.name = name
+		this.value = value
+	}
+
+	
 }

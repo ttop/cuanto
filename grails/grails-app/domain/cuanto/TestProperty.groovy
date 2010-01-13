@@ -19,11 +19,38 @@
 
 package cuanto
 
-public class QueuedTestRunStat {
-	// This class represents a test run that is queued for stat calculation -- we'll just use the ID rather than
-	// a reference to the actual TestRun object. If the TestRun is not present at the time the calculation is
-	// attempted, it will just be ignored. This way we don't have to manage the case where TestRuns are deleted
-	// while in the queue
-	Long testRunId
-	Date dateCreated
+public class TestProperty implements Comparable {
+
+	String name
+	String value
+
+
+	TestProperty(){}
+
+
+	TestProperty(String name, String value) {
+		this.name = name
+		this.value = value
+	}
+
+
+	public int compareTo(Object t) {
+		TestProperty otherProp = (TestProperty) t
+
+		def nameComp = this.name.compareToIgnoreCase(otherProp.name)
+		if (nameComp == 0) {
+			nameComp = this.name.compareTo(otherProp.name)
+		}
+		if (nameComp == 0) {
+			return this.value.compareTo(otherProp.value)
+		} else {
+			return nameComp
+		}
+	}
+
+
+	public boolean equals(Object t) {
+		TestProperty otherProp = (TestProperty) t
+		return this.name == otherProp.name && this.value == otherProp.value
+	}
 }

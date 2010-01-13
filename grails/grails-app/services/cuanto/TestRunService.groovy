@@ -20,10 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import java.math.MathContext
 import java.text.SimpleDateFormat
+import cuanto.api.Link as ApiLink
+import cuanto.api.TestProperty as ApiProperty
+import cuanto.api.TestRun as ParsableTestRun
 
 class TestRunService {
+
 	def dataService
 	def projectService
 	def statisticService
@@ -31,7 +34,6 @@ class TestRunService {
 	boolean transactional = false
 
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
-
 
 
 
@@ -369,38 +371,93 @@ class TestRunService {
 
 
 	def update(TestRun testRun, Map params) {
-		testRun.properties = params
+		testRun.note = params.note
 		if (!params.valid) {
 			testRun.valid = false;
 		}
-		if (params.userDateExecuted) {
-			try {
-				SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-				Date candidate = formatter.parse(params.userDateExecuted)
-				// only update the dateExecuted this if it's changed by more than a second
-				if (Math.abs(candidate.time - testRun.dateExecuted.time) > 1000) {
-					testRun.dateExecuted = candidate
+
+		processTestPropertiesFromParameters(params, testRun)
+		processLinksFromParameters(params, testRun)
+
+		dataService.saveDomainObject testRun
+		return testRun
+	}
+
+
+	Map processLinksFromParameters(Map params, TestRun testRun) {
+		return params.each {String paramName, String paramValue ->
+			// is this parameter an existing Link?
+			def existingLinkMatcher = (paramName =~ /^linkId\[(\d+)]/)
+			if (existingLinkMatcher.matches()) {
+				def linkIndex = existingLinkMatcher[0][1] as Integer
+				def linkId = params["linkId[${linkIndex}]"] as Integer
+				if (linkId) {
+					Link existingLink = Link.get(linkId)
+					def descr = params["linkDescr[${linkIndex}]"] as String
+					def url = params["linkUrl[${linkIndex}]"] as String
+					if (existingLink.description != descr || existingLink.url != url) {
+						existingLink.description = descr
+						existingLink.url = url
+						dataService.saveDomainObject existingLink
+					}
 				}
-			} catch (java.text.ParseException e) {
-				testRun.errors.reject('date.not.parseable.message', [params.userDateExecuted, Defaults.dateFormat] as Object[],
-					"${params.userDateExecuted} is not a parsable date matching the format ${Defaults.dateFormat}")
+			} else {
+				// is this parameter a new Link?
+				def newLinkMatcher = (paramName =~ /^newLinkDescr\[(\d+)]/)
+				if (newLinkMatcher.matches()) {
+					def linkIndex = newLinkMatcher[0][1] as Integer
+					def linkUrl = params["newLinkUrl[${linkIndex}]"] as String
+					linkUrl = linkUrl?.trim()
+					if (linkUrl) {
+						def descr = paramValue.trim()
+						if (!descr) {
+							descr = linkUrl
+						}
+						def link = new Link(descr, linkUrl)
+						testRun.addToLinks(link)
+					}
+				}
 			}
 		}
-
-		if (!testRun.errors && dataService.saveTestRun(testRun)) {
-			reportError(testRun)
-		}
-		return testRun
 	}
 
-	
+
+	Map processTestPropertiesFromParameters(Map params, TestRun testRun) {
+		return params.each {String paramName, String paramValue ->
+			// is this parameter an existing TestProperty?
+			def existingPropertyMatcher = (paramName =~ /^prop\[(\d+)]/)
+			if (existingPropertyMatcher.matches()) {
+				def propIndex = existingPropertyMatcher[0][1] as Integer
+				def propId = params["propId[${propIndex}]"] as Integer
+				if (propId) {
+					TestProperty existingProp = TestProperty.get(propId)
+					if (existingProp.value != paramValue) {
+						existingProp.value = paramValue
+						dataService.saveDomainObject existingProp
+					}
+				}
+			} else {
+				// is this parameter a new TestProperty?
+				def newPropertyMatcher = (paramName =~ /^newPropName\[(\d+)]/)
+				if (newPropertyMatcher.matches()) {
+					def propIndex = newPropertyMatcher[0][1] as Integer
+					def propValue = params["newPropValue[${propIndex}]"] as String
+					if (propValue) {
+						def testProperty = new TestProperty(paramValue.trim(), propValue.trim())
+						testRun.addToTestProperties(testProperty)
+					}
+				}
+			}
+		}
+	}
+
+
 	def updateNote(testRun, note) {
 		testRun.note = note
-		if (!testRun.errors && dataService.saveTestRun(testRun)) {
-			reportError(testRun)
-		}
+		dataService.saveDomainObject(testRun) 
 		return testRun
 	}
+
 
 	void reportError(domainObj) {
 		def errMsg = ""
@@ -433,7 +490,7 @@ class TestRunService {
 	TestRun createTestRun(Map params) {
 		def project
 		if (params.containsKey("project")) {
-			project = getProject(params.project)
+			project = projectService.getProject(params.project)
 			if (!project) {
 				throw new CuantoException("Unable to locate project with the project key or full title of ${params.project}")
 			}
@@ -447,15 +504,12 @@ class TestRunService {
 		}
 
 		def testRun = new TestRun('project': project)
-
-		testRun.build = params.build
-		testRun.milestone = params.milestone
-		testRun.targetEnv = params.targetEnv
 		testRun.note = params.note
 		if (params.valid) {
 			testRun.valid = Boolean.valueOf(params.valid)
 		}
 
+		// TODO: consolidate dateExecuted and userDateExecuted handling
 		if (params.dateExecuted) {
 			Date dateExecuted
 			String dateFormat
@@ -472,9 +526,118 @@ class TestRunService {
 		else {
 			testRun.dateExecuted = new Date()
 		}
+
+		if (params.userDateExecuted) {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
+				Date candidate = formatter.parse(params.userDateExecuted)
+				// only update the dateExecuted this if it's changed by more than a second
+				if (Math.abs(candidate.time - testRun.dateExecuted.time) > 1000) {
+					testRun.dateExecuted = candidate
+				}
+			} catch (java.text.ParseException e) {
+				testRun.errors.reject('date.not.parseable.message', [params.userDateExecuted, Defaults.dateFormat] as Object[],
+					"${params.userDateExecuted} is not a parsable date matching the format ${Defaults.dateFormat}")
+			}
+		}
+
+		parseLinksFromParams(params).each {
+			testRun.addToLinks(it)
+		}
+
+		parseTestPropertiesFromParams(params).each {
+			testRun.addToTestProperties(it)
+		}
+
 		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
 		dataService.saveTestRun(testRun)
 		return testRun
+	}
+
+
+	List parseLinksFromParams(Map params) {
+		def linksToAdd = []
+		if (params.link) {
+			def links = [params.link].flatten()
+			links.each {String linkParam ->
+				try {
+					Link link = new Link()
+					def linkSplit = linkParam.split('\\|\\|', 3)
+					link.url = getUrlFromString(linkSplit[0])
+
+					if (linkSplit.length > 1) {
+						link.description = linkSplit[1]
+					} else {
+						link.description = linkSplit[0]
+					}
+					linksToAdd << link
+
+				} catch (MalformedURLException e) {
+					// Don't persist the link, just log an error
+					log.error "Malformed URL: ${e.message}"
+				}
+			}
+		}
+		return linksToAdd
+	}
+
+	
+	List parseTestPropertiesFromParams(Map params) {
+		def propsToAdd = []
+		if (params.testProperty) {
+			def props = [params.testProperty].flatten()
+			props.each { String propParam ->
+				def propSplit = propParam.split('\\|\\|')
+				if (propSplit.length > 1) {
+					propsToAdd << new TestProperty(propSplit[0], propSplit[1])
+				}
+			}
+		}
+		return propsToAdd
+	}
+
+
+	TestRun createTestRun(ParsableTestRun pTestRun) {
+
+		def project = projectService.getProject(pTestRun.projectKey)
+		if (!project) {
+			throw new CuantoException("Unable to locate project with the project key or full title of ${pTestRun.projectKey}")
+		}
+
+		def testRun = new TestRun('project': project)
+		testRun.note = pTestRun.note
+		if (pTestRun.valid != null) {
+			testRun.valid = pTestRun.valid
+		}
+
+		if (pTestRun.dateExecuted) {
+			testRun.dateExecuted = pTestRun.dateExecuted
+		} else {
+			testRun.dateExecuted = new Date()
+		}
+
+		pTestRun.links?.each {ApiLink aLink->
+			try {
+				// todo: make description and link HTML-safe?
+				testRun.addToLinks(new Link(aLink.description, aLink.url))
+			} catch (MalformedURLException e) {
+				// Don't persist the link, just log an error
+				log.error "Malformed URL: ${e.message}"
+			}
+		}
+
+		pTestRun.testProperties?.each { ApiProperty aProperty ->
+			// todo: make name and value HTML-safe?
+			testRun.addToTestProperties(new TestProperty(aProperty.name, aProperty.value))
+		}
+
+		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
+		dataService.saveTestRun(testRun)
+		return testRun
+	}
+
+	def getUrlFromString(String urlString) {
+		return new URL(urlString).toString()
 	}
 
 	def getProject(projectString) {

@@ -271,9 +271,15 @@ label.wideLabel {
 	margin-right: 10px;
 }
 
+<<<<<<< HEAD
 label.widerLabel {
 	width: 70%;
 	margin-right: 0px;
+=======
+label.narrowLabel {
+	width: 120px;
+	margin-right: 10px;
+>>>>>>> master
 }
 
 .formHeader {
@@ -333,4 +339,25 @@ form label.dialogLabel {
 
 .cuanto tbody tr td {
 	padding: 0 5px;
+}
+
+#testRunForm {
+	margin-top:20px;
+}
+
+#trEditBody {
+	width: 750px;
+}
+
+.newProp {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.nonClearLabel {
+	margin-left:10px;
+	margin-right:10px;
+	clear:none;
+	display: inline;
+	float:none;
 }

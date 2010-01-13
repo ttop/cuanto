@@ -28,7 +28,7 @@ class BugTests extends GroovyTestCase {
 
 		def numCases = 25
 
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 
 		if (!testRun.save()) {
 			dataService.reportSaveError testRun

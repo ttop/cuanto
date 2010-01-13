@@ -62,7 +62,7 @@ class ParsingServiceTests extends GroovyTestCase {
 		proj.testType = TestType.findByName("JUnit")
 		proj.save()
 
-		TestRun testRun = fakes.getTestRun(proj, "foobar")
+		TestRun testRun = fakes.getTestRun(proj)
 
 		dataService.saveDomainObject(testRun)
 

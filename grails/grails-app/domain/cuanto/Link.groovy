@@ -19,11 +19,34 @@
 
 package cuanto
 
-public class QueuedTestRunStat {
-	// This class represents a test run that is queued for stat calculation -- we'll just use the ID rather than
-	// a reference to the actual TestRun object. If the TestRun is not present at the time the calculation is
-	// attempted, it will just be ignored. This way we don't have to manage the case where TestRuns are deleted
-	// while in the queue
-	Long testRunId
-	Date dateCreated
+class Link implements Comparable {
+
+    static constraints = {
+
+    }
+
+	String description
+	String url
+
+	public Link(){}
+	
+	public Link(String description, String url) {
+		this.description = description
+		this.url = url
+	}
+
+	public int compareTo(Object t) {
+		Link other = (Link) t
+		int descriptionCompare = this.description.compareTo(other.description)
+		if (descriptionCompare == 0) {
+			return this.url.compareTo(other.url)
+		} else {
+			return descriptionCompare
+		}
+	}
+
+	public boolean equals(Object t) {
+		Link other = (Link) t
+		return this.description == other.description && this.url == other.url
+	}
 }

@@ -18,10 +18,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.api
 
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.types.FileSet
+import cuanto.api.Link
+import java.text.SimpleDateFormat
+import org.apache.tools.ant.taskdefs.Property
+import cuanto.api.TestProperty
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClient
 
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
@@ -32,15 +39,17 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 	File resultFile
 	String testType // here just for backward compatibility
 	String testProject
-	String milestone
-	String targetEnv
-	String build
+	String milestone // deprecated
+	String targetEnv // deprecated
+	String build // deprecated
 	String date
 	String dateFormat
 	String action = "submit"
+	protected static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
 	List<FileSet> filesets = []
-
+	List<Link> links = []
+	List<Property> properties = []
 
 	public void execute() {
 		if (!testProject) {
@@ -74,7 +83,32 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 
 	private void submit() {
 		def cuantoClient = getCuantoClient()
-		def testRunId = cuantoClient.getTestRunId(testProject, date, milestone, build, targetEnv)
+
+		TestRun testRun = new TestRun()
+		testRun.projectKey = testProject
+
+		if (date) {
+			def dateFormatToUse = dateFormat ? dateFormat : DEFAULT_DATE_FORMAT
+			testRun.dateExecuted = new SimpleDateFormat(dateFormatToUse).parse(date)
+		}
+
+		testRun.links = links
+
+		// process deprecated attributes
+		["build", "milestone", "targetEnv"].each { String propName ->
+			def propVal = getProperty(propName) as String
+			if (propVal) {
+				testRun.testProperties << new TestProperty(propName, propVal)
+				log "cuanto task attribute '${propName}' is deprecated, use a nested property node instead",
+					this.project.MSG_WARN
+			}
+		}
+
+		properties.each {Property prop ->
+			testRun.testProperties << new TestProperty(prop.name, prop.value)
+		}
+
+		def testRunId = cuantoClient.createTestRun(testRun)
 		log "Submitting results to ${url}"
 
 		def startTime = new Date()
@@ -110,5 +144,19 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		FileSet fset = new FileSet()
 		filesets.add fset
 		return fset
+	}
+
+
+	public Link createLink() {
+		def link = new Link()
+		links << link
+		return link
+	}
+
+	
+	public Property createProperty(){
+		def prop = new Property()
+		properties << prop
+		return prop
 	}
 }

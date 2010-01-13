@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.api
 
 /**
  * User: Todd Wells
@@ -26,7 +26,7 @@ package cuanto
  * Time: 9:49:54 PM
  *
  */
-class ParsableTestCase implements Comparable {
+class TestCase implements Comparable {
 	String project
 	String packageName 
 	String testName
@@ -38,9 +38,9 @@ class ParsableTestCase implements Comparable {
 	boolean equals(o) {
 		if (this.is(o)) return true;
 
-		if (!(o instanceof ParsableTestCase)) return false;
+		if (!(o instanceof TestCase)) return false;
 
-		ParsableTestCase that = (ParsableTestCase) o;
+		TestCase that = (TestCase) o;
 
 		if (description ? !description.equals(that.description) : that.description != null) return false;
 		if (fullName ? !fullName.equals(that.fullName) : that.fullName != null) return false;
@@ -66,7 +66,7 @@ class ParsableTestCase implements Comparable {
 
 
 	public int compareTo(Object t) {
-		def other = (ParsableTestCase) t
+		def other = (TestCase) t
 		if (this.project != other.project)
 			return this.project.compareTo(other.project)
 		if (this.packageName != other.packageName)

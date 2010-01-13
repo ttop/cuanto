@@ -12,30 +12,40 @@
 		   </fileset>
 		 </path>
 
-		<taskdef name="cuanto" classname="cuanto.CuantoAntTask" classpathref="api.class.path"/>
+		<taskdef name="cuanto" classname="cuanto.api.CuantoAntTask" classpathref="api.class.path"/>
 	</target>
 
 	<target name="submitResults" depends="init">
 
 		<!-- submit a few result sets just to show how the ant task works -->
 
-		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="233093" targetEnv="test lab"
-		        resultfile="../grails/test/resources/junitReport_single_suite.xml" userId="admin" password="admin"/>
-
+		<!-- Note the milestone, build and targetEnv attributes are deprecated, use the property node style show below -->
 		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" milestone="1.0" build="235035" targetEnv="test lab"
-			userId="admin" password="admin">
+			userId="admin" password="admin" resultfile="../grails/test/resources/junitReport_single_suite.xml">
+			<link description="Test Link 1" url="http://testlink1"/>
+			<link description="Test Link 2" url="http://testlink2"/>
+			<property name="Custom Property 1" value="Custom value 1"/>
+			<property name="Custom Property 2" value="Custom value 2"/>
+		</cuanto>
+
+		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd" userId="admin" password="admin">
 			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
+			<property name="milestone" value="1.0"/>
+			<property name="build" value="235035"/>
+			<property name="targetEnv" value="test lab"/>
+			<link description="Test Link 1" url="http://testlink1"/>
+			<link description="Test Link 2" url="http://testlink2"/>
 		</cuanto>
 
 	</target>
 
 	<target name="submitTestNG" depends="init">
-		<cuanto url="${cuanto.url}" testProject="CNG" milestone="1.1" build="352442" targetEnv="test lab"
-			resultfile="../grails/test/resources/testng-results-params.xml"/>
+		<cuanto url="${cuanto.url}" testProject="CNG" resultfile="../grails/test/resources/testng-results-params.xml"
+			userId="admin" password="admin"/>
 	</target>
 
 	<target name="submitTestNGConfigParams" depends="init">
-		<cuanto url="${cuanto.url}" testProject="CNG" milestone="1.1" build="352442" targetEnv="test lab"
-			resultfile="../grails/test/resources/testng-results-params-config.xml"/>
+		<cuanto url="${cuanto.url}" testProject="CNG" resultfile="../grails/test/resources/testng-results-params-config.xml"
+			userId="admin" password="admin"/>
 	</target>
 </project>

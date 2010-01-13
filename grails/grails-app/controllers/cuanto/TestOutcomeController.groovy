@@ -26,6 +26,7 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import com.thoughtworks.xstream.XStream
+import cuanto.api.TestOutcome as ParsableTestOutcome
 
 class TestOutcomeController {
 	def parsingService

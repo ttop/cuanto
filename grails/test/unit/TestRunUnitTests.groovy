@@ -33,24 +33,6 @@ class TestRunUnitTests extends GroovyTestCase {
 		projOne.name = two.project.name
 		assertEquals one, two
 
-		two.build = "foo"
-		assertFalse one.equals(two)
-		assertFalse two.equals(one)
-		one.build = two.build
-		assertEquals one, two
-
-		two.targetEnv = "blahblah"
-		assertFalse one.equals(two)
-		assertFalse two.equals(one)
-		one.targetEnv = two.targetEnv
-		assertEquals one, two
-
-		two.milestone = "blargity"
-		assertFalse one.equals(two)
-		assertFalse two.equals(one)
-		one.milestone = two.milestone
-		assertEquals one, two
-
 		two.note = "foosicle"
 		assertFalse one.equals(two)
 		assertFalse two.equals(one)

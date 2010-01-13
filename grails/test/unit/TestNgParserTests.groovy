@@ -1,5 +1,5 @@
-import cuanto.ParsableTestCase
-import cuanto.ParsableTestOutcome
+import cuanto.api.TestCase as ParsableTestCase
+import cuanto.api.TestOutcome as ParsableTestOutcome
 import cuanto.parsers.TestNgParser
 
 /**

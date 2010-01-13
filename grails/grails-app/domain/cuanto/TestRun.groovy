@@ -21,34 +21,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import cuanto.api.Link as ApiLink
+import cuanto.api.TestProperty as ApiProperty
+import cuanto.api.TestRun as ParsableTestRun
 
 class TestRun {
 
 	static constraints = {
 		project(nullable: false)
-		milestone(nullable: true, blank: true)
-		build(nullable: true, blank: true)
-		targetEnv(nullable: true, blank: true)
 		note(nullable: true, blank: true)
 		valid(nullable: true)
 		testRunStatistics(nullable:true)
 	}
-	
+
+	static hasMany = [links:Link, testProperties:TestProperty]
+
 	static mapping = {
 		cache true
+		link fetch: "join"
+		testProperty fetch: "join"
 	}
 	
-	String build
-	String targetEnv
 	Date dateCreated // date the record was added to the database
 	Date dateExecuted // date the test run was executed
-	String milestone
 	String note
 	Boolean valid = true
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-
+	SortedSet<Link> links
+	SortedSet<TestProperty> testProperties
 
 	def beforeInsert = {
 
@@ -65,19 +67,13 @@ class TestRun {
 			return false
 		} else if (this.project != testRun.project) {
 			return false
-		} else if (this.build != testRun.build) {
-			return false
-		} else if (this.targetEnv != testRun.targetEnv) {
-			return false
-		} else if (this.milestone != testRun.milestone) {
-			return false
 		} else if (this.note != testRun.note) {
  			return false
 
 		} else if (this.valid != testRun.valid) {
 			return false
 		}
-
+		//todo: compare links and properties?
 		return true
 	}
 
@@ -90,13 +86,48 @@ class TestRun {
 	Map toJSONMap() {
 		def jsonMap = [:]
 		jsonMap.id = this.id
-		jsonMap.build = this.build
 		jsonMap.dateExecuted = this.dateExecuted.toString()
 		jsonMap.valid = this.valid
-		jsonMap.targetEnv = this.targetEnv
-		jsonMap.milestone = this.milestone
 		jsonMap.project = this.project.toString()
 		jsonMap.note = this.note
+
+		def jsonLinks = []
+		this.links.each {
+			jsonLinks << [description: it.description, url: it.url]
+		}
+		jsonMap.links = jsonLinks
+		jsonMap.testProperties = getJsonTestProperties()
+
 		return jsonMap
+	}
+
+
+	List getJsonTestProperties() {
+		def jsonProps = []
+		this.testProperties.each {
+			jsonProps << [name: it.name, value: it.value]
+		}
+		return jsonProps
+	}
+
+
+	ParsableTestRun toParsableTestRun(dateFormat = Defaults.dateFormat) {
+		ParsableTestRun pTestRun = new ParsableTestRun()
+		pTestRun.dateCreated =  new SimpleDateFormat(dateFormat).format(this.dateCreated)
+		pTestRun.dateExecuted = this.dateExecuted
+		pTestRun.note = this.note
+		pTestRun.valid = this.valid
+		pTestRun.projectKey = this.project.projectKey
+
+		pTestRun.links = new ArrayList<ApiLink>()
+		this.links?.each {
+			pTestRun.links << new ApiLink(it.description, it.url)
+		}
+
+		pTestRun.testProperties = new ArrayList<TestProperty>()
+		this.testProperties?.each {
+			pTestRun.testProperties << new ApiProperty(it.name, it.value)
+		}
+		return pTestRun
 	}
 }

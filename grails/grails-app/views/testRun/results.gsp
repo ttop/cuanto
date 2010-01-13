@@ -58,7 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/lruCache.js"/>
 		<g:javascript src="cuanto/outputProxy.js"/>
 		<g:javascript src="cuanto/testoutput.js"/>
-		<g:javascript src="cuanto/testRunDialog.js"/>
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
@@ -102,6 +101,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div id="failContainer"></div>
 		<iframe id="yui-history-iframe" src="${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}"></iframe>
 		<input id="yui-history-field" type="hidden">
-		<g:render template="testRunDialog"/>
 	</body>
 </html>

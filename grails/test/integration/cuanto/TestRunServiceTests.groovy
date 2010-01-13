@@ -27,7 +27,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 		def numCases = 11
 
-		TestRun testRun = to.getTestRun(proj, "foobar")
+		TestRun testRun = to.getTestRun(proj)
 
 		if (!testRun.save()) {
 			dataService.reportSaveError testRun
@@ -78,7 +78,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -86,7 +86,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -150,7 +150,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -158,7 +158,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -209,7 +209,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			testCases.add(testCase)
 		}
 
-		def testRunOne = to.getTestRun(proj, "mile1")
+		def testRunOne = to.getTestRun(proj)
 		testRunOne.save()
 
 		for (testCase in testCases) {
@@ -217,7 +217,7 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def testRunTwo = to.getTestRun(proj, "mile1")
+		def testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
 		for (testCase in testCases) {
@@ -273,6 +273,54 @@ class TestRunServiceTests extends GroovyTestCase {
 			assertNotNull foundProj
 			assertEquals proj, foundProj
 		}
+	}
+
+
+	void testCreateAndDeleteTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true 
+
+		def params = [:]
+		params.project = proj.projectKey
+		params.note = to.wordGen.getSentence(5)
+
+		def links = ["http://gurdy||hurdy", "http://easy||squeezy", "malformed"]
+		assertEquals 0, Link.list().size()
+		params.link = links
+
+		def props = ["CustomProp1||Custom Value 1", "CustomProp2||Custom Value 2"]
+		assertEquals 0, TestProperty.list().size()
+		params.testProperty = props
+
+		TestRun createdTr = testRunService.createTestRun(params)
+
+		assertEquals 2, Link.list().size()
+		assertEquals 2, TestProperty.list().size()
+
+		TestRun fetchedTr = TestRun.get(createdTr.id)
+		assertEquals "Wrong note", params.note, fetchedTr.note
+
+		assertEquals "Wrong number of links", 2, fetchedTr.links.size()
+		assertEquals "Wrong number of test properties", 2, fetchedTr.testProperties.size()
+
+		def listOfLinks = new ArrayList(fetchedTr.links as List)
+		Collections.sort(listOfLinks)
+
+		assertEquals "http://gurdy", listOfLinks[0].url
+		assertEquals "hurdy", listOfLinks[0].description
+		assertEquals "http://easy", listOfLinks[1].url
+		assertEquals "squeezy", listOfLinks[1].description
+
+		def listOfProps = new ArrayList(fetchedTr.testProperties as List)
+		Collections.sort(listOfProps)
+		assertEquals "CustomProp1", listOfProps[0].name
+		assertEquals "Custom Value 1", listOfProps[0].value
+		assertEquals "CustomProp2", listOfProps[1].name
+		assertEquals "Custom Value 2", listOfProps[1].value
+
+		dataService.deleteTestRun(fetchedTr)
+		assertNull TestRun.get(fetchedTr.id)
+		assertEquals 0, Link.list().size()
 	}
 }
 

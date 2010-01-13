@@ -22,7 +22,8 @@ package cuanto
 
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import grails.util.Environment
+import com.thoughtworks.xstream.XStream
+import cuanto.api.TestRun as ParsableTestRun
 
 class TestRunController {
 	def parsingService
@@ -34,12 +35,13 @@ class TestRunController {
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
-		submitFile: 'POST']
+		submitFile: 'POST', createXml:'POST', deleteProperty: 'POST', deleteLink: 'POST']
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
 	def index = { redirect(action: 'list', controller: 'project', params: params) }
 
+	
 	def delete = {
 		def testRun = TestRun.get(params.id)
 		def myJson = [:]
@@ -52,6 +54,36 @@ class TestRunController {
 		render myJson as JSON
 	}
 
+
+	def deleteProperty = {
+		def propToDelete = TestProperty.get(params.id)
+		def testRun = TestRun.get(params.testRun)
+
+		if (propToDelete && testRun) {
+			testRun.removeFromTestProperties(propToDelete)
+			dataService.saveDomainObject testRun 
+			render "OK"
+		} else {
+			response.setStatus(response.SC_NOT_FOUND)
+			render "TestProperty ID ${params?.id} or Test Run ID ${params?.testRun} not found"
+		}
+	}
+
+	def deleteLink = {
+		def linkToDelete = Link.get(params.id)
+		def testRun = TestRun.get(params.testRun)
+
+		if (linkToDelete && testRun) {
+			testRun.removeFromLinks(linkToDelete)
+			dataService.saveDomainObject testRun
+			render "OK"
+		} else {
+			response.setStatus(response.SC_NOT_FOUND)
+			render "Link ID ${params?.id} or Test Run ID ${params?.testRun} not found"
+		}
+	}
+
+	
 	def edit = {
 		def testRun = TestRun.get(params.id)
 
@@ -67,19 +99,13 @@ class TestRunController {
 
 	def update = {
 		def testRun = TestRun.get(params.id)
-		def myJson = [:]
 		if (testRun) {
 			testRun = testRunService.update(testRun, params)
-			if (testRun.hasErrors()) {
-				myJson.error = "Error updating test run";
-			}
+			flash.message = "Test Run updated."
 		}
-		else {
-			myJson.error = "TestRun not found with id ${params.id}"
-			response.status = response.SC_NOT_FOUND
-		}
-		render myJson as JSON
+		redirect(controller: "testRun", action: edit, id: testRun?.id)
 	}
+
 
 	def updateNote = {
 		def testRun = TestRun.get(params.id)
@@ -103,6 +129,7 @@ class TestRunController {
 		}
 	}
 
+
 	def submitFile = {
 		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
 
@@ -120,6 +147,7 @@ class TestRunController {
 		def testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId)
 		render testOutcome.id
 	}
+
 
 	def outcomes = {
 		def queryParams = [:]
@@ -256,7 +284,7 @@ class TestRunController {
 
 	def get = {
 		def testRun = TestRun.get(Long.valueOf(params.id))
-		def testRunMap = testRun.toJSONWithDateFormat(dateFormat)
+		def testRunMap = testRun?.toJSONWithDateFormat(dateFormat)
 		withFormat {
 			text {
 				['testRunMap': testRunMap]
@@ -264,10 +292,14 @@ class TestRunController {
 			json {
 				render testRunMap as JSON
 			}
+			xml {
+				XStream xstream = new XStream()
+				render xstream.toXML(testRun.toParsableTestRun())
+			}
 		}
 	}
 
-
+	
 	def results = {
 		def testRun = null
 		if (params.id) {
@@ -356,6 +388,18 @@ class TestRunController {
 				response.status = 403
 				render e.getMessage()
 			}
+		}
+	}
+
+	def createXml = {
+		XStream xstream = new XStream()
+		def testRun = (ParsableTestRun) xstream.fromXML(request.inputStream)
+		try {
+			def parsedTestRun = testRunService.createTestRun(testRun)
+			render(view: "create", model: ['testRunId': parsedTestRun.id])
+		} catch (CuantoException e) {
+			response.status = 403
+			render e.getMessage()
 		}
 	}
 

@@ -1,10 +1,18 @@
 package cuanto
 
-import cuanto.CuantoClient
+import cuanto.api.CuantoClient
 import cuanto.WordGenerator
 import groovy.mock.interceptor.StubFor
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.PostMethod
+import cuanto.api.Link
+import cuanto.api.TestProperty
+import cuanto.api.TestRun
+import cuanto.api.TestRun
+import cuanto.api.CuantoClient
+import cuanto.api.CuantoClientException
+import cuanto.api.TestCase
+import cuanto.api.TestOutcome
 
 /**
  * User: Todd Wells
@@ -14,12 +22,13 @@ import org.apache.commons.httpclient.methods.PostMethod
  */
 class CuantoClientTest extends GroovyTestCase{
 
-	def serverUrl = "http://localhost:8080/cuanto"
+	String serverUrl = "http://localhost:8080/cuanto"
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
-	def projectName
+	String projectName
 	def projectId
+	String projectKey
 
 	def testUser = "admin"
 	def testPassword = "admin"
@@ -30,7 +39,7 @@ class CuantoClientTest extends GroovyTestCase{
 		client.password = testPassword
 		
 		projectName = wordGen.getSentence(3).trim()
-		def projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
+		projectKey = wordGen.getSentence(3).replaceAll("\\s+", "").trim()
 		if (projectKey.length() > 25) {
 			projectKey = projectKey.substring(0, 24)
 		}
@@ -92,59 +101,95 @@ class CuantoClientTest extends GroovyTestCase{
 	}
 
 	
-	void testGetTestRunId() {
-		/* getTestRunID(String project, String dateExecuted, String milestone, String build, String
-			 targetEnv) //everything but project can be null */
-
-		Long testRunId = client.getTestRunId(projectName, null, null, null, null)
+	void testGetTestRun() {
+		Long testRunId = client.createTestRun(new TestRun(projectKey: projectName))
 		assertNotNull "No testRunId returned", testRunId
-
-		Map runInfo = client.getTestRunInfo(testRunId)
-		assertEquals projectName, runInfo.project
-		assertNotNull runInfo.dateExecuted
-		assertTrue runInfo != ""
-		assertNull  runInfo.milestone
-		assertNull runInfo.build
-		assertNull runInfo.targetEnv
+		def fetchedTestRun = client.getTestRun(testRunId)
+		assertEquals projectKey, fetchedTestRun.projectKey
+		assertNotNull fetchedTestRun.dateExecuted
 	}
 
 
-	void testGetTestRunIdWithoutProject() {
+	void testCreateTestRunWithoutProject() {
 		def msg = shouldFail(IllegalArgumentException) {
-			client.getTestRunId(null, null, null, null, null)
+			client.createTestRun(new TestRun())
 		}
-		assertEquals "Wrong error message", "Project argument must be a valid cuanto project", msg
+		assertEquals "Wrong error message", "Project argument must be a valid cuanto project key", msg
 	}
 
 
-	void testGetTestRunIdWithBogusProject() {
+	void testCreateTestRunWithBogusProject() {
 		def projName = "Bogus Foobar"
 		def msg = shouldFail(IllegalArgumentException) {
-			client.getTestRunId(projName, null, null, null, null)
+			client.createTestRun(new TestRun(projName))
 		}
 		assertEquals "Wrong error message", "Unable to locate project with the project key or full title of ${projName}", msg 
 	}
 
 
-	void testGetTestRunWithParams() {
-		def milestone = wordGen.getSentence(2)
-		def build = wordGen.word
-		def targetEnv = wordGen.getSentence(2)
-		Long testRunId = client.getTestRunId(projectName, null, milestone, build, targetEnv)
+	void testGetTestRunWithPropertiesAndLinks() {
+		TestRun run = new TestRun(projectName)
+		run.links << new Link("Code Coverage", "http://cobertura")
+		run.links << new Link("Info", "http://projectInfo")
+
+		run.testProperties << new TestProperty("Artist", "Da Vinci")
+		run.testProperties << new TestProperty("Musician", "Paul McCartney")
+
+		Long testRunId = client.createTestRun(run)
 		assertNotNull "No testRunId returned", testRunId
 
-		Map runInfo = client.getTestRunInfo(testRunId)
-		assertEquals projectName, runInfo.project
-		assertNotNull runInfo.dateExecuted
-		assertEquals milestone, runInfo.milestone
-		assertEquals build, runInfo.build
-		assertEquals targetEnv, runInfo.targetEnv
+		TestRun testRun = client.getTestRun(testRunId)
+		assertEquals projectKey, testRun.projectKey
+		assertNotNull testRun.dateExecuted
+		assertTrue "Valid", testRun.valid
+
+		assertNotNull testRun.links
+		assertEquals 2, testRun.links.size()
+
+		testRun.links.eachWithIndex { link, index ->
+			assertEquals run.links[index].description, link.description
+			assertEquals run.links[index].url, link.url
+		}
+
+		assertEquals 2, testRun.testProperties?.size()
+		testRun.testProperties.eachWithIndex { prop, index ->
+			assertEquals run.testProperties[index].name, prop.name
+			assertEquals run.testProperties[index].value, prop.value
+		}
 	}
 
 
-	/*  boolean submit(File file, Long testRunId)  */
+	void testCreateTestRun() {
+		def createdTestRun = new TestRun(projectKey)
+		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
+		createdTestRun.links << new Link("Info", "http://projectInfo")
+		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
+		createdTestRun.testProperties << new TestProperty("Musician", "Paul McCartney")
+
+		Long testRunId = client.createTestRun(createdTestRun)
+		assertNotNull "No testRunId returned", testRunId
+
+		TestRun testRun = client.getTestRun(testRunId)
+		assertEquals projectKey, testRun.projectKey
+		assertNotNull testRun.dateExecuted
+		assertTrue "Valid", testRun.valid
+
+		assertEquals 2, testRun.links?.size()
+		testRun.links.eachWithIndex {link, index ->
+			assertEquals createdTestRun.links[index].description, link.description
+			assertEquals createdTestRun.links[index].url, link.url
+		}
+
+		assertEquals 2, testRun.testProperties?.size()
+		testRun.testProperties.eachWithIndex {prop, index ->
+			assertEquals createdTestRun.testProperties[index].name, prop.name
+			assertEquals createdTestRun.testProperties[index].value, prop.value
+		}
+	}
+
+
 	void testSubmitSingleSuite() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "34")
@@ -155,7 +200,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 	
 	void testSubmitMultipleSuite() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submit(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "56")
@@ -166,7 +211,7 @@ class CuantoClientTest extends GroovyTestCase{
 
 
 	void testSubmitMultipleFiles() {
-		Long testRunId = client.getTestRunId(projectName, null, "test milestone", "test build", "test env")
+		Long testRunId = client.createTestRun(new TestRun(projectName))
 		def filesToSubmit = []
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
@@ -178,31 +223,75 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "62", stats.passed
 	}
 
-	
-	void testDefaultDateFormat() {
-		def expDate = "2008-03-05 20:55:00"
-		Long testRunId = client.getTestRunId(projectName, expDate, "test milestone", "test build", "test env")
-		def runInfo = client.getTestRunInfo(testRunId)
-		assertEquals "Wrong date", expDate, runInfo.dateExecuted
+
+	void testSubmitOneResult() {
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+
+		TestCase testCase = new TestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
+
+		TestOutcome outcome = new TestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Pass"
+
+		def outcomeId = client.submit(outcome, testRunId)
+		assertNotNull outcomeId
+
+		def stats = waitForTestRunStats(client, testRunId, "1")
+		assertNotNull stats
+		assertEquals "Wrong total tests", "1", stats?.tests
+		assertEquals "Wrong passed", "1", stats?.passed
+		assertEquals "Wrong failed", "0", stats?.failed
+	}
+
+	void testSubmitManyMultiThreaded() {
+		final int numSubmissions = 100
+		final int numThreads = 5
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		Long submitTime = 0
+		int idx = 0
+		def totalStart = new Date().time
+		while (idx < numSubmissions) {
+			def th = []
+			1.upto(numThreads){
+				th << Thread.start {
+					TestCase testCase = new TestCase()
+					testCase.packageName = "foo.bar.blah"
+					testCase.testName = wordGen.getSentence(3).replaceAll(" ", "")
+
+					TestOutcome outcome = new TestOutcome()
+					outcome.testCase = testCase
+					outcome.testResult = "Pass"
+
+					long start = System.currentTimeMillis();
+					client.submit(outcome, testRunId)
+					long duration = System.currentTimeMillis() - start;
+
+					synchronized(idx) {
+						submitTime += duration;
+						System.out.println(String.format("${idx + 1} done in %d ms - Total lapse: %d ms", duration, submitTime));
+						idx++
+					}
+				}
+			}
+			th.each { Thread it ->
+				it.join()
+			}
+		}
+		def totalEnd = new Date().time
+		println "total time is ${totalEnd - totalStart}"
 	}
 
 
-	void testDifferentDateFormat() {
-		CuantoClient altDateClient = new CuantoClient(dateFormat: "MM-dd-yyyy HH:mm:ss", cuantoUrl: serverUrl,
-			userId: testUser, password: testPassword)
-		def altFormattedDate = "03-05-2008 20:55:00"
-		Long testRunId = altDateClient.getTestRunId(projectName, altFormattedDate, "test milestone", "test build", "test env")
-		def runInfo = client.getTestRunInfo(testRunId)
-		assertEquals "Wrong date", "2008-03-05 20:55:00", runInfo.dateExecuted
-	}
-
-	
 	File getFile(String filename) {
 		def path = "grails/test/resources"
 		File myFile = new File("${path}/${filename}")
 		assertTrue "file not found: ${myFile.absoluteFile}", myFile.exists()
 		return myFile
 	}
+
 
 	Map waitForTestRunStats(CuantoClient client, Long testRunId, String totalTests) {
 		def secToWait = 30

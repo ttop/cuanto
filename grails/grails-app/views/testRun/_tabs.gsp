@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 --}%
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
 <div id="tabContainer" class="yui-skin-sam yui-navset">
 	<ul class="yui-nav">
@@ -47,10 +48,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<br/>
 					<a id="showSelectCol" class="selectCmd" alt="Show Select Column" href="#showSelect">Select</a>
 				    <span id="showSelectOptions" class="selectCmd">
-					    <a id="hideSelectCol" alt="Hide Select Column" href="#hideSelect">Hide Select</a> |
-					    <a id="selectPage" alt="Select Page" href="#selectPage">Select Page</a> |
-					    <a id="deselectPage" alt="Deselect Page" href="#deselectPage">Deselect Page</a> |
-					    <a id="deselectAll" alt="Deselect All" href="#selectNone">Deselect All</a> |
+					    <a id="hideSelectCol" alt="Hide Select Column" href="#hideSelect">Hide Select</a> ${bullet}
+					    <a id="selectPage" alt="Select Page" href="#selectPage">Select Page</a> ${bullet}
+					    <a id="deselectPage" alt="Deselect Page" href="#deselectPage">Deselect Page</a> ${bullet}
+					    <a id="deselectAll" alt="Deselect All" href="#selectNone">Deselect All</a> ${bullet}
 					    <span id="currentSelected" alt="Currently Selected">0 Tests Selected</span>
 				    </span>
 					<a id="chooseColumns" class="selectCmd" alt="Choose Columns" href="#chooseColumns">Choose Columns</a>

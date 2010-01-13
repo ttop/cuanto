@@ -59,11 +59,8 @@ class TestObjects {
 	}
 
 
-	
-	TestRun getTestRun(Project project, String milestone){
-		TestRun tr = new TestRun(project:project, milestone:milestone)
-		tr.build = rand.nextInt(80000).toString()
-		tr.targetEnv = "testcms01"
+	TestRun getTestRun(Project project){
+		TestRun tr = new TestRun(project:project)
 		tr.note = wordGen.getSentence(10)
 		tr.valid = true
 		tr.dateExecuted = new Date()
@@ -71,15 +68,15 @@ class TestObjects {
 	}
 
 	
-	TestRun getTestRun(String project, String milestone){
-		getTestRun(new Project(name:project, projectKey:wordGen.getCamelWords(1)), milestone)
+	TestRun getTestRun(String project){
+		getTestRun(new Project(name:project, projectKey:wordGen.getCamelWords(1)))
 	}
-
 
 
 	Project getProject() {
 		return new Project(name:wordGen.getWord(), projectKey: getProjectKey(), testType: TestType.findByName("JUnit"))
 	}
+
 
 	String getProjectKey(){
 		String ky = wordGen.getCamelWords(2)
@@ -94,6 +91,7 @@ class TestObjects {
 		return ky
 	}
 
+	
 	ProjectGroup getProjectGroup(groupName) {
 		return new ProjectGroup(name: groupName)
 	}
