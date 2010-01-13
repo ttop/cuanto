@@ -37,7 +37,10 @@ public class TestProperty implements Comparable {
 	public int compareTo(Object t) {
 		TestProperty otherProp = (TestProperty) t
 
-		def nameComp = this.name.compareTo(otherProp.name)
+		def nameComp = this.name.compareToIgnoreCase(otherProp.name)
+		if (nameComp == 0) {
+			nameComp = this.name.compareTo(otherProp.name)
+		}
 		if (nameComp == 0) {
 			return this.value.compareTo(otherProp.value)
 		} else {

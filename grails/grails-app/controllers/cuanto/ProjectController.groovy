@@ -285,7 +285,7 @@ class ProjectController {
 			}
 
 			def numAnalyzed;
-			if (stats?.failed > 0) {
+			if (stats && stats.failed > 0) {
 				numAnalyzed = "${stats?.analyzed} of ${stats?.failed}"
 			} else {
 				numAnalyzed = ""
@@ -293,7 +293,7 @@ class ProjectController {
 
 			return [projectName: testRun?.project?.name, projectKey: testRun?.project?.projectKey, id: testRun?.id,
 				dateExecuted: friendlyDate,
-				testProperties: testRun.getJsonTestProperties(),
+				testProperties: testRun?.getJsonTestProperties(),
 				dateCreated: testRun?.dateCreated, note: testRun?.note,
 				valid: testRun?.valid, successRate: stats?.successRate ? stats?.successRate : 0,
 				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,

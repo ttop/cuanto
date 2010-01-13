@@ -265,6 +265,11 @@ label.wideLabel {
 	margin-right: 10px;
 }
 
+label.narrowLabel {
+	width: 120px;
+	margin-right: 10px;
+}
+
 .formHeader {
 	margin-left: 10px;
 }
@@ -301,4 +306,25 @@ form label.dialogLabel {
 
 .cuanto tbody tr td {
 	padding: 0 5px;
+}
+
+#testRunForm {
+	margin-top:20px;
+}
+
+#trEditBody {
+	width: 750px;
+}
+
+.newProp {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.newPropValue {
+	margin-left:10px;
+	margin-right:10px;
+	clear:none;
+	display: inline;
+	float:none;
 }

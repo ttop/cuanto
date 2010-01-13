@@ -371,38 +371,50 @@ class TestRunService {
 
 
 	def update(TestRun testRun, Map params) {
-		testRun.properties = params
+		testRun.note = params.note
+
 		if (!params.valid) {
 			testRun.valid = false;
 		}
-		if (params.userDateExecuted) {
-			try {
-				SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-				Date candidate = formatter.parse(params.userDateExecuted)
-				// only update the dateExecuted this if it's changed by more than a second
-				if (Math.abs(candidate.time - testRun.dateExecuted.time) > 1000) {
-					testRun.dateExecuted = candidate
+
+		List<TestProperty> propsToUpdate = []
+		params.each {paramName, paramValue ->
+			def existingPropertyMatcher = (paramName =~ /^prop\[(\d+)]/)
+			if (existingPropertyMatcher.matches()) {
+				def propIndex = existingPropertyMatcher[0][1] as Integer
+				def propId = params["propId[${propIndex}]"] as Integer
+				if (propId) {
+					TestProperty existingProp = TestProperty.get(propId)
+					if (existingProp.value != paramValue) {
+						existingProp.value = paramValue
+						dataService.saveDomainObject existingProp
+					}
 				}
-			} catch (java.text.ParseException e) {
-				testRun.errors.reject('date.not.parseable.message', [params.userDateExecuted, Defaults.dateFormat] as Object[],
-					"${params.userDateExecuted} is not a parsable date matching the format ${Defaults.dateFormat}")
+			}
+			else {
+				def newPropertyMatcher = (paramName =~ /^newPropName\[(\d+)]/)
+				if (newPropertyMatcher.matches()) {
+					def propIndex = newPropertyMatcher[0][1] as Integer
+					def propValue = params["newPropValue[${propIndex}]"]
+					if (propValue) {
+						def testProperty = new TestProperty(paramValue.trim(), propValue.trim())
+						testRun.addToTestProperties(testProperty)
+					}
+				}
 			}
 		}
 
-		if (!testRun.errors && dataService.saveTestRun(testRun)) {
-			reportError(testRun)
-		}
+		dataService.saveDomainObject testRun
 		return testRun
 	}
 
 	
 	def updateNote(testRun, note) {
 		testRun.note = note
-		if (!testRun.errors && dataService.saveTestRun(testRun)) {
-			reportError(testRun)
-		}
+		dataService.saveDomainObject(testRun) 
 		return testRun
 	}
+
 
 	void reportError(domainObj) {
 		def errMsg = ""
@@ -454,6 +466,7 @@ class TestRunService {
 			testRun.valid = Boolean.valueOf(params.valid)
 		}
 
+		// TODO: consolidate dateExecuted and userDateExecuted handling
 		if (params.dateExecuted) {
 			Date dateExecuted
 			String dateFormat
@@ -469,6 +482,20 @@ class TestRunService {
 		}
 		else {
 			testRun.dateExecuted = new Date()
+		}
+
+		if (params.userDateExecuted) {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
+				Date candidate = formatter.parse(params.userDateExecuted)
+				// only update the dateExecuted this if it's changed by more than a second
+				if (Math.abs(candidate.time - testRun.dateExecuted.time) > 1000) {
+					testRun.dateExecuted = candidate
+				}
+			} catch (java.text.ParseException e) {
+				testRun.errors.reject('date.not.parseable.message', [params.userDateExecuted, Defaults.dateFormat] as Object[],
+					"${params.userDateExecuted} is not a parsable date matching the format ${Defaults.dateFormat}")
+			}
 		}
 
 		parseLinksFromParams(params).each {

@@ -26,14 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
 	<span class="smaller">
 		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
-			<a id="editTestRun" href="#editTestRun">Edit</a></span> ${bullet}
+			<g:link action="edit" id="${testRun.id}">Edit</g:link>
+		</span> ${bullet}
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
 	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span>
+	<br/>
 	<span id="trhTestProps">
-		<g:if test="${testRun?.testProperties}"> ${bullet}
+		<g:if test="${testRun?.testProperties}">
 			<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
 				<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
 				<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
@@ -42,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</span>
 	<br/>
 
-	<g:if test="${testRun?.links}"><span class="heading">Links:</span>
+	<g:if test="${testRun?.links}">
 		<g:each in="${testRun?.links}" var="link" status="idx">
 			<a href="${link.url}">${link.description}</a>
 			<g:if test="${idx < testRun.links.size() - 1}"> &bull; </g:if>

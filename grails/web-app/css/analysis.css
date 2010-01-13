@@ -157,3 +157,12 @@
 	white-space: nowrap;
 }
 
+.dialogHeading {
+	font-weight:bold;
+	margin-top:8px;
+	margin-bottom:8px;
+}
+
+.deleteLink {
+	margin-left: 10px;
+}

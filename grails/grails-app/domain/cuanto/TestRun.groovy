@@ -96,9 +96,7 @@ class TestRun {
 			jsonLinks << [description: it.description, url: it.url]
 		}
 		jsonMap.links = jsonLinks
-
-		List jsonProps = getJsonTestProperties()
-		jsonMap.properties = jsonProps
+		jsonMap.testProperties = getJsonTestProperties()
 
 		return jsonMap
 	}
