@@ -33,6 +33,8 @@
 			<property name="milestone" value="1.0"/>
 			<property name="build" value="235035"/>
 			<property name="targetEnv" value="test lab"/>
+			<link description="Test Link 1" url="http://testlink1"/>
+			<link description="Test Link 2" url="http://testlink2"/>
 		</cuanto>
 
 	</target>
