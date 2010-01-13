@@ -35,7 +35,7 @@ class TestRunController {
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
-		submitFile: 'POST', createXml:'POST', deleteProperty: 'POST']
+		submitFile: 'POST', createXml:'POST', deleteProperty: 'POST', deleteLink: 'POST']
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
@@ -66,6 +66,20 @@ class TestRunController {
 		} else {
 			response.setStatus(response.SC_NOT_FOUND)
 			render "TestProperty ID ${params?.id} or Test Run ID ${params?.testRun} not found"
+		}
+	}
+
+	def deleteLink = {
+		def linkToDelete = Link.get(params.id)
+		def testRun = TestRun.get(params.testRun)
+
+		if (linkToDelete && testRun) {
+			testRun.removeFromLinks(linkToDelete)
+			dataService.saveDomainObject testRun
+			render "OK"
+		} else {
+			response.setStatus(response.SC_NOT_FOUND)
+			render "Link ID ${params?.id} or Test Run ID ${params?.testRun} not found"
 		}
 	}
 

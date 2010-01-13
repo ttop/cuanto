@@ -372,13 +372,59 @@ class TestRunService {
 
 	def update(TestRun testRun, Map params) {
 		testRun.note = params.note
-
 		if (!params.valid) {
 			testRun.valid = false;
 		}
 
-		List<TestProperty> propsToUpdate = []
-		params.each {paramName, paramValue ->
+		processTestPropertiesFromParameters(params, testRun)
+		processLinksFromParameters(params, testRun)
+
+		dataService.saveDomainObject testRun
+		return testRun
+	}
+
+
+	Map processLinksFromParameters(Map params, TestRun testRun) {
+		return params.each {String paramName, String paramValue ->
+			// is this parameter an existing Link?
+			def existingLinkMatcher = (paramName =~ /^linkId\[(\d+)]/)
+			if (existingLinkMatcher.matches()) {
+				def linkIndex = existingLinkMatcher[0][1] as Integer
+				def linkId = params["linkId[${linkIndex}]"] as Integer
+				if (linkId) {
+					Link existingLink = Link.get(linkId)
+					def descr = params["linkDescr[${linkIndex}]"] as String
+					def url = params["linkUrl[${linkIndex}]"] as String
+					if (existingLink.description != descr || existingLink.url != url) {
+						existingLink.description = descr
+						existingLink.url = url
+						dataService.saveDomainObject existingLink
+					}
+				}
+			} else {
+				// is this parameter a new Link?
+				def newLinkMatcher = (paramName =~ /^newLinkDescr\[(\d+)]/)
+				if (newLinkMatcher.matches()) {
+					def linkIndex = newLinkMatcher[0][1] as Integer
+					def linkUrl = params["newLinkUrl[${linkIndex}]"] as String
+					linkUrl = linkUrl?.trim()
+					if (linkUrl) {
+						def descr = paramValue.trim()
+						if (!descr) {
+							descr = linkUrl
+						}
+						def link = new Link(descr, linkUrl)
+						testRun.addToLinks(link)
+					}
+				}
+			}
+		}
+	}
+
+
+	Map processTestPropertiesFromParameters(Map params, TestRun testRun) {
+		return params.each {String paramName, String paramValue ->
+			// is this parameter an existing TestProperty?
 			def existingPropertyMatcher = (paramName =~ /^prop\[(\d+)]/)
 			if (existingPropertyMatcher.matches()) {
 				def propIndex = existingPropertyMatcher[0][1] as Integer
@@ -390,12 +436,12 @@ class TestRunService {
 						dataService.saveDomainObject existingProp
 					}
 				}
-			}
-			else {
+			} else {
+				// is this parameter a new TestProperty?
 				def newPropertyMatcher = (paramName =~ /^newPropName\[(\d+)]/)
 				if (newPropertyMatcher.matches()) {
 					def propIndex = newPropertyMatcher[0][1] as Integer
-					def propValue = params["newPropValue[${propIndex}]"]
+					def propValue = params["newPropValue[${propIndex}]"] as String
 					if (propValue) {
 						def testProperty = new TestProperty(paramValue.trim(), propValue.trim())
 						testRun.addToTestProperties(testProperty)
@@ -403,12 +449,9 @@ class TestRunService {
 				}
 			}
 		}
-
-		dataService.saveDomainObject testRun
-		return testRun
 	}
 
-	
+
 	def updateNote(testRun, note) {
 		testRun.note = note
 		dataService.saveDomainObject(testRun) 

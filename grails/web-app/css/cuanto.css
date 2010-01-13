@@ -321,7 +321,7 @@ form label.dialogLabel {
 	margin-bottom: 20px;
 }
 
-.newPropValue {
+.nonClearLabel {
 	margin-left:10px;
 	margin-right:10px;
 	clear:none;

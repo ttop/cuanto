@@ -66,14 +66,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<span id="newProps"></span>
 					<a id="addProperty" href="#addProperty">Add Property</a>
 					<div class="clear"></div>
+					<br/><br/>
 
-				<!--	<span class="headone">Links:</span><br/><br/>
+
+					<span class="headone">Links:</span><br/><br/>
 					<g:each var="link" in="${testRun?.links}" status="i">
-						<span class="link">
-							<label class="narrowLabel">${link.description}</label>
-							<g:hiddenField class="linkDescr" name="linkDescr[${i}]" value="${link.description}"/>
-						</span>
-					</g:each>-->
+						<div class="link">
+							<g:hiddenField class="linkId" name="linkId[${i}]" value="${link.id}"/>
+							<label class="narrowLabel">Link description: </label>
+							<g:textField name="linkDescr[${i}]" class="linkDescr" value="${link.description}"/>
+							<label class="nonClearLabel">URL: </label>
+							<g:textField name="linkUrl[${i}]" class="linkUrl" value="${link.url}"/>
+							<a class="deleteLink" href="#deleteLink">Delete</a>
+						</div>
+					</g:each>
+					<span id="newLinks"></span>
+					<a id="addLink" href="#addLink">Add Link</a>
+					<div class="clear"></div>
+					<br/><br/>
 
 					<input id="submitBtn" type="submit" name="submit" value="Save"/>
 				</g:form>
