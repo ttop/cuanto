@@ -62,7 +62,7 @@ class CuantoClient {
 
 
 	public Long createProject(String fullName, String projectKey, String testType) {
-		def post = new PostMethod("${cuantoUrl}/project/create")
+		def post = getMethod("post", "${cuantoUrl}/project/create")
 		post.addParameter "name", fullName
 		post.addParameter "projectKey", projectKey
 		post.addParameter "testType", testType
@@ -94,7 +94,7 @@ class CuantoClient {
 
 
 	public void deleteProject(Long id) {
-		def post = new PostMethod("${cuantoUrl}/project/delete")
+		def post = getMethod("post", "${cuantoUrl}/project/delete")
 		post.addParameter "id", id.toString()
 		post.addParameter "client", ""
 
@@ -124,7 +124,7 @@ class CuantoClient {
 
 
 	public TestRun getTestRun(Long testRunId) {
-		def get = new GetMethod("${cuantoUrl}/testRun/get/${testRunId.toString()}")
+		def get = getMethod("get", "${cuantoUrl}/testRun/get/${testRunId.toString()}")
 		get.addRequestHeader "Accept", "application/xml"
 
 		def responseCode
@@ -146,8 +146,7 @@ class CuantoClient {
 		if (!testRun.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
-
-		def post = new PostMethod("${cuantoUrl}/testRun/createXml")
+		def post = getMethod("post", "${cuantoUrl}/testRun/createXml")
 		XStream xstream = new XStream();
 		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
 		post.requestEntity = request
@@ -171,7 +170,7 @@ class CuantoClient {
 
 	public TestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
-		def get = new GetMethod(url)
+		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
 
 		def responseCode
@@ -200,7 +199,7 @@ class CuantoClient {
 
 	public void submit(List<File> files, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
-		PostMethod post = new PostMethod(fullUri)
+		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
 
 		def parts = []
@@ -226,7 +225,7 @@ class CuantoClient {
 
 	public Long submit(TestOutcome testOutcome, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
-		PostMethod post = new PostMethod(fullUri)
+		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
 
 		XStream xstream = new XStream()
@@ -256,7 +255,7 @@ class CuantoClient {
 
 
 	private Map getValueMap(url) {
-		def get = new GetMethod(url)
+		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/plain"
 
 		def responseCode
@@ -290,5 +289,19 @@ class CuantoClient {
 			httpClient.hostConfiguration.setProxy proxyHost, proxyPort
 		}
 		return httpClient
+	}
+
+
+	private getMethod(methodType, url) {
+		def method
+		if (methodType.toLowerCase() == "get") {
+			method = new GetMethod(url)
+		} else if (methodType.toLowerCase() == "post") {
+			method = new PostMethod(url)
+		} else {
+			throw new CuantoClientException("Unknown HTTP method: ${methodType}")
+		}
+		return method
+
 	}
   }
