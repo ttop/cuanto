@@ -38,6 +38,7 @@ import cuanto.api.TestOutcome
 import cuanto.api.TestRun
 import cuanto.api.TestRun
 import cuanto.api.CuantoClientException
+import org.apache.commons.httpclient.HttpMethod
 
 /**
  * User: Todd Wells
@@ -45,7 +46,7 @@ import cuanto.api.CuantoClientException
  * Time: 5:58:07 PM
  *
  */
-class CuantoClient {
+class CuantoClient implements ICuantoClient {
 
 	String cuantoUrl
 	String proxyHost
@@ -62,32 +63,31 @@ class CuantoClient {
 
 
 	public Long createProject(String fullName, String projectKey, String testType) {
-		def post = getMethod("post", "${cuantoUrl}/project/create")
-		post.addParameter "name", fullName
-		post.addParameter "projectKey", projectKey
-		post.addParameter "testType", testType
+		return createProject(new Project(name:fullName, 'projectKey': projectKey, 'testType': testType))
+	}
 
-		def responseCode
-		def responseText
+
+	public Long createProject(Project project) {
+		if (!project.projectKey) {
+			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
+		}
+		PostMethod post = getMethod("post", "${cuantoUrl}/project/create") as PostMethod
+		XStream xstream = new XStream();
+		String xmlProj = xstream.toXML(project)
+		post.requestEntity = new StringRequestEntity(xmlProj, "text/xml", null)
+		def projectId = null
 		try {
-			responseCode = httpClient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().text
+			def responseCode = httpClient.executeMethod(post)
+			def responseText = post.getResponseBodyAsStream().text.trim()
+			if (responseCode == 200) {
+				projectId = Long.valueOf(responseText)
+			} else if (responseCode == 403) {
+				throw new IllegalArgumentException(responseText)
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
 		} finally {
 			post.releaseConnection()
-		}
-
-		def projectId
-		if (responseCode == 200) {
-			try {
-				projectId = Long.valueOf(responseText)
-			} catch (NumberFormatException e) {
-			    throw new CuantoClientException("Couldn't parse project ID response: ${responseText}")
-			}
-		} else if (responseCode == 500) {
-			throw new CuantoClientException(responseText)
-		}
-		else {
-			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return projectId
 	}
@@ -113,11 +113,29 @@ class CuantoClient {
 	}
 
 
-	public Map getProject(Long projectId) {
-		return getValueMap("${cuantoUrl}/project/get/${projectId.toString()}")
+	public Project getProject(Long projectId) {
+		def get = getMethod("get", "${cuantoUrl}/project/get/${projectId}")
+		get.addRequestHeader "Accept", "application/xml"
+
+		def responseCode
+		String responseText
+		Project project
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == 200) {
+				XStream xstream = new XStream()
+				project = xstream.fromXML(responseText) as Project
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return project
 	}
 
-
+	
 	public Map getTestRunInfo(Long testRunId) {
 		return getValueMap("${cuantoUrl}/testRun/get/${testRunId.toString()}")
 	}
@@ -292,7 +310,7 @@ class CuantoClient {
 	}
 
 
-	private getMethod(methodType, url) {
+	private HttpMethod getMethod(methodType, url) {
 		def method
 		if (methodType.toLowerCase() == "get") {
 			method = new GetMethod(url)
@@ -304,4 +322,15 @@ class CuantoClient {
 		return method
 
 	}
-  }
+
+
+
+	public Long submit(TestOutcome testOutcome) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+
+	public Long update(TestOutcome testOutcome) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+}

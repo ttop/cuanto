@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
+import cuanto.api.Project as ParsableProject
+
 import cuanto.CuantoException
 import cuanto.Project
 import cuanto.TestCase
@@ -81,26 +83,64 @@ class ProjectService {
 	}
 	
 
-	def createProject(params) {
-		def project = new Project()
-		Project.withTransaction {status ->
-			project.bugUrlPattern = params?.bugUrlPattern
-			project.projectGroup = getProjectGroupByName(params?.group)
-			project.name = params?.name
-			project.projectKey = params?.projectKey
-			project.testType = dataService.getTestType(params?.testType)
+	def createProject(Map params) {
+		def parsedProject = new ParsableProject()
+		parsedProject.bugUrlPattern = params?.bugUrlPattern
+		parsedProject.projectGroup = getProjectGroupByName(params?.group)
+		parsedProject.name = params?.name
+		parsedProject.projectKey = params?.projectKey
+		parsedProject.testType = params?.testType
+		return createProject(parsedProject)
+	}
 
-			if (project.validate()) {
-				dataService.saveDomainObject(project)
+
+	def createProject(ParsableProject project) {
+		def newProj = new Project()
+		Project.withTransaction { status ->
+			newProj.bugUrlPattern = project?.bugUrlPattern
+			newProj.projectGroup = getProjectGroupByName(project?.projectGroup)
+			newProj.name = project?.name
+			newProj.projectKey = project?.projectKey
+			newProj.testType = dataService.getTestType(project?.testType)
+
+			if (newProj.validate()) {
+				dataService.saveDomainObject(newProj)
 			} else {
 				status.setRollbackOnly() // rollback any potential group creation if anything failed validation
 				def err = ""
-				project.errors.allErrors.each {
+				newProj.errors.allErrors.each {
 					err += "${it}\n"
 				}
 				throw new CuantoException(err)
 			}
 		}
+		return newProj
+	}
+
+	
+	def updateProject(params) {
+		def project = Project.get(params.project)     // todo: refactor with new grails 1.1 validation?
+		if (params.group) {
+			project.projectGroup = getProjectGroupByName(params.group)
+		}
+
+		if (params.bugUrlPattern) {
+			project.bugUrlPattern = params.bugUrlPattern
+		}
+
+		if (params.name) {
+			project.name = params.name
+		}
+
+		if (params.projectKey) {
+			project.projectKey = params.projectKey
+		}
+
+		if (params.testType) {
+			project.testType = dataService.getTestType(params.testType)
+		}
+
+		dataService.saveDomainObject(project)
 		return project
 	}
 
@@ -137,6 +177,7 @@ class ProjectService {
 		}
 		return tc
 	}
+
 
 	def getAllGroupNames() {
 		def groupNames = dataService.getAllGroups().collect { grp ->

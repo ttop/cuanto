@@ -24,12 +24,6 @@ import java.math.BigDecimal
 import cuanto.api.TestCase
 import cuanto.api.TestCase
 
-/**
- * User: Todd Wells
- * Date: May 13, 2008
- * Time: 9:15:31 PM
- *
- */
 class TestOutcome {
 	TestCase testCase
 	String testResult
@@ -38,4 +32,5 @@ class TestOutcome {
     String owner
     String bug
     String note
+	Long id
 }

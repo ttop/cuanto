@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,27 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
 package cuanto.api
 
-import cuanto.api.Link
-import cuanto.api.TestProperty
-
-
-class TestRun {
+public class Project {
+	String name
+	String projectGroup
 	String projectKey
-	String note
-	String dateCreated // todo: remove?
-	Date dateExecuted
-	Boolean valid
-	List<Link> links = []
-	List<TestProperty> testProperties = []
+	String bugUrlPattern
+	String testType
 	Long id
-
-
-	TestRun() {}
-
-	TestRun(String projectKey) {
-		this.projectKey = projectKey
-	}
 }

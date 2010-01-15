@@ -22,6 +22,7 @@ package cuanto
 
 import cuanto.ProjectGroup
 import cuanto.TestType
+import cuanto.api.Project as ParsableProject
 
 class Project implements Comparable {
 	String name
@@ -144,5 +145,16 @@ class Project implements Comparable {
 		json.bugUrlPattern = this.bugUrlPattern
 		json.testType = this.testType?.toJSONMap()
 		return json
+	}
+
+
+	ParsableProject toParsableProject() {
+		def parsable = new ParsableProject()
+		parsable.name = this.name
+		parsable.projectGroup = this.projectGroup?.name
+		parsable.projectKey = this.projectKey
+		parsable.bugUrlPattern = this.bugUrlPattern
+		parsable.testType = this.testType?.name
+		return parsable
 	}
 }

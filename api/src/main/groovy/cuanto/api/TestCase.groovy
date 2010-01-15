@@ -33,7 +33,7 @@ class TestCase implements Comparable {
 	String fullName
 	String parameters
 	String description
-
+	Long id
 
 	boolean equals(o) {
 		if (this.is(o)) return true;

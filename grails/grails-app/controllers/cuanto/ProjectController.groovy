@@ -28,6 +28,8 @@ import cuanto.ProjectGroup
 import cuanto.TestRun
 import grails.converters.JSON
 import java.text.SimpleDateFormat
+import cuanto.api.Project as ParsableProject
+import com.thoughtworks.xstream.XStream
 
 class ProjectController {
 	def projectService
@@ -51,11 +53,12 @@ class ProjectController {
 
 
 	def create = {
-		def project
+		XStream xstream = new XStream()
+		def project = (ParsableProject) xstream.fromXML(request.inputStream)
 		def responseText
 		try {
-			project = projectService.createProject(params)
-			responseText = project?.id.toString()
+			def parsedProject = projectService.createProject(project)
+			responseText = parsedProject?.id?.toString()
 		} catch (CuantoException e) {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
 			responseText = e.message
@@ -67,28 +70,7 @@ class ProjectController {
 	def save = {
 		def project
 		if (params.project) {
-			project = Project.get(params.project)     // todo: refactor with new grails 1.1 validation?
-			if (params.group) {
-				project.projectGroup = projectService.getProjectGroupByName(params.group)
-			}
-
-			if (params.bugUrlPattern) {
-				project.bugUrlPattern = params.bugUrlPattern
-			}
-
-			if (params.name) {
-				project.name = params.name
-			}
-
-			if (params.projectKey) {
-				project.projectKey = params.projectKey
-			}
-
-			if (params.testType) {
-				project.testType = dataService.getTestType(params.testType)
-			}
-
-			dataService.saveDomainObject(project)
+			project = projectService.updateProject(params)
 		} else {
 			project = projectService.createProject(params)
 		}
@@ -175,13 +157,22 @@ class ProjectController {
 
 	def get = {
 		def proj = Project.get(params.id)
-		withFormat {
-			text {
-			  ['project':proj]
+		if (proj) {
+			withFormat {
+				text {
+				  ['project':proj]
+				}
+				json {
+					render proj.toJSONMap() as JSON
+				}
+				xml {
+					def xstream = new XStream()
+					render xstream.toXML(proj?.toParsableProject())
+				}
 			}
-			json {
-				render proj.toJSONMap() as JSON
-			}
+		} else {
+			response.status = response.SC_NOT_FOUND
+			render "Project ${params.id} not found"
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,27 +18,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
 package cuanto.api
 
-import cuanto.api.Link
-import cuanto.api.TestProperty
+public interface ICuantoClient {
 
+	String cuantoUrl
+	String proxyHost
+	Integer proxyPort
 
-class TestRun {
-	String projectKey
-	String note
-	String dateCreated // todo: remove?
-	Date dateExecuted
-	Boolean valid
-	List<Link> links = []
-	List<TestProperty> testProperties = []
-	Long id
+	public Long createProject(Project project)
 
+	public void deleteProject(Long id)
 
-	TestRun() {}
+	public Project getProject(Long projectId)
 
-	TestRun(String projectKey) {
-		this.projectKey = projectKey
-	}
+	public TestRun getTestRun(Long testRunId)
+
+	public Long createTestRun(TestRun testRun)
+
+	public TestOutcome getTestOutcome(Long testOutcomeId)
+
+	public void submit(File file, Long testRunId)
+
+	public void submit(List<File> files, Long testRunId)
+
+	public Long submit(TestOutcome testOutcome, Long testRunId)
+
+	public Long submit(TestOutcome testOutcome)
+
+	public Long update(TestOutcome testOutcome)
 }

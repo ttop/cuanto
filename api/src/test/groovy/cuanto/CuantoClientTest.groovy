@@ -1,18 +1,7 @@
 package cuanto
 
-import cuanto.api.CuantoClient
 import cuanto.WordGenerator
-import groovy.mock.interceptor.StubFor
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.methods.PostMethod
-import cuanto.api.Link
-import cuanto.api.TestProperty
-import cuanto.api.TestRun
-import cuanto.api.TestRun
-import cuanto.api.CuantoClient
-import cuanto.api.CuantoClientException
-import cuanto.api.TestCase
-import cuanto.api.TestOutcome
+import cuanto.api.*
 
 /**
  * User: Todd Wells
@@ -51,38 +40,30 @@ class CuantoClientTest extends GroovyTestCase{
 		def localName = wordGen.getSentence(3)
 		def projKey = wordGen.getSentence(2).replaceAll("\\s+", "")
 		def localProjectId = client.createProject(localName, projKey, "JUnit")
-		def projectInfo = client.getProject(localProjectId)
-		assertEquals "wrong project name", localName, projectInfo.name
-		assertEquals "wrong project key", projKey, projectInfo.key
+		def project = client.getProject(localProjectId)
+		assertEquals "wrong project name", localName, project.name
+		assertEquals "wrong project key", projKey, project.projectKey
 		client.deleteProject(localProjectId)
-		projectInfo = client.getProject(localProjectId)
-		assertNull projectInfo.id
+		shouldFail(CuantoClientException) {
+			project = client.getProject(localProjectId)
+		}
 	}
 
 
-	void testCreateAndDeleteProjectStubbed() {
+	void testCreateAndDeleteProjectTwo() {
 		def localName = wordGen.getSentence(3)
-		def projKey = wordGen.getSentence(3).replaceAll("\\s+", "")
-		def fakedId = 12345
+		def projKey = wordGen.getSentence(2).replaceAll("\\s+", "")
+		def proj = new Project(name:localName, projectKey: projKey, testType: "JUnit")
+		def localProjectId = client.createProject(proj)
+		def fetchedProject = client.getProject(localProjectId)
+		assertEquals "wrong project name", localName, fetchedProject.name
+		assertEquals "wrong project key", projKey, fetchedProject.projectKey
+		client.deleteProject(localProjectId)
 
-		def stubHttpClient = new StubFor(HttpClient)
-		stubHttpClient.demand.executeMethod { 200 }
-
-		def stubPost = new StubFor(PostMethod)
-		stubPost.demand.addParameter(3..3) { name, value ->	}
-		stubPost.demand.releaseConnection { }
-		stubPost.demand.getResponseBodyAsStream {
-			def exp = new Expando()
-			exp.text = fakedId.toString()
-			return exp
+		def msg = shouldFail(CuantoClientException) {
+			fetchedProject = client.getProject(localProjectId)
 		}
-
-		stubHttpClient.use {
-			stubPost.use {
-				def localProjectId = client.createProject(localName, projKey, "JUnit")
-				assertEquals "Wrong id", fakedId, localProjectId
-			}
-		}
+		assertTrue msg.contains("Project ${localProjectId} not found")
 	}
 
 
