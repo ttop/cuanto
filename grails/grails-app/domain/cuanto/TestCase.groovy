@@ -61,6 +61,7 @@ class TestCase implements Comparable{
 		tc.project = this.project.toString()
 		tc.description = this.description
 		tc.fullName = this.fullName
+		tc.id = this.id
 		return tc
 	}
 }

@@ -73,8 +73,13 @@ class ParsingService {
 
 
 	TestOutcome parseTestOutcome(inputStream, testRunId, projectId = null) {
-		def testRun = dataService.getTestRun(testRunId)
-		def project
+		def testRun = null
+		def project = null
+
+		if (testRunId) {
+			testRun = dataService.getTestRun(testRunId)
+		}
+
 		if (testRun) {
 			project = testRun.project
 		} else if (projectId) {
@@ -124,7 +129,7 @@ class ParsingService {
 		testOutcome.owner = parsableTestOutcome.owner
 		testOutcome.note = parsableTestOutcome.note
 		testOutcome.testRun = testRun
-		processTestFailure(testOutcome, testRun.project)
+		processTestFailure(testOutcome, project)
 		return testOutcome
 	}
 

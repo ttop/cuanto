@@ -21,24 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.HttpMethod
+import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
+import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
-import com.thoughtworks.xstream.XStream
-import org.apache.commons.httpclient.methods.StringRequestEntity
-import org.apache.commons.httpclient.HttpStatus
-import java.text.SimpleDateFormat
-import cuanto.api.Link
-import cuanto.api.TestProperty
-import cuanto.api.TestOutcome
-import cuanto.api.TestOutcome
-import cuanto.api.TestRun
-import cuanto.api.TestRun
-import cuanto.api.CuantoClientException
-import org.apache.commons.httpclient.HttpMethod
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import cuanto.api.*
 
 /**
  * User: Todd Wells
@@ -241,10 +235,15 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public Long submit(TestOutcome testOutcome, Long testRunId) {
+	public Long submit(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
-		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+		if (testRunId) {
+			post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+		}
+		if (projectId) {
+			post.addRequestHeader "Cuanto-Project-Id", projectId.toString()
+		}
 
 		XStream xstream = new XStream()
 		def outcomeXml = xstream.toXML(testOutcome)
@@ -257,16 +256,20 @@ class CuantoClient implements ICuantoClient {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
 			responseText = post.getResponseBodyAsStream().text
-			testOutcomeId = Long.valueOf(responseText)
 		} finally {
 			post.releaseConnection()
 		}
-		if (responseCode != 200) {
-			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+
+		if (responseCode == 200) {
+			testOutcomeId = Long.valueOf(responseText)
+		} else {
+			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 		}
 		return testOutcomeId 
 	}
 
+
+	// TODO: make testRunStats object in API
 	Map getTestRunStats(Long testRunId){
 		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}")
 	}
@@ -325,12 +328,20 @@ class CuantoClient implements ICuantoClient {
 
 
 
-	public Long submit(TestOutcome testOutcome) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
+		submit(testOutcome, null, projectId)
 	}
 
+	public Long submitTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
+		submit(testOutcome, testRunId)
+	}
+
+	
 
 	public Long update(TestOutcome testOutcome) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		throw new NotImplementedException()
 	}
+
+
+
 }

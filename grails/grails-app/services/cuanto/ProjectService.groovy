@@ -60,14 +60,14 @@ class ProjectService {
 
 
 	void deleteProject(Project project) {
-		def testRuns = dataService.getTestRunsByProject(project)
-
-		testRuns.each { testRun ->
-			dataService.deleteOutcomesForTestRun(testRun)
-			dataService.deleteTestRun(testRun)
+		Project.withTransaction {
+			def testRuns = dataService.getTestRunsByProject(project)
+			dataService.deleteTestCasesForProject(project)
+			testRuns.each { testRun ->
+				dataService.deleteTestRun(testRun)
+			}
+			dataService.deleteProject(project)
 		}
-        dataService.deleteTestCasesForProject(project)
-		dataService.deleteProject(project)
 	}
 
 

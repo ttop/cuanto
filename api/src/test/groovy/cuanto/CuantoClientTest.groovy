@@ -198,7 +198,7 @@ class CuantoClientTest extends GroovyTestCase{
 	}
 
 
-	void testSubmitOneResult() {
+	void testSubmitOneOutcomeWithTestRun() {
 		def testRunId = client.createTestRun(new TestRun(projectKey))
 
 		TestCase testCase = new TestCase()
@@ -209,7 +209,7 @@ class CuantoClientTest extends GroovyTestCase{
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 
-		def outcomeId = client.submit(outcome, testRunId)
+		def outcomeId = client.submitTestOutcomeForTestRun(outcome, testRunId)
 		assertNotNull outcomeId
 
 		def stats = waitForTestRunStats(client, testRunId, "1")
@@ -218,6 +218,27 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "Wrong passed", "1", stats?.passed
 		assertEquals "Wrong failed", "0", stats?.failed
 	}
+
+
+	void testSubmitOneOutcomeWithoutTestRun() {
+		TestCase testCase = new TestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
+		testCase.fullName = testCase.packageName + "." + testCase.testName
+
+		TestOutcome outcome = new TestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Pass"
+
+		def outcomeId = client.submitTestOutcomeForProject(outcome, projectId)
+		assertNotNull outcomeId
+
+		def fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertEquals outcome.testCase.packageName, fetchedOutcome.testCase.packageName
+		assertEquals outcome.testCase.testName, fetchedOutcome.testCase.testName
+		assertEquals outcome.testResult, fetchedOutcome.testResult
+	}
+
 
 	void testSubmitManyMultiThreaded() {
 		final int numSubmissions = 100
@@ -240,7 +261,7 @@ class CuantoClientTest extends GroovyTestCase{
 					outcome.testResult = "Pass"
 
 					long start = System.currentTimeMillis();
-					client.submit(outcome, testRunId)
+					client.submitTestOutcomeForTestRun(outcome, testRunId)
 					long duration = System.currentTimeMillis() - start;
 
 					synchronized(idx) {

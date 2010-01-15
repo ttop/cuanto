@@ -46,7 +46,11 @@ if (cuantoVersion.toString() != pomXml.version.toString()) {
 target(cuantoapi: "Build the Cuanto API") {
 	println "Packaging the Cuanto API"
 
-	"mvn -f ${apiDir}/pom.xml clean package".execute().text
+	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()
+	packageProcess.waitFor()
+	if (packageProcess.exitValue() != 0) {
+		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
+	}
 	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
 	ant.delete(verbose: "true", failonerror: "true") {
@@ -54,7 +58,6 @@ target(cuantoapi: "Build the Cuanto API") {
 	}
 	
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	//def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
 	ant.copy(file: distClientJar, todir: "lib", verbose: "true")
 	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
 	ant.copy(todir: targetApiDir, verbose: "true") {

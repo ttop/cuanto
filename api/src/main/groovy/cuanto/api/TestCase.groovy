@@ -20,12 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
-/**
- * User: Todd Wells
- * Date: May 13, 2008
- * Time: 9:49:54 PM
- *
- */
 class TestCase implements Comparable {
 	String project
 	String packageName 
@@ -48,6 +42,7 @@ class TestCase implements Comparable {
 		if (parameters ? !parameters.equals(that.parameters) : that.parameters != null) return false;
 		if (project ? !project.equals(that.project) : that.project != null) return false;
 		if (testName ? !testName.equals(that.testName) : that.testName != null) return false;
+		if (id ? !id.equals(that.id) : that.id != null) return false;
 
 		return true;
 	}

@@ -173,6 +173,8 @@ class DataService {
 
 
 	def saveTestOutcomes(TestRun testRun, List outcomes) {
+
+		//todo: remove testRun argument
 		for (outcome in outcomes) {
 			saveDomainObject outcome 
 		}
@@ -591,7 +593,16 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 
 	def deleteTestCasesForProject(project) {
+		//TestOutcome.executeUpdate("delete cuanto.TestOutcome out where out.testCase.project = ?", [project])
+		def cases = getTestCases(project)
+		cases.each { TestCase tc ->
+			def outcomes = TestOutcome.findAllByTestCase(tc)
+			outcomes.each { outcome ->
+				outcome.delete(flush:true)
+			}
+		}
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
+		
 	}
 
 

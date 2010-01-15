@@ -20,31 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
-public interface ICuantoClient {
-
-	String cuantoUrl
-	String proxyHost
-	Integer proxyPort
-
-	public Long createProject(Project project)
-
-	public void deleteProject(Long id)
-
-	public Project getProject(Long projectId)
-
-	public TestRun getTestRun(Long testRunId)
-
-	public Long createTestRun(TestRun testRun)
-
-	public TestOutcome getTestOutcome(Long testOutcomeId)
-
-	public void submit(File file, Long testRunId)
-
-	public void submit(List<File> files, Long testRunId)
-
-	public Long submitTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId)
-
-	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
-
-	public Long update(TestOutcome testOutcome)
+class TestRunStats {
+	Integer tests
+	Integer passed
+	Integer failed
+	Integer analyzed
+	BigDecimal totalDuration
+	BigDecimal averageDuration
+	BigDecimal successRate
+	Date lastUpdated
+	List analysisStatistics
 }
