@@ -167,7 +167,7 @@ class ProjectController {
 				}
 				xml {
 					def xstream = new XStream()
-					render xstream.toXML(proj?.toParsableProject())
+					render xstream.toXML(proj?.toProjectApi())
 				}
 			}
 		} else {

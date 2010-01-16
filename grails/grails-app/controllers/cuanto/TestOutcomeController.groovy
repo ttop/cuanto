@@ -60,7 +60,7 @@ class TestOutcomeController {
 		def outString = ""
 		if (outcome) {
 			XStream xstream = new XStream()
-			outString = xstream.toXML(outcome.toParsableTestOutcome())
+			outString = xstream.toXML(outcome.toTestOutcomeApi())
 		} else {
 		    response.status = response.SC_NOT_FOUND
 		}

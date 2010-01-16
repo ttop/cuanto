@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import cuanto.Project
-import cuanto.api.TestCase as ParsableTestCase
+import cuanto.api.TestCase as TestCaseApi
 
 class TestCase implements Comparable{
 
@@ -53,8 +53,8 @@ class TestCase implements Comparable{
 		}
 	}
 
-	ParsableTestCase toParsableTestCase() {
-		ParsableTestCase tc = new ParsableTestCase()
+	TestCaseApi toTestCaseApi() {
+		TestCaseApi tc = new TestCaseApi()
 		tc.testName = this.testName
 		tc.packageName = this.packageName
 		tc.parameters = this.parameters

@@ -49,6 +49,7 @@ class TestOutcome {
 		if (testCase ? !testCase.equals(that.testCase) : that.testCase != null) return false;
 		if (testOutput ? !testOutput.equals(that.testOutput) : that.testOutput != null) return false;
 		if (testResult ? !testResult.equals(that.testResult) : that.testResult != null) return false;
+		if (analysisState ? !analysisState.equals(that.analysisState) : that.analysisState != null) return false;
 
 		return true;
 	}
@@ -64,6 +65,7 @@ class TestOutcome {
 		result = 31 * result + (bug ? bug.hashCode() : 0);
 		result = 31 * result + (note ? note.hashCode() : 0);
 		result = 31 * result + (id ? id.hashCode() : 0);
+		result = 31 * result + (analysisState ? analysisState.hashCode() : 0);
 		return result;
 	}
 }

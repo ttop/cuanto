@@ -316,7 +316,7 @@ class TestRunController {
 			}
 			xml {
 				XStream xstream = new XStream()
-				render xstream.toXML(testRun.toParsableTestRun())
+				render xstream.toXML(testRun.toTestRunApi())
 			}
 		}
 	}

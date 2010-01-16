@@ -19,6 +19,8 @@
 
 package cuanto
 
+import cuanto.api.TestProperty as TestPropertyApi
+
 public class TestProperty implements Comparable {
 
 	String name
@@ -52,5 +54,10 @@ public class TestProperty implements Comparable {
 	public boolean equals(Object t) {
 		TestProperty otherProp = (TestProperty) t
 		return this.name == otherProp.name && this.value == otherProp.value
+	}
+
+
+	public TestPropertyApi toTestPropertyApi() {
+		return new TestPropertyApi(this.name, this.value)
 	}
 }

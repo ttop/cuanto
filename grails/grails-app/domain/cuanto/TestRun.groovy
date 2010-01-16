@@ -22,8 +22,7 @@ package cuanto
 
 import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
-import cuanto.api.TestProperty as ApiProperty
-import cuanto.api.TestRun as ParsableTestRun
+import cuanto.api.TestRun as TestRunApi
 
 class TestRun {
 
@@ -111,8 +110,8 @@ class TestRun {
 	}
 
 
-	ParsableTestRun toParsableTestRun(dateFormat = Defaults.dateFormat) {
-		ParsableTestRun pTestRun = new ParsableTestRun()
+	TestRunApi toTestRunApi(dateFormat = Defaults.dateFormat) {
+		TestRunApi pTestRun = new TestRunApi()
 		pTestRun.dateCreated =  new SimpleDateFormat(dateFormat).format(this.dateCreated)
 		pTestRun.dateExecuted = this.dateExecuted
 		pTestRun.note = this.note
@@ -121,12 +120,12 @@ class TestRun {
 
 		pTestRun.links = new ArrayList<ApiLink>()
 		this.links?.each {
-			pTestRun.links << new ApiLink(it.description, it.url)
+			pTestRun.links << it.toLinkApi()
 		}
 
 		pTestRun.testProperties = new ArrayList<TestProperty>()
 		this.testProperties?.each {
-			pTestRun.testProperties << new ApiProperty(it.name, it.value)
+			pTestRun.testProperties << it.toTestPropertyApi()
 		}
 		return pTestRun
 	}

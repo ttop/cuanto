@@ -33,13 +33,13 @@ public class TestCaseUnitTests extends GroovyTestCase{
 		testCase.fullName = testCase.packageName + "." + testCase.testName
 		testCase.description = wordGen.getSentence(8)
 
-		def parsableTestCase = testCase.toParsableTestCase()
+		def testCaseApi = testCase.toTestCaseApi()
 
 		["testName", "packageName", "fullName", "description"].each { field ->
-			assertEquals "Wrong value for ${field}", testCase.getProperty(field), parsableTestCase.getProperty(field)
+			assertEquals "Wrong value for ${field}", testCase.getProperty(field), testCaseApi.getProperty(field)
 		}
 
-		assertEquals "Wrong project", proj.projectGroup.name + ": " + proj.name, parsableTestCase.project
+		assertEquals "Wrong project", proj.projectGroup.name + ": " + proj.name, testCaseApi.project
 
 	}
 }

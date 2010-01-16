@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto
-import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.Bug as ParsableBug
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class TestOutcome {
+
 	static constraints = {
 	    testCase(nullable:false)
 	    testResult(nullable:false)
@@ -50,18 +50,17 @@ class TestOutcome {
     String note
 	
 
-	ParsableTestOutcome toParsableTestOutcome() {
-		ParsableTestOutcome out = new ParsableTestOutcome()
-		out.testCase = this.testCase.toParsableTestCase()
-		out.testResult = this.testResult.toString()
+	TestOutcomeApi toTestOutcomeApi() {
+		TestOutcomeApi out = new TestOutcomeApi()
+		out.testCase = this.testCase?.toTestCaseApi()
+		out.testResult = this.testResult?.toString()
 		out.testOutput = this.testOutput
 		out.duration = this.duration
 		out.owner = this.owner
-		if (this.bug) {
-			out.bug = new ParsableBug('title': this.title, 'url': this.url)
-		}
+		out.bug = this.bug?.toBugApi()
 		out.note = this.note
 		out.id = this.id
+		out.analysisState = this.analysisState?.toAnalysisStateApi()
 		return out
 	}
 }
