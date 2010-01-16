@@ -59,6 +59,7 @@ class TestOutcome {
 		out.owner = this.owner
 		out.bug = this.bug?.url ? this.bug?.url : this.bug?.title
 		out.note = this.note
+		out.id = this.id
 		return out
 	}
 }
