@@ -28,7 +28,7 @@ class TestOutcome {
     String testOutput
     BigDecimal duration
     String owner
-    String bug
+    Bug bug
     String note
 	Long id
 
