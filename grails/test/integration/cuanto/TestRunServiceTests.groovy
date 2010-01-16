@@ -2,6 +2,8 @@ package cuanto
 
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
+import cuanto.api.TestCase as TestCaseApi
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class TestRunServiceTests extends GroovyTestCase {
 
@@ -9,6 +11,9 @@ class TestRunServiceTests extends GroovyTestCase {
 	InitializationService initializationService
 	TestRunService testRunService
 	StatisticService statisticService
+	ParsingService parsingService
+	TestOutcomeService testOutcomeService
+
 	TestObjects to
 	WordGenerator wordGen = new WordGenerator()
 
@@ -21,8 +26,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 
 	void testCalculateTestRunTotals() {
-		Project proj = to.getProject()
-		proj.testType = TestType.findByName("JUnit")
+		Project proj = to.project
 		dataService.saveDomainObject proj
 
 		def numCases = 11
@@ -195,10 +199,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 	void testSearchByTestOwner() {
 		Project proj = to.project
-		proj.testType = TestType.findByName("JUnit")
-		if (!proj.save()) {
-			dataService.reportSaveError proj
-		}
+		dataService.saveDomainObject proj
 
 		final int numTests = 10
 

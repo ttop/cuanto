@@ -26,7 +26,7 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestOutcome as ParsableTestOutcome
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class TestOutcomeController {
 	def parsingService
@@ -142,6 +142,19 @@ class TestOutcomeController {
 				def myJson = ['testOutputs': outputJson]
 				render myJson as JSON
 			}
+		}
+	}
+
+
+	def update = {
+		XStream xstream = new XStream()
+		def testOutcome = (TestOutcomeApi) xstream.fromXML(request.inputStream)
+		try {
+			testOutcomeService.updateTestOutcome(testOutcome)
+			render ""
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
 		}
 	}
 }

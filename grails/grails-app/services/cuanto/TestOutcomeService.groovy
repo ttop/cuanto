@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import cuanto.*
-import cuanto.api.TestOutcome as ParsableTestOutcome
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class TestOutcomeService {
 
@@ -47,8 +47,9 @@ class TestOutcomeService {
 	}
 
 
-	def updateTestOutcome(ParsableTestOutcome pOutcome) {
+	def updateTestOutcome(TestOutcomeApi pOutcome) {
 		if (pOutcome) {
+			TestOutcome origOutcome = dataService.getTestOutcome(pOutcome.id)
 			TestOutcome outcome = dataService.getTestOutcome(pOutcome.id)
 			if (outcome) {
 				applyTestResultToTestOutcome(outcome, dataService.result(pOutcome.testResult))
@@ -61,8 +62,13 @@ class TestOutcomeService {
 				outcome.bug = bugService.getBug(pOutcome.bug?.title, pOutcome.bug?.url)
 				outcome.note = pOutcome.note
 				outcome.owner = pOutcome.owner
+				outcome.testOutput = pOutcome.testOutput
 				dataService.saveDomainObject outcome
 				dataService.deleteBugIfUnused origBug
+
+				if (origOutcome.testResult != outcome.testResult && outcome.testRun != null) {
+					statisticService.queueTestRunStats outcome.testRun.id
+				}
 			}
 		}
 	}
@@ -71,7 +77,7 @@ class TestOutcomeService {
 	def applyTestResultToTestOutcome(testOutcome, testResult) {
 		if (testOutcome && testResult) {
 			boolean recalc = false
-			if (testResult != testOutcome.testResult) {
+			if (testResult != testOutcome.testResult && testOutcome.testRun != null) {
 				recalc = true
 			}
 

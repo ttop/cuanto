@@ -9,7 +9,7 @@ import cuanto.api.*
  * Time: 5:54:29 PM
  * 
  */
-class CuantoClientTest extends GroovyTestCase{
+class CuantoClientTest extends GroovyTestCase {
 
 	String serverUrl = "http://localhost:8080/cuanto"
 	CuantoClient client = new CuantoClient(serverUrl)
@@ -219,6 +219,35 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "Wrong failed", "0", stats?.failed
 	}
 
+
+	void testUpdateOneOutcome() {
+		TestOutcome origApiOutcome = new TestOutcome()
+		origApiOutcome.testCase = new TestCase(project: projectKey, packageName: "foo.bar", testName: "testUpdate")
+		origApiOutcome.setDuration 200
+		origApiOutcome.setTestResult "Pass"
+		origApiOutcome.setNote wordGen.getSentence(13)
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		def outcomeId = client.submitTestOutcomeForTestRun(origApiOutcome, testRunId)
+
+		TestOutcome changedApiOutcome = new TestOutcome()
+		["testCase", "duration", "testResult", "note"].each {
+			changedApiOutcome.setProperty it, origApiOutcome.getProperty(it)
+		}
+
+		changedApiOutcome.note = "New Note!"
+		changedApiOutcome.testOutput = wordGen.getSentence(15)
+		changedApiOutcome.id = outcomeId
+		changedApiOutcome.testResult = "Fail"
+
+		client.update(changedApiOutcome)
+
+		TestOutcome fetchedApiOutcome = client.getTestOutcome(outcomeId)
+		assertEquals "Note", changedApiOutcome.note, fetchedApiOutcome.note
+		assertEquals "output", changedApiOutcome.testOutput, fetchedApiOutcome.testOutput
+		assertEquals "test result", changedApiOutcome.testResult, fetchedApiOutcome.testResult 
+	}
+	
 
 	void testSubmitOneOutcomeWithoutTestRun() {
 		TestCase testCase = new TestCase()

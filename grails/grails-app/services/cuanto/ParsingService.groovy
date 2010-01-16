@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestOutcome as ParsableTestOutcome
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class ParsingService {
 	static transactional = false
@@ -31,6 +31,7 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 	def statisticService
+	private XStream xstream = new XStream()
 
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
@@ -51,9 +52,9 @@ class ParsingService {
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
-		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
+		for (TestOutcomeApi TestOutcomeApi in outcomes) {
 			numberOfOutcomes++
-			def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
+			def testOutcome = processParsableOutcome(TestOutcomeApi, testRun, project)
 			testOutcomesToSave.add(testOutcome)
 		}
 
@@ -66,7 +67,13 @@ class ParsingService {
 	}
 
 
-	TestOutcome parseTestOutcome(inputStream, testRunId, projectId = null) {
+	TestOutcome parseTestOutcome(InputStream inputStream, Long testRunId, Long projectId = null) {
+		TestOutcomeApi testOutcomeApi = (TestOutcomeApi) xstream.fromXML(inputStream)
+		return parseTestOutcome(testOutcomeApi, testRunId, projectId)
+	}
+
+
+	TestOutcome parseTestOutcome(TestOutcomeApi testOutcomeApi, testRunId, projectId = null) {
 		def testRun = null
 		def project = null
 
@@ -82,13 +89,10 @@ class ParsingService {
 			throw new ParsingException("No TestRun ID or Project ID was provided")
 		}
 
+		def testOutcome = processParsableOutcome(testOutcomeApi, testRun, project)
 
-		XStream xstream = new XStream()
-		ParsableTestOutcome parsableTestOutcome = (ParsableTestOutcome) xstream.fromXML(inputStream)
-		def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
-
-		if (parsableTestOutcome.bug) {
-			throw new RuntimeException("bug parsing from ParsableTestOutcome not yet implemented")
+		if (testOutcomeApi.bug) {
+			throw new RuntimeException("bug parsing from TestOutcomeApi not yet implemented")
 		}
 
 		dataService.saveTestOutcomes(testRun, [testOutcome])
@@ -99,12 +103,12 @@ class ParsingService {
 	}
 
 
-	private TestOutcome processParsableOutcome(ParsableTestOutcome parsableTestOutcome, TestRun testRun, Project project = null) {
+	private TestOutcome processParsableOutcome(TestOutcomeApi TestOutcomeApi, TestRun testRun, Project project = null) {
 		if (!project) {
 			project = testRun?.project
 		}
 
-		TestCase testCase = parseTestCase(parsableTestOutcome, project)
+		TestCase testCase = parseTestCase(TestOutcomeApi, project)
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
 		
 		if (matchingTestCase) {
@@ -113,26 +117,26 @@ class ParsingService {
 			dataService.addTestCases(project, [testCase])
 		}
 
-		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
+		setTestCaseDescription(TestOutcomeApi.testCase.description, testCase)
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
 
-		testOutcome.testResult = dataService.result(parsableTestOutcome.testResult.toLowerCase())
-		testOutcome.duration = parsableTestOutcome.duration
+		testOutcome.testResult = dataService.result(TestOutcomeApi.testResult.toLowerCase())
+		testOutcome.duration = TestOutcomeApi.duration
 		testOutcome.testCase = testCase
-		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
-		testOutcome.owner = parsableTestOutcome.owner
-		testOutcome.note = parsableTestOutcome.note
+		testOutcome.testOutput = processTestOutput(TestOutcomeApi.testOutput)
+		testOutcome.owner = TestOutcomeApi.owner
+		testOutcome.note = TestOutcomeApi.note
 		testOutcome.testRun = testRun
 		processTestFailure(testOutcome, project)
 		return testOutcome
 	}
 
 
-	private TestCase parseTestCase(parsableTestOutcome, project) {
+	private TestCase parseTestCase(TestOutcomeApi, project) {
 		TestCase testCase = new TestCase(
-			testName: parsableTestOutcome.testCase.testName,
-			packageName: parsableTestOutcome.testCase.packageName,
-			parameters: parsableTestOutcome.testCase.parameters,
+			testName: TestOutcomeApi.testCase.testName,
+			packageName: TestOutcomeApi.testCase.packageName,
+			parameters: TestOutcomeApi.testCase.parameters,
 			'project': project
 		)
 

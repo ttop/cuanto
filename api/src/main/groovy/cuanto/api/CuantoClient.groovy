@@ -262,6 +262,7 @@ class CuantoClient implements ICuantoClient {
 
 		if (responseCode == 200) {
 			testOutcomeId = Long.valueOf(responseText)
+			testOutcome.id = testOutcomeId
 		} else {
 			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 		}
@@ -338,10 +339,27 @@ class CuantoClient implements ICuantoClient {
 
 	
 
-	public Long update(TestOutcome testOutcome) {
-		throw new NotImplementedException()
+	public void update(TestOutcome testOutcome) {
+		def fullUri = "${cuantoUrl}/testOutcome/update"
+		PostMethod post = getMethod("post", fullUri)
+		XStream xstream = new XStream()
+		def outcomeXml = xstream.toXML(testOutcome)
+		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
+
+		def responseCode
+		def responseText
+		def testOutcomeId
+		try {
+			HttpClient hclient = getHttpClient()
+			responseCode = hclient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().text
+		} finally {
+			post.releaseConnection()
+		}
+
+		if (responseCode != 200) {
+			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
+		}
 	}
-
-
 
 }
