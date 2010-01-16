@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.TestCase as ParsableTestCase
+import cuanto.api.Bug as ParsableBug
 
 class TestOutcome {
 	static constraints = {
@@ -57,7 +57,9 @@ class TestOutcome {
 		out.testOutput = this.testOutput
 		out.duration = this.duration
 		out.owner = this.owner
-		out.bug = this.bug?.url ? this.bug?.url : this.bug?.title
+		if (this.bug) {
+			out.bug = new ParsableBug('title': this.title, 'url': this.url)
+		}
 		out.note = this.note
 		out.id = this.id
 		return out

@@ -31,6 +31,7 @@ class TestOutcome {
     Bug bug
     String note
 	Long id
+	AnalysisState analysisState
 
 
 	boolean equals(o) {

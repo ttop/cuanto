@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import cuanto.*
+import cuanto.api.TestOutcome as ParsableTestOutcome
 
 class TestOutcomeService {
 
@@ -33,7 +34,6 @@ class TestOutcomeService {
 	def testCaseFormatterRegistry
 
 	def updateTestOutcome(Map params) {
-
 		def outcome = dataService.getTestOutcome(params.id)
 		if (outcome) {
 			applyTestResultToTestOutcome(outcome, dataService.result(params.testResult))
@@ -43,6 +43,27 @@ class TestOutcomeService {
 			outcome.owner =  Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
 			dataService.deleteBugIfUnused(outcome.bug)
+		}
+	}
+
+
+	def updateTestOutcome(ParsableTestOutcome pOutcome) {
+		if (pOutcome) {
+			TestOutcome outcome = dataService.getTestOutcome(pOutcome.id)
+			if (outcome) {
+				applyTestResultToTestOutcome(outcome, dataService.result(pOutcome.testResult))
+
+				if (pOutcome.analysisState) {
+					outcome.analysisState = dataService.getAnalysisStateByName(pOutcome.analysisState)
+				}
+
+				def origBug = outcome.bug
+				outcome.bug = bugService.getBug(pOutcome.bug?.title, pOutcome.bug?.url)
+				outcome.note = pOutcome.note
+				outcome.owner = pOutcome.owner
+				dataService.saveDomainObject outcome
+				dataService.deleteBugIfUnused origBug
+			}
 		}
 	}
 

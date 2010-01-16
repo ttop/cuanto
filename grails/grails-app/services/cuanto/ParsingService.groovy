@@ -22,13 +22,7 @@ package cuanto
 
 import com.thoughtworks.xstream.XStream
 import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.TestCase as ParsableTestCase
 
-/**
- * User: Todd Wells
- * Date: May 7, 2008
- * Time: 7:44:29 AM
- */
 class ParsingService {
 	static transactional = false
 
@@ -197,7 +191,7 @@ class ParsingService {
 
 	def processTestFailure(testOutcome, project) {
 		if (testOutcome.testResult?.isFailure) {
-			if (project.bugUrlPattern) {
+			if (project?.bugUrlPattern) {
 				def urls = parseUrls(testOutcome.testOutput)
 				def firstUrl = urls.find {it -> project.getBugMap(it).url }
 				def bugInfo = project.getBugMap(firstUrl)

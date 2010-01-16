@@ -327,10 +327,10 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-
 	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
 		submit(testOutcome, null, projectId)
 	}
+
 
 	public Long submitTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
 		submit(testOutcome, testRunId)
