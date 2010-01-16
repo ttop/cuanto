@@ -339,7 +339,7 @@ class CuantoClient implements ICuantoClient {
 
 	
 
-	public void update(TestOutcome testOutcome) {
+	public void updateTestOutcome(TestOutcome testOutcome) {
 		def fullUri = "${cuantoUrl}/testOutcome/update"
 		PostMethod post = getMethod("post", fullUri)
 		XStream xstream = new XStream()

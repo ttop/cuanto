@@ -240,7 +240,7 @@ class CuantoClientTest extends GroovyTestCase {
 		changedApiOutcome.id = outcomeId
 		changedApiOutcome.testResult = "Fail"
 
-		client.update(changedApiOutcome)
+		client.updateTestOutcome(changedApiOutcome)
 
 		TestOutcome fetchedApiOutcome = client.getTestOutcome(outcomeId)
 		assertEquals "Note", changedApiOutcome.note, fetchedApiOutcome.note

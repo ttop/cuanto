@@ -46,5 +46,5 @@ public interface ICuantoClient {
 
 	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
 
-	public void update(TestOutcome testOutcome)
+	public void updateTestOutcome(TestOutcome testOutcome)
 }
