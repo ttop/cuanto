@@ -215,12 +215,12 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public void submit(File file, Long testRunId) {
-		submit([file], testRunId)
+	public void submitFile(File file, Long testRunId) {
+		submitFiles([file], testRunId)
 	}
 	
 
-	public void submit(List<File> files, Long testRunId) {
+	public void submitFiles(List<File> files, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
 		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
@@ -246,7 +246,7 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public Long submit(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
+	protected Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
 		if (testRunId) {
@@ -338,13 +338,13 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
-		submit(testOutcome, null, projectId)
+	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
+		createTestOutcome(testOutcome, null, projectId)
 	}
 
 
-	public Long submitTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
-		submit(testOutcome, testRunId)
+	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
+		createTestOutcome(testOutcome, testRunId)
 	}
 
 

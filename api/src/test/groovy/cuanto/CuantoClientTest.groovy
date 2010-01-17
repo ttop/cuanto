@@ -163,7 +163,7 @@ class CuantoClientTest extends GroovyTestCase {
 	void testSubmitSingleSuite() {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
-		client.submit(fileToSubmit, testRunId)
+		client.submitFile(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "34")
 		assertEquals "34", stats.tests
 		assertEquals "3", stats.failed
@@ -174,7 +174,7 @@ class CuantoClientTest extends GroovyTestCase {
 	void testSubmitMultipleSuite() {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
-		client.submit(fileToSubmit, testRunId)
+		client.submitFile(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "56")
 		assertEquals "56", stats.tests
 		assertEquals "15", stats.failed
@@ -188,7 +188,7 @@ class CuantoClientTest extends GroovyTestCase {
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
 
-		client.submit(filesToSubmit, testRunId)
+		client.submitFiles(filesToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "68")
 		assertEquals "68", stats.tests
 		assertEquals "6", stats.failed
@@ -207,7 +207,7 @@ class CuantoClientTest extends GroovyTestCase {
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 
-		def outcomeId = client.submitTestOutcomeForTestRun(outcome, testRunId)
+		def outcomeId = client.createTestOutcomeForTestRun(outcome, testRunId)
 		assertNotNull outcomeId
 
 		def stats = waitForTestRunStats(client, testRunId, "1")
@@ -230,7 +230,7 @@ class CuantoClientTest extends GroovyTestCase {
 		origApiOutcome.setNote wordGen.getSentence(13)
 
 		def testRunId = client.createTestRun(new TestRun(projectKey))
-		def outcomeId = client.submitTestOutcomeForTestRun(origApiOutcome, testRunId)
+		def outcomeId = client.createTestOutcomeForTestRun(origApiOutcome, testRunId)
 
 		TestOutcome changedApiOutcome = new TestOutcome()
 		["testCase", "duration", "testResult", "note"].each {
@@ -261,7 +261,7 @@ class CuantoClientTest extends GroovyTestCase {
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 
-		def outcomeId = client.submitTestOutcomeForProject(outcome, projectId)
+		def outcomeId = client.createTestOutcomeForProject(outcome, projectId)
 		assertNotNull outcomeId
 
 		def fetchedOutcome = client.getTestOutcome(outcomeId)
@@ -292,7 +292,7 @@ class CuantoClientTest extends GroovyTestCase {
 					outcome.testResult = "Pass"
 
 					long start = System.currentTimeMillis();
-					client.submitTestOutcomeForTestRun(outcome, testRunId)
+					client.createTestOutcomeForTestRun(outcome, testRunId)
 					long duration = System.currentTimeMillis() - start;
 
 					synchronized(idx) {

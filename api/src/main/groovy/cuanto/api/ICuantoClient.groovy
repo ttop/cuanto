@@ -40,13 +40,13 @@ public interface ICuantoClient {
 
 	public TestOutcome getTestOutcome(Long testOutcomeId)
 
-	public void submit(File file, Long testRunId)
+	public void submitFile(File file, Long testRunId)
 
-	public void submit(List<File> files, Long testRunId)
+	public void submitFiles(List<File> files, Long testRunId)
 
-	public Long submitTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId)
+	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId)
 
-	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
+	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
 
 	public void updateTestOutcome(TestOutcome testOutcome)
 
