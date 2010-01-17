@@ -117,6 +117,7 @@ class TestRun {
 		pTestRun.note = this.note
 		pTestRun.valid = this.valid
 		pTestRun.projectKey = this.project.projectKey
+		pTestRun.id = this.id
 
 		pTestRun.links = new ArrayList<ApiLink>()
 		this.links?.each {

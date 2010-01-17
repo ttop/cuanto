@@ -235,5 +235,9 @@ class TestOutcomeService {
 	}
 
 	
-
+	def deleteTestOutcome(testOutcome) {
+		TestOutcome.withTransaction {
+			testOutcome.delete(flush:true)
+		}
+	}
 }

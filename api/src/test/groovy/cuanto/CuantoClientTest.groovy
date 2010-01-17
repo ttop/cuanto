@@ -44,9 +44,7 @@ class CuantoClientTest extends GroovyTestCase {
 		assertEquals "wrong project name", localName, project.name
 		assertEquals "wrong project key", projKey, project.projectKey
 		client.deleteProject(localProjectId)
-		shouldFail(CuantoClientException) {
-			project = client.getProject(localProjectId)
-		}
+		assertNull client.getProject(localProjectId)
 	}
 
 
@@ -59,11 +57,7 @@ class CuantoClientTest extends GroovyTestCase {
 		assertEquals "wrong project name", localName, fetchedProject.name
 		assertEquals "wrong project key", projKey, fetchedProject.projectKey
 		client.deleteProject(localProjectId)
-
-		def msg = shouldFail(CuantoClientException) {
-			fetchedProject = client.getProject(localProjectId)
-		}
-		assertTrue msg.contains("Project ${localProjectId} not found")
+		assertNull client.getProject(localProjectId)
 	}
 
 
@@ -133,7 +127,7 @@ class CuantoClientTest extends GroovyTestCase {
 	}
 
 
-	void testCreateTestRun() {
+	void testCreateTestAndDeleteTestRun() {
 		def createdTestRun = new TestRun(projectKey)
 		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
 		createdTestRun.links << new Link("Info", "http://projectInfo")
@@ -159,6 +153,10 @@ class CuantoClientTest extends GroovyTestCase {
 			assertEquals createdTestRun.testProperties[index].name, prop.name
 			assertEquals createdTestRun.testProperties[index].value, prop.value
 		}
+
+		client.deleteTestRun testRun.id
+		def fetchedRun = client.getTestRun(testRun.id)
+		assertNull fetchedRun
 	}
 
 
@@ -217,6 +215,10 @@ class CuantoClientTest extends GroovyTestCase {
 		assertEquals "Wrong total tests", "1", stats?.tests
 		assertEquals "Wrong passed", "1", stats?.passed
 		assertEquals "Wrong failed", "0", stats?.failed
+
+		client.deleteTestOutcome outcomeId
+		def fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertEquals "Outcome not deleted", null, fetchedOutcome
 	}
 
 

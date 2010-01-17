@@ -31,20 +31,14 @@ import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
-import cuanto.api.*
 
-/**
- * User: Todd Wells
- * Date: Sep 29, 2008
- * Time: 5:58:07 PM
- *
- */
 class CuantoClient implements ICuantoClient {
 
 	String cuantoUrl
 	String proxyHost
 	Integer proxyPort
+
+	XStream xstream = new XStream();
 
 
 	public CuantoClient() {}
@@ -66,17 +60,16 @@ class CuantoClient implements ICuantoClient {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
 		PostMethod post = getMethod("post", "${cuantoUrl}/project/create") as PostMethod
-		XStream xstream = new XStream();
 		String xmlProj = xstream.toXML(project)
 		post.requestEntity = new StringRequestEntity(xmlProj, "text/xml", null)
 		def projectId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
 			def responseText = post.getResponseBodyAsStream().text.trim()
-			if (responseCode == 200) {
+			if (responseCode == HttpStatus.SC_OK) {
 				projectId = Long.valueOf(responseText)
-			} else if (responseCode == 403) {
-				throw new IllegalArgumentException(responseText)
+			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+				throw new CuantoClientException(responseText)
 			} else {
 				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
@@ -87,10 +80,24 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public void deleteProject(Long id) {
-		def post = getMethod("post", "${cuantoUrl}/project/delete")
-		post.addParameter "id", id.toString()
-		post.addParameter "client", ""
+	public void deleteProject(Long projectId) {
+		deleteObject "${cuantoUrl}/project/delete", projectId
+	}
+
+
+	public void deleteTestRun(Long testRunId) {
+		deleteObject "${cuantoUrl}/testRun/delete", testRunId
+	}
+
+
+	public void deleteTestOutcome(Long testOutcomeId) {
+		deleteObject "${cuantoUrl}/testOutcome/delete", testOutcomeId
+	}
+
+
+	private void deleteObject(url, objectId) {
+		def post = getMethod("post", url)
+		post.addParameter "id", objectId.toString()
 
 		def responseCode
 		def responseText
@@ -101,7 +108,7 @@ class CuantoClient implements ICuantoClient {
 			post.releaseConnection()
 		}
 
-		if (responseCode != 200) {
+		if (responseCode != HttpStatus.SC_OK) {
 			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
@@ -117,9 +124,10 @@ class CuantoClient implements ICuantoClient {
 		try {
 			responseCode = httpClient.executeMethod(get)
 			responseText = get.getResponseBodyAsStream().text
-			if (responseCode == 200) {
-				XStream xstream = new XStream()
+			if (responseCode == HttpStatus.SC_OK) {
 				project = xstream.fromXML(responseText) as Project
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				project = null
 			} else {
 				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
@@ -145,8 +153,13 @@ class CuantoClient implements ICuantoClient {
 		try {
 			responseCode = httpClient.executeMethod(get)
 			responseText = get.getResponseBodyAsStream().text
-			XStream xstream = new XStream()
-			testRun = (TestRun) xstream.fromXML(responseText)
+			if (responseCode == HttpStatus.SC_OK) {
+				testRun = (TestRun) xstream.fromXML(responseText)
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				testRun = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
 		} finally {
 			get.releaseConnection()
 		}
@@ -159,16 +172,15 @@ class CuantoClient implements ICuantoClient {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
 		def post = getMethod("post", "${cuantoUrl}/testRun/createXml")
-		XStream xstream = new XStream();
 		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
 		post.requestEntity = request
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
 			def responseText = post.getResponseBodyAsStream().text.trim()
-			if (responseCode == 200) {
+			if (responseCode == HttpStatus.SC_OK) {
 				testRunId = Long.valueOf(responseText)
-			} else if (responseCode == 403) {
+			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
 				throw new IllegalArgumentException(responseText)
 			} else {
 				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
@@ -193,7 +205,6 @@ class CuantoClient implements ICuantoClient {
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
 			} else {
-				XStream xstream = new XStream()
 				def outcome = (TestOutcome)xstream.fromXML(responseText)
 				return outcome
 			}
@@ -229,7 +240,7 @@ class CuantoClient implements ICuantoClient {
 		} finally {
 			post.releaseConnection()
 		}
-		if (responseCode != 200) {
+		if (responseCode != HttpStatus.SC_OK) {
 			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
@@ -245,7 +256,6 @@ class CuantoClient implements ICuantoClient {
 			post.addRequestHeader "Cuanto-Project-Id", projectId.toString()
 		}
 
-		XStream xstream = new XStream()
 		def outcomeXml = xstream.toXML(testOutcome)
 		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
 
@@ -260,7 +270,7 @@ class CuantoClient implements ICuantoClient {
 			post.releaseConnection()
 		}
 
-		if (responseCode == 200) {
+		if (responseCode == HttpStatus.SC_OK) {
 			testOutcomeId = Long.valueOf(responseText)
 			testOutcome.id = testOutcomeId
 		} else {
@@ -291,7 +301,7 @@ class CuantoClient implements ICuantoClient {
 
 		def valueMap = [:]
 
-		if (responseCode == 200) {
+		if (responseCode == HttpStatus.SC_OK) {
 			responseText.eachLine {String line ->
 				def rawValues = line.split("=")
 				if (rawValues.size() > 1) {
@@ -337,12 +347,10 @@ class CuantoClient implements ICuantoClient {
 		submit(testOutcome, testRunId)
 	}
 
-	
 
 	public void updateTestOutcome(TestOutcome testOutcome) {
 		def fullUri = "${cuantoUrl}/testOutcome/update"
 		PostMethod post = getMethod("post", fullUri)
-		XStream xstream = new XStream()
 		def outcomeXml = xstream.toXML(testOutcome)
 		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
 
@@ -357,7 +365,7 @@ class CuantoClient implements ICuantoClient {
 			post.releaseConnection()
 		}
 
-		if (responseCode != 200) {
+		if (responseCode != HttpStatus.SC_OK) {
 			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 		}
 	}

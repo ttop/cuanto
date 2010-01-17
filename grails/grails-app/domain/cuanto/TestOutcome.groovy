@@ -41,7 +41,7 @@ class TestOutcome {
 
 	TestCase testCase
 	TestRun testRun
-    TestResult testResult
+	TestResult testResult
     AnalysisState analysisState
     String testOutput
     BigDecimal duration

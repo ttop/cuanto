@@ -316,7 +316,12 @@ class TestRunController {
 			}
 			xml {
 				XStream xstream = new XStream()
-				render xstream.toXML(testRun.toTestRunApi())
+				if (testRun) {
+					render xstream.toXML(testRun.toTestRunApi())
+				} else {
+					response.status = response.SC_NOT_FOUND
+					render "Test Run with id parameter of ${params.id} was not found"
+				}
 			}
 		}
 	}
@@ -400,14 +405,14 @@ class TestRunController {
 
 	def create = {
 		if (!params.project) {
-			response.status = 404 // todo is this the right response code? how about invalid request?
+			response.status = response.SC_NOT_FOUND // todo is this the right response code? how about invalid request?
 			render "project parameter is required"
 		} else {
 			try {
 				def run = testRunService.createTestRun(params)
 				render(view: "create", model: ['testRunId': run.id])
 			} catch (CuantoException e) {
-				response.status = 403
+				response.status = response.SC_INTERNAL_SERVER_ERROR
 				render e.getMessage()
 			}
 		}
@@ -420,7 +425,7 @@ class TestRunController {
 			def parsedTestRun = testRunService.createTestRun(testRun)
 			render(view: "create", model: ['testRunId': parsedTestRun.id])
 		} catch (CuantoException e) {
-			response.status = 403
+			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render e.getMessage()
 		}
 	}

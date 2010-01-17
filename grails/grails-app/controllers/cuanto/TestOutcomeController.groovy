@@ -157,4 +157,13 @@ class TestOutcomeController {
 			render e.message
 		}
 	}
+
+
+	def delete = {
+		def testOutcome = TestOutcome.get(params.id)
+		if (testOutcome) {
+			testOutcomeService.deleteTestOutcome(testOutcome)
+		}
+		render ""
+	}
 }

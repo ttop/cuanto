@@ -36,6 +36,8 @@ public interface ICuantoClient {
 
 	public Long createTestRun(TestRun testRun)
 
+	public void deleteTestRun(Long testRunId)
+
 	public TestOutcome getTestOutcome(Long testOutcomeId)
 
 	public void submit(File file, Long testRunId)
@@ -47,4 +49,6 @@ public interface ICuantoClient {
 	public Long submitTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
 
 	public void updateTestOutcome(TestOutcome testOutcome)
+
+	public void deleteTestOutcome(Long testOutcomeId)
 }
