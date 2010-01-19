@@ -124,6 +124,25 @@ class CuantoClientTest extends GroovyTestCase {
 			assertEquals run.testProperties[index].name, prop.name
 			assertEquals run.testProperties[index].value, prop.value
 		}
+
+		TestRun runTwo = new TestRun(projectName)
+		runTwo.testProperties << new TestProperty("Artist", "Da Vinci")
+		runTwo.testProperties << new TestProperty("Musician", "Muddy Waters")
+		client.createTestRun(runTwo)
+
+		List<TestRun> runs = client.getTestRunsWithProperties(projectId, runTwo.testProperties)
+		assertEquals "Wrong number of test runs", 1, runs.size()
+		assertEquals "Wrong test run", runTwo.id, runs[0].id
+
+		runs = client.getTestRunsWithProperties(projectId, testRun.testProperties)
+		assertEquals "Wrong number of test runs", 1, runs.size()
+		assertEquals "Wrong test run", testRun.id, runs[0].id
+
+		runs = client.getTestRunsWithProperties(projectId, [run.testProperties[0]])
+		assertEquals "Wrong number of test runs", 2, runs.size()
+		assertNotNull runs.find { it.id == testRun.id }
+		assertNotNull runs.find { it.id == runTwo.id }
+
 	}
 
 

@@ -33,6 +33,8 @@ class TestRunController {
 	def testCaseFormatterRegistry
 	def statisticService
 
+	XStream xstream = new XStream()
+
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
 		submitFile: 'POST', createXml:'POST', deleteProperty: 'POST', deleteLink: 'POST']
@@ -315,7 +317,6 @@ class TestRunController {
 				render testRunMap as JSON
 			}
 			xml {
-				XStream xstream = new XStream()
 				if (testRun) {
 					render xstream.toXML(testRun.toTestRunApi())
 				} else {
@@ -419,7 +420,6 @@ class TestRunController {
 	}
 
 	def createXml = {
-		XStream xstream = new XStream()
 		def testRun = (ParsableTestRun) xstream.fromXML(request.inputStream)
 		try {
 			def parsedTestRun = testRunService.createTestRun(testRun)
@@ -460,5 +460,28 @@ class TestRunController {
 		}
 		javascriptList += "]"
 		return javascriptList
+	}
+
+
+	def getWithProperties = {
+		def testProps = []
+		Project project = Project.get(params.project)
+		if (project) {
+			params.each { String paramName, String paramValue ->
+				def propMatcher = (paramName =~ /^prop\[(\d+)]/)
+				if (propMatcher.matches()) {
+					def propIndex = propMatcher[0][1] as Integer
+					def propValue = params["propValue[${propIndex}]"]
+					testProps << new TestProperty(paramValue, propValue)
+				}
+			}
+			List testRuns = testRunService.getTestRunsWithProperties(project, testProps)
+			def toRender = testRuns.collect {it.toTestRunApi()}
+			render xstream.toXML(toRender)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't find project ${params?.project}"
+		}
+
 	}
 }

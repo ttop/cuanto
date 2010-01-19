@@ -323,5 +323,47 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertNull TestRun.get(fetchedTr.id)
 		assertEquals 0, Link.list().size()
 	}
+
+
+	void testGetTestRunsWithProperties() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		def testRuns = []
+
+		1.upto(3) {
+			testRuns << to.getTestRun(proj)
+		}
+		assertEquals 3, testRuns.size()
+
+		def props = []
+		1.upto(5) {
+			props << to.testProperty
+		}
+
+		testRuns[0].addToTestProperties(props[0])
+		testRuns[0].addToTestProperties(props[1])
+		testRuns[0].addToTestProperties(props[2])
+		testRuns[1].addToTestProperties(props[0])
+		testRuns[1].addToTestProperties(props[1])
+		testRuns[1].addToTestProperties(props[3])
+		testRuns[2].addToTestProperties(props[1])
+
+		testRuns.each {
+			dataService.saveTestRun(it)
+		}
+
+		assertEquals "Wrong number of test runs", 0, testRunService.getTestRunsWithProperties(proj, [props[4]])?.size()
+
+		def fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..2])
+		assertEquals "Wrong number of test runs", 1, fetchedRuns?.size()
+		assertEquals "Wrong test run retrieved", testRuns[0].id, fetchedRuns[0].id
+
+		fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..1])
+		assertEquals "Wrong number of test runs", 2, fetchedRuns.size()
+		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[0].id }
+		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[1].id }
+	}
+
 }
 

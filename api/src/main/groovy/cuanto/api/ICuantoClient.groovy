@@ -51,4 +51,7 @@ public interface ICuantoClient {
 	public void updateTestOutcome(TestOutcome testOutcome)
 
 	public void deleteTestOutcome(Long testOutcomeId)
+
+	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties)
+	
 }

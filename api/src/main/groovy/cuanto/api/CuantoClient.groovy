@@ -25,12 +25,14 @@ import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.HttpMethod
 import org.apache.commons.httpclient.HttpStatus
+import org.apache.commons.httpclient.NameValuePair
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
 import org.apache.commons.httpclient.methods.StringRequestEntity
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
+
 
 class CuantoClient implements ICuantoClient {
 
@@ -68,6 +70,7 @@ class CuantoClient implements ICuantoClient {
 			def responseText = post.getResponseBodyAsStream().text.trim()
 			if (responseCode == HttpStatus.SC_OK) {
 				projectId = Long.valueOf(responseText)
+				project.id = projectId
 			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
 				throw new CuantoClientException(responseText)
 			} else {
@@ -180,6 +183,7 @@ class CuantoClient implements ICuantoClient {
 			def responseText = post.getResponseBodyAsStream().text.trim()
 			if (responseCode == HttpStatus.SC_OK) {
 				testRunId = Long.valueOf(responseText)
+				testRun.id = testRunId
 			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
 				throw new IllegalArgumentException(responseText)
 			} else {
@@ -280,6 +284,38 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) {
+		def post = getMethod("post", "${cuantoUrl}/testRun/getWithProperties") as PostMethod
+		post.addRequestHeader "Accept", "application/xml"
+
+		def reqParams = []
+		reqParams << new NameValuePair("project", projectId.toString())
+
+		testProperties.eachWithIndex{TestProperty prop, Long index ->
+			reqParams << new NameValuePair("prop[${index}]", prop.name)
+			reqParams << new NameValuePair("propValue[${index}]", prop.value)
+		}
+
+		post.setRequestBody(reqParams as NameValuePair[])
+
+		def responseCode
+		String responseText
+		def runs = []
+		try {
+			responseCode = httpClient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				runs = xstream.fromXML(responseText) as List
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			def cpuFix = "" // this prevents IDEA's code inspection from maxing the CPU when evaluating the next line
+			post.releaseConnection() // this causes the CPU to be maxed in IDEA
+		}
+		return runs
+	}
+
 	// TODO: make testRunStats object in API
 	Map getTestRunStats(Long testRunId){
 		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}")
@@ -369,5 +405,7 @@ class CuantoClient implements ICuantoClient {
 			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 		}
 	}
+
+
 
 }

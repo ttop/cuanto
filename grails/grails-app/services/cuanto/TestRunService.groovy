@@ -24,12 +24,16 @@ import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
 import cuanto.api.TestProperty as ApiProperty
 import cuanto.api.TestRun as ParsableTestRun
+import org.hibernate.criterion.Expression
+import org.hibernate.criterion.Restrictions
+import org.hibernate.Criteria
 
 class TestRunService {
 
 	def dataService
 	def projectService
 	def statisticService
+	def sessionFactory
 
 	boolean transactional = false
 
@@ -731,6 +735,7 @@ class TestRunService {
 		return ["note", "name", "owner", "output"]
 	}
 
+
 	def extractValidParams(Map params) {
 		def validParamKeys = ["max", "order", "offset", "sort", "filter"]
 		def newPagingMap = [:]
@@ -743,5 +748,27 @@ class TestRunService {
 	}
 
 
+	List<TestRun> getTestRunsWithProperties(Project proj, List<TestProperty> props) {
+		if (!props) {
+			throw new CuantoException("No properties were specified")
+		}
+
+		def qryFromClause = "from cuanto.TestRun tr left join tr.testProperties prop_0 "
+		def qryWhereClause = "where tr.project = ? and prop_0.name=? and prop_0.value=? "
+		def qryArgs = [proj, props[0].name, props[0].value]
+		for (def idx = 1; idx < props.size(); idx++) {
+		    qryFromClause += "left join tr.testProperties prop_${idx} "
+			qryWhereClause += "and prop_${idx}.name=? and prop_${idx}.value=? "
+			qryArgs << props[idx].name
+			qryArgs << props[idx].value
+		}
+
+		def results = TestRun.executeQuery(qryFromClause + qryWhereClause + " order by tr.dateExecuted desc", qryArgs)
+		if (results == null || results?.size() == 0) {
+			return []
+		} else {
+			return results.collect { it[0] }
+		}
+	}
 
 }
