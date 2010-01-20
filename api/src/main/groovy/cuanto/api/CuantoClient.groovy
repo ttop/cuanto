@@ -98,9 +98,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	private void deleteObject(url, objectId) {
-		def post = getMethod("post", url)
-		post.addParameter "id", objectId.toString()
+	private void deleteObject(String url, Long objectId) {
+		def post = getMethod("post", url) as PostMethod
+		post.requestBody = [new NameValuePair("id", objectId.toString())] as NameValuePair[];
 
 		def responseCode
 		def responseText
@@ -406,6 +406,40 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+
+	public TestCase getTestCase(Long projectId, String packageName, String testName, String parameters = null) {
+		def url = "${cuantoUrl}/testCase/get" 
+		GetMethod get = getMethod("get", url) as GetMethod
+		get.addRequestHeader "Accept", "application/xml"
+
+		def params = []
+		params << new NameValuePair("project", projectId.toString())
+		params << new NameValuePair("packageName", packageName)
+		params << new NameValuePair("testName", testName)
+		params << new NameValuePair("parameters", parameters)
+
+		get.setQueryString(params as NameValuePair[])
+
+		def responseCode
+		String responseText
+		TestCase testCase
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				testCase = xstream.fromXML(responseText) as TestCase
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND && responseText.contains("Project not found")) {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				testCase = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return testCase
+	}
 
 
 }

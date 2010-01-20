@@ -16,7 +16,7 @@ class CuantoClientTest extends GroovyTestCase {
 
 	WordGenerator wordGen = new WordGenerator()
 	String projectName
-	def projectId
+	Long projectId
 	String projectKey
 
 	@Override
@@ -179,6 +179,42 @@ class CuantoClientTest extends GroovyTestCase {
 	}
 
 
+	void testGetTestCase() {
+		Long testRunId = client.createTestRun(new TestRun(projectName))
+		File fileToSubmit = getFile("junitReport_single_suite.xml")
+		client.submitFile(fileToSubmit, testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "34")
+
+		def fetchedCase = client.getTestCase(projectId, "cuanto.test.packageOne.SampleTest", "Stephenson")
+		assertNotNull "No test case fetched", fetchedCase
+		assertEquals "Wrong package", "cuanto.test.packageOne.SampleTest", fetchedCase.packageName
+		assertEquals "Wrong test name", "Stephenson", fetchedCase.testName
+
+		assertNull client.getTestCase(projectId, "non.existent.TestCase", "Stephenson")
+		assertNull client.getTestCase(projectId, "cuanto.test.packageOne.SampleTest", "Stephenson", "foo")
+		
+		shouldFail(CuantoClientException) {
+			client.getTestCase(3434L, "blah", "blah")
+		}
+
+		def testCases = []
+		1.upto(3) {
+			def tc = new TestCase(packageName: wordGen.getSentence(3).replaceAll(" ", "."),
+				testName: wordGen.getSentence(2), parameters: wordGen.getSentence(3))
+			testCases << tc
+			def testOutcome = new TestOutcome(testCase: tc, testResult: "Pass")
+			client.createTestOutcomeForProject(testOutcome, projectId)
+		}
+
+		testCases.each { TestCase tc ->
+			def fetchedTc = client.getTestCase(projectId, tc.packageName, tc.testName,  tc.parameters)
+			assertEquals "package name", tc.packageName, fetchedTc.packageName
+			assertEquals "test name", tc.testName, fetchedTc.testName
+			assertEquals "parameters", tc.parameters, fetchedTc.parameters
+		}
+	}
+
+	
 	void testSubmitSingleSuite() {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")

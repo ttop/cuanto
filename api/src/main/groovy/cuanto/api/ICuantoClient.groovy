@@ -53,5 +53,7 @@ public interface ICuantoClient {
 	public void deleteTestOutcome(Long testOutcomeId)
 
 	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties)
-	
+
+    public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters )
+
 }
