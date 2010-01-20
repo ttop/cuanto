@@ -37,6 +37,8 @@ class ProjectController {
 	def testCaseFormatterRegistry
 	def dataService
 
+	XStream xstream = new XStream()
+
 	// the delete, save and update actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
 
@@ -166,7 +168,21 @@ class ProjectController {
 					render proj.toJSONMap() as JSON
 				}
 				xml {
-					def xstream = new XStream()
+					render xstream.toXML(proj?.toProjectApi())
+				}
+			}
+		} else {
+			response.status = response.SC_NOT_FOUND
+			render "Project ${params.id} not found"
+		}
+	}
+
+	
+	def getByKey = {
+		def proj = projectService.getProject(params.id)
+		if (proj) {
+			withFormat {
+				xml {
 					render xstream.toXML(proj?.toProjectApi())
 				}
 			}

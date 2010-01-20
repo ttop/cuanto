@@ -32,6 +32,8 @@ public interface ICuantoClient {
 
 	public Project getProject(Long projectId)
 
+	public Project getProject(String projectKey)
+
 	public TestRun getTestRun(Long testRunId)
 
 	public Long createTestRun(TestRun testRun)

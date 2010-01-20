@@ -442,4 +442,29 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	public Project getProject(String projectKey) {
+		def url = "${cuantoUrl}/project/getByKey/${projectKey}"
+		GetMethod get = getMethod("get", url) as GetMethod
+		get.addRequestHeader "Accept", "application/xml"
+		def responseCode
+		String responseText
+		Project project
+
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				project = xstream.fromXML(responseText) as Project
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				project = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return project
+
+	}
+
 }

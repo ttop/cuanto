@@ -43,8 +43,14 @@ class CuantoClientTest extends GroovyTestCase {
 		def project = client.getProject(localProjectId)
 		assertEquals "wrong project name", localName, project.name
 		assertEquals "wrong project key", projKey, project.projectKey
+
+		project = client.getProject(projKey)
+		assertEquals "wrong project name", localName, project.name
+		assertEquals "wrong project key", projKey, project.projectKey
+
 		client.deleteProject(localProjectId)
 		assertNull client.getProject(localProjectId)
+		assertNull client.getProject(projKey)
 	}
 
 
