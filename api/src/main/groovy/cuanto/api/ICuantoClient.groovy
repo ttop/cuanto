@@ -58,4 +58,8 @@ public interface ICuantoClient {
 
     public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters)
 
+	public TestCase getTestCase(String projectKey, String packageName, String testName, String parameters) 	
+
+	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId)
+
 }

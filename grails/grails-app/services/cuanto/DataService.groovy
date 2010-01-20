@@ -366,6 +366,11 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 	}
 
 
+	List<TestOutcome> getTestOutcomes(TestCase testCase, TestRun testRun) {
+		TestOutcome.findAllByTestCaseAndTestRun(testCase, testRun, [sort: "id", order: "desc"])
+	}
+
+
 	List<TestOutcome> getTestOutcomes(outcomeIds) {
 		TestOutcome.findAll("from cuanto.TestOutcome out where out.id in (:outList)", [outList: outcomeIds])
 	}

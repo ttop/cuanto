@@ -33,6 +33,8 @@ class TestOutcomeController {
 	def dataService
 	def testOutcomeService
 
+	XStream xstream = new XStream()
+
 	// the delete, save and update actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', applyAnalysis: 'POST']
 
@@ -55,11 +57,35 @@ class TestOutcomeController {
 		render myJson as JSON
 	}
 
+
+	def findForTestRun = {
+		TestCase testCase = TestCase.get(params.testCase)
+		if (!testCase) {
+			response.status = response.SC_NOT_FOUND
+			render "Test case ${params.testCase} not found"
+		}
+
+		TestRun testRun = TestRun.get(params.testRun)
+		if (!testRun) {
+			response.status = response.SC_NOT_FOUND
+			render "Test run ${params.testRun} not found"
+		}
+
+		List<TestOutcome> out = dataService.getTestOutcomes(testCase, testRun)
+		if (!out) {
+			response.status = response.SC_NOT_FOUND
+			render "Test outcome not found for test case ${params.testCase} and test run ${params.testRun}"
+		} else {
+			def outsToReturn = out.collect { it.toTestOutcomeApi() }
+			render xstream.toXML(outsToReturn)
+		}
+	}
+
+
 	def getXml = {
 		TestOutcome outcome = TestOutcome.get(params.id)
 		def outString = ""
 		if (outcome) {
-			XStream xstream = new XStream()
 			outString = xstream.toXML(outcome.toTestOutcomeApi())
 		} else {
 		    response.status = response.SC_NOT_FOUND
@@ -147,7 +173,6 @@ class TestOutcomeController {
 
 
 	def update = {
-		XStream xstream = new XStream()
 		def testOutcome = (TestOutcomeApi) xstream.fromXML(request.inputStream)
 		try {
 			testOutcomeService.updateTestOutcome(testOutcome)

@@ -372,6 +372,24 @@ class CuantoClientTest extends GroovyTestCase {
 	}
 
 
+	void testGetTestOutcome() {
+		TestOutcome origApiOutcome = new TestOutcome()
+		origApiOutcome.testCase = new TestCase(project: projectKey, packageName: "foo.bar", testName: "testUpdate")
+		origApiOutcome.setDuration 200
+		origApiOutcome.setTestResult "Pass"
+		origApiOutcome.setNote wordGen.getSentence(13)
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		def outcomeId = client.createTestOutcomeForTestRun(origApiOutcome, testRunId)
+		def testCase = client.getTestCase(projectId, origApiOutcome.testCase.packageName, origApiOutcome.testCase.testName)
+		def fetchedOutcomes = client.getTestOutcomes(testRunId, testCase.id)
+
+		assertNotNull fetchedOutcomes
+		assertEquals 1, fetchedOutcomes.size()
+		assertEquals "Outcome ID", outcomeId, fetchedOutcomes[0].id
+	}
+
+	
 	File getFile(String filename) {
 		def path = "grails/test/resources"
 		File myFile = new File("${path}/${filename}")

@@ -215,7 +215,6 @@ class CuantoClient implements ICuantoClient {
 		} finally {
 			get.releaseConnection()
 		}
-
 	}
 
 
@@ -406,6 +405,10 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+	public TestCase getTestCase(String projectKey, String packageName, String testName, String parameters = null) {
+		def proj = getProject(projectKey)
+		return getTestCase(proj.id, packageName, testName, parameters)
+	}
 
 	public TestCase getTestCase(Long projectId, String packageName, String testName, String parameters = null) {
 		def url = "${cuantoUrl}/testCase/get" 
@@ -464,7 +467,29 @@ class CuantoClient implements ICuantoClient {
 			get.releaseConnection()
 		}
 		return project
+	}
 
+
+	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
+		def url = "${cuantoUrl}/testOutcome/findForTestRun"
+		def get = getMethod("get", url)
+		get.addRequestHeader "Accept", "text/xml"
+		get.setQueryString([new NameValuePair("testRun", testRunId.toString()),
+			new NameValuePair("testCase", testCaseId.toString())] as NameValuePair[])
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
+				return outcomes
+			}
+		} finally {
+			get.releaseConnection()
+		}
 	}
 
 }
