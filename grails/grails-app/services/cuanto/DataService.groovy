@@ -157,13 +157,11 @@ class DataService {
 			}
 			def query = "from cuanto.TestCase as tc where tc.project=? and tc.fullName=? "
 			if (testcase.parameters == null) {
-				query += "and is null (tc.parameters)"
-				return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?",
-					[project, testcase.fullName])
+				query += "and tc.parameters is null"
+				return TestCase.find(query, [project, testcase.fullName])
 			} else {
 				query += "and tc.parameters=?"
-				return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=? and tc.parameters=?",
-					[project, testcase.fullName, testcase.parameters])
+				return TestCase.find(query,	[project, testcase.fullName, testcase.parameters])
 			}
 		} else {
 			throw new CuantoException("No test case specified")

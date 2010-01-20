@@ -40,15 +40,26 @@ class ParsingServiceTests extends GroovyTestCase {
 		
 		TestCase t2 = new TestCase()
 		t2.packageName = "foo"
-
 		t2.testName = "Bar"
 		t2.fullName = t2.packageName + "." + t2.testName
 		t2.project = project
 
+		TestCase t3 = new TestCase()
+		t3.packageName = "foo"
+		t3.testName = "Bar"
+		t3.fullName = t3.packageName + "." + t3.testName
+		t3.parameters = fakes.wordGen.getSentence(3)
+		t3.project = project
+		dataService.saveDomainObject t3 
+
 		TestCase myCase = dataService.findMatchingTestCaseForProject(project, tCase)
 		assertEquals("wrong fullName", tCase.fullName, myCase.fullName)
 		myCase = dataService.findMatchingTestCaseForProject(project, t2)
-		assertEquals("wrong fullName", tCase.fullName, myCase.fullName)
+		assertEquals("wrong fullName", t2.fullName, myCase.fullName)
+
+		myCase = dataService.findMatchingTestCaseForProject(project, t3)
+		assertEquals("wrong fullName", t3.fullName, myCase.fullName)
+		assertEquals("wrong parameters", t3.parameters, myCase.parameters)
 	}
 
 	

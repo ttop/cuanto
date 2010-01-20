@@ -54,6 +54,6 @@ public interface ICuantoClient {
 
 	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties)
 
-    public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters )
+    public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters)
 
 }
