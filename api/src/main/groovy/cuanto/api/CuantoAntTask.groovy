@@ -107,7 +107,7 @@ class CuantoAntTask extends org.apache.tools.ant.Task {
 		log "Submitting results to ${url}"
 
 		def startTime = new Date()
-		cuantoClient.submitFile(getFilesToSubmit(), testRunId)
+		cuantoClient.submitFiles(getFilesToSubmit(), testRunId)
 		def endTime = new Date()
 		def duration = (endTime.time - startTime.time) / 1000
 		log "Submitting results took ${duration} second(s)"
