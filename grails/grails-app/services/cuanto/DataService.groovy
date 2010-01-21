@@ -367,7 +367,7 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 
 
 	List<TestOutcome> getTestOutcomes(TestCase testCase, TestRun testRun) {
-		TestOutcome.findAllByTestCaseAndTestRun(testCase, testRun, [sort: "id", order: "desc"])
+		TestOutcome.findAllByTestCaseAndTestRun(testCase, testRun, [sort: "finishedAt", order: "desc"])
 	}
 
 

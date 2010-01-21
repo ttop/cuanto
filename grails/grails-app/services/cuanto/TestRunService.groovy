@@ -589,8 +589,8 @@ class TestRunService {
 		if (params.dateExecuted) {
 			Date dateExecuted
 			String dateFormat
-			if (params.dateFormat) {
-				dateFormat = params.dateFormat
+			if (params.dateFormatter) {
+				dateFormat = params.dateFormatter
 			} else {
 				dateFormat = Defaults.dateFormat
 			}

@@ -32,6 +32,10 @@ class TestOutcome {
     String note
 	Long id
 	AnalysisState analysisState
+	Date startedAt
+	Date finishedAt
+	Date dateCreated
+	Date lastUpdated
 
 
 	boolean equals(o) {
@@ -50,6 +54,10 @@ class TestOutcome {
 		if (testOutput ? !testOutput.equals(that.testOutput) : that.testOutput != null) return false;
 		if (testResult ? !testResult.equals(that.testResult) : that.testResult != null) return false;
 		if (analysisState ? !analysisState.equals(that.analysisState) : that.analysisState != null) return false;
+		if (startedAt ? ! startedAt.equals(that.startedAt) : that.startedAt != null) return false;
+		if (finishedAt ? ! finishedAt.equals(that.finishedAt) : that.finishedAt != null) return false;
+		if (dateCreated ? ! dateCreated.equals(that.dateCreated) : that.dateCreated != null) return false;
+		if (lastUpdated ? ! lastUpdated.equals(that.lastUpdated) : that.lastUpdated != null) return false;
 
 		return true;
 	}
@@ -66,6 +74,10 @@ class TestOutcome {
 		result = 31 * result + (note ? note.hashCode() : 0);
 		result = 31 * result + (id ? id.hashCode() : 0);
 		result = 31 * result + (analysisState ? analysisState.hashCode() : 0);
+		result = 31 * result + (startedAt ? startedAt.hashCode() : 0);
+		result = 31 * result + (finishedAt ? finishedAt.hashCode() : 0);
+		result = 31 * result + (dateCreated ? dateCreated.hashCode() : 0);
+		result = 31 * result + (lastUpdated ? lastUpdated.hashCode() : 0);
 		return result;
 	}
 }

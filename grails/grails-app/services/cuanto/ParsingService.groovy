@@ -103,12 +103,12 @@ class ParsingService {
 	}
 
 
-	private TestOutcome processParsableOutcome(TestOutcomeApi TestOutcomeApi, TestRun testRun, Project project = null) {
+	private TestOutcome processParsableOutcome(TestOutcomeApi testOutcomeApi, TestRun testRun, Project project = null) {
 		if (!project) {
 			project = testRun?.project
 		}
 
-		TestCase testCase = parseTestCase(TestOutcomeApi, project)
+		TestCase testCase = parseTestCase(testOutcomeApi, project)
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
 		
 		if (matchingTestCase) {
@@ -117,16 +117,18 @@ class ParsingService {
 			dataService.addTestCases(project, [testCase])
 		}
 
-		setTestCaseDescription(TestOutcomeApi.testCase.description, testCase)
+		setTestCaseDescription(testOutcomeApi.testCase.description, testCase)
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
 
-		testOutcome.testResult = dataService.result(TestOutcomeApi.testResult.toLowerCase())
-		testOutcome.duration = TestOutcomeApi.duration
+		testOutcome.testResult = dataService.result(testOutcomeApi.testResult.toLowerCase())
+		testOutcome.duration = testOutcomeApi.duration
 		testOutcome.testCase = testCase
-		testOutcome.testOutput = processTestOutput(TestOutcomeApi.testOutput)
-		testOutcome.owner = TestOutcomeApi.owner
-		testOutcome.note = TestOutcomeApi.note
+		testOutcome.testOutput = processTestOutput(testOutcomeApi.testOutput)
+		testOutcome.owner = testOutcomeApi.owner
+		testOutcome.note = testOutcomeApi.note
 		testOutcome.testRun = testRun
+		testOutcome.startedAt = testOutcomeApi.startedAt
+		testOutcome.finishedAt = testOutcomeApi.finishedAt
 		processTestFailure(testOutcome, project)
 		return testOutcome
 	}

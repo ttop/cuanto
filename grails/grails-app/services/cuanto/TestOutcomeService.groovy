@@ -22,6 +22,7 @@ package cuanto
 
 import cuanto.*
 import cuanto.api.TestOutcome as TestOutcomeApi
+import java.text.SimpleDateFormat
 
 class TestOutcomeService {
 
@@ -39,6 +40,19 @@ class TestOutcomeService {
 			applyTestResultToTestOutcome(outcome, dataService.result(params.testResult))
 			applyBugParametersToTestOutcome(outcome, params)
 			applyAnalysisStateToTestOutcome(outcome, params)
+
+			SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
+			["startedAt", "finishedAt"].each {
+				if (params.it) {
+					Date candidate = formatter.parse(params.it)
+					if (candidate != null &&
+						(outcome.getProperty(it) == null) ||
+						Math.abs(candidate.time - outcome.getProperty(it)) > 1000) {
+						outcome.setProperty(it, candidate)
+					}
+				}
+			}
+
 			outcome.note = Sanitizer.escapeHtmlScriptTags(params.note)
 			outcome.owner =  Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
@@ -63,6 +77,18 @@ class TestOutcomeService {
 				outcome.note = pOutcome.note
 				outcome.owner = pOutcome.owner
 				outcome.testOutput = pOutcome.testOutput
+
+				["startedAt", "finishedAt"].each {
+					if (pOutcome.getProperty(it)) {
+						Date candidate = pOutcome.getProperty(it)
+						if (candidate != null && 
+							(origOutcome.getProperty(it) == null) ||
+							Math.abs(candidate.time - origOutcome.getProperty(it).time) > 1000) {
+							outcome.setProperty(it, candidate)
+						}
+					}
+				}
+
 				dataService.saveDomainObject outcome
 				dataService.deleteBugIfUnused origBug
 
