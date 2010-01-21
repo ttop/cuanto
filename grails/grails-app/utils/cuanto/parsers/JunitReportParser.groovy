@@ -75,7 +75,8 @@ class JunitReportParser implements CuantoTestParser {
 				outcome.testResult = "pass"
 			}
 
-			outcome.duration = new BigDecimal(tc.'@time')
+			def time = tc.'@time'.replaceAll(",", "")
+			outcome.duration = new BigDecimal(time)
 			outcome.testCase = new ParsableTestCase()
 			outcome.testCase.packageName = testsuite.'@name'
 			outcome.testCase.testName = getTestName(tc.'@name')
