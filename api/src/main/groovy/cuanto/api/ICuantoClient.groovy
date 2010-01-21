@@ -38,6 +38,8 @@ public interface ICuantoClient {
 
 	public Long createTestRun(TestRun testRun)
 
+	public void updateTestRun(TestRun testRun)
+
 	public void deleteTestRun(Long testRunId)
 
 	public TestOutcome getTestOutcome(Long testOutcomeId)

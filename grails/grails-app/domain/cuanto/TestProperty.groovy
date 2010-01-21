@@ -58,6 +58,8 @@ public class TestProperty implements Comparable {
 
 
 	public TestPropertyApi toTestPropertyApi() {
-		return new TestPropertyApi(this.name, this.value)
+		def api = new TestPropertyApi(this.name, this.value)
+		api.id = this.id
+		return api
 	}
 }

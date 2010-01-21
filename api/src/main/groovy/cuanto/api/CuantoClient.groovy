@@ -492,4 +492,31 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+	
+	public void updateTestRun(TestRun testRun) {
+		if (testRun) {
+			def fullUri = "${cuantoUrl}/testRun/update"
+			PostMethod post = getMethod("post", fullUri)
+			def trXml = xstream.toXML(testRun)
+			post.requestEntity = new StringRequestEntity(trXml, "text/xml", null)
+
+			def responseCode
+			def responseText
+			def testRunId
+			try {
+				HttpClient hclient = getHttpClient()
+				responseCode = hclient.executeMethod(post)
+				responseText = post.getResponseBodyAsStream().text
+			} finally {
+				post.releaseConnection()
+			}
+
+			if (responseCode != HttpStatus.SC_OK) {
+				throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
+			}
+		} else {
+			throw new NullPointerException("TestRun cannot be null")
+		}
+	}
+
 }

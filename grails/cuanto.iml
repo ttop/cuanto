@@ -34,16 +34,6 @@
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
     </content>
-    <content url="file://$MODULE_DIR$/plugins">
-      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/grails-app/taglib" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/integration" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/unit" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/src/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/grails-app/taglib" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/src/groovy" isTestSource="false" />
-    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="GRAILS" level="application" />

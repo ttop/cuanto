@@ -22,6 +22,7 @@ package cuanto.api
 public class TestProperty {
 	String name
 	String value
+	Long id
 
 
 

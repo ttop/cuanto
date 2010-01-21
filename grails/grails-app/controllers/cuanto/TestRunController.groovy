@@ -23,7 +23,7 @@ package cuanto
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestRun as ParsableTestRun
+import cuanto.api.TestRun as TestRunApi
 
 class TestRunController {
 	def parsingService
@@ -100,12 +100,31 @@ class TestRunController {
 
 
 	def update = {
-		def testRun = TestRun.get(params.id)
-		if (testRun) {
-			testRun = testRunService.update(testRun, params)
-			flash.message = "Test Run updated."
+		if (request.format == 'form') {
+			def testRun = TestRun.get(params.id)
+			if (testRun) {
+				testRun = testRunService.update(testRun, params)
+				flash.message = "Test Run updated."
+			}
+			redirect(controller: "testRun", action: edit, id: testRun?.id)
+		} else if (request.format == 'xml') {
+			try {
+				def testRunApi = (TestRunApi) xstream.fromXML(request.inputStream)
+				if (testRunApi) {
+					testRunService.update(testRunApi)
+					render "OK"
+				} else {
+					response.status = response.SC_NOT_FOUND
+					render "Did not parse test run"
+				}
+			} catch (Exception e) {
+				response.status = response.SC_INTERNAL_SERVER_ERROR
+				render e.message
+			}
+		} else {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unable to process update" 
 		}
-		redirect(controller: "testRun", action: edit, id: testRun?.id)
 	}
 
 
@@ -174,6 +193,7 @@ class TestRunController {
 
 
 	def outcomes = {
+		//todo: migrate most of this logic to service
 		def queryParams = [:]
 
 		def possibleQueryParams = ["sort", "order", "max", "offset", "filter"]
@@ -420,7 +440,7 @@ class TestRunController {
 	}
 
 	def createXml = {
-		def testRun = (ParsableTestRun) xstream.fromXML(request.inputStream)
+		def testRun = (TestRunApi) xstream.fromXML(request.inputStream)
 		try {
 			def parsedTestRun = testRunService.createTestRun(testRun)
 			render(view: "create", model: ['testRunId': parsedTestRun.id])

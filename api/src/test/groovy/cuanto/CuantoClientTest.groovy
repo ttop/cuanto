@@ -390,6 +390,38 @@ class CuantoClientTest extends GroovyTestCase {
 	}
 
 	
+	void testUpdateTestRun() {
+		shouldFail(NullPointerException) {
+			client.updateTestRun(null) 
+		}
+		
+		def createdTestRun = new TestRun(projectKey)
+		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
+		createdTestRun.links << new Link("Info", "http://projectInfo")
+		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
+		createdTestRun.testProperties << new TestProperty("Musician", "Paul McCartney")
+		createdTestRun.note = wordGen.getSentence(3)
+
+		Long testRunId = client.createTestRun(createdTestRun)
+		assertNotNull "No testRunId returned", testRunId
+
+		TestRun testRun = new TestRun(projectKey)
+		testRun.links << new Link("Info", "http://projectInfo2")
+		testRun.testProperties << new TestProperty("Musician", "John Lennon")
+		testRun.note = wordGen.getSentence(3)
+		testRun.id = testRunId
+
+		client.updateTestRun(testRun)
+
+		TestRun fetchedRun = client.getTestRun(testRunId)
+		assertEquals "links size", 1, fetchedRun.links?.size()
+		assertEquals "link", testRun.links[0].url, fetchedRun.links[0].url
+	    assertEquals "testProperties size", 1, fetchedRun.testProperties?.size()
+		assertEquals "testProperty", testRun.testProperties[0].value, fetchedRun.testProperties[0].value
+		assertEquals "note", testRun.note, fetchedRun.note
+	}
+	
+	
 	File getFile(String filename) {
 		def path = "grails/test/resources"
 		File myFile = new File("${path}/${filename}")
