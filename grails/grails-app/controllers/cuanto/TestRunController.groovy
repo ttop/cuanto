@@ -250,7 +250,7 @@ class TestRunController {
 				outs.each {outcome ->
 					def currentOutcome = [
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
-						duration: outcome.duration, owner: outcome.owner,
+						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
 						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
 					]
 
