@@ -313,7 +313,7 @@ class TestRunService {
 
 
 	def countOutcomes(TestRun testRun) {
-		return testRun.outcomes.size()
+		return TestOutcome.countByTestRun(testRun)
 	}
 
 
