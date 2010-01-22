@@ -181,6 +181,33 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertEquals "Wrong finishedAt", changedApiOutcome.finishedAt, changedOutcome.finishedAt
 	}
 
+	void testGetCsvForTestOutcomes() {
+		//todo: submit results
+		// retrieve CSV
+		// verify
+		// create a project
+		Project proj = to.getProject()
+		proj.save()
+
+		def testRun = to.getTestRun(proj)
+		dataService.saveDomainObject testRun
+
+		def outcomes = []
+		1.upto(3) {
+			def tc = to.getTestCase(proj)
+			dataService.saveDomainObject tc
+			def outcome = to.getTestOutcome(tc, testRun)
+			dataService.saveDomainObject outcome
+			outcomes << outcome
+		}
+
+		def csv = testOutcomeService.getCsvForTestOutcomes(outcomes)
+		def csvLines = csv.readLines()
+		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size() 
+
+		// do 0 results, 1 result, 3 results, 10 results
+
+	}
 
 	def textWithoutScriptTags = '''
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.

@@ -193,10 +193,14 @@ class TestRunController {
 
 
 	def outcomes = {
+		if (request.format == 'csv') {
+			params.remove 'offset'
+			params.remove 'max'
+		}
+
 		Map results = testOutcomeService.getTestOutcomes(params)
 
 		withFormat {
-
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
@@ -228,9 +232,20 @@ class TestRunController {
 					'offset': results?.offset]
 				render myJson as JSON
 			}
+			xml {
+				def outcomesToRender = results?.testOutcomes.collect{it.toTestOutcomeApi()}
+			    render xstream.toXML(outcomesToRender)
+			}
+			csv {
+				response.contentType = "text/csv"
+				render testOutcomeService.getCsvForTestOutcomes(results?.testOutcomes)
+			}
 		}
 	}
 
+	def csv = {
+		redirect(action: outcomes, params: params)
+	}
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)

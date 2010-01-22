@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
 		</span> ${bullet}
+		<span><g:link controller="testRun" action="csv" id="${testRun?.id}" params="[format:'csv']">CSV</g:link> ${bullet} </span> 
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
 	</span>
 	<br/>

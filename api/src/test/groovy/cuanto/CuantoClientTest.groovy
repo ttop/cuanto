@@ -420,8 +420,8 @@ class CuantoClientTest extends GroovyTestCase {
 		assertEquals "testProperty", testRun.testProperties[0].value, fetchedRun.testProperties[0].value
 		assertEquals "note", testRun.note, fetchedRun.note
 	}
-	
-	
+
+
 	File getFile(String filename) {
 		def path = "grails/test/resources"
 		File myFile = new File("${path}/${filename}")
@@ -441,4 +441,31 @@ class CuantoClientTest extends GroovyTestCase {
 		}
 		return stats
 	}
+
+
+	void testGetAllTestOutcomes() {
+		Long testRunId = client.createTestRun(new TestRun(projectName))
+		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
+		client.submitFile(fileToSubmit, testRunId)
+
+		def stats = waitForTestRunStats(client, testRunId, "56")
+		assertEquals "56", stats.tests
+
+		def outcomes = client.getAllTestOutcomes(testRunId)
+		assertEquals "Wrong number of outcomes", 56, outcomes.size()
+
+		def failed = 0
+		def passed = 0
+		outcomes.each { TestOutcome out ->
+			if (out.testResult == "Fail" || out.testResult == "Error") {
+				failed++
+			} else if (out.testResult == "Pass") {
+				passed++
+			}
+		}
+		assertEquals "failed count", 15, failed
+		assertEquals "passed count", 41, passed
+	}
+
+
 }

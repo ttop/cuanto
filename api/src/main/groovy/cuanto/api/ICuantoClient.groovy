@@ -64,4 +64,6 @@ public interface ICuantoClient {
 
 	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId)
 
+	public List<TestOutcome> getAllTestOutcomes(Long testRunId)
+
 }

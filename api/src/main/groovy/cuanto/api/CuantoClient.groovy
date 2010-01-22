@@ -519,4 +519,25 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+
+	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
+		def url = "${cuantoUrl}/testRun/outcomes"
+		def get = getMethod("get", url)
+		get.addRequestHeader "Accept", "text/xml"
+		get.setQueryString([new NameValuePair("id", testRunId.toString())] as NameValuePair[])
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
+				return outcomes
+			}
+		} finally {
+			get.releaseConnection()
+		}
+	}
 }
