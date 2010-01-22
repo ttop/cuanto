@@ -242,7 +242,6 @@ class TestRunService {
 		 value set to false (e.g. Ignored, Unexecuted, etc) are included in the search.
 	*/
 	def getOutcomesForTestRun(TestRun testRun, Map params) {
-		//todo: move logic into service
 		def order
 		def sort
 
@@ -362,8 +361,8 @@ class TestRunService {
 	}
 
 
-	// given a List of TestOutcomes, return a List of TestCases
-	def getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
+	// given a List of TestOutcomes, return a Set of TestCases
+	Set getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
 		def tCases = new HashSet()
 		outcomes.each {	tCases += it.testCase }
 		return tCases

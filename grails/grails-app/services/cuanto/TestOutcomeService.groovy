@@ -266,4 +266,63 @@ class TestOutcomeService {
 			testOutcome.delete(flush:true)
 		}
 	}
+	
+	
+	
+
+
+	/**
+	* Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
+	*/
+	Map getTestOutcomes(Map params) {
+		
+		def queryParams = [:]
+
+		def possibleQueryParams = ["sort", "order", "max", "offset", "filter", "qry"]
+		possibleQueryParams.each {possibleParam ->
+			if (params.containsKey(possibleParam)) {
+				queryParams[possibleParam] = params[possibleParam]
+			}
+		}
+
+		def testRun = TestRun.get(params.id)
+		def outputChars = params.outputChars ? params.outputChars : 180
+
+		def offset
+		def totalCount
+		def testOutcomes
+		
+		if (params.containsKey("recordStartIndex")) {
+			offset = Integer.valueOf(params.recordStartIndex)
+		} else if (params.containsKey("offset")) {
+			offset = Integer.valueOf(params.offset)
+		} else {
+			offset = 0
+		}
+
+		def filter = params.filter
+
+		if (params.qry) {
+			totalCount = testRunService.countTestOutcomesBySearch(params)
+			testOutcomes = testRunService.searchTestOutcomes(params)
+		} else if (filter?.equalsIgnoreCase("allFailures")) {
+			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
+			totalCount = dataService.countFailuresForTestRun(testRun)
+		} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
+			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
+			totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
+		} else if (filter?.equalsIgnoreCase("newFailures")) {
+			testOutcomes = testRunService.getNewFailures(testRun, queryParams)
+			totalCount = testRunService.countNewFailuresForTestRun(testRun)
+		} else if (params.outcome) {
+			testOutcomes = [dataService.getTestOutcome(params.outcome)]
+			offset = (Integer.valueOf(params.recordStartIndex))
+			totalCount = params.totalCount
+		} else {
+			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
+			totalCount = testRunService.countOutcomes(testRun)
+		}
+
+		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
+	}
 }

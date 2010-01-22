@@ -193,61 +193,14 @@ class TestRunController {
 
 
 	def outcomes = {
-		//todo: migrate most of this logic to service
-		def queryParams = [:]
+		Map results = testOutcomeService.getTestOutcomes(params)
 
-		def possibleQueryParams = ["sort", "order", "max", "offset", "filter"]
-		possibleQueryParams.each {possibleParam ->
-			if (params.containsKey(possibleParam)) {
-				queryParams[possibleParam] = params[possibleParam]
-			}
-		}
-
-		def outs
-		def totalCount
-		def recordStartIndex
-		def testRun = TestRun.get(params.id)
-		def outputChars = params.outputChars ? params.outputChars : 180
-
-		if (!testRun) {
-			redirect controller: 'project', action: 'list'
-		} else {
-			if (params.containsKey("recordStartIndex")) {
-				recordStartIndex = Integer.valueOf(params.recordStartIndex)
-			} else if (params.containsKey("offset")) {
-				recordStartIndex = Integer.valueOf(params.offset)
-			} else {
-				recordStartIndex = 0
-			}
-
-			def filter = params.filter
-
-			if (params.qry) {
-				totalCount = testRunService.countTestOutcomesBySearch(params)
-				outs = testRunService.searchTestOutcomes(params)
-			} else if (filter?.equalsIgnoreCase("allFailures")) {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = dataService.countFailuresForTestRun(testRun)
-			} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
-			} else if (filter?.equalsIgnoreCase("newFailures")) {
-				outs = testRunService.getNewFailures(testRun, queryParams)
-				totalCount = testRunService.countNewFailuresForTestRun(testRun)
-			} else if (params.outcome) {
-				outs = [dataService.getTestOutcome(params.outcome)]
-				recordStartIndex = (Integer.valueOf(params.recordStartIndex))
-				totalCount = params.totalCount
-			} else {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = testRunService.countOutcomes(testRun)
-			}
-		}
 		withFormat {
+
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
-				outs.each {outcome ->
+				results?.testOutcomes?.each {outcome ->
 					def currentOutcome = [
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
@@ -255,7 +208,7 @@ class TestRunController {
 					]
 
 					if (outcome.testOutput) {
-						def maxChars = outcome.testOutput.size() > outputChars ? outputChars : outcome.testOutput.size()
+						def maxChars = outcome.testOutput.size() > results?.outputChars ? results?.outputChars : outcome.testOutput.size()
 						currentOutcome.output = outcome.testOutput[0..maxChars - 1]
 					} else {
 						currentOutcome.output = null
@@ -271,8 +224,8 @@ class TestRunController {
 					jsonOutcomes << currentOutcome
 				}
 
-				def myJson = ['totalCount': totalCount, count: outs?.size(), testOutcomes: jsonOutcomes,
-					'offset': recordStartIndex]
+				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
+					'offset': results?.offset]
 				render myJson as JSON
 			}
 		}
