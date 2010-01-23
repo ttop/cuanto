@@ -22,7 +22,11 @@ package cuanto
 
 class TestType {
 	String name
+	String timeUnits
 
+	static constraints = {
+		timeUnits(nullable:true, maxSize:12)
+	}
 	static mapping = {
 		cache usage:'read-only'
 	}

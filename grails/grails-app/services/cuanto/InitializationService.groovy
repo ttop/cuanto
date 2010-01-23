@@ -25,6 +25,7 @@ import grails.util.GrailsUtil
 class InitializationService {
 
 	def grailsApplication
+	def dataService
 	boolean transactional = true
 
 
@@ -90,9 +91,9 @@ class InitializationService {
 		if (TestType.list().size() <= 0) {
 			def typeList = []
 
-			typeList += new TestType(name: "JUnit")
+			typeList += new TestType(name: "JUnit", timeUnits: "sec")
 			typeList += new TestType(name: "NUnit")
-			typeList += new TestType(name: "TestNG")
+			typeList += new TestType(name: "TestNG", timeUnits: "ms")
 			typeList += new TestType(name: "Selenium")
 			typeList += new TestType(name: "Canoo")
 			typeList += new TestType(name: "Manual")
@@ -105,6 +106,20 @@ class InitializationService {
 				}
 			}
 		}
+
+		/*
+		TestType junit = TestType.findByName("JUnit")
+		if (!junit.timeUnits) {
+			junit.timeUnits = "sec"
+			dataService.saveDomainObject junit
+		}
+		
+		TestType testng = TestType.findByName("TestNG")
+		if (!testng.timeUnits) {
+			testng.timeUnits = "ms"
+			dataService.saveDomainObject testng
+		}
+		*/
 	}
 
 	void initProjects() {

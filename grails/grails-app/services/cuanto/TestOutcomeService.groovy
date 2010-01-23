@@ -330,39 +330,6 @@ class TestOutcomeService {
 		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
 	}
 
-
-	String getCsvForTestOutcomes(List<TestOutcome> outcomes) {
-		return getDelimitedTextForTestOutcomes(outcomes, ",")
-/*		StringBuffer buff = new StringBuffer()
-		buff << 'Test Outcome ID,Test Result,Analysis State,Started At,Finished At, Duration, Bug Title, Bug URL, Note\n'
-
-		outcomes.each{ outcome ->
-			def renderList = []
-			renderList << outcome.id
-			renderList << outcome.testResult.name
-			renderList << outcome.analysisState?.name
-			renderList << outcome.startedAt
-			renderList << outcome.finishedAt
-			renderList << outcome.duration
-			renderList << outcome.bug?.title
-			renderList << outcome.bug?.url
-			renderList << outcome.note
-			renderList.eachWithIndex { it, indx ->
-				if (it == null) {
-					buff << ''
-				} else {
-					buff << it.toString().replaceAll(',', '\\,')
-				}
-				//buff << it != null ? it : ''
-				if (indx != renderList.size() - 1) {
-					buff << ','
-				}
-			}
-			buff << '\n'
-		}
-
-		return buff.toString()*/
-	}
 	
 	String getDelimitedTextForTestOutcomes(List<TestOutcome> outcomes, String delimiter) {
 		StringBuffer buff = new StringBuffer()

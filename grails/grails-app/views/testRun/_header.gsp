@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
 	<span class="smaller">
 		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
-		<g:link controller="testRun" action="csv" id="TestRun_${testRun?.id}.csv">CSV</g:link> ${bullet}
+		<g:link controller="testRun" action="export" id="${testRun?.id}">Export</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
 		</span> ${bullet}
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)

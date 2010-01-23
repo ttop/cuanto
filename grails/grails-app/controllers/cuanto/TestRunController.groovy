@@ -193,11 +193,6 @@ class TestRunController {
 
 
 	def outcomes = {
-		if (request.format == 'csv') {
-			params.remove 'offset'
-			params.remove 'max'
-		}
-
 		Map results = testOutcomeService.getTestOutcomes(params)
 
 		withFormat {
@@ -228,27 +223,34 @@ class TestRunController {
 					jsonOutcomes << currentOutcome
 				}
 
+				def units = TestRun.get(params.id)?.project?.testType?.timeUnits
+
 				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
-					'offset': results?.offset]
+					'offset': results?.offset, timeUnits: units]
 				render myJson as JSON
 			}
 			xml {
 				def outcomesToRender = results?.testOutcomes.collect{it.toTestOutcomeApi()}
+				response.contentType = "text/xml"
 			    render xstream.toXML(outcomesToRender)
 			}
 			csv {
 				response.contentType = "text/csv"
-				render testOutcomeService.getCsvForTestOutcomes(results?.testOutcomes)
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, ",")
+			}
+			tsv {
+				response.contentType = 'text/tab-separated-values'
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, "\t")
 			}
 		}
 	}
 	
 
 	def csv = {
-		params.format = 'csv'
-		def matcher = params.id =~ /.+(\d+).*/
-		if (matcher.matches()) {
-			params.id = matcher[0][1]
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'csv'
+			params.id = testRunId
 			forward(action: 'outcomes', params: params)
 		} else {
 			response.status = response.SC_BAD_REQUEST
@@ -256,6 +258,32 @@ class TestRunController {
 		}
 	}
 
+
+	def tab = {
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'tsv'
+			params.id = testRunId
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for CSV"
+		}
+	}
+
+
+	def xml = {
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'xml'
+			params.id = testRunId
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for XML"
+		}
+	}
+	
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)
@@ -481,5 +509,19 @@ class TestRunController {
 			render "Couldn't find project ${params?.project}"
 		}
 
+	}
+
+	def export = {
+		[testRun: TestRun.get(params.id)]
+	}
+
+
+	private def getTestRunIdFromFilename(filename) {
+		def matcher = filename =~ /.+(\d+).*/
+		if (matcher.matches()) {
+			return matcher[0][1]
+		} else {
+			return null
+		}
 	}
 }
