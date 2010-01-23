@@ -242,10 +242,20 @@ class TestRunController {
 			}
 		}
 	}
+	
 
 	def csv = {
-		redirect(action: outcomes, params: params)
+		params.format = 'csv'
+		def matcher = params.id =~ /.+(\d+).*/
+		if (matcher.matches()) {
+			params.id = matcher[0][1]
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for CSV"
+		}
 	}
+
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)

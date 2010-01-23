@@ -37,6 +37,6 @@ class UrlMappings {
 		"/testRun/analysis/$id"(controller: "testRun", action: "results")
 		"/testRun/latest/$projectKey"(controller: "testRun", action: "results")
 		"/show/$projectKey"(controller: "project", action: "history")
-		"/testRun/csv/$id/$filename"(controller: "testRun", action: "outcomes")
+		"/testRun/csv/$filename"
 	}
 }
