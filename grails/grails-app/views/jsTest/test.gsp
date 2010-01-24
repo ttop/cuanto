@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="yuitest" file="yuitest-min.js" version="2.6.0"/>
 		<g:javascript src="cuanto/lruCache.js"/>
 		<g:javascript src="cuanto/test/lruCacheTest.js"/>
+		<g:javascript src="cuanto/timeParser.js"/>
+		<g:javascript src="cuanto/test/timeParserTest.js"/>
 	</head>
 	<body class=" yui-skin-sam">
 		<div id="testConsole">
@@ -56,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 			YAHOO.cuanto.test.TestSuite = new YAHOO.tool.TestSuite("Cuanto Test Suite");
 			YAHOO.cuanto.test.TestSuite.add(YAHOO.cuanto.test.LruCacheTest);
+			YAHOO.cuanto.test.TestSuite.add(YAHOO.cuanto.test.TimeParserTest);
 
 			YAHOO.util.Event.onDOMReady(function () {
 				var logger = new YAHOO.tool.TestLogger("testLogger");

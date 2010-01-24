@@ -48,7 +48,7 @@ class TestOutcome {
 	TestResult testResult
     AnalysisState analysisState
     String testOutput
-    BigDecimal duration
+    Long duration
     String owner
     Bug bug
     String note

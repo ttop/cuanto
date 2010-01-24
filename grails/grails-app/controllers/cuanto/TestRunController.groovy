@@ -223,10 +223,8 @@ class TestRunController {
 					jsonOutcomes << currentOutcome
 				}
 
-				def units = TestRun.get(params.id)?.project?.testType?.timeUnits
-
 				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
-					'offset': results?.offset, timeUnits: units]
+					'offset': results?.offset]
 				render myJson as JSON
 			}
 			xml {

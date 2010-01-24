@@ -22,6 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.projectHistory = function() {
+
+	var timeParser = new YAHOO.cuanto.TimeParser();
+
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
 		var currentRow = this.getSelectedRows()[0];
@@ -63,8 +66,8 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"failed", label: "Failed", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
-			{key:"totalDuration", label: "Duration", sortable:true},
-			{key:"averageDuration", label: "Avg Duration", sortable:true},
+			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
+			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAverageDuration},
 			{key:"testProperties", label: "Properties", sortable:false, formatter: propertyFormatter}
 		];
 	}
@@ -122,6 +125,13 @@ YAHOO.cuanto.projectHistory = function() {
 		elCell.innerHTML = out;
 	}
 
+	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
+		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
+	}
+
+	function formatAverageDuration(elCell, oRecord, oColumn, oData) {
+		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
+	}
 
 	return {
 		initHistoryTable: function() {

@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
 
 		<g:javascript src="cuanto/url.js"/>
+		<g:javascript src="cuanto/timeParser.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 
 		<script type="text/javascript">

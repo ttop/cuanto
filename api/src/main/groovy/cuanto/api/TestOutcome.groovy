@@ -26,7 +26,7 @@ class TestOutcome {
 	TestCase testCase
 	String testResult
     String testOutput
-    BigDecimal duration
+    Long duration
     String owner
     Bug bug
     String note

@@ -92,10 +92,7 @@ class InitializationService {
 			def typeList = []
 
 			typeList += new TestType(name: "JUnit", timeUnits: "sec")
-			typeList += new TestType(name: "NUnit")
 			typeList += new TestType(name: "TestNG", timeUnits: "ms")
-			typeList += new TestType(name: "Selenium")
-			typeList += new TestType(name: "Canoo")
 			typeList += new TestType(name: "Manual")
 
 			typeList.each {tp ->
@@ -129,7 +126,11 @@ class InitializationService {
 				new Project(name: "CuantoProd", projectKey: "CUANTO", projectGroup: grp,
 				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
-
+			if (!Project.findByName("CuantoNG")) {
+				def grp = ProjectGroup.findByName("Sample")
+				new Project(name: "CuantoNG", projectKey: "CNG", projectGroup: grp,
+				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
+			}
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
 		}
