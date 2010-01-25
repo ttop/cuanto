@@ -60,7 +60,7 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function getTestRunTableColumnDefs() {
 		return [
-			{key:"dateExecuted", label:"Test Run", sortable:true},
+			{key:"dateExecuted", label:"Test Run", sortable:true, width: 125},
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
 			{key:"failed", label: "Failed", sortable:true},
