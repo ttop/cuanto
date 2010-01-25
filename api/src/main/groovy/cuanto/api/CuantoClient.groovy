@@ -42,6 +42,7 @@ class CuantoClient implements ICuantoClient {
 
 	XStream xstream = new XStream();
 
+	final static String HTTP_USER_AGENT = 'Cuantoooo Java Client 2.4.0; Jakarta Commons-HttpClient/3.1'
 
 	public CuantoClient() {}
 
@@ -368,6 +369,7 @@ class CuantoClient implements ICuantoClient {
 		} else {
 			throw new CuantoClientException("Unknown HTTP method: ${methodType}")
 		}
+		method.setRequestHeader('User-Agent', HTTP_USER_AGENT)
 		return method
 
 	}
