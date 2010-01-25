@@ -23,13 +23,14 @@ package cuanto
 import java.text.SimpleDateFormat
 import cuanto.api.Link as ApiLink
 import cuanto.api.TestProperty as ApiProperty
-import cuanto.api.TestRun as ParsableTestRun
+import cuanto.api.TestRun as TestRunApi
 
 class TestRunService {
 
 	def dataService
 	def projectService
 	def statisticService
+	def sessionFactory
 
 	boolean transactional = false
 
@@ -163,7 +164,6 @@ class TestRunService {
 
 
 	private String getDateLegend(List testRuns) {
-
 		if (testRuns.size() == 1) {
 			return "|" + chartDateFormat.format(testRuns[0].dateExecuted) + "|"
 		} else {
@@ -242,7 +242,6 @@ class TestRunService {
 		 value set to false (e.g. Ignored, Unexecuted, etc) are included in the search.
 	*/
 	def getOutcomesForTestRun(TestRun testRun, Map params) {
-		//todo: move logic into service
 		def order
 		def sort
 
@@ -313,7 +312,11 @@ class TestRunService {
 
 
 	def countOutcomes(TestRun testRun) {
-		return testRun.outcomes.size()
+		if (testRun) {
+			return TestOutcome.countByTestRun(testRun)
+		} else {
+			return 0
+		}
 	}
 
 
@@ -362,8 +365,8 @@ class TestRunService {
 	}
 
 
-	// given a List of TestOutcomes, return a List of TestCases
-	def getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
+	// given a List of TestOutcomes, return a Set of TestCases
+	Set getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
 		def tCases = new HashSet()
 		outcomes.each {	tCases += it.testCase }
 		return tCases
@@ -371,16 +374,92 @@ class TestRunService {
 
 
 	def update(TestRun testRun, Map params) {
-		testRun.note = params.note
-		if (!params.valid) {
-			testRun.valid = false;
+		if (testRun) {
+			testRun.note = params.note
+			if (!params.valid) {
+				testRun.valid = false;
+			}
+
+			processTestPropertiesFromParameters(params, testRun)
+			processLinksFromParameters(params, testRun)
+
+			dataService.saveDomainObject testRun
+		}
+		return testRun
+	}
+
+
+	def update(TestRunApi testRun) {
+		TestRun.withTransaction {
+			TestRun origTestRun = TestRun.get(testRun.id)
+			if (!origTestRun) {
+				throw new CuantoException("Test run ID ${testRun.id} not found")
+			}
+
+			// update the TestRun values that can be updated
+			def valuesToUpdate = ["note", "valid"]
+			valuesToUpdate.each { String val ->
+				origTestRun.setProperty(val, testRun.getProperty(val))
+			}
+
+			updatePropertiesOfTestRun origTestRun, testRun
+			updateLinksOfTestRun origTestRun, testRun
+			dataService.saveDomainObject origTestRun
+		}
+	}
+
+
+	void updatePropertiesOfTestRun(TestRun origTestRun, TestRunApi testRun) {
+		testRun.testProperties?.each { tp ->
+			TestProperty origProp = origTestRun.testProperties?.find{ it.name == tp.name }
+			if (origProp) {
+				if (tp.value != origProp.value) {
+					origProp.value = tp.value
+					dataService.saveDomainObject origProp
+				}
+			} else {
+				// property not found in original, so add it
+				origTestRun.addToTestProperties(new TestProperty(tp.name, tp.value))
+			}
 		}
 
-		processTestPropertiesFromParameters(params, testRun)
-		processLinksFromParameters(params, testRun)
+		def propsToRemove = []
+		origTestRun.testProperties?.each { origProp ->
+			if (!testRun.testProperties?.find { it.name == origProp.name }) {
+				propsToRemove << origProp
+			}
+		}
 
-		dataService.saveDomainObject testRun
-		return testRun
+		propsToRemove.each {
+			origTestRun.removeFromTestProperties it
+		}
+	}
+
+
+	void updateLinksOfTestRun(TestRun origTestRun, TestRunApi testRun) {
+		testRun.links?.each { link ->
+			Link origLink = origTestRun.links?.find { it.description == link.description }
+			if (origLink) {
+				if (origLink.url != link.url) {
+					origLink.url = link.url
+					dataService.saveDomainObject origLink
+				}
+			} else {
+				// link not found in original, so add it
+				origTestRun.addToLinks(new Link(link.description, link.url))
+			}
+		}
+
+		def linksToRemove = []
+		origTestRun.links?.each { Link origLink ->
+			if (!testRun.links?.find {it.description == origLink.description}) {
+				linksToRemove << origLink
+			}
+		}
+
+		linksToRemove.each {
+			origTestRun.removeFromLinks it
+		}
 	}
 
 
@@ -513,8 +592,8 @@ class TestRunService {
 		if (params.dateExecuted) {
 			Date dateExecuted
 			String dateFormat
-			if (params.dateFormat) {
-				dateFormat = params.dateFormat
+			if (params.dateFormatter) {
+				dateFormat = params.dateFormatter
 			} else {
 				dateFormat = Defaults.dateFormat
 			}
@@ -597,7 +676,7 @@ class TestRunService {
 	}
 
 
-	TestRun createTestRun(ParsableTestRun pTestRun) {
+	TestRun createTestRun(TestRunApi pTestRun) {
 
 		def project = projectService.getProject(pTestRun.projectKey)
 		if (!project) {
@@ -731,6 +810,7 @@ class TestRunService {
 		return ["note", "name", "owner", "output"]
 	}
 
+
 	def extractValidParams(Map params) {
 		def validParamKeys = ["max", "order", "offset", "sort", "filter"]
 		def newPagingMap = [:]
@@ -743,5 +823,27 @@ class TestRunService {
 	}
 
 
+	List<TestRun> getTestRunsWithProperties(Project proj, List<TestProperty> props) {
+		if (!props) {
+			throw new CuantoException("No properties were specified")
+		}
+
+		def qryFromClause = "from cuanto.TestRun tr left join tr.testProperties prop_0 "
+		def qryWhereClause = "where tr.project = ? and prop_0.name=? and prop_0.value=? "
+		def qryArgs = [proj, props[0].name, props[0].value]
+		for (def idx = 1; idx < props.size(); idx++) {
+		    qryFromClause += "left join tr.testProperties prop_${idx} "
+			qryWhereClause += "and prop_${idx}.name=? and prop_${idx}.value=? "
+			qryArgs << props[idx].name
+			qryArgs << props[idx].value
+		}
+
+		def results = TestRun.executeQuery(qryFromClause + qryWhereClause + " order by tr.dateExecuted desc", qryArgs)
+		if (results == null || results?.size() == 0) {
+			return []
+		} else {
+			return results.collect { it[0] }
+		}
+	}
 
 }

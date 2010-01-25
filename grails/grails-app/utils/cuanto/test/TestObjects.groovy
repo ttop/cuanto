@@ -95,4 +95,9 @@ class TestObjects {
 	ProjectGroup getProjectGroup(groupName) {
 		return new ProjectGroup(name: groupName)
 	}
+
+	
+	TestProperty getTestProperty() {
+		return new TestProperty(wordGen.getCamelWords(3), wordGen.getSentence(3))
+	}
 }

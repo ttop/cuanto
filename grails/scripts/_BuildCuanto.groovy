@@ -46,7 +46,16 @@ if (cuantoVersion.toString() != pomXml.version.toString()) {
 target(cuantoapi: "Build the Cuanto API") {
 	println "Packaging the Cuanto API"
 
-	"mvn -f ${apiDir}/pom.xml clean package".execute().text
+	// Update the Cuanto Java Client version to match the grails application version.
+	String userAgent = "final static String HTTP_USER_AGENT = 'Cuanto Java Client ${cuantoVersion.toString()}; Jakarta Commons-HttpClient/3.1'"
+	ant.replaceregexp(file: "${apiDir}/src/main/groovy/cuanto/api/CuantoClient.groovy",
+		match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
+
+	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()
+	packageProcess.waitFor()
+	if (packageProcess.exitValue() != 0) {
+		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
+	}
 	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
 	ant.delete(verbose: "true", failonerror: "true") {
@@ -54,7 +63,6 @@ target(cuantoapi: "Build the Cuanto API") {
 	}
 	
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	//def origClientJar = "${apiDir}/target/original-${pomXml.artifactId}-${pomXml.version}.jar"
 	ant.copy(file: distClientJar, todir: "lib", verbose: "true")
 	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
 	ant.copy(todir: targetApiDir, verbose: "true") {

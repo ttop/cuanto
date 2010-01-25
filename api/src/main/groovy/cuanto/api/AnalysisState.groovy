@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,34 +18,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
 
-import cuanto.api.AnalysisState as AnalysisStateApi
+package cuanto.api
 
-class AnalysisState {
-
+public class AnalysisState {
 	String name
 	Boolean isAnalyzed
 	Boolean isDefault
 	Boolean isBug
 
-	static mapping = {
-		cache usage:'read-only'
-		//cache: 'nonstrict-read-write' // change to this if an interface is introduced to create AnalysisStates
-	}
 
-	
 	String toString() {
 		name
-	}
-
-
-	AnalysisStateApi toAnalysisStateApi() {
-		def state = new AnalysisStateApi()
-		state.name = this.name
-		state.isAnalyzed = this.isAnalyzed
-		state.isDefault = this.isDefault
-		state.isBug = this.isBug
-		return state
 	}
 }

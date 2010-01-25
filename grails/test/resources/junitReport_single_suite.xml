@@ -146,7 +146,7 @@
   <testcase classname="cuanto.test.packageOne.SampleTest" name="Kesey" time="0.616" />
   <testcase classname="cuanto.test.packageOne.SampleTest" name="Greene" time="0.043" />
   <testcase classname="cuanto.test.packageOne.SampleTest" name="Eliot" time="0.03" />
-  <testcase classname="cuanto.test.packageOne.SampleTest" name="Chaucer" time="0.49" />
+  <testcase classname="cuanto.test.packageOne.SampleTest" name="Chaucer" time="1,020.49" />
   <testcase classname="cuanto.test.packageOne.SampleTest" name="Bellow" time="0.687">
     <error message="Test error" type="java.lang.RuntimeException">java.lang.RuntimeException: Test error http://tpjira/browse/SAUL
 	at cuanto.test.packageOne.SampleTest.testMain(SampleTest.java:39)

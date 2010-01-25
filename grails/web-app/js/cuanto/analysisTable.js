@@ -34,6 +34,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var ovrlyMgr = new YAHOO.widget.OverlayManager();
 	var outputProxy = new YAHOO.cuanto.OutputProxy();
 	var outputPanel = new YAHOO.cuanto.OutputPanel(outputProxy);
+	var timeParser = new YAHOO.cuanto.TimeParser();
 	var cacheOutputTimer;
 	var historyImgUrl =  YAHOO.cuanto.urls.get('historyImg');
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
@@ -330,7 +331,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
-			{key:"duration", label:"Duration", sortable:true},
+			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
 			{key:"bug", label: bugColumnLabel, formatter:YAHOO.cuanto.format.formatBug, sortable:true,
 				editor: bugEditor},
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
@@ -852,6 +853,10 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			cols["parameters"] = true;
 		}
 		return cols;
+	}
+
+	function formatDuration(elCell, oRecord, oColumn, oData) {
+		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
 	}
 };
 

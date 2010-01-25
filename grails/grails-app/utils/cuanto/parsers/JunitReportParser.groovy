@@ -75,7 +75,9 @@ class JunitReportParser implements CuantoTestParser {
 				outcome.testResult = "pass"
 			}
 
-			outcome.duration = new BigDecimal(tc.'@time')
+			def time = tc.'@time'.replaceAll(",", "")
+			def dec = new BigDecimal(time) * 1000
+			outcome.duration = dec.toLong()
 			outcome.testCase = new ParsableTestCase()
 			outcome.testCase.packageName = testsuite.'@name'
 			outcome.testCase.testName = getTestName(tc.'@name')
@@ -102,8 +104,9 @@ class JunitReportParser implements CuantoTestParser {
 				outcome.testCase.parameters = getTestParameters(testcase.'@name')
 				outcome.testCase.fullName = outcome.testCase.packageName + "." + outcome.testCase.testName
 
-				def tTime = testcase.'@time'.replaceAll(",", "")
-				outcome.duration = new BigDecimal(tTime)
+				def time = testcase.'@time'.replaceAll(",", "")
+				def dec = new BigDecimal(time) * 1000 
+				outcome.duration = dec.toLong()
 
 				if (testcase.failure) {
 					outcome.testResult = "fail"

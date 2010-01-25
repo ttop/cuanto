@@ -21,6 +21,8 @@ class TestNgParserTests extends GroovyTestCase {
 		assertEquals "Wrong name", "test1", outcomes[0].testCase.testName
 		assertEquals "Wrong duration", 23, outcomes[0].duration
 		assertEquals "Wrong description", "someDescription2", outcomes[0].testCase.description
+		assertEquals "Wrong startedAt", "2007-05-28T12:14:37Z", parser.dateFormatter.format(outcomes[0].startedAt)
+		assertEquals "Wrong finishedAt", "2007-05-28T12:14:37Z", parser.dateFormatter.format(outcomes[0].finishedAt)
 
 		assertEquals "Wrong result", "Pass", outcomes[1].testResult
 		assertEquals "Wrong fullname", "com.test.TestOne.test2", outcomes[1].testCase.fullName
@@ -28,6 +30,8 @@ class TestNgParserTests extends GroovyTestCase {
 		assertEquals "Wrong duration", 0, outcomes[1].duration
 		assertEquals "Wrong description", "someDescription1", outcomes[1].testCase.description
 		assertEquals "Wrong filetype", "TestNG", parser.testType
+		assertEquals "Wrong startedAt", "2007-05-28T12:14:37Z", parser.dateFormatter.format(outcomes[0].startedAt)
+		assertEquals "Wrong finishedAt", "2007-05-28T12:14:37Z", parser.dateFormatter.format(outcomes[0].finishedAt)
 	}
 
 

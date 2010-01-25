@@ -1,18 +1,7 @@
 package cuanto
 
-import cuanto.api.CuantoClient
 import cuanto.WordGenerator
-import groovy.mock.interceptor.StubFor
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.methods.PostMethod
-import cuanto.api.Link
-import cuanto.api.TestProperty
-import cuanto.api.TestRun
-import cuanto.api.TestRun
-import cuanto.api.CuantoClient
-import cuanto.api.CuantoClientException
-import cuanto.api.TestCase
-import cuanto.api.TestOutcome
+import cuanto.api.*
 
 /**
  * User: Todd Wells
@@ -20,14 +9,14 @@ import cuanto.api.TestOutcome
  * Time: 5:54:29 PM
  * 
  */
-class CuantoClientTest extends GroovyTestCase{
+class CuantoClientTest extends GroovyTestCase {
 
 	String serverUrl = "http://localhost:8080/cuanto"
 	CuantoClient client = new CuantoClient(serverUrl)
 
 	WordGenerator wordGen = new WordGenerator()
 	String projectName
-	def projectId
+	Long projectId
 	String projectKey
 
 	def testUser = "admin"
@@ -57,39 +46,30 @@ class CuantoClientTest extends GroovyTestCase{
 		def localName = wordGen.getSentence(3)
 		def projKey = wordGen.getSentence(2).replaceAll("\\s+", "")
 		def localProjectId = client.createProject(localName, projKey, "JUnit")
-		def projectInfo = client.getProject(localProjectId)
-		assertEquals "wrong project name", localName, projectInfo.name
-		assertEquals "wrong project key", projKey, projectInfo.key
+		def project = client.getProject(localProjectId)
+		assertEquals "wrong project name", localName, project.name
+		assertEquals "wrong project key", projKey, project.projectKey
+
+		project = client.getProject(projKey)
+		assertEquals "wrong project name", localName, project.name
+		assertEquals "wrong project key", projKey, project.projectKey
+
 		client.deleteProject(localProjectId)
-		projectInfo = client.getProject(localProjectId)
-		assertNull projectInfo.id
+		assertNull client.getProject(localProjectId)
+		assertNull client.getProject(projKey)
 	}
 
 
-	void testCreateAndDeleteProjectStubbed() {
+	void testCreateAndDeleteProjectTwo() {
 		def localName = wordGen.getSentence(3)
-		def projKey = wordGen.getSentence(3).replaceAll("\\s+", "")
-		def fakedId = 12345
-
-		def stubHttpClient = new StubFor(HttpClient)
-		stubHttpClient.demand.executeMethod { 200 }
-
-		def stubPost = new StubFor(PostMethod)
-		stubPost.demand.addRequestHeader(1..1) { name, value ->	}
-		stubPost.demand.addParameter(3..3) { name, value ->	}
-		stubPost.demand.releaseConnection { }
-		stubPost.demand.getResponseBodyAsStream {
-			def exp = new Expando()
-			exp.text = fakedId.toString()
-			return exp
-		}
-
-		stubHttpClient.use {
-			stubPost.use {
-				def localProjectId = client.createProject(localName, projKey, "JUnit")
-				assertEquals "Wrong id", fakedId, localProjectId
-			}
-		}
+		def projKey = wordGen.getSentence(2).replaceAll("\\s+", "")
+		def proj = new Project(name:localName, projectKey: projKey, testType: "JUnit")
+		def localProjectId = client.createProject(proj)
+		def fetchedProject = client.getProject(localProjectId)
+		assertEquals "wrong project name", localName, fetchedProject.name
+		assertEquals "wrong project key", projKey, fetchedProject.projectKey
+		client.deleteProject(localProjectId)
+		assertNull client.getProject(localProjectId)
 	}
 
 
@@ -156,10 +136,29 @@ class CuantoClientTest extends GroovyTestCase{
 			assertEquals run.testProperties[index].name, prop.name
 			assertEquals run.testProperties[index].value, prop.value
 		}
+
+		TestRun runTwo = new TestRun(projectName)
+		runTwo.testProperties << new TestProperty("Artist", "Da Vinci")
+		runTwo.testProperties << new TestProperty("Musician", "Muddy Waters")
+		client.createTestRun(runTwo)
+
+		List<TestRun> runs = client.getTestRunsWithProperties(projectId, runTwo.testProperties)
+		assertEquals "Wrong number of test runs", 1, runs.size()
+		assertEquals "Wrong test run", runTwo.id, runs[0].id
+
+		runs = client.getTestRunsWithProperties(projectId, testRun.testProperties)
+		assertEquals "Wrong number of test runs", 1, runs.size()
+		assertEquals "Wrong test run", testRun.id, runs[0].id
+
+		runs = client.getTestRunsWithProperties(projectId, [run.testProperties[0]])
+		assertEquals "Wrong number of test runs", 2, runs.size()
+		assertNotNull runs.find { it.id == testRun.id }
+		assertNotNull runs.find { it.id == runTwo.id }
+
 	}
 
 
-	void testCreateTestRun() {
+	void testCreateTestAndDeleteTestRun() {
 		def createdTestRun = new TestRun(projectKey)
 		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
 		createdTestRun.links << new Link("Info", "http://projectInfo")
@@ -185,13 +184,53 @@ class CuantoClientTest extends GroovyTestCase{
 			assertEquals createdTestRun.testProperties[index].name, prop.name
 			assertEquals createdTestRun.testProperties[index].value, prop.value
 		}
+
+		client.deleteTestRun testRun.id
+		def fetchedRun = client.getTestRun(testRun.id)
+		assertNull fetchedRun
 	}
 
 
+	void testGetTestCase() {
+		Long testRunId = client.createTestRun(new TestRun(projectName))
+		File fileToSubmit = getFile("junitReport_single_suite.xml")
+		client.submitFile(fileToSubmit, testRunId)
+		def stats = waitForTestRunStats(client, testRunId, "34")
+
+		def fetchedCase = client.getTestCase(projectId, "cuanto.test.packageOne.SampleTest", "Stephenson")
+		assertNotNull "No test case fetched", fetchedCase
+		assertEquals "Wrong package", "cuanto.test.packageOne.SampleTest", fetchedCase.packageName
+		assertEquals "Wrong test name", "Stephenson", fetchedCase.testName
+
+		assertNull client.getTestCase(projectId, "non.existent.TestCase", "Stephenson")
+		assertNull client.getTestCase(projectId, "cuanto.test.packageOne.SampleTest", "Stephenson", "foo")
+		
+		shouldFail(CuantoClientException) {
+			client.getTestCase(3434L, "blah", "blah")
+		}
+
+		def testCases = []
+		1.upto(3) {
+			def tc = new TestCase(packageName: wordGen.getSentence(3).replaceAll(" ", "."),
+				testName: wordGen.getSentence(2), parameters: wordGen.getSentence(3))
+			testCases << tc
+			def testOutcome = new TestOutcome(testCase: tc, testResult: "Pass")
+			client.createTestOutcomeForProject(testOutcome, projectId)
+		}
+
+		testCases.each { TestCase tc ->
+			def fetchedTc = client.getTestCase(projectId, tc.packageName, tc.testName,  tc.parameters)
+			assertEquals "package name", tc.packageName, fetchedTc.packageName
+			assertEquals "test name", tc.testName, fetchedTc.testName
+			assertEquals "parameters", tc.parameters, fetchedTc.parameters
+		}
+	}
+
+	
 	void testSubmitSingleSuite() {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
-		client.submit(fileToSubmit, testRunId)
+		client.submitFile(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "34")
 		assertEquals "34", stats.tests
 		assertEquals "3", stats.failed
@@ -202,7 +241,7 @@ class CuantoClientTest extends GroovyTestCase{
 	void testSubmitMultipleSuite() {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
-		client.submit(fileToSubmit, testRunId)
+		client.submitFile(fileToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "56")
 		assertEquals "56", stats.tests
 		assertEquals "15", stats.failed
@@ -216,7 +255,7 @@ class CuantoClientTest extends GroovyTestCase{
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
 
-		client.submit(filesToSubmit, testRunId)
+		client.submitFiles(filesToSubmit, testRunId)
 		def stats = waitForTestRunStats(client, testRunId, "68")
 		assertEquals "68", stats.tests
 		assertEquals "6", stats.failed
@@ -224,7 +263,7 @@ class CuantoClientTest extends GroovyTestCase{
 	}
 
 
-	void testSubmitOneResult() {
+	void testSubmitOneOutcomeWithTestRun() {
 		def testRunId = client.createTestRun(new TestRun(projectKey))
 
 		TestCase testCase = new TestCase()
@@ -235,7 +274,7 @@ class CuantoClientTest extends GroovyTestCase{
 		outcome.testCase = testCase
 		outcome.testResult = "Pass"
 
-		def outcomeId = client.submit(outcome, testRunId)
+		def outcomeId = client.createTestOutcomeForTestRun(outcome, testRunId)
 		assertNotNull outcomeId
 
 		def stats = waitForTestRunStats(client, testRunId, "1")
@@ -243,7 +282,61 @@ class CuantoClientTest extends GroovyTestCase{
 		assertEquals "Wrong total tests", "1", stats?.tests
 		assertEquals "Wrong passed", "1", stats?.passed
 		assertEquals "Wrong failed", "0", stats?.failed
+
+		client.deleteTestOutcome outcomeId
+		def fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertEquals "Outcome not deleted", null, fetchedOutcome
 	}
+
+
+	void testUpdateOneOutcome() {
+		TestOutcome origApiOutcome = new TestOutcome()
+		origApiOutcome.testCase = new TestCase(project: projectKey, packageName: "foo.bar", testName: "testUpdate")
+		origApiOutcome.setDuration 200
+		origApiOutcome.setTestResult "Pass"
+		origApiOutcome.setNote wordGen.getSentence(13)
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		def outcomeId = client.createTestOutcomeForTestRun(origApiOutcome, testRunId)
+
+		TestOutcome changedApiOutcome = new TestOutcome()
+		["testCase", "duration", "testResult", "note"].each {
+			changedApiOutcome.setProperty it, origApiOutcome.getProperty(it)
+		}
+
+		changedApiOutcome.note = "New Note!"
+		changedApiOutcome.testOutput = wordGen.getSentence(15)
+		changedApiOutcome.id = outcomeId
+		changedApiOutcome.testResult = "Fail"
+
+		client.updateTestOutcome(changedApiOutcome)
+
+		TestOutcome fetchedApiOutcome = client.getTestOutcome(outcomeId)
+		assertEquals "Note", changedApiOutcome.note, fetchedApiOutcome.note
+		assertEquals "output", changedApiOutcome.testOutput, fetchedApiOutcome.testOutput
+		assertEquals "test result", changedApiOutcome.testResult, fetchedApiOutcome.testResult 
+	}
+	
+
+	void testSubmitOneOutcomeWithoutTestRun() {
+		TestCase testCase = new TestCase()
+		testCase.packageName = "foo.bar.blah"
+		testCase.testName = "submitOneTest"
+		testCase.fullName = testCase.packageName + "." + testCase.testName
+
+		TestOutcome outcome = new TestOutcome()
+		outcome.testCase = testCase
+		outcome.testResult = "Pass"
+
+		def outcomeId = client.createTestOutcomeForProject(outcome, projectId)
+		assertNotNull outcomeId
+
+		def fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertEquals outcome.testCase.packageName, fetchedOutcome.testCase.packageName
+		assertEquals outcome.testCase.testName, fetchedOutcome.testCase.testName
+		assertEquals outcome.testResult, fetchedOutcome.testResult
+	}
+
 
 	void testSubmitManyMultiThreaded() {
 		final int numSubmissions = 100
@@ -266,7 +359,7 @@ class CuantoClientTest extends GroovyTestCase{
 					outcome.testResult = "Pass"
 
 					long start = System.currentTimeMillis();
-					client.submit(outcome, testRunId)
+					client.createTestOutcomeForTestRun(outcome, testRunId)
 					long duration = System.currentTimeMillis() - start;
 
 					synchronized(idx) {
@@ -282,6 +375,56 @@ class CuantoClientTest extends GroovyTestCase{
 		}
 		def totalEnd = new Date().time
 		println "total time is ${totalEnd - totalStart}"
+	}
+
+
+	void testGetTestOutcome() {
+		TestOutcome origApiOutcome = new TestOutcome()
+		origApiOutcome.testCase = new TestCase(project: projectKey, packageName: "foo.bar", testName: "testUpdate")
+		origApiOutcome.setDuration 200
+		origApiOutcome.setTestResult "Pass"
+		origApiOutcome.setNote wordGen.getSentence(13)
+
+		def testRunId = client.createTestRun(new TestRun(projectKey))
+		def outcomeId = client.createTestOutcomeForTestRun(origApiOutcome, testRunId)
+		def testCase = client.getTestCase(projectId, origApiOutcome.testCase.packageName, origApiOutcome.testCase.testName)
+		def fetchedOutcomes = client.getTestOutcomes(testRunId, testCase.id)
+
+		assertNotNull fetchedOutcomes
+		assertEquals 1, fetchedOutcomes.size()
+		assertEquals "Outcome ID", outcomeId, fetchedOutcomes[0].id
+	}
+
+	
+	void testUpdateTestRun() {
+		shouldFail(NullPointerException) {
+			client.updateTestRun(null) 
+		}
+		
+		def createdTestRun = new TestRun(projectKey)
+		createdTestRun.links << new Link("Code Coverage", "http://cobertura")
+		createdTestRun.links << new Link("Info", "http://projectInfo")
+		createdTestRun.testProperties << new TestProperty("Artist", "Da Vinci")
+		createdTestRun.testProperties << new TestProperty("Musician", "Paul McCartney")
+		createdTestRun.note = wordGen.getSentence(3)
+
+		Long testRunId = client.createTestRun(createdTestRun)
+		assertNotNull "No testRunId returned", testRunId
+
+		TestRun testRun = new TestRun(projectKey)
+		testRun.links << new Link("Info", "http://projectInfo2")
+		testRun.testProperties << new TestProperty("Musician", "John Lennon")
+		testRun.note = wordGen.getSentence(3)
+		testRun.id = testRunId
+
+		client.updateTestRun(testRun)
+
+		TestRun fetchedRun = client.getTestRun(testRunId)
+		assertEquals "links size", 1, fetchedRun.links?.size()
+		assertEquals "link", testRun.links[0].url, fetchedRun.links[0].url
+	    assertEquals "testProperties size", 1, fetchedRun.testProperties?.size()
+		assertEquals "testProperty", testRun.testProperties[0].value, fetchedRun.testProperties[0].value
+		assertEquals "note", testRun.note, fetchedRun.note
 	}
 
 
@@ -304,4 +447,31 @@ class CuantoClientTest extends GroovyTestCase{
 		}
 		return stats
 	}
+
+
+	void testGetAllTestOutcomes() {
+		Long testRunId = client.createTestRun(new TestRun(projectName))
+		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
+		client.submitFile(fileToSubmit, testRunId)
+
+		def stats = waitForTestRunStats(client, testRunId, "56")
+		assertEquals "56", stats.tests
+
+		def outcomes = client.getAllTestOutcomes(testRunId)
+		assertEquals "Wrong number of outcomes", 56, outcomes.size()
+
+		def failed = 0
+		def passed = 0
+		outcomes.each { TestOutcome out ->
+			if (out.testResult == "Fail" || out.testResult == "Error") {
+				failed++
+			} else if (out.testResult == "Pass") {
+				passed++
+			}
+		}
+		assertEquals "failed count", 15, failed
+		assertEquals "passed count", 41, passed
+	}
+
+
 }

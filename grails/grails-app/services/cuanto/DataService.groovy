@@ -151,15 +151,20 @@ class DataService {
 
 
 	def findMatchingTestCaseForProject(Project project, TestCase testcase) {
-		def query = "from cuanto.TestCase as tc where tc.project=? and tc.fullName=? "
-		if (testcase.parameters == null) {
-			query += "and is null (tc.parameters)"
-			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=?",
-				[project, testcase.fullName])
+		if (testcase) {
+			if (!testcase.fullName) {
+				testcase.fullName = testcase.packageName + "." + testcase.testName
+			}
+			def query = "from cuanto.TestCase as tc where tc.project=? and tc.fullName=? "
+			if (testcase.parameters == null) {
+				query += "and tc.parameters is null"
+				return TestCase.find(query, [project, testcase.fullName])
+			} else {
+				query += "and tc.parameters=?"
+				return TestCase.find(query,	[project, testcase.fullName, testcase.parameters])
+			}
 		} else {
-			query += "and tc.parameters=?"
-			return TestCase.find("from cuanto.TestCase as tc where tc.project=? and tc.fullName=? and tc.parameters=?",
-				[project, testcase.fullName, testcase.parameters])
+			throw new CuantoException("No test case specified")
 		}
 	}
 
@@ -173,6 +178,8 @@ class DataService {
 
 
 	def saveTestOutcomes(TestRun testRun, List outcomes) {
+
+		//todo: remove testRun argument
 		for (outcome in outcomes) {
 			saveDomainObject outcome 
 		}
@@ -356,6 +363,11 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 		} else {
 			return null
 		}
+	}
+
+
+	List<TestOutcome> getTestOutcomes(TestCase testCase, TestRun testRun) {
+		TestOutcome.findAllByTestCaseAndTestRun(testCase, testRun, [sort: "finishedAt", order: "desc"])
 	}
 
 
@@ -591,7 +603,16 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 
 	def deleteTestCasesForProject(project) {
+		//TestOutcome.executeUpdate("delete cuanto.TestOutcome out where out.testCase.project = ?", [project])
+		def cases = getTestCases(project)
+		cases.each { TestCase tc ->
+			def outcomes = TestOutcome.findAllByTestCase(tc)
+			outcomes.each { outcome ->
+				outcome.delete(flush:true)
+			}
+		}
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
+		
 	}
 
 

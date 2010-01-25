@@ -33,7 +33,7 @@ class TestRun {
 	Boolean valid
 	List<Link> links = []
 	List<TestProperty> testProperties = []
-
+	Long id
 
 
 	TestRun() {}

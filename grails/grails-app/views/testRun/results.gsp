@@ -58,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/lruCache.js"/>
 		<g:javascript src="cuanto/outputProxy.js"/>
 		<g:javascript src="cuanto/testoutput.js"/>
+		<g:javascript src="cuanto/timeParser.js"/>
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>

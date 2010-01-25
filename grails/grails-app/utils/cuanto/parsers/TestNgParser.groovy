@@ -22,6 +22,7 @@ package cuanto.parsers
 
 import cuanto.api.TestOutcome as ParsableTestOutcome
 import cuanto.api.TestCase as ParsableTestCase
+import java.text.SimpleDateFormat
 
 /**
  * User: Todd Wells
@@ -31,6 +32,7 @@ import cuanto.api.TestCase as ParsableTestCase
  */
 class TestNgParser implements CuantoTestParser{
 
+	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
 	public List<ParsableTestOutcome> parseFile(File file) {
 		parseStream(file.newInputStream())
@@ -67,6 +69,8 @@ class TestNgParser implements CuantoTestParser{
 								out.testResult = "Skip"
 							}
 
+	                        out.startedAt = dateFormatter.parse(testMethod.'@started-at')
+	                        out.finishedAt = dateFormatter.parse(testMethod.'@finished-at')
 							out.testCase = new ParsableTestCase()
 							out.testCase.packageName = testClass.'@name'
 							out.testCase.fullName = testClass.'@name' + "." + testMethod.'@name'

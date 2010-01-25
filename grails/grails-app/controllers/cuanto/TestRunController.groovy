@@ -23,7 +23,7 @@ package cuanto
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestRun as ParsableTestRun
+import cuanto.api.TestRun as TestRunApi
 
 class TestRunController {
 	def parsingService
@@ -32,6 +32,8 @@ class TestRunController {
 	def testRunService
 	def testCaseFormatterRegistry
 	def statisticService
+
+	XStream xstream = new XStream()
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
@@ -98,12 +100,31 @@ class TestRunController {
 
 
 	def update = {
-		def testRun = TestRun.get(params.id)
-		if (testRun) {
-			testRun = testRunService.update(testRun, params)
-			flash.message = "Test Run updated."
+		if (request.format == 'form') {
+			def testRun = TestRun.get(params.id)
+			if (testRun) {
+				testRun = testRunService.update(testRun, params)
+				flash.message = "Test Run updated."
+			}
+			redirect(controller: "testRun", action: edit, id: testRun?.id)
+		} else if (request.format == 'xml') {
+			try {
+				def testRunApi = (TestRunApi) xstream.fromXML(request.inputStream)
+				if (testRunApi) {
+					testRunService.update(testRunApi)
+					render "OK"
+				} else {
+					response.status = response.SC_NOT_FOUND
+					render "Did not parse test run"
+				}
+			} catch (Exception e) {
+				response.status = response.SC_INTERNAL_SERVER_ERROR
+				render e.message
+			}
+		} else {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unable to process update" 
 		}
-		redirect(controller: "testRun", action: edit, id: testRun?.id)
 	}
 
 
@@ -143,75 +164,50 @@ class TestRunController {
 
 
 	def submitSingleTest = {
-		def testRunId = Long.valueOf(request.getHeader("Cuanto-TestRun-Id"))
-		def testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId)
-		render testOutcome.id
+		def testRunId = null
+		def projectId = null
+
+		String testRunHeader = request.getHeader("Cuanto-TestRun-Id")
+		if (testRunHeader) {
+			testRunId = Long.valueOf(testRunHeader)
+		}
+
+		String projectHeader = request.getHeader("Cuanto-Project-Id")
+		if (projectHeader) {
+			projectId = Long.valueOf(projectHeader)
+		}
+
+		def testOutcome
+		try {
+			testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId, projectId)
+			render testOutcome?.id
+
+		} catch (ParsingException e) {
+		    response.status = response.SC_BAD_REQUEST
+			render e.message
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
 	}
 
 
 	def outcomes = {
-		def queryParams = [:]
+		Map results = testOutcomeService.getTestOutcomes(params)
 
-		def possibleQueryParams = ["sort", "order", "max", "offset", "filter"]
-		possibleQueryParams.each {possibleParam ->
-			if (params.containsKey(possibleParam)) {
-				queryParams[possibleParam] = params[possibleParam]
-			}
-		}
-
-		def outs
-		def totalCount
-		def recordStartIndex
-		def testRun = TestRun.get(params.id)
-		def outputChars = params.outputChars ? params.outputChars : 180
-
-		if (!testRun) {
-			redirect controller: 'project', action: 'list'
-		} else {
-			if (params.containsKey("recordStartIndex")) {
-				recordStartIndex = Integer.valueOf(params.recordStartIndex)
-			} else if (params.containsKey("offset")) {
-				recordStartIndex = Integer.valueOf(params.offset)
-			} else {
-				recordStartIndex = 0
-			}
-
-			def filter = params.filter
-
-			if (params.qry) {
-				totalCount = testRunService.countTestOutcomesBySearch(params)
-				outs = testRunService.searchTestOutcomes(params)
-			} else if (filter?.equalsIgnoreCase("allFailures")) {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = dataService.countFailuresForTestRun(testRun)
-			} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
-			} else if (filter?.equalsIgnoreCase("newFailures")) {
-				outs = testRunService.getNewFailures(testRun, queryParams)
-				totalCount = testRunService.countNewFailuresForTestRun(testRun)
-			} else if (params.outcome) {
-				outs = [dataService.getTestOutcome(params.outcome)]
-				recordStartIndex = (Integer.valueOf(params.recordStartIndex))
-				totalCount = params.totalCount
-			} else {
-				outs = testRunService.getOutcomesForTestRun(testRun, queryParams)
-				totalCount = testRunService.countOutcomes(testRun)
-			}
-		}
 		withFormat {
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
-				outs.each {outcome ->
+				results?.testOutcomes?.each {outcome ->
 					def currentOutcome = [
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
-						duration: outcome.duration, owner: outcome.owner,
+						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
 						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
 					]
 
 					if (outcome.testOutput) {
-						def maxChars = outcome.testOutput.size() > outputChars ? outputChars : outcome.testOutput.size()
+						def maxChars = outcome.testOutput.size() > results?.outputChars ? results?.outputChars : outcome.testOutput.size()
 						currentOutcome.output = outcome.testOutput[0..maxChars - 1]
 					} else {
 						currentOutcome.output = null
@@ -227,13 +223,65 @@ class TestRunController {
 					jsonOutcomes << currentOutcome
 				}
 
-				def myJson = ['totalCount': totalCount, count: outs?.size(), testOutcomes: jsonOutcomes,
-					'offset': recordStartIndex]
+				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
+					'offset': results?.offset]
 				render myJson as JSON
+			}
+			xml {
+				def outcomesToRender = results?.testOutcomes.collect{it.toTestOutcomeApi()}
+				response.contentType = "text/xml"
+			    render xstream.toXML(outcomesToRender)
+			}
+			csv {
+				response.contentType = "text/csv"
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, ",")
+			}
+			tsv {
+				response.contentType = 'text/tab-separated-values'
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, "\t")
 			}
 		}
 	}
+	
 
+	def csv = {
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'csv'
+			params.id = testRunId
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for CSV"
+		}
+	}
+
+
+	def tab = {
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'tsv'
+			params.id = testRunId
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for CSV"
+		}
+	}
+
+
+	def xml = {
+		def testRunId = getTestRunIdFromFilename(params.id)
+		if (testRunId) {
+			params.format = 'xml'
+			params.id = testRunId
+			forward(action: 'outcomes', params: params)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't parse TestRun ID for XML"
+		}
+	}
+	
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)
@@ -293,8 +341,12 @@ class TestRunController {
 				render testRunMap as JSON
 			}
 			xml {
-				XStream xstream = new XStream()
-				render xstream.toXML(testRun.toParsableTestRun())
+				if (testRun) {
+					render xstream.toXML(testRun.toTestRunApi())
+				} else {
+					response.status = response.SC_NOT_FOUND
+					render "Test Run with id parameter of ${params.id} was not found"
+				}
 			}
 		}
 	}
@@ -378,27 +430,26 @@ class TestRunController {
 
 	def create = {
 		if (!params.project) {
-			response.status = 404 // todo is this the right response code? how about invalid request?
+			response.status = response.SC_NOT_FOUND // todo is this the right response code? how about invalid request?
 			render "project parameter is required"
 		} else {
 			try {
 				def run = testRunService.createTestRun(params)
 				render(view: "create", model: ['testRunId': run.id])
 			} catch (CuantoException e) {
-				response.status = 403
+				response.status = response.SC_INTERNAL_SERVER_ERROR
 				render e.getMessage()
 			}
 		}
 	}
 
 	def createXml = {
-		XStream xstream = new XStream()
-		def testRun = (ParsableTestRun) xstream.fromXML(request.inputStream)
+		def testRun = (TestRunApi) xstream.fromXML(request.inputStream)
 		try {
 			def parsedTestRun = testRunService.createTestRun(testRun)
 			render(view: "create", model: ['testRunId': parsedTestRun.id])
 		} catch (CuantoException e) {
-			response.status = 403
+			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render e.getMessage()
 		}
 	}
@@ -433,5 +484,42 @@ class TestRunController {
 		}
 		javascriptList += "]"
 		return javascriptList
+	}
+
+
+	def getWithProperties = {
+		def testProps = []
+		Project project = Project.get(params.project)
+		if (project) {
+			params.each { String paramName, String paramValue ->
+				def propMatcher = (paramName =~ /^prop\[(\d+)]/)
+				if (propMatcher.matches()) {
+					def propIndex = propMatcher[0][1] as Integer
+					def propValue = params["propValue[${propIndex}]"]
+					testProps << new TestProperty(paramValue, propValue)
+				}
+			}
+			List testRuns = testRunService.getTestRunsWithProperties(project, testProps)
+			def toRender = testRuns.collect {it.toTestRunApi()}
+			render xstream.toXML(toRender)
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "Couldn't find project ${params?.project}"
+		}
+
+	}
+
+	def export = {
+		[testRun: TestRun.get(params.id)]
+	}
+
+
+	private def getTestRunIdFromFilename(filename) {
+		def matcher = filename =~ /.+(\d+).*/
+		if (matcher.matches()) {
+			return matcher[0][1]
+		} else {
+			return null
+		}
 	}
 }

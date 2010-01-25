@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto
-import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.TestCase as ParsableTestCase
+import cuanto.api.TestOutcome as TestOutcomeApi
 
 class TestOutcome {
+
 	static constraints = {
 	    testCase(nullable:false)
 	    testResult(nullable:false)
@@ -33,6 +33,10 @@ class TestOutcome {
 	    note(blank:true, nullable:true)
 	    owner(blank:true, nullable:true)
 		testOutput(nullable:true, blank:true, maxSize:10000)
+		startedAt(nullable:true)
+		finishedAt(nullable:true)
+		dateCreated(nullable:true)
+		lastUpdated(nullable:true)
     }
 	static mapping = {
 		cache true
@@ -41,24 +45,33 @@ class TestOutcome {
 
 	TestCase testCase
 	TestRun testRun
-    TestResult testResult
+	TestResult testResult
     AnalysisState analysisState
     String testOutput
-    BigDecimal duration
+    Long duration
     String owner
     Bug bug
     String note
-	
+	Date startedAt // when the test started
+	Date finishedAt // when the test finished
+	Date dateCreated  // this is the timestamp for when the database record was created
+	Date lastUpdated // timestamp for when the database record was last updated
 
-	ParsableTestOutcome toParsableTestOutcome() {
-		ParsableTestOutcome out = new ParsableTestOutcome()
-		out.testCase = this.testCase.toParsableTestCase()
-		out.testResult = this.testResult.toString()
+	TestOutcomeApi toTestOutcomeApi() {
+		TestOutcomeApi out = new TestOutcomeApi()
+		out.testCase = this.testCase?.toTestCaseApi()
+		out.testResult = this.testResult?.toString()
 		out.testOutput = this.testOutput
 		out.duration = this.duration
 		out.owner = this.owner
-		out.bug = this.bug?.url ? this.bug?.url : this.bug?.title
+		out.bug = this.bug?.toBugApi()
 		out.note = this.note
+		out.id = this.id
+		out.analysisState = this.analysisState?.toAnalysisStateApi()
+		out.startedAt = this.startedAt
+		out.finishedAt = this.finishedAt
+		out.dateCreated = this.dateCreated
+		out.lastUpdated = this.lastUpdated
 		return out
 	}
 }

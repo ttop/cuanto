@@ -2,6 +2,11 @@ package cuanto
 
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
+import cuanto.api.TestCase as TestCaseApi
+import cuanto.api.TestOutcome as TestOutcomeApi
+import cuanto.api.TestRun as TestRunApi
+import cuanto.api.Link as LinkApi
+import cuanto.api.TestProperty as TestPropertyApi
 
 class TestRunServiceTests extends GroovyTestCase {
 
@@ -9,6 +14,9 @@ class TestRunServiceTests extends GroovyTestCase {
 	InitializationService initializationService
 	TestRunService testRunService
 	StatisticService statisticService
+	ParsingService parsingService
+	TestOutcomeService testOutcomeService
+
 	TestObjects to
 	WordGenerator wordGen = new WordGenerator()
 
@@ -21,8 +29,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 
 	void testCalculateTestRunTotals() {
-		Project proj = to.getProject()
-		proj.testType = TestType.findByName("JUnit")
+		Project proj = to.project
 		dataService.saveDomainObject proj
 
 		def numCases = 11
@@ -195,10 +202,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 	void testSearchByTestOwner() {
 		Project proj = to.project
-		proj.testType = TestType.findByName("JUnit")
-		if (!proj.save()) {
-			dataService.reportSaveError proj
-		}
+		dataService.saveDomainObject proj
 
 		final int numTests = 10
 
@@ -322,5 +326,98 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertNull TestRun.get(fetchedTr.id)
 		assertEquals 0, Link.list().size()
 	}
+
+
+	void testUpdateTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		def params = [:]
+		params.project = proj.projectKey
+		params.note = to.wordGen.getSentence(5)
+
+		def links = ["http://gurdy||hurdy", "http://easy||squeezy", "malformed"]
+		assertEquals 0, Link.list().size()
+		params.link = links
+
+		def props = ["CustomProp1||Custom Value 1", "CustomProp2||Custom Value 2"]
+		assertEquals 0, TestProperty.list().size()
+		params.testProperty = props
+
+		TestRun createdTr = testRunService.createTestRun(params)
+
+		TestRunApi updatedTr = new TestRunApi(id: createdTr.id)
+		updatedTr.note = to.wordGen.getSentence(5)
+		updatedTr.valid = false
+		updatedTr.links = [new LinkApi("newlink", "http://newlink"), new LinkApi("hurdy", "http://foo")]
+		updatedTr.testProperties = [new TestPropertyApi("CustomProp1", "Custom Value 1"),
+			new TestPropertyApi("newprop", "new value")]
+		testRunService.update(updatedTr)
+
+		TestRun fetchedTr = TestRun.get(createdTr.id)
+		assertNotNull fetchedTr
+
+		assertEquals "note", updatedTr.note, fetchedTr.note
+		assertEquals "valid", updatedTr.valid, fetchedTr.valid
+		assertEquals "links length", 2, fetchedTr.links.size()
+
+		def link0 = fetchedTr.links.find {it.description == updatedTr.links[0].description }
+		assertNotNull link0
+		assertEquals "link 0 url", updatedTr.links[0].url, link0.url
+
+		def link1 = fetchedTr.links.find { it.description == updatedTr.links[1].description }
+		assertNotNull link1
+		assertEquals "link 1 url", updatedTr.links[1].url, link1.url
+
+		def prop0 = fetchedTr.testProperties.find { it.name == updatedTr.testProperties[0].name }
+		assertNotNull prop0
+		assertEquals "prop 0 value", updatedTr.testProperties[0].value, prop0.value
+		
+		def prop1 = fetchedTr.testProperties.find { it.name == updatedTr.testProperties[1].name }
+		assertNotNull prop1
+		assertEquals "prop 1 value", updatedTr.testProperties[1].value, prop1.value
+	}
+
+
+	void testGetTestRunsWithProperties() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		def testRuns = []
+
+		1.upto(3) {
+			testRuns << to.getTestRun(proj)
+		}
+		assertEquals 3, testRuns.size()
+
+		def props = []
+		1.upto(5) {
+			props << to.testProperty
+		}
+
+		testRuns[0].addToTestProperties(props[0])
+		testRuns[0].addToTestProperties(props[1])
+		testRuns[0].addToTestProperties(props[2])
+		testRuns[1].addToTestProperties(props[0])
+		testRuns[1].addToTestProperties(props[1])
+		testRuns[1].addToTestProperties(props[3])
+		testRuns[2].addToTestProperties(props[1])
+
+		testRuns.each {
+			dataService.saveTestRun(it)
+		}
+
+		assertEquals "Wrong number of test runs", 0, testRunService.getTestRunsWithProperties(proj, [props[4]])?.size()
+
+		def fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..2])
+		assertEquals "Wrong number of test runs", 1, fetchedRuns?.size()
+		assertEquals "Wrong test run retrieved", testRuns[0].id, fetchedRuns[0].id
+
+		fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..1])
+		assertEquals "Wrong number of test runs", 2, fetchedRuns.size()
+		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[0].id }
+		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[1].id }
+	}
+
 }
 

@@ -3,6 +3,8 @@ package cuanto
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
 import cuanto.*
+import cuanto.api.TestOutcome as TestOutcomeApi
+import cuanto.api.TestCase as TestCaseApi
 
 public class TestOutcomeServiceTests extends GroovyTestCase {
 
@@ -13,6 +15,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 	def testRunService
 	def bugService
 	StatisticService statisticService
+	ParsingService parsingService
 
 	TestObjects to
 	WordGenerator wordGen
@@ -140,6 +143,71 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 	}
 
+	void testUpdateTestOutcome() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		TestOutcomeApi origApiOutcome = new TestOutcomeApi()
+		origApiOutcome.testCase = new TestCaseApi(project: proj.projectKey, packageName: "foo.bar", testName: "testUpdate")
+		origApiOutcome.setDuration 200
+		origApiOutcome.setTestResult "Pass"
+		origApiOutcome.setNote to.wordGen.getSentence(13)
+		origApiOutcome.startedAt = new Date() - 3
+		origApiOutcome.finishedAt = new Date() - 2
+
+		TestOutcome createdOutcome = parsingService.parseTestOutcome(origApiOutcome, null, proj.id)
+
+		TestOutcomeApi changedApiOutcome = new TestOutcomeApi()
+		["testCase", "duration", "testResult", "note"].each {
+			changedApiOutcome.setProperty it, origApiOutcome.getProperty(it)
+		}
+
+		changedApiOutcome.note = "New Note!"
+		changedApiOutcome.testOutput = to.wordGen.getSentence(15)
+		changedApiOutcome.id = createdOutcome.id
+		changedApiOutcome.testResult = "Fail"
+		changedApiOutcome.startedAt = new Date() - 2
+		changedApiOutcome.finishedAt = new Date() - 1
+
+		testOutcomeService.updateTestOutcome(changedApiOutcome)
+		TestOutcome changedOutcome = TestOutcome.get(createdOutcome.id)
+
+		assertEquals "Wrong note", changedApiOutcome.note, changedOutcome.note
+		assertEquals "Wrong output", changedApiOutcome.testOutput, changedOutcome.testOutput
+		assertEquals "Wrong test case", createdOutcome.testCase.fullName, changedOutcome.testCase.fullName
+		assertEquals "Wrong duration", origApiOutcome.duration, changedOutcome.duration
+		assertEquals "Wrong result", "Fail", changedOutcome.testResult.toString()
+		assertEquals "Wrong startedAt", changedApiOutcome.startedAt, changedOutcome.startedAt
+		assertEquals "Wrong finishedAt", changedApiOutcome.finishedAt, changedOutcome.finishedAt
+	}
+
+	void testGetCsvForTestOutcomes() {
+		//todo: submit results
+		// retrieve CSV
+		// verify
+		// create a project
+		Project proj = to.getProject()
+		proj.save()
+
+		def testRun = to.getTestRun(proj)
+		dataService.saveDomainObject testRun
+
+		def outcomes = []
+		1.upto(3) {
+			def tc = to.getTestCase(proj)
+			dataService.saveDomainObject tc
+			def outcome = to.getTestOutcome(tc, testRun)
+			dataService.saveDomainObject outcome
+			outcomes << outcome
+		}
+
+		def csv = testOutcomeService.getDelimitedTextForTestOutcomes(outcomes, ",")
+		def csvLines = csv.readLines()
+		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size() 
+
+		// do 0 results, 1 result, 3 results, 10 results
+
+	}
 
 	def textWithoutScriptTags = '''
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.

@@ -18,6 +18,7 @@ grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
                       atom: 'application/atom+xml',
                       css: 'text/css',
                       csv: 'text/csv',
+	                  tsv: 'text/tab-separated-values',
                       all: '*/*',
                       json: ['application/json','text/json'],
                       form: 'application/x-www-form-urlencoded',
@@ -66,6 +67,7 @@ log4j = {
 	       'org.codehaus.groovy.grails.commons', // core / classloading
 	       'org.codehaus.groovy.grails.plugins', // plugins
 	       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+			'org.codehaus.groovy.grails.scaffolding.view.ScaffoldingViewResolver',
 	       'org.springframework',
 	       'org.hibernate'
 

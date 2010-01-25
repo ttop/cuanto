@@ -26,7 +26,7 @@ class InitializationService {
 
 	def authenticateService
 	def grailsApplication
-
+	def dataService
 	boolean transactional = true
 
 
@@ -91,11 +91,8 @@ class InitializationService {
 		if (TestType.list().size() <= 0) {
 			def typeList = []
 
-			typeList += new TestType(name: "JUnit")
-			typeList += new TestType(name: "NUnit")
-			typeList += new TestType(name: "TestNG")
-			typeList += new TestType(name: "Selenium")
-			typeList += new TestType(name: "Canoo")
+			typeList += new TestType(name: "JUnit", timeUnits: "sec")
+			typeList += new TestType(name: "TestNG", timeUnits: "ms")
 			typeList += new TestType(name: "Manual")
 
 			typeList.each {tp ->
@@ -189,9 +186,13 @@ class InitializationService {
 			requestmaps.each {
 				it.save()
 			}
-
 			authenticateService.clearCachedRequestmaps()
 
+			if (!Project.findByName("CuantoNG")) {
+				def grp = ProjectGroup.findByName("Sample")
+				new Project(name: "CuantoNG", projectKey: "CNG", projectGroup: grp,
+				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
+			}
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
 		}

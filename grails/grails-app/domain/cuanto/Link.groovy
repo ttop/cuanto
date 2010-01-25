@@ -18,6 +18,7 @@
 */
 
 package cuanto
+import cuanto.api.Link as LinkApi
 
 class Link implements Comparable {
 
@@ -35,6 +36,7 @@ class Link implements Comparable {
 		this.url = url
 	}
 
+
 	public int compareTo(Object t) {
 		Link other = (Link) t
 		int descriptionCompare = this.description.compareTo(other.description)
@@ -45,8 +47,14 @@ class Link implements Comparable {
 		}
 	}
 
+
 	public boolean equals(Object t) {
 		Link other = (Link) t
 		return this.description == other.description && this.url == other.url
+	}
+
+
+	public LinkApi toLinkApi() {
+		return new LinkApi(this.description, this.url)
 	}
 }

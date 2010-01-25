@@ -22,11 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto.api
 
 import com.thoughtworks.xstream.XStream
-import cuanto.api.CuantoClientException
-import cuanto.api.TestOutcome
-import cuanto.api.TestRun
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.HttpStatus
+import org.apache.commons.httpclient.NameValuePair
 import org.apache.commons.httpclient.methods.GetMethod
 import org.apache.commons.httpclient.methods.PostMethod
 import org.apache.commons.httpclient.methods.StringRequestEntity
@@ -34,6 +32,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
 import sun.misc.BASE64Encoder
+import org.apache.commons.httpclient.HttpMethod
 
 /**
  * User: Todd Wells
@@ -41,7 +40,7 @@ import sun.misc.BASE64Encoder
  * Time: 5:58:07 PM
  *
  */
-class CuantoClient {
+class CuantoClient implements ICuantoClient {
 
 	String cuantoUrl
 	String proxyHost
@@ -49,6 +48,9 @@ class CuantoClient {
 	String userId
 	String password
 
+	XStream xstream = new XStream();
+
+	final static String HTTP_USER_AGENT = 'Cuanto Java Client 2.4.0; Jakarta Commons-HttpClient/3.1'
 
 	public CuantoClient() {}
 
@@ -60,41 +62,54 @@ class CuantoClient {
 
 
 	public Long createProject(String fullName, String projectKey, String testType) {
-		def post = getMethod("post", "${cuantoUrl}/project/create")
-		post.addParameter "name", fullName
-		post.addParameter "projectKey", projectKey
-		post.addParameter "testType", testType
+		return createProject(new Project(name:fullName, 'projectKey': projectKey, 'testType': testType))
+	}
 
-		def responseCode
-		def responseText
+
+	public Long createProject(Project project) {
+		if (!project.projectKey) {
+			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
+		}
+		PostMethod post = getMethod("post", "${cuantoUrl}/project/create") as PostMethod
+		String xmlProj = xstream.toXML(project)
+		post.requestEntity = new StringRequestEntity(xmlProj, "text/xml", null)
+		def projectId = null
 		try {
-			responseCode = httpClient.executeMethod(post)
-			responseText = post.getResponseBodyAsStream().text
+			def responseCode = httpClient.executeMethod(post)
+			def responseText = post.getResponseBodyAsStream().text.trim()
+			if (responseCode == HttpStatus.SC_OK) {
+				projectId = Long.valueOf(responseText)
+				project.id = projectId
+			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+				throw new CuantoClientException(responseText)
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
 		} finally {
 			post.releaseConnection()
-		}
-
-		def projectId
-		if (responseCode == 200) {
-			try {
-				projectId = Long.valueOf(responseText)
-			} catch (NumberFormatException e) {
-			    throw new CuantoClientException("Couldn't parse project ID response: ${responseText}")
-			}
-		} else if (responseCode == 500) {
-			throw new CuantoClientException(responseText)
-		}
-		else {
-			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 		return projectId
 	}
 
 
-	public void deleteProject(Long id) {
-		def post = getMethod("post", "${cuantoUrl}/project/delete")
-		post.addParameter "id", id.toString()
-		post.addParameter "client", ""
+	public void deleteProject(Long projectId) {
+		deleteObject "${cuantoUrl}/project/delete", projectId
+	}
+
+
+	public void deleteTestRun(Long testRunId) {
+		deleteObject "${cuantoUrl}/testRun/delete", testRunId
+	}
+
+
+	public void deleteTestOutcome(Long testOutcomeId) {
+		deleteObject "${cuantoUrl}/testOutcome/delete", testOutcomeId
+	}
+
+
+	private void deleteObject(String url, Long objectId) {
+		def post = getMethod("post", url) as PostMethod
+		post.requestBody = [new NameValuePair("id", objectId.toString())] as NameValuePair[];
 
 		def responseCode
 		def responseText
@@ -105,17 +120,36 @@ class CuantoClient {
 			post.releaseConnection()
 		}
 
-		if (responseCode != 200) {
+		if (responseCode != HttpStatus.SC_OK) {
 			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
 
-	public Map getProject(Long projectId) {
-		return getValueMap("${cuantoUrl}/project/get/${projectId.toString()}")
+	public Project getProject(Long projectId) {
+		def get = getMethod("get", "${cuantoUrl}/project/get/${projectId}")
+		get.addRequestHeader "Accept", "application/xml"
+
+		def responseCode
+		String responseText
+		Project project
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				project = xstream.fromXML(responseText) as Project
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				project = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return project
 	}
 
-
+	
 	public Map getTestRunInfo(Long testRunId) {
 		return getValueMap("${cuantoUrl}/testRun/get/${testRunId.toString()}")
 	}
@@ -131,8 +165,13 @@ class CuantoClient {
 		try {
 			responseCode = httpClient.executeMethod(get)
 			responseText = get.getResponseBodyAsStream().text
-			XStream xstream = new XStream()
-			testRun = (TestRun) xstream.fromXML(responseText)
+			if (responseCode == HttpStatus.SC_OK) {
+				testRun = (TestRun) xstream.fromXML(responseText)
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				testRun = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
 		} finally {
 			get.releaseConnection()
 		}
@@ -146,16 +185,16 @@ class CuantoClient {
 		}
 
 		def post = getMethod("post", "${cuantoUrl}/testRun/createXml")
-		XStream xstream = new XStream();
 		def request = new StringRequestEntity(xstream.toXML(testRun), "text/xml", null)
 		post.requestEntity = request
 		def testRunId = null
 		try {
 			def responseCode = httpClient.executeMethod(post)
 			def responseText = post.getResponseBodyAsStream().text.trim()
-			if (responseCode == 200) {
+			if (responseCode == HttpStatus.SC_OK) {
 				testRunId = Long.valueOf(responseText)
-			} else if (responseCode == 403) {
+				testRun.id = testRunId
+			} else if (responseCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
 				throw new IllegalArgumentException(responseText)
 			} else {
 				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
@@ -180,23 +219,21 @@ class CuantoClient {
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
 			} else {
-				XStream xstream = new XStream()
 				def outcome = (TestOutcome)xstream.fromXML(responseText)
 				return outcome
 			}
 		} finally {
 			get.releaseConnection()
 		}
-
 	}
 
 
-	public void submit(File file, Long testRunId) {
-		submit([file], testRunId)
+	public void submitFile(File file, Long testRunId) {
+		submitFiles([file], testRunId)
 	}
 	
 
-	public void submit(List<File> files, Long testRunId) {
+	public void submitFiles(List<File> files, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
 		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
@@ -216,18 +253,22 @@ class CuantoClient {
 		} finally {
 			post.releaseConnection()
 		}
-		if (responseCode != 200) {
+		if (responseCode != HttpStatus.SC_OK) {
 			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 		}
 	}
 
 
-	public Long submit(TestOutcome testOutcome, Long testRunId) {
+	protected Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
-		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+		if (testRunId) {
+			post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
+		}
+		if (projectId) {
+			post.addRequestHeader "Cuanto-Project-Id", projectId.toString()
+		}
 
-		XStream xstream = new XStream()
 		def outcomeXml = xstream.toXML(testOutcome)
 		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
 
@@ -238,16 +279,53 @@ class CuantoClient {
 			HttpClient hclient = getHttpClient()
 			responseCode = hclient.executeMethod(post)
 			responseText = post.getResponseBodyAsStream().text
-			testOutcomeId = Long.valueOf(responseText)
 		} finally {
 			post.releaseConnection()
 		}
-		if (responseCode != 200) {
-			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+
+		if (responseCode == HttpStatus.SC_OK) {
+			testOutcomeId = Long.valueOf(responseText)
+			testOutcome.id = testOutcomeId
+		} else {
+			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 		}
 		return testOutcomeId 
 	}
 
+
+	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) {
+		def post = getMethod("post", "${cuantoUrl}/testRun/getWithProperties") as PostMethod
+		post.addRequestHeader "Accept", "application/xml"
+
+		def reqParams = []
+		reqParams << new NameValuePair("project", projectId.toString())
+
+		testProperties.eachWithIndex{TestProperty prop, Long index ->
+			reqParams << new NameValuePair("prop[${index}]", prop.name)
+			reqParams << new NameValuePair("propValue[${index}]", prop.value)
+		}
+
+		post.setRequestBody(reqParams as NameValuePair[])
+
+		def responseCode
+		String responseText
+		def runs = []
+		try {
+			responseCode = httpClient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				runs = xstream.fromXML(responseText) as List
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			def cpuFix = "" // this prevents IDEA's code inspection from maxing the CPU when evaluating the next line
+			post.releaseConnection() // this causes the CPU to be maxed in IDEA
+		}
+		return runs
+	}
+
+	// TODO: make testRunStats object in API
 	Map getTestRunStats(Long testRunId){
 		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}")
 	}
@@ -268,7 +346,7 @@ class CuantoClient {
 
 		def valueMap = [:]
 
-		if (responseCode == 200) {
+		if (responseCode == HttpStatus.SC_OK) {
 			responseText.eachLine {String line ->
 				def rawValues = line.split("=")
 				if (rawValues.size() > 1) {
@@ -299,7 +377,7 @@ class CuantoClient {
 	}
 
 
-	private getMethod(methodType, url) {
+	private HttpMethod getMethod(methodType, url) {
 		def method
 		if (methodType.toLowerCase() == "get") {
 			method = new GetMethod(url)
@@ -312,7 +390,177 @@ class CuantoClient {
 		if (authHeader) {
 			method.addRequestHeader("Authorization", authHeader)
 		}
-		return method
 
+		method.setRequestHeader('User-Agent', HTTP_USER_AGENT)
+		return method
+	}
+
+
+	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
+		createTestOutcome(testOutcome, null, projectId)
+	}
+
+
+	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
+		createTestOutcome(testOutcome, testRunId)
+	}
+
+
+	public void updateTestOutcome(TestOutcome testOutcome) {
+		def fullUri = "${cuantoUrl}/testOutcome/update"
+		PostMethod post = getMethod("post", fullUri)
+		def outcomeXml = xstream.toXML(testOutcome)
+		post.requestEntity = new StringRequestEntity(outcomeXml, "text/xml", null)
+
+		def responseCode
+		def responseText
+		def testOutcomeId
+		try {
+			HttpClient hclient = getHttpClient()
+			responseCode = hclient.executeMethod(post)
+			responseText = post.getResponseBodyAsStream().text
+		} finally {
+			post.releaseConnection()
+		}
+
+		if (responseCode != HttpStatus.SC_OK) {
+			throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
+		}
+	}
+
+	public TestCase getTestCase(String projectKey, String packageName, String testName, String parameters = null) {
+		def proj = getProject(projectKey)
+		return getTestCase(proj.id, packageName, testName, parameters)
+	}
+
+	public TestCase getTestCase(Long projectId, String packageName, String testName, String parameters = null) {
+		def url = "${cuantoUrl}/testCase/get" 
+		GetMethod get = getMethod("get", url) as GetMethod
+		get.addRequestHeader "Accept", "application/xml"
+
+		def params = []
+		params << new NameValuePair("project", projectId.toString())
+		params << new NameValuePair("packageName", packageName)
+		params << new NameValuePair("testName", testName)
+		params << new NameValuePair("parameters", parameters)
+
+		get.setQueryString(params as NameValuePair[])
+
+		def responseCode
+		String responseText
+		TestCase testCase
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				testCase = xstream.fromXML(responseText) as TestCase
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND && responseText.contains("Project not found")) {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				testCase = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return testCase
+	}
+
+
+	public Project getProject(String projectKey) {
+		def url = "${cuantoUrl}/project/getByKey/${projectKey}"
+		GetMethod get = getMethod("get", url) as GetMethod
+		get.addRequestHeader "Accept", "application/xml"
+		def responseCode
+		String responseText
+		Project project
+
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				project = xstream.fromXML(responseText) as Project
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				project = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
+		} finally {
+			get.releaseConnection()
+		}
+		return project
+	}
+
+
+	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
+		def url = "${cuantoUrl}/testOutcome/findForTestRun"
+		def get = getMethod("get", url)
+		get.addRequestHeader "Accept", "text/xml"
+		get.setQueryString([new NameValuePair("testRun", testRunId.toString()),
+			new NameValuePair("testCase", testCaseId.toString())] as NameValuePair[])
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
+				return outcomes
+			}
+		} finally {
+			get.releaseConnection()
+		}
+	}
+
+	
+	public void updateTestRun(TestRun testRun) {
+		if (testRun) {
+			def fullUri = "${cuantoUrl}/testRun/update"
+			PostMethod post = getMethod("post", fullUri)
+			def trXml = xstream.toXML(testRun)
+			post.requestEntity = new StringRequestEntity(trXml, "text/xml", null)
+
+			def responseCode
+			def responseText
+			def testRunId
+			try {
+				HttpClient hclient = getHttpClient()
+				responseCode = hclient.executeMethod(post)
+				responseText = post.getResponseBodyAsStream().text
+			} finally {
+				post.releaseConnection()
+			}
+
+			if (responseCode != HttpStatus.SC_OK) {
+				throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
+			}
+		} else {
+			throw new NullPointerException("TestRun cannot be null")
+		}
+	}
+
+
+	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
+		def url = "${cuantoUrl}/testRun/outcomes"
+		def get = getMethod("get", url)
+		get.addRequestHeader "Accept", "text/xml"
+		get.setQueryString([new NameValuePair("id", testRunId.toString())] as NameValuePair[])
+		def responseCode
+		def responseText
+		try {
+			responseCode = httpClient.executeMethod(get)
+			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				return null
+			} else {
+				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
+				return outcomes
+			}
+		} finally {
+			get.releaseConnection()
+		}
 	}
 }
