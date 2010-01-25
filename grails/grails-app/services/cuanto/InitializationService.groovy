@@ -103,20 +103,6 @@ class InitializationService {
 				}
 			}
 		}
-
-		/*
-		TestType junit = TestType.findByName("JUnit")
-		if (!junit.timeUnits) {
-			junit.timeUnits = "sec"
-			dataService.saveDomainObject junit
-		}
-		
-		TestType testng = TestType.findByName("TestNG")
-		if (!testng.timeUnits) {
-			testng.timeUnits = "ms"
-			dataService.saveDomainObject testng
-		}
-		*/
 	}
 
 	void initProjects() {
