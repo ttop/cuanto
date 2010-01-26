@@ -230,17 +230,6 @@ class DataService {
 	}
 
 
-	void deleteProject(Project project) {
-		if (project) {
-			def group = project.projectGroup
-			project.delete(flush: true)
-			if (group && Project.countByProjectGroup(group) == 0) {
-				group.delete(flush: true)
-			}
-		}
-	}
-
-
 	void reportSaveError(domainObj) throws CuantoException {
 		def errMsg = ""
 		domainObj.errors.allErrors.each {

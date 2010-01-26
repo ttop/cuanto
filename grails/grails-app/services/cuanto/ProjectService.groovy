@@ -60,13 +60,17 @@ class ProjectService {
 
 
 	void deleteProject(Project project) {
-		Project.withTransaction {
-			def testRuns = dataService.getTestRunsByProject(project)
-			dataService.deleteTestCasesForProject(project)
-			testRuns.each { testRun ->
-				dataService.deleteTestRun(testRun)
+		if (project) {
+			Project.withTransaction {
+				def origGroup = project.projectGroup
+				def testRuns = dataService.getTestRunsByProject(project)
+				dataService.deleteTestCasesForProject(project)
+				testRuns.each { testRun ->
+					dataService.deleteTestRun(testRun)
+				}
+				project.delete(flush: true)
+				deleteProjectGroupIfUnused(origGroup)
 			}
-			dataService.deleteProject(project)
 		}
 	}
 
@@ -120,28 +124,46 @@ class ProjectService {
 	
 	def updateProject(params) {
 		def project = Project.get(params.project)     // todo: refactor with new grails 1.1 validation?
-		if (params.group) {
-			project.projectGroup = getProjectGroupByName(params.group)
-		}
+		if (project) {
+			def origGroup = project.projectGroup
+			if (params.group != null) {
+				project.projectGroup = getProjectGroupByName(params.group)
+			}
 
-		if (params.bugUrlPattern) {
-			project.bugUrlPattern = params.bugUrlPattern
-		}
+			if (params.bugUrlPattern) {
+				project.bugUrlPattern = params.bugUrlPattern
+			}
 
-		if (params.name) {
-			project.name = params.name
-		}
+			if (params.name) {
+				project.name = params.name
+			}
 
-		if (params.projectKey) {
-			project.projectKey = params.projectKey
-		}
+			if (params.projectKey) {
+				project.projectKey = params.projectKey
+			}
 
-		if (params.testType) {
-			project.testType = dataService.getTestType(params.testType)
-		}
+			if (params.testType) {
+				project.testType = dataService.getTestType(params.testType)
+			}
 
-		dataService.saveDomainObject(project)
-		return project
+			if (project.projectGroup != origGroup) {
+				deleteProjectGroupIfUnused(origGroup)
+			}
+
+			dataService.saveDomainObject(project)
+			return project
+		} else {
+			throw new CuantoException("Project ${params.project} not found")
+		}
+	}
+
+
+	def deleteProjectGroupIfUnused(group) {
+		Project.withTransaction {
+			if (group && Project.countByProjectGroup(group) == 0) {
+				group.delete(flush: true)
+			}
+		}
 	}
 
 

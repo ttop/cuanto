@@ -233,18 +233,18 @@ class ProjectTests extends GroovyTestCase {
 		}
 
 		assertEquals "Wrong number of projects", 2, Project.list().size()
-		dataService.deleteProject(projects[0])
+		projectService.deleteProject(projects[0])
 		assertEquals "Wrong number of projects", 1, Project.list().size()
 		assertEquals "Wrong number of project groups", 1, ProjectGroup.list().size()
 
-		dataService.deleteProject(projects[1])
+		projectService.deleteProject(projects[1])
 		assertEquals "Wrong number of projects", 0, Project.list().size()
 		assertEquals "Wrong number of project groups", 0, ProjectGroup.list().size()
 	}
 
 
 	void testDataServiceDeleteNullProject() {
-		dataService.deleteProject(null)
+		projectService.deleteProject(null)
 	}
 
 
@@ -472,5 +472,53 @@ class ProjectTests extends GroovyTestCase {
 		testPackageNames.reverse().eachWithIndex { name, indx ->
 			assertEquals "Wrong title/order", name, fetchedCases[indx].packageName
 		}
+	}
+
+
+	void testUpdateProjectAndChangeProjectGroup() {
+		def projectGroups = []
+		1.upto(2) {
+			ProjectGroup group = dataService.createProjectGroup(fakes.wordGen.getCamelWords(3))
+			dataService.saveDomainObject(group)
+			projectGroups << group
+		}
+		assertEquals "Wrong number of project groups", 2, ProjectGroup.list().size()
+
+		def projects = []
+		1.upto(2) {
+			def proj = fakes.project
+			proj.projectGroup = projectGroups[0]
+			dataService.saveDomainObject proj 
+			projects << proj
+		}
+
+		def proj = fakes.project
+		proj.projectGroup = projectGroups[1]
+		dataService.saveDomainObject(proj)
+
+		projectService.updateProject([group: "", project: projects[0].id])
+		Project fetched = Project.get(projects[0].id)
+		assertNull "Shouldn't have group", fetched.projectGroup
+		assertEquals "Wrong number of project groups", 2, ProjectGroup.list().size()
+
+		projectService.updateProject([group: projectGroups[1].name, project: projects[0].id])
+		fetched = Project.get(projects[0].id)
+		assertEquals "Wrong project group", projectGroups[1], fetched.projectGroup
+		assertEquals "Wrong number of project groups", 2, ProjectGroup.list().size()
+
+		projectService.updateProject([group: "", project: projects[0].id])
+		fetched = Project.get(projects[0].id)
+		assertNull "Shouldn't have group", fetched.projectGroup
+		assertEquals "Wrong number of project groups", 2, ProjectGroup.list().size()
+
+		projectService.updateProject([group: "", project: projects[1].id])
+		fetched = Project.get(projects[1].id)
+		assertNull "Shouldn't have group", fetched.projectGroup
+		assertEquals "Wrong number of project groups", 1, ProjectGroup.list().size()
+
+		projectService.updateProject([group: "", project: proj.id])
+		fetched = Project.get(proj.id)
+		assertNull "Shouldn't have group", fetched.projectGroup
+		assertEquals "Wrong number of project groups", 0, ProjectGroup.list().size()
 	}
 }
