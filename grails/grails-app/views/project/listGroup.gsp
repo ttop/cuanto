@@ -49,6 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<g:javascript src="cuanto/projectDialog.js"/>
 	<g:javascript src="cuanto/deleteProjectDialog.js"/>
 	<g:javascript src="cuanto/events.js"/>
+	<g:javascript src="cuanto/timeParser.js"/>
 	<g:javascript src="cuanto/listGroup.js"/>
 	<g:javascript src="cuanto/groupHistory.js"/>
 
