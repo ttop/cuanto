@@ -149,7 +149,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -331,6 +331,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
+			{key:"startedAt", label: "Started At", sortable:true},
+			{key:"finishedAt", label: "Finished At", sortable:true},
 			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
 			{key:"bug", label: bugColumnLabel, formatter:YAHOO.cuanto.format.formatBug, sortable:true,
 				editor: bugEditor},
@@ -781,7 +783,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (!columnDialog)
 		{
 			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["parameters", "result", "analysisState", "duration", "bug", "owner", "note", "output"]);
+				["parameters", "result", "analysisState", "startedAt", "finishedAt", "duration", "bug", "owner", "note", "output"]);
 		}
 		columnDialog.show();
 
@@ -849,8 +851,10 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			});
 		}
 		else {
-			cols["output"] = true;
-			cols["parameters"] = true;
+			["startedAt", "finishedAt", "output", "parameters"].each(function(item)
+			{
+				cols[item] = true;
+			});
 		}
 		return cols;
 	}

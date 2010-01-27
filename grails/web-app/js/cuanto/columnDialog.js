@@ -29,7 +29,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 
 	function getColumnPanel() {
 		if (!panel) {
-			panel = new YAHOO.widget.Panel("columnPanel", {dragOnly: true, fixedCenter: true,
+			panel = new YAHOO.widget.Panel("columnPanel", {dragOnly: true, x: 150,
 				width: "270px", visible: true, iframe: false, underlay: "none"});
 			panel.render();
 			if (overlayManager)
