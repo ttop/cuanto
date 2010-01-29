@@ -24,34 +24,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <div id="testRunHeader">
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
-	<span class="smaller">
-		<span>(<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
+	<span id="trActions" class="smaller">
+		<span><g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
 		<g:link controller="testRun" action="export" id="${testRun?.id}">Export</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
 		</span> ${bullet}
-		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>)
+		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
 	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span>
 	<br/>
-	<span id="trhTestProps">
-		<g:if test="${testRun?.testProperties}">
-			<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
-				<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
-				<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
-			</g:each>
-		</g:if>
-	</span>
-	<br/>
-
-	<g:if test="${testRun?.links}">
-		<g:each in="${testRun?.links}" var="link" status="idx">
-			<a href="${link.url}">${link.description}</a>
-			<g:if test="${idx < testRun.links.size() - 1}"> &bull; </g:if>
-		</g:each>
+	<div id="trPropsAndLinks">
+		<span id="trhTestProps">
+			<g:if test="${testRun?.testProperties}">
+				<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
+					<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
+					<g:if test="${idx < testRun.testProperties.size() - 1}"> ${bullet} </g:if>
+				</g:each>
+			</g:if>
+		</span>
 		<br/>
-	</g:if>
+
+		<g:if test="${testRun?.links}">
+			<div id="trLinks">
+				<g:each in="${testRun?.links}" var="link" status="idx">
+					<a href="${link.url}">${link.description}</a>
+					<g:if test="${idx < testRun.links.size() - 1}"> &bull; </g:if>
+				</g:each>
+			</div>
+		</g:if>
+	</div>
 	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">
