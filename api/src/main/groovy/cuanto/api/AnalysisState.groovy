@@ -21,9 +21,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+/**
+ * A state of the analysis, or cause of a failure. The possible values are determined by the Cuanto database.
+ * The analysisStates in a default installation are "Unanalyzed", "Bug", "Environment", "Harness", "No Repro", "Other",
+ * "Test Bug", and "Investigate".
+ */
 public class AnalysisState {
+
 	String name
+
+	/**
+	 * @param isAnalyzed Whether this analysis state should be considered "Analyzed" or not when determining what 
+	 * TestOutcomes have been analyzed.
+	 */
 	Boolean isAnalyzed
+
+	/**
+	* @return Whether this AnalysisState is
+	*/
 	Boolean isDefault
 	Boolean isBug
 
@@ -31,4 +46,6 @@ public class AnalysisState {
 	String toString() {
 		name
 	}
+
+
 }

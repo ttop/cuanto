@@ -19,6 +19,9 @@
 
 package cuanto.api
 
+/**
+ * A simple name-value association.
+ */
 public class TestProperty {
 	String name
 	String value

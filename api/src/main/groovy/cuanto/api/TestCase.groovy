@@ -19,7 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto.api
-
+/**
+ * Represents a single unique test case. Each execution of a TestCase is called a TestOutcome. A TestCase typically has
+ * a <b>packageName</b> (a logical grouping, such as package + class name in Java), a <b>testName</b> and optionally
+ * <b>parameters</b> (as some test cases have variations based on what parameters they are called with).
+ * The <b>fullName</b> shouldn't need to be set when or fetching creating a test case, it is just there as a convenience
+ * for getting. The fullName is typically the packageName concatenated to the testName with a period.
+ */
 class TestCase implements Comparable {
 	String project
 	String packageName 

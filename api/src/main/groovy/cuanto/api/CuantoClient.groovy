@@ -34,15 +34,18 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.methods.multipart.Part
 
 
+/**
+ * The client for communicating with a Cuanto server.
+ */
 class CuantoClient implements ICuantoClient {
 
 	String cuantoUrl
 	String proxyHost
 	Integer proxyPort
 
-	XStream xstream = new XStream();
+	private XStream xstream = new XStream();
 
-	final static String HTTP_USER_AGENT = 'Cuantoooo Java Client 2.4.0; Jakarta Commons-HttpClient/3.1'
+	private final static String HTTP_USER_AGENT = 'Cuanto Java Client 2.4.0; Jakarta Commons-HttpClient/3.1'
 
 	public CuantoClient() {}
 
@@ -58,6 +61,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Long createProject(Project project) {
 		if (!project.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
@@ -83,17 +89,23 @@ class CuantoClient implements ICuantoClient {
 		return projectId
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void deleteProject(Long projectId) {
 		deleteObject "${cuantoUrl}/project/delete", projectId
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void deleteTestRun(Long testRunId) {
 		deleteObject "${cuantoUrl}/testRun/delete", testRunId
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void deleteTestOutcome(Long testOutcomeId) {
 		deleteObject "${cuantoUrl}/testOutcome/delete", testOutcomeId
 	}
@@ -117,7 +129,9 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public Project getProject(Long projectId) {
 		def get = getMethod("get", "${cuantoUrl}/project/get/${projectId}")
 		get.addRequestHeader "Accept", "application/xml"
@@ -147,6 +161,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public TestRun getTestRun(Long testRunId) {
 		def get = getMethod("get", "${cuantoUrl}/testRun/get/${testRunId.toString()}")
 		get.addRequestHeader "Accept", "application/xml"
@@ -170,7 +187,9 @@ class CuantoClient implements ICuantoClient {
 		return testRun
 	}
 
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Long createTestRun(TestRun testRun) {
 		if (!testRun.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
@@ -196,7 +215,9 @@ class CuantoClient implements ICuantoClient {
 		return testRunId
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public TestOutcome getTestOutcome(Long testOutcomeId) {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
 		def get = getMethod("get", url)
@@ -218,12 +239,16 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void submitFile(File file, Long testRunId) {
 		submitFiles([file], testRunId)
 	}
 	
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void submitFiles(List<File> files, Long testRunId) {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
 		PostMethod post = getMethod("post", fullUri)
@@ -283,7 +308,9 @@ class CuantoClient implements ICuantoClient {
 		return testOutcomeId 
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) {
 		def post = getMethod("post", "${cuantoUrl}/testRun/getWithProperties") as PostMethod
 		post.addRequestHeader "Accept", "application/xml"
@@ -375,16 +402,25 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
 		createTestOutcome(testOutcome, null, projectId)
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
 		createTestOutcome(testOutcome, testRunId)
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateTestOutcome(TestOutcome testOutcome) {
 		def fullUri = "${cuantoUrl}/testOutcome/update"
 		PostMethod post = getMethod("post", fullUri)
@@ -407,19 +443,26 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
-	public TestCase getTestCase(String projectKey, String packageName, String testName, String parameters = null) {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public TestCase getTestCase(String projectKey, String testPackage, String testName, String parameters = null) {
 		def proj = getProject(projectKey)
-		return getTestCase(proj.id, packageName, testName, parameters)
+		return getTestCase(proj.id, testPackage, testName, parameters)
 	}
 
-	public TestCase getTestCase(Long projectId, String packageName, String testName, String parameters = null) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters = null) {
 		def url = "${cuantoUrl}/testCase/get" 
 		GetMethod get = getMethod("get", url) as GetMethod
 		get.addRequestHeader "Accept", "application/xml"
 
 		def params = []
 		params << new NameValuePair("project", projectId.toString())
-		params << new NameValuePair("packageName", packageName)
+		params << new NameValuePair("packageName", testPackage)
 		params << new NameValuePair("testName", testName)
 		params << new NameValuePair("parameters", parameters)
 
@@ -447,6 +490,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Project getProject(String projectKey) {
 		def url = "${cuantoUrl}/project/getByKey/${projectKey}"
 		GetMethod get = getMethod("get", url) as GetMethod
@@ -472,6 +518,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
 		def url = "${cuantoUrl}/testOutcome/findForTestRun"
 		def get = getMethod("get", url)
@@ -494,7 +543,10 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateTestRun(TestRun testRun) {
 		if (testRun) {
 			def fullUri = "${cuantoUrl}/testRun/update"
@@ -522,6 +574,9 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */	
 	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
 		def url = "${cuantoUrl}/testRun/outcomes"
 		def get = getMethod("get", url)

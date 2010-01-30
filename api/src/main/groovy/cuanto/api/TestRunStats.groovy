@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+/**
+ * A container object for statistics related to a single testRun.
+ */
 class TestRunStats {
 	Integer tests
 	Integer passed

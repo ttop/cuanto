@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
-
+/**
+ * A helper object used in statistics, represents an analysis state and a quantity of TestOutcomes that are in that analysis state.
+ */
 public class AnalysisStatistic {
 	AnalysisState state
 	Long qty

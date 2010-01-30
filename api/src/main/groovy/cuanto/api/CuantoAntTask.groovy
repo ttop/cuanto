@@ -30,6 +30,10 @@ import cuanto.api.TestRun
 import cuanto.api.TestRun
 import cuanto.api.CuantoClient
 
+
+/**
+* The Ant Task for submitting test results to Cuanto. 
+*/
 class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url
 	String proxyHost

@@ -21,7 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
-
+/**
+ * A bug or defect that is associated with a TestOutcome
+ */
 public class Bug {
 	String title
 	String url

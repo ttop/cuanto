@@ -24,11 +24,13 @@ package cuanto.api
 import cuanto.api.Link
 import cuanto.api.TestProperty
 
-
+/**
+ * Represents a group of tests that were executed together.
+ */
 class TestRun {
 	String projectKey
 	String note
-	String dateCreated // todo: remove?
+	String dateCreated 
 	Date dateExecuted
 	Boolean valid
 	List<Link> links = []

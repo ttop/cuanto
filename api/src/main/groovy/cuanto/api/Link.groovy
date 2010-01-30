@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package cuanto.api
 
+/**
+ * A URL and a description of the URL.
+ */
 public class Link {
 	String description
 	String url

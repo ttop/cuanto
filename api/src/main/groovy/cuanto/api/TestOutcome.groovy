@@ -22,6 +22,12 @@ package cuanto.api
 
 import cuanto.api.TestCase
 
+
+/**
+* A TestOutcome contains information about one execution of a test case. Valid <b>TestResults</b> are determined by the Cuanto
+* database. The testResults available in a default installation are <b>Pass, Fail, Error, Ignore, Skip,</b> and <b>Unexecuted</b>.
+* <b>dateCreated</b> and <b>lastUpdated</b> are not settable, the Cuanto server maintains these values.   
+*/
 class TestOutcome {
 	TestCase testCase
 	String testResult
