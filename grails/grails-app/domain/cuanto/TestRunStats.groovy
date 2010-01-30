@@ -45,8 +45,8 @@ class TestRunStats {
 	Integer passed
 	Integer failed
 	Integer analyzed
-	BigDecimal totalDuration
-	BigDecimal averageDuration
+	Long totalDuration
+	Long averageDuration
 	BigDecimal successRate
 	Date lastUpdated
 	List analysisStatistics

@@ -35,8 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<td>${testRun?.testRunStatistics?.passed?.encodeAsHTML()}</td>
 			<td>${testRun?.testRunStatistics?.failed?.encodeAsHTML()}</td>
 			<td>${testRun?.testRunStatistics?.successRate?.encodeAsHTML()} %</td>
-			<td>${testRun?.testRunStatistics?.totalDuration?.encodeAsHTML()}</td>
-			<td>${testRun?.testRunStatistics?.averageDuration?.encodeAsHTML()}</td>
+			<td><g:formatDuration ms="${testRun?.testRunStatistics?.totalDuration}"/></td>
+			<td><g:formatDuration ms="${testRun?.testRunStatistics?.averageDuration}"/></td>
 			<td><span class="progress"></span></td>
 		</tr>
 	</table>
