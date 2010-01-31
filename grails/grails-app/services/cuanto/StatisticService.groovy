@@ -105,7 +105,6 @@ class StatisticService {
 				calculatedStats.tests = rawTestRunStats[0]
 				calculatedStats.totalDuration = rawTestRunStats[1]
 				calculatedStats.averageDuration = rawTestRunStats[2]
-				calculatedStats.averageDuration = calculatedStats.averageDuration?.round(new MathContext(4))
 				calculatedStats.failed = dataService.getTestRunFailureCount(testRun)
 				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
 
