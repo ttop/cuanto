@@ -56,11 +56,6 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	public Long createProject(String fullName, String projectKey, String testType) {
-		return createProject(new Project(name:fullName, 'projectKey': projectKey, 'testType': testType))
-	}
-
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -155,11 +150,6 @@ class CuantoClient implements ICuantoClient {
 		return project
 	}
 
-	
-	public Map getTestRunInfo(Long testRunId) {
-		return getValueMap("${cuantoUrl}/testRun/get/${testRunId.toString()}")
-	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -186,6 +176,7 @@ class CuantoClient implements ICuantoClient {
 		}
 		return testRun
 	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -239,12 +230,14 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public void submitFile(File file, Long testRunId) {
 		submitFiles([file], testRunId)
 	}
+
 	
 	/**
 	 * {@inheritDoc}
@@ -275,7 +268,7 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	protected Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
+	private Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
 		if (testRunId) {
@@ -307,6 +300,7 @@ class CuantoClient implements ICuantoClient {
 		}
 		return testOutcomeId 
 	}
+
 
 	/**
 	 * {@inheritDoc}

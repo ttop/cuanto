@@ -26,7 +26,7 @@ class CuantoClientTest extends GroovyTestCase {
 		if (projectKey.length() > 25) {
 			projectKey = projectKey.substring(0, 24)
 		}
-		projectId = client.createProject(projectName, projectKey, "JUnit")
+		projectId = client.createProject(new Project(name: projectName, 'projectKey': projectKey, testType: "JUnit"))
 	}
 
 
@@ -39,7 +39,7 @@ class CuantoClientTest extends GroovyTestCase {
 	void testCreateAndDeleteProject() {
 		def localName = wordGen.getSentence(3)
 		def projKey = wordGen.getSentence(2).replaceAll("\\s+", "")
-		def localProjectId = client.createProject(localName, projKey, "JUnit")
+		def localProjectId = client.createProject(new Project(name:localName, 'projectKey': projKey, testType: "JUnit"))
 		def project = client.getProject(localProjectId)
 		assertEquals "wrong project name", localName, project.name
 		assertEquals "wrong project key", projKey, project.projectKey
@@ -69,7 +69,8 @@ class CuantoClientTest extends GroovyTestCase {
 
 	void testCreateProjectTooBig() {
 		def message = shouldFail(CuantoClientException) {
-			client.createProject("Long name", "abcdefghijklmnopqrstuvwxyz", "JUnit")
+			client.createProject(new Project(name: "Long name", 'projectKey': "abcdefghijklmnopqrstuvwxyz",
+				testType: "JUnit"))
 		}
 		assertTrue "Wrong error message: $message", message.contains("projectKey.maxSize")
 	}
