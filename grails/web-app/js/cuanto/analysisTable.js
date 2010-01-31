@@ -418,7 +418,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		anlzLink.appendChild(anlzImg);
 		elCell.appendChild(anlzLink);
 
-		YAHOO.util.Event.addListener(outputLinkId, "click", showOutput);
+		YAHOO.util.Event.addListener(outputLinkId, "click", handleOutputIcon);
 		YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
 		YAHOO.util.Event.addListener(anlzLink, "click", showAnalysisDialog, null,
 			analysisDialog);
@@ -439,8 +439,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	}
 
 
-	function showOutput(e) {
-		outputPanel.showOutputForLink(e, ovrlyMgr);
+	function handleOutputIcon(e) {
+		var currentlyDisplayed = outputPanel.getCurrentTargetId();
+		var currentlySelected = YAHOO.util.Event.getTarget(e).id ;
+		if (currentlyDisplayed == currentlySelected ) {
+			outputPanel.closePanel();
+		} else {
+			outputPanel.showOutputForLink(e, ovrlyMgr);
+		}
 	}
 
 	function highlightRowForEvent(e) {

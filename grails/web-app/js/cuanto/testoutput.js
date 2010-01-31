@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.OutputPanel = function(outputProxy) {
+	var currentTargetId;
 
 	var pub = {}; // public methods
 	if (!outputProxy) {
@@ -35,6 +36,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 
 	function closeOutPanel() {
 		if (outputPanel) {
+			currentTargetId = undefined;
 			outputPanel.setBody(""); //workaround for Firefox 2 rendering bug
 			outputPanel.hide("");
 		}
@@ -82,6 +84,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 
 	pub.showOutputForLink = function(e, overlayMgr) {
 		var outcomeId = YAHOO.util.Event.getTarget(e).id.match(/.+?(\d+)/)[1];
+		currentTargetId = YAHOO.util.Event.getTarget(e).id
 		if (outputPanel == null || outputPanel == undefined) {
 			outputPanel = new YAHOO.widget.Panel("outPanel", {
 				width: document.viewport.getWidth() * .95 - PANEL_X_POSITION + "px",
@@ -128,6 +131,14 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 
 	pub.getOutputProxy = function() {
 		return outputProxy;
+	};
+
+	pub.getCurrentTargetId = function() {
+		return currentTargetId;
+	};
+
+	pub.closePanel = function() {
+		closeOutPanel();
 	};
 
 	return pub;
