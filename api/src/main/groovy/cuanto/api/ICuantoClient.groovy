@@ -31,7 +31,7 @@ public interface ICuantoClient {
 	 * @param project The project to create.
 	 * @return The ID of the project
 	 */
-	public Long createProject(Project project)
+	public Long createProject(Project project) throws CuantoClientException
 
 
 	/**
@@ -39,7 +39,7 @@ public interface ICuantoClient {
 	 *
 	 * @param id The ID of the project to delete.
 	 */
-	public void deleteProject(Long id)
+	public void deleteProject(Long id) throws CuantoClientException
 
 
 	/**
@@ -48,7 +48,7 @@ public interface ICuantoClient {
 	 * @param projectId The ID of the project
 	 * @return The Project
 	 */
-	public Project getProject(Long projectId)
+	public Project getProject(Long projectId) throws CuantoClientException
 
 
 	/**
@@ -57,7 +57,7 @@ public interface ICuantoClient {
 	 * @param projectKey The projectKey of the project
 	 * @return The Project
 	 */
-	public Project getProject(String projectKey)
+	public Project getProject(String projectKey) throws CuantoClientException
 
 
 	/**
@@ -65,7 +65,7 @@ public interface ICuantoClient {
 	* @param testRunId The ID of the test run
 	* @return The TestRun
 	*/
-	public TestRun getTestRun(Long testRunId)
+	public TestRun getTestRun(Long testRunId) throws CuantoClientException
 
 
 	/**
@@ -74,21 +74,21 @@ public interface ICuantoClient {
 	* @param testRun The TestRun to create.
 	* @return The ID of the created Test Run
 	*/
-	public Long createTestRun(TestRun testRun)
+	public Long createTestRun(TestRun testRun) throws CuantoClientException
 
 
 	/**
 	* Update a test run with the provided values. Uses the TestRun.id field to determine which TestRun to update.
 	* @param testRun The new TestRun details
 	*/
-	public void updateTestRun(TestRun testRun)
+	public void updateTestRun(TestRun testRun) throws CuantoClientException
 
 
 	/**
 	* Delete a test run.
 	* @param testRunId The ID of the test run to delete
 	*/
-	public void deleteTestRun(Long testRunId)
+	public void deleteTestRun(Long testRunId) throws CuantoClientException
 
 
 	/**
@@ -96,7 +96,7 @@ public interface ICuantoClient {
 	 * @param testOutcomeId The ID of the TestOutcome to fetch
 	 * @return The TestOutcome
 	 */
-	public TestOutcome getTestOutcome(Long testOutcomeId)
+	public TestOutcome getTestOutcome(Long testOutcomeId) throws CuantoClientException
 
 
 	/**
@@ -104,14 +104,14 @@ public interface ICuantoClient {
     * @param file The file to submit.
 	* @param testRunId The ID of the TestRun for this file.
 	*/
-	public void submitFile(File file, Long testRunId)
+	public void submitFile(File file, Long testRunId) throws CuantoClientException
 
 	/**
 	* Submit a group of files to the Cuanto server for parsing. The files need to be of the appropriate type (JUnit, TestNG) for the project.
     * @param files A list of files to submit.
 	* @param testRunId The ID of the TestRun for this file.
 	*/
-	public void submitFiles(List<File> files, Long testRunId)
+	public void submitFiles(List<File> files, Long testRunId) throws CuantoClientException
 
 
 	/**
@@ -120,7 +120,7 @@ public interface ICuantoClient {
 	 * @param testRunId The ID of the TestRun to add the TestOutcome to
 	 * @return The ID assigned to the created TestOutcome
 	 */
-	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId)
+	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) throws CuantoClientException
 
 
 	/**
@@ -130,7 +130,7 @@ public interface ICuantoClient {
 	 * @param projectId The ID of the Project to add the TestOutcome to.
 	 * @return The ID assigned to the created TestOutcome
 	 */
-	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId)
+	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) throws CuantoClientException
 
 
 
@@ -138,14 +138,14 @@ public interface ICuantoClient {
 	 * Update the fields of specified TestOutcome (based on it's ID).
 	 * @param testOutcome The updated TestOutcome
 	 */
-	public void updateTestOutcome(TestOutcome testOutcome)
+	public void updateTestOutcome(TestOutcome testOutcome) throws CuantoClientException
 
 
 	/**
 	 * Delete the specified TestOutcome.
 	 * @param testOutcomeId The ID of the TestOutcome to delete.
 	 */
-	public void deleteTestOutcome(Long testOutcomeId)
+	public void deleteTestOutcome(Long testOutcomeId) throws CuantoClientException
 
 
 	/**
@@ -155,7 +155,7 @@ public interface ICuantoClient {
 	 * @param testProperties A List of TestProperties for which to search.
 	 * @return A List of TestRuns with match properties, in descending order by dateExecuted.
 	 */
-	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties)
+	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) throws CuantoClientException
 
 
 	/**
@@ -167,7 +167,7 @@ public interface ICuantoClient {
 	 * @param parameters The parameters of the TestCase
 	 * @return The matching TestCase or null if none is found.
 	 */
-	public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters)
+	public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters) throws CuantoClientException
 
 
 	/**
@@ -179,7 +179,7 @@ public interface ICuantoClient {
 	 * @param parameters The parameters of the TestCase
 	 * @return The matching TestCase or null if none is found.
 	 */
-	public TestCase getTestCase(String projectKey, String testPackage, String testName, String parameters)
+	public TestCase getTestCase(String projectKey, String testPackage, String testName, String parameters) throws CuantoClientException
 
 
 	/**
@@ -191,7 +191,7 @@ public interface ICuantoClient {
 	 * @return A List of TestOutcomes in descending order by the "finishedAt" value.
 	 *
 	 */
-	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId)
+	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) throws CuantoClientException
 
 
 	/**
@@ -199,6 +199,13 @@ public interface ICuantoClient {
 	 * @param testRunId The ID of the TestRun
 	 * @return All of the TestOutcomes for the specified TestRun. 
 	 */
-	public List<TestOutcome> getAllTestOutcomes(Long testRunId)
+	public List<TestOutcome> getAllTestOutcomes(Long testRunId) throws CuantoClientException
 
+
+	/**
+	 * Get the statistics for the specified TestRun.
+	 * @param testRunId The ID of the TestRun
+	 * @return The statistics for the specified TestRun
+	 */
+	public TestRunStats getTestRunStats(Long testRunId) throws CuantoClientException
 }

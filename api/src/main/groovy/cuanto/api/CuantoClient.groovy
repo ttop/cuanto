@@ -59,7 +59,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long createProject(Project project) {
+	public Long createProject(Project project) throws CuantoClientException, IllegalArgumentException {
 		if (!project.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
@@ -84,29 +84,31 @@ class CuantoClient implements ICuantoClient {
 		return projectId
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void deleteProject(Long projectId) {
-		deleteObject "${cuantoUrl}/project/delete", projectId
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void deleteTestRun(Long testRunId) {
+	public void deleteProject(Long projectId) throws CuantoClientException {
+		deleteObject "${cuantoUrl}/project/delete", projectId
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void deleteTestRun(Long testRunId) throws CuantoClientException {
 		deleteObject "${cuantoUrl}/testRun/delete", testRunId
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void deleteTestOutcome(Long testOutcomeId) {
+	public void deleteTestOutcome(Long testOutcomeId) throws CuantoClientException {
 		deleteObject "${cuantoUrl}/testOutcome/delete", testOutcomeId
 	}
 
 
-	private void deleteObject(String url, Long objectId) {
+	private void deleteObject(String url, Long objectId) throws CuantoClientException {
 		def post = getMethod("post", url) as PostMethod
 		post.requestBody = [new NameValuePair("id", objectId.toString())] as NameValuePair[];
 
@@ -124,10 +126,11 @@ class CuantoClient implements ICuantoClient {
 		}
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public Project getProject(Long projectId) {
+	public Project getProject(Long projectId) throws CuantoClientException {
 		def get = getMethod("get", "${cuantoUrl}/project/get/${projectId}")
 		get.addRequestHeader "Accept", "application/xml"
 
@@ -154,7 +157,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public TestRun getTestRun(Long testRunId) {
+	public TestRun getTestRun(Long testRunId) throws CuantoClientException {
 		def get = getMethod("get", "${cuantoUrl}/testRun/get/${testRunId.toString()}")
 		get.addRequestHeader "Accept", "application/xml"
 
@@ -181,7 +184,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long createTestRun(TestRun testRun) {
+	public Long createTestRun(TestRun testRun) throws CuantoClientException, IllegalArgumentException {
 		if (!testRun.projectKey) {
 			throw new IllegalArgumentException("Project argument must be a valid cuanto project key")
 		}
@@ -206,10 +209,11 @@ class CuantoClient implements ICuantoClient {
 		return testRunId
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public TestOutcome getTestOutcome(Long testOutcomeId) {
+	public TestOutcome getTestOutcome(Long testOutcomeId) throws CuantoClientException {
 		def url = "${cuantoUrl}/testOutcome/getXml/${testOutcomeId.toString()}"
 		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
@@ -221,9 +225,11 @@ class CuantoClient implements ICuantoClient {
 			responseText = get.getResponseBodyAsStream().text
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
-			} else {
+			} else if (responseCode == HttpStatus.SC_OK) {
 				def outcome = (TestOutcome)xstream.fromXML(responseText)
 				return outcome
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
 		} finally {
 			get.releaseConnection()
@@ -234,7 +240,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void submitFile(File file, Long testRunId) {
+	public void submitFile(File file, Long testRunId) throws CuantoClientException {
 		submitFiles([file], testRunId)
 	}
 
@@ -242,7 +248,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void submitFiles(List<File> files, Long testRunId) {
+	public void submitFiles(List<File> files, Long testRunId) throws CuantoClientException {
 		def fullUri = "${cuantoUrl}/testRun/submitFile"
 		PostMethod post = getMethod("post", fullUri)
 		post.addRequestHeader "Cuanto-TestRun-Id", testRunId.toString()
@@ -268,7 +274,7 @@ class CuantoClient implements ICuantoClient {
 	}
 
 
-	private Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) {
+	private Long createTestOutcome(TestOutcome testOutcome, Long testRunId, Long projectId = null) throws CuantoClientException {
 		def fullUri = "${cuantoUrl}/testRun/submitSingleTest"
 		PostMethod post = getMethod("post", fullUri)
 		if (testRunId) {
@@ -305,7 +311,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) {
+	public List<TestRun> getTestRunsWithProperties(Long projectId, List<TestProperty> testProperties) throws CuantoClientException {
 		def post = getMethod("post", "${cuantoUrl}/testRun/getWithProperties") as PostMethod
 		post.addRequestHeader "Accept", "application/xml"
 
@@ -337,38 +343,28 @@ class CuantoClient implements ICuantoClient {
 		return runs
 	}
 
-	// TODO: make testRunStats object in API
-	Map getTestRunStats(Long testRunId){
-		return getValueMap("${cuantoUrl}/testRun/statistics/${testRunId.toString()}")
-	}
 
-
-	private Map getValueMap(url) {
-		def get = getMethod("get", url)
-		get.addRequestHeader "Accept", "text/plain"
+	public TestRunStats getTestRunStats(Long testRunId) throws CuantoClientException {
+		def get = getMethod("get", "${cuantoUrl}/testRun/statistics/${testRunId}")
+		get.addRequestHeader "Accept", "application/xml"
 
 		def responseCode
-		def responseText
+		String responseText
+		TestRunStats stats
 		try {
 			responseCode = httpClient.executeMethod(get)
 			responseText = get.getResponseBodyAsStream().text
+			if (responseCode == HttpStatus.SC_OK) {
+				stats = xstream.fromXML(responseText) as TestRunStats
+			} else if (responseCode == HttpStatus.SC_NOT_FOUND) {
+				stats = null
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
+			}
 		} finally {
 			get.releaseConnection()
 		}
-
-		def valueMap = [:]
-
-		if (responseCode == HttpStatus.SC_OK) {
-			responseText.eachLine {String line ->
-				def rawValues = line.split("=")
-				if (rawValues.size() > 1) {
-					valueMap[rawValues[0].trim()] = rawValues[1].trim()
-				}
-			}
-		} else {
-			throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
-		}
-		return valueMap
+		return stats
 	}
 
 
@@ -399,7 +395,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) {
+	public Long createTestOutcomeForProject(TestOutcome testOutcome, Long projectId) throws CuantoClientException {
 		createTestOutcome(testOutcome, null, projectId)
 	}
 
@@ -407,7 +403,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) {
+	public Long createTestOutcomeForTestRun(TestOutcome testOutcome, Long testRunId) throws CuantoClientException {
 		createTestOutcome(testOutcome, testRunId)
 	}
 
@@ -415,7 +411,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void updateTestOutcome(TestOutcome testOutcome) {
+	public void updateTestOutcome(TestOutcome testOutcome) throws CuantoClientException {
 		def fullUri = "${cuantoUrl}/testOutcome/update"
 		PostMethod post = getMethod("post", fullUri)
 		def outcomeXml = xstream.toXML(testOutcome)
@@ -441,7 +437,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public TestCase getTestCase(String projectKey, String testPackage, String testName, String parameters = null) {
+	public TestCase getTestCase(String projectKey, String testPackage, String testName, String parameters = null) throws CuantoClientException {
 		def proj = getProject(projectKey)
 		return getTestCase(proj.id, testPackage, testName, parameters)
 	}
@@ -449,7 +445,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters = null) {
+	public TestCase getTestCase(Long projectId, String testPackage, String testName, String parameters = null) throws CuantoClientException {
 		def url = "${cuantoUrl}/testCase/get" 
 		GetMethod get = getMethod("get", url) as GetMethod
 		get.addRequestHeader "Accept", "application/xml"
@@ -487,7 +483,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Project getProject(String projectKey) {
+	public Project getProject(String projectKey) throws CuantoClientException {
 		def url = "${cuantoUrl}/project/getByKey/${projectKey}"
 		GetMethod get = getMethod("get", url) as GetMethod
 		get.addRequestHeader "Accept", "application/xml"
@@ -515,7 +511,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
+	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) throws CuantoClientException {
 		def url = "${cuantoUrl}/testOutcome/findForTestRun"
 		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
@@ -528,9 +524,11 @@ class CuantoClient implements ICuantoClient {
 			responseText = get.getResponseBodyAsStream().text
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
-			} else {
+			} else if (responseCode == HttpStatus.SC_OK) {
 				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
 				return outcomes
+			} else {
+				throw new CuantoClientException("HTTP Response code ${responseCode}: ${responseText}")
 			}
 		} finally {
 			get.releaseConnection()
@@ -541,7 +539,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void updateTestRun(TestRun testRun) {
+	public void updateTestRun(TestRun testRun) throws CuantoClientException {
 		if (testRun) {
 			def fullUri = "${cuantoUrl}/testRun/update"
 			PostMethod post = getMethod("post", fullUri)
@@ -571,7 +569,7 @@ class CuantoClient implements ICuantoClient {
 	/**
 	 * {@inheritDoc}
 	 */	
-	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
+	public List<TestOutcome> getAllTestOutcomes(Long testRunId) throws CuantoClientException {
 		def url = "${cuantoUrl}/testRun/outcomes"
 		def get = getMethod("get", url)
 		get.addRequestHeader "Accept", "text/xml"
@@ -583,9 +581,11 @@ class CuantoClient implements ICuantoClient {
 			responseText = get.getResponseBodyAsStream().text
 			if (responseCode == HttpStatus.SC_NOT_FOUND) {
 				return null
-			} else {
+			} else if (responseCode == HttpStatus.SC_OK) {
 				def outcomes = (List<TestOutcome>) xstream.fromXML(responseText)
 				return outcomes
+			} else {
+				throw new CuantoClientException("HTTP Response (${responseCode}): ${responseText}")
 			}
 		} finally {
 			get.releaseConnection()

@@ -24,6 +24,7 @@ import grails.converters.JSON
 import java.text.SimpleDateFormat
 import com.thoughtworks.xstream.XStream
 import cuanto.api.TestRun as TestRunApi
+import cuanto.api.TestRunStats as TestRunStatsApi
 
 class TestRunController {
 	def parsingService
@@ -325,6 +326,11 @@ class TestRunController {
 					testRunMap.failed = stats.failed
 				}
 				render(view: 'get', model: ['testRunMap': testRunMap])
+			}
+			xml {
+				def stats = testRun.testRunStatistics?.toTestRunStatsApi()
+				response.contentType = 'application/xml'
+				render(xstream.toXML(stats))
 			}
 		}
 	}

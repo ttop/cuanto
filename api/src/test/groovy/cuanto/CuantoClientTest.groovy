@@ -226,10 +226,10 @@ class CuantoClientTest extends GroovyTestCase {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
 		client.submitFile(fileToSubmit, testRunId)
-		def stats = waitForTestRunStats(client, testRunId, "34")
-		assertEquals "34", stats.tests
-		assertEquals "3", stats.failed
-		assertEquals "31", stats.passed
+		def stats = waitForTestRunStats(client, testRunId, 34)
+		assertEquals 34, stats.tests
+		assertEquals 3, stats.failed
+		assertEquals 31, stats.passed
 	}
 
 	
@@ -237,10 +237,10 @@ class CuantoClientTest extends GroovyTestCase {
 		Long testRunId = client.createTestRun(new TestRun(projectName))
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submitFile(fileToSubmit, testRunId)
-		def stats = waitForTestRunStats(client, testRunId, "56")
-		assertEquals "56", stats.tests
-		assertEquals "15", stats.failed
-		assertEquals "41", stats.passed
+		def stats = waitForTestRunStats(client, testRunId, 56)
+		assertEquals 56, stats.tests
+		assertEquals 15, stats.failed
+		assertEquals 41, stats.passed
 	}
 
 
@@ -251,10 +251,10 @@ class CuantoClientTest extends GroovyTestCase {
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
 
 		client.submitFiles(filesToSubmit, testRunId)
-		def stats = waitForTestRunStats(client, testRunId, "68")
-		assertEquals "68", stats.tests
-		assertEquals "6", stats.failed
-		assertEquals "62", stats.passed
+		def stats = waitForTestRunStats(client, testRunId, 68)
+		assertEquals 68, stats.tests
+		assertEquals 6, stats.failed
+		assertEquals 62, stats.passed
 	}
 
 
@@ -272,11 +272,11 @@ class CuantoClientTest extends GroovyTestCase {
 		def outcomeId = client.createTestOutcomeForTestRun(outcome, testRunId)
 		assertNotNull outcomeId
 
-		def stats = waitForTestRunStats(client, testRunId, "1")
+		def stats = waitForTestRunStats(client, testRunId, 1)
 		assertNotNull stats
-		assertEquals "Wrong total tests", "1", stats?.tests
-		assertEquals "Wrong passed", "1", stats?.passed
-		assertEquals "Wrong failed", "0", stats?.failed
+		assertEquals "Wrong total tests", 1, stats?.tests
+		assertEquals "Wrong passed", 1, stats?.passed
+		assertEquals "Wrong failed", 0, stats?.failed
 
 		client.deleteTestOutcome outcomeId
 		def fetchedOutcome = client.getTestOutcome(outcomeId)
@@ -431,11 +431,11 @@ class CuantoClientTest extends GroovyTestCase {
 	}
 
 
-	Map waitForTestRunStats(CuantoClient client, Long testRunId, String totalTests) {
+	TestRunStats waitForTestRunStats(CuantoClient client, Long testRunId, totalTests) {
 		def secToWait = 30
 		def interval = 500
 		def start = new Date().time
-		Map stats = client.getTestRunStats(testRunId)
+		TestRunStats stats = client.getTestRunStats(testRunId)
 		while (stats.tests != totalTests && new Date().time - start < secToWait * 1000) {
 			sleep interval
 			stats = client.getTestRunStats(testRunId)
@@ -449,8 +449,8 @@ class CuantoClientTest extends GroovyTestCase {
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
 		client.submitFile(fileToSubmit, testRunId)
 
-		def stats = waitForTestRunStats(client, testRunId, "56")
-		assertEquals "56", stats.tests
+		def stats = waitForTestRunStats(client, testRunId, 56)
+		assertEquals 56, stats.tests
 
 		def outcomes = client.getAllTestOutcomes(testRunId)
 		assertEquals "Wrong number of outcomes", 56, outcomes.size()
