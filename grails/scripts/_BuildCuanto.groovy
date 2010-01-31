@@ -22,6 +22,7 @@ def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
 def apiDir = "${cuantoBase}/api"
 def sqlDir = "${cuantoBase}/grails/sql"
+def javadocDir = "${apiDir}/target/site/apidocs"
 
 def propfileName = "${cuantoBase}/grails/application.properties"
 ant.property(file: propfileName)
@@ -57,6 +58,12 @@ target(cuantoapi: "Build the Cuanto API") {
 		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
 	}
 	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
+
+	def javadocProcess = "mvn -f ${apiDir}/pom.xml javadoc:javadoc".execute()
+	javadocProcess.waitFor()
+	if (javadocProcess.exitValue() != 0) {
+		ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
+	}
 
 	ant.delete(verbose: "true", failonerror: "true") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
@@ -126,6 +133,10 @@ target(cuantopackage: "Build the Cuanto distributable") {
 		}
 	}
 
+	ant.copy(todir: "${targetApiDir}/javadoc") {
+		fileset(dir:javadocDir, includes: "**/*")
+	}
+	
 	ant.copy(todir: zipDir, file: "${cuantoBase}/dist/INSTALL")
 	ant.zip(basedir:targetDir, destfile: "${releaseDir}/${zipfile}")
 }
