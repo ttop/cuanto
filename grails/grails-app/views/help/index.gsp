@@ -106,7 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 		  <h2>Defining the task in an ant file</h2>
-		  <p>With the Cuanto client jar in your classpath, define the task in your ant file like this:</p>
+		  <p>With the Cuanto client jar and it's dependencies (both found in the distribution's api directory) in your classpath, define the task in your ant file like this:</p>
 		  <pre class="code">&lt;taskdef name="cuanto" classname="cuanto.CuantoAntTask"/&gt;</pre>
 
 
@@ -118,9 +118,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	&lt;property name="build" value="823"/&gt;
 	&lt;property name="milestone" value="1.0"/&gt;
 	&lt;property name="environment" value="test lab"/&gt;
+	&lt;link description="Test artifacts" url="http://my/url/link"/&gt;	  
 &lt;/cuanto&gt;</pre>
 		  <br/>
-		  Use the project key as the testProject value.
+		  <p>Use the project key as the testProject value. &lt;property&gt; nodes can be used to specify arbitrary properties
+		  for a Test Run. &lt;link&gt; nodes can be used to associate arbitrary URLs with a test run.</p>
 		  
 		  <h1><a name="test_run_history">Test Run History</a></h1>
 		  <p>The Test Run History page shows the history of test runs for a project. The feed icon links to an RSS feed
@@ -135,10 +137,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <img src="${resource(dir:'images/help', file:'filter_results.png')}" alt="analysis filters screenshot"/>
 		  <br/><br/>
 		  
-		  <p>You can choose a different filter for the view to display all tests, or just the new failures.
+		  <p>You can choose a different filter for the view to display all tests, all failures, unanalyzed failures or just the new failures.
 		  <em>New failures</em> are defined as tests that failed for this test run but passed the previous test run. Any test that failed in
 		  the previous test run is not displayed in this view, allowing you to quickly see what new bugs may have
-		  been introduced since the previous test run.</p>
+		  been introduced since the previous test run. Note that analyzing failures while in the <em>unanalyzed failures</em> view
+		  can result in hard-to-predict paging behavior (missing tests while paging), as you are changing the size of the selected result set by analyzing
+		  tests.</p>
 
 		  <h2>Searching test results</h2>
 		  <img src="${resource(dir:'images/help', file:'search.png')}" alt="search screenshot"/><br/><br/>

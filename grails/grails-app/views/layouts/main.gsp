@@ -48,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<body class=" yui-skin-sam">
 		<div id="nav" class="nav">
 			<ul>
-				<li id="clogo"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-16.gif')}" alt="Cuanto logo"/>
-Cuanto</li>
+				<li id="clogo"><g:link controller="project" action="list"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-16.gif')}" alt="Cuanto logo"/>
+Cuanto</g:link></li>
 				<li class="first navitem">
 					<g:link controller="project" action="list">Projects</g:link>
 				</li>
