@@ -36,8 +36,7 @@ PRIMARY KEY (id))""")
 sql.execute("""CREATE TABLE test_run_test_property (
   test_run_test_properties_id bigint(20) DEFAULT NULL,
   test_property_id bigint(20) DEFAULT NULL,
-  test_properties_idx int(11) DEFAULT NULL,
-""")
+  test_properties_idx int(11) DEFAULT NULL);""")
 
 
 sql.eachRow("select id, milestone, build, target_env from test_run") {
