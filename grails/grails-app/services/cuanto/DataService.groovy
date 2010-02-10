@@ -668,6 +668,10 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 			queries += " and out.testResult.isFailure = true "
 		}
 
+		if (filter == "unanalyzedfailures") {
+			queries += " and out.analysisState.isAnalyzed = false"
+		}
+
 		def qArgs = [testRun, queryList].flatten()
 		def outcomesToReturn
 		def outs = TestOutcome.findAll(

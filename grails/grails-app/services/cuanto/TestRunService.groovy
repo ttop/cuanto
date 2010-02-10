@@ -237,7 +237,7 @@ class TestRunService {
 		 sort = sort field,
 		 max = max results
 		 offset = first result
-		 filter = "allfailures" or blank for all results
+		 filter = "allfailures", "unanalyzedfailures" or blank for all results
 		 includeIgnored determines whether or not results that have the "includeInCalculations"
 		 value set to false (e.g. Ignored, Unexecuted, etc) are included in the search.
 	*/
