@@ -192,15 +192,6 @@ class TestRunService {
 	}
 
 
-	def capitalize(String str) {        //todo: delete? unused?
-		def words = str.tokenize(" ")
-		StringBuffer buf = new StringBuffer()
-		words.each {
-			buf.append(it[0].toUpperCase() + it[1..it.size() - 1] + " ")
-		}
-		buf.toString().trim()
-	}
-
 
 	def getGoogleChartUrlForTestRunFailures(testRun) {
 		def analysisStats = testRun?.testRunStatistics?.analysisStatistics
@@ -259,6 +250,7 @@ class TestRunService {
 		sortMap.bug = "t.bug.title"
 		sortMap.owner = "t.owner"
 		sortMap.note = "t.note"
+		sortMap.output = "t.testOutput"
 
 		if (params?.sort == null) {
 			sort = sortMap.testCase
