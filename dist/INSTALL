@@ -31,9 +31,42 @@ The application should be ready to run now -- start your application server and 
 for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu
 link to read about how to use Cuanto.
 
+If you'd like to run Cuanto at the root context, you'll need to consult the documentation for your application server.
+For Jetty, it involves adding a jetty-web.xml file to WEB-INF.
+
 
 Upgrading
 =========
-If you are upgrading from an existing Cuanto installation, you'll want to execute the SQL scripts
-found in the sql directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may
-be needed if using a different database configuration.
+If you are upgrading, shut down Cuanto and back up your database first.
+
+If you are upgrading from an existing Cuanto installation, you'll want to execute the SQL scripts found in the sql
+directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may be needed if using a different
+database configuration.
+
+If you are upgrading from 2.2.5 or earlier, execute the upgrade_to_2.3.1.sql script followed by upgrade_to_2.4.sql.
+
+If you are upgrading from 2.3.0 or 2.3.1, execute the upgrade_to_2.4.sql script.
+
+All upgrades require executing the groovy script migrate_test_run_props_for_2.4.groovy. You need to have a recent
+version of groovy installed (1.6 or greater recommended) and have your mySql driver in your class path. Open the script
+with your favorite editor and customize the username, password, driverClassName and JDBC url for your installation.
+Then execute the script.
+
+Each of these scripts may take a substantial time to complete. With the MySql instance on the author's MacBook (2.4 Ghz
+Intel with 4GB RAM) using a database with 1845 test_run rows and 751495 test_outcome rows, the scripts had the following
+execution timings:
+
+upgrade_to_2.3.1.sql                   appx 20 minutes
+upgrade_to_2.4.sql                     appx 41 minutes
+migrate_test_run_props_for_2.4.groovy  appx 18 seconds
+
+Of course, your average mySql server used in production is much more capable then this humble author's laptop, so these
+figures will almost certainly be better for you.
+
+Once these scripts are executed, copy the cuanto-db.groovy file from your existing installation -- probably in
+<appserver>/webapps/cuanto/WEB-INF/classes.  Then delete (or move) the existing webapp and unzip the new Cuanto war
+ in the cuanto directory (or whatever context you're using). Copy cuanto-db.groovy back to you new
+ directory under WEB-INF/classes. Then you're ready to start up Cuanto again.
+
+The first time starting Cuanto with the new webapp, it may take a substantial amount of time to start up, as some
+additional database updates are done automatically. It took 43 minutes on a MacBook running Cuanto and MySql.
