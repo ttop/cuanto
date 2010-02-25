@@ -171,6 +171,7 @@ YAHOO.cuanto.format = function() {
 		var removed = oData.replace(/[\n|\r\n]/g, " ");
 		var broken = pub.breakOnToken(removed, " ", 400);
 		outputContainer.innerHTML = broken.replace(/[\n|\r\n]/g, "<br/>");
+		elCell.innerHTML = "";
 		elCell.appendChild(outputContainer);
 	};
 
