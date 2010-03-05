@@ -20,7 +20,7 @@ UPDATE test_run trun INNER JOIN project
    ON trun.test_run_statistics_id
 SET trs.total_duration = trs.total_duration * 1000,
     trs.average_duration = trs.average_duration * 1000
-WHERE tt.name like 'JUnit';
+WHERE tt.name LIKE 'JUnit';
 
 ALTER TABLE test_run_stats MODIFY total_duration bigint(20);
 ALTER TABLE test_run_stats MODIFY average_duration bigint(20);
