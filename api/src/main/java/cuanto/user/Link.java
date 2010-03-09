@@ -8,13 +8,18 @@ public class Link {
 	String description;
 	Long id;
 
-	Link (String url, String description) {
+	Link (String url, String description, Long id) {
 		this.url = url;
 		this.description = description;
+		this.id = id;
+	}
+
+	Link (String url, String description) {
+		this(url, description, null);
 	}
 
 	Link (String url) {
-		this.url = url;
+		this(url, null, null);
 	}
 
 
@@ -30,10 +35,5 @@ public class Link {
 
 	Long getId() {
 		return id;
-	}
-
-
-	void setId(Long id) {
-		this.id = id;
 	}
 }

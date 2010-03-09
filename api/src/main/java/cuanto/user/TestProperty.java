@@ -8,13 +8,14 @@ public class TestProperty {
 	String value;
 	Long id;
 
-	TestProperty(String name, String value) {
+	TestProperty(String name, String value, Long id) {
 		this.name = name;
 		this.value = value;
+		this.id = id;
 	}
 
-	void setId(Long id) {
-		this.id = id;
+	TestProperty(String name, String value) {
+		this(name, value, null);
 	}
 
 	public String getName() {
