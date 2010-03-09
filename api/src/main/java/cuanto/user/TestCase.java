@@ -1,7 +1,7 @@
 package cuanto.user;
 
 /**
- * User: Todd Wells Date: Mar 9, 2010 Time: 9:35:41 AM
+ * An immutable class that represents a Cuanto server-side TestCase.
  */
 public class TestCase {
 	String projectKey;

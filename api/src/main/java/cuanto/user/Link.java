@@ -33,7 +33,7 @@ public class Link {
 	}
 
 
-	Long getId() {
+	public Long getId() {
 		return id;
 	}
 }

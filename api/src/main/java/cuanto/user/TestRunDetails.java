@@ -67,15 +67,15 @@ public class TestRunDetails {
 		this.testProperties = testProperties;
 	}
 
-	public void validate() throws CuantoException {
+	public void validate() throws IllegalStateException{
 		if (dateExecuted == null) {
-			throw new CuantoException("null is not a valid value for dateExecuted");
+			throw new IllegalStateException("null is not a valid value for dateExecuted");
 		}
 		if (testProperties == null) {
-			throw new CuantoException("null is not a valid value for testProperties. Use an empty list instead.");
+			throw new IllegalStateException("null is not a valid value for testProperties. Use an empty list instead.");
 		}
 		if (dateExecuted == null) {
-			throw new CuantoException("null is not a valid value for links. Use an empty list instead");
+			throw new IllegalStateException("null is not a valid value for links. Use an empty list instead");
 		}
 	}
 

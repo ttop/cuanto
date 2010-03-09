@@ -1,7 +1,7 @@
 package cuanto.user;
 
 /**
- * User: Todd Wells Date: Mar 9, 2010 Time: 8:41:46 AM
+ * Represents the result of executing a TestCase, or perhaps an unexecuted TestCase. 
  */
 public class TestResult {
 	private final String status;
