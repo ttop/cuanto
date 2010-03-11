@@ -360,10 +360,19 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 	}
 
 
-	List<TestOutcome> getTestOutcomes(outcomeIds) {
+	List<TestOutcome> getTestOutcomes(List outcomeIds) {
 		TestOutcome.findAll("from cuanto.TestOutcome out where out.id in (:outList)", [outList: outcomeIds])
 	}
 
+
+	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) {
+		CuantoQuery cuantoQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(queryFilter)
+		if (cuantoQuery.paginateParameters) {
+			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+		} else {
+			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+		}
+	}
 
 	TestResult result(String nameStartsWith) {
 		TestResult.findByNameIlike(nameStartsWith + "%")
@@ -423,7 +432,7 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 		}
 
 		def results = TestOutcome.executeQuery(qry, [testCase], [max: maxOutcomes, offset: startIndex])
-		return results
+		return results              
 	}
 
 
@@ -742,6 +751,8 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 	def findOutcomeForTestCase(testCase, testRun) {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
+
+
 }
 
 
