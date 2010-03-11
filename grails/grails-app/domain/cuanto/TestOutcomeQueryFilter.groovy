@@ -32,7 +32,7 @@ public class TestOutcomeQueryFilter {
 
 	TestRun testRun
 	
-	Map sorts
+	List sorts
 	Long offset
 	Long max
 }
