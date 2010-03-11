@@ -21,8 +21,8 @@ public class QueryBuilderTests extends GroovyTestCase {
 	void testTestRun() {
 		def qf = new TestOutcomeQueryFilter()
 		qf.testRun = new TestRun(note: "foo")
-		qf.sort = "testCase.fullName"
-		qf.order = "asc"
+		qf.sorts = []
+		qf.sorts << [sort: "testCase.fullName", order: "asc"]
 
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.${qf.sort} ${qf.order}"

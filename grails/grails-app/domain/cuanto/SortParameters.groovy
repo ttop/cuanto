@@ -1,5 +1,7 @@
+package cuanto
 /*
- Copyright (c) 2010 Todd Wells
+
+Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,21 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
-
-public class TestOutcomeQueryFilter {
-
-	static hasMany = [sorts: SortParameters]
-	static constraints = {
-		testRun(nullable: true)
-		sorts(nullable: true)
-		offset(nullable: true)
-		max(nullable:true)
-	}
-
-	TestRun testRun
-	
-	Map sorts
-	Long offset
-	Long max
+public class SortParameters {
+	String sort
+	String order
 }

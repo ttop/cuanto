@@ -35,6 +35,16 @@ public class QueryBuilder {
 		}
 
 		// add sort & order if specified
+		if (queryFilter.sorts) {
+			query += " order by "
+			queryFilter.sorts.eachWithIndex { it, idx ->
+				query += "${it.sort} ${it.order}"
+				if (idx < queryFilter.sorts.size() - 1) {
+					query += ", "
+				}
+			}
+		}
+
 		if (queryFilter.sort) {
 			query += " order by t.${queryFilter.sort} "
 			if (queryFilter.order) {

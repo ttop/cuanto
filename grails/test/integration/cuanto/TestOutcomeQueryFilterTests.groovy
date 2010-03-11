@@ -9,7 +9,7 @@ import cuanto.test.TestObjects
  * 
  */
 
-public class QueryFilterTests extends GroovyTestCase {
+public class TestOutcomeQueryFilterTests extends GroovyTestCase {
 
 	DataService dataService
 	Project project
