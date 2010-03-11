@@ -22,5 +22,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class SortParameters {
 	String sort
-	String order
+	String sortOrder
 }

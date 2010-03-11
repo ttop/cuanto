@@ -38,13 +38,13 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.testRun = new TestRun(note: "foo")
 		qf.sorts = []
 		qf.sorts << [sort: "testCase.fullName", order: "asc"]
-		qf.max = 10
-		qf.offset = 5
+		qf.queryMax = 10
+		qf.queryOffset = 5
 
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun]
-		expectedQuery.paginateParameters = [max: qf.max, offset: qf.offset]
+		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
 		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
 		assertEquals "TestRun", expectedQuery, actualQuery

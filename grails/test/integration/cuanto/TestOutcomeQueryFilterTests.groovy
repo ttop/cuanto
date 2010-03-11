@@ -68,13 +68,13 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
 		assertEquals "Outcome 1", outcomesA[0], fetchedOutcomes[0]
 		assertEquals "Outcome 2", outcomesA[1], fetchedOutcomes[1]
 
-		queryFilterA.sort = "testCase.fullName"
+		queryFilterA.sorts = [new SortParameters(sort:"testCase.fullName", sortOrder: "asc")]
 		fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
-		assertTrue "Wrong sort order", fetchedOutcomes[0].testCase.fullName < fetchedOutcomes[1].testCase.fullName
+		assertTrue "Wrong sort sortOrder", fetchedOutcomes[0].testCase.fullName < fetchedOutcomes[1].testCase.fullName
 
-		queryFilterA.order = "desc"
+		queryFilterA.sorts = [new SortParameters(sort:"testCase.fullName", sortOrder: "desc")]
 		fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
-		assertTrue "Wrong sort order", fetchedOutcomes[0].testCase.fullName > fetchedOutcomes[1].testCase.fullName
+		assertTrue "Wrong sort sortOrder", fetchedOutcomes[0].testCase.fullName > fetchedOutcomes[1].testCase.fullName
 
 		
 

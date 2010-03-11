@@ -34,11 +34,17 @@ public class QueryBuilder {
 			params += details.params
 		}
 
-		// add sort & order if specified
+		// add sort & sortOrder if specified
 		if (queryFilter.sorts) {
 			query += " order by "
 			queryFilter.sorts.eachWithIndex { it, idx ->
-				query += "t.${it.sort} ${it.order}"
+				def order
+				if (it.sortOrder) {
+					order = it.sortOrder
+				} else {
+					order = "asc"
+				}
+				query += "t.${it.sort} ${order}"
 				if (idx < queryFilter.sorts.size() - 1) {
 					query += ", "
 				}
@@ -46,14 +52,13 @@ public class QueryBuilder {
 		}
 
 		def pagination = [:]
-		if (queryFilter.max) {
-			pagination.max = queryFilter.max
+		if (queryFilter.queryMax) {
+			pagination.max = queryFilter.queryMax
 		}
-		if (queryFilter.offset) {
-			pagination.offset = queryFilter.offset
+		if (queryFilter.queryOffset) {
+			pagination.offset = queryFilter.queryOffset
 		}
 
-		//query = query.replaceAll(/\s+/, " ").trim()
 		def cuantoQuery = new CuantoQuery(hql: query, positionalParameters: params.flatten() as List,
 			paginateParameters:pagination )
 		return cuantoQuery

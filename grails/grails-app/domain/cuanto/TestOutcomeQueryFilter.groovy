@@ -26,13 +26,13 @@ public class TestOutcomeQueryFilter {
 	static constraints = {
 		testRun(nullable: true)
 		sorts(nullable: true)
-		offset(nullable: true)
-		max(nullable:true)
+		queryOffset(nullable: true)
+		queryMax(nullable:true)
 	}
 
 	TestRun testRun
 	
 	List sorts
-	Long offset
-	Long max
+	Long queryOffset
+	Long queryMax
 }
