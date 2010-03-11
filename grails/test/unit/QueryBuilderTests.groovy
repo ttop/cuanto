@@ -25,7 +25,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.sorts << [sort: "testCase.fullName", order: "asc"]
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.${qf.sort} ${qf.order}"
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun]
 		expectedQuery.paginateParameters = [:]
 
@@ -36,13 +36,13 @@ public class QueryBuilderTests extends GroovyTestCase {
 	void testPaginateTestRun() {
 		def qf = new TestOutcomeQueryFilter()
 		qf.testRun = new TestRun(note: "foo")
-		qf.sort = "testCase.fullName"
-		qf.order = "asc"
+		qf.sorts = []
+		qf.sorts << [sort: "testCase.fullName", order: "asc"]
 		qf.max = 10
 		qf.offset = 5
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.${qf.sort} ${qf.order}"
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun]
 		expectedQuery.paginateParameters = [max: qf.max, offset: qf.offset]
 
