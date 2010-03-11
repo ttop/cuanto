@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2010 Todd Wells
+
+Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -22,16 +23,28 @@ package cuanto
 
 public class QueryBuilder {
 
-	List processors = [this.&getTestRunClause]
+	List processors = [this.&getTestRunClause, this.&getIsFailureClause]
 
 	CuantoQuery buildQueryForTestOutcomeFilter(TestOutcomeQueryFilter queryFilter) {
-		String query = "from cuanto.TestOutcome t "
+		String query = "from cuanto.TestOutcome t where "
 		List params = []
+		List queryClauses = []
 
 		processors.each { queryProcessor ->
 			def details = queryProcessor(queryFilter)
-			query += details.clause
-			params += details.params
+			if (details.clause?.trim()) {
+				queryClauses << details.clause
+				params += details.params
+			}
+		}
+
+		queryClauses.eachWithIndex { clause, idx ->
+			query += " ${clause}"
+			if (idx < queryClauses.size() - 1) {
+				query += "and "
+			} else {
+				query += " "
+			}
 		}
 
 		// add sort & sortOrder if specified
@@ -66,7 +79,15 @@ public class QueryBuilder {
 
 	Map getTestRunClause(TestOutcomeQueryFilter queryFilter) {
 		if (queryFilter.testRun) {
-			return [clause: "where t.testRun = ? ", params: [queryFilter.testRun]]
+			return [clause: " t.testRun = ? ", params: [queryFilter.testRun]]
+		} else {
+			return [:]
+		}
+	}
+	
+	Map getIsFailureClause(TestOutcomeQueryFilter  queryFilter) {
+		if (queryFilter.isFailure != null) {
+			return [clause: " t.testResult.isFailure = ? ", params: [queryFilter.isFailure]]
 		} else {
 			return [:]
 		}

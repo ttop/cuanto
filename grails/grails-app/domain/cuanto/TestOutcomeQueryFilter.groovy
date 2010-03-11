@@ -25,14 +25,35 @@ public class TestOutcomeQueryFilter {
 	static hasMany = [sorts: SortParameters]
 	static constraints = {
 		testRun(nullable: true)
+		isFailure(nullable: true)
 		sorts(nullable: true)
 		queryOffset(nullable: true)
 		queryMax(nullable:true)
 	}
 
 	TestRun testRun
+	Boolean isFailure
 	
 	List sorts
 	Long queryOffset
 	Long queryMax
+
+	/* TODO:
+
+     Filters for:
+      Project (if it's not with a TestRun)
+	  TestCase (which would return history)
+	  TestCase name
+	  DateRange - start and end dates, operator (lt, gt, <=, >=)
+	  TestResult
+	  IncludeIgnored
+	  AnalysisState
+	  duration
+	  bug
+	  note
+	  owner
+	  testoutput
+
+	*/
+
 }
