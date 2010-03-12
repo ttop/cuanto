@@ -1,7 +1,3 @@
-package cuanto.queryprocessor
-
-import cuanto.QueryFilter
-import cuanto.TestOutcome
 /*
 
 Copyright (c) 2010 Todd Wells
@@ -23,6 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+package cuanto.queryprocessor
+
+import cuanto.QueryFilter
+import cuanto.TestOutcome
 public class TestResultIsFailureQueryModule implements QueryModule {
 
 	/**

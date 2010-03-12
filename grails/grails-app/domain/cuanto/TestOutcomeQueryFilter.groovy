@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2010 Todd Wells
+
+Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 

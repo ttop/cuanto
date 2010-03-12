@@ -1,7 +1,3 @@
-package cuanto.queryprocessor
-
-import cuanto.QueryFilter
-import cuanto.TestOutcome
 /*
 
 Copyright (c) 2010 Todd Wells
@@ -22,6 +18,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+package cuanto.queryprocessor
+
+import cuanto.QueryFilter
+import cuanto.TestOutcome
 
 public class TestCaseParametersQueryModule implements QueryModule {
 

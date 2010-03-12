@@ -1,5 +1,3 @@
-package cuanto
-
 /*
 
 Copyright (c) 2010 Todd Wells
@@ -20,6 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+package cuanto
+
 public interface QueryFilter {
 
 	/**
