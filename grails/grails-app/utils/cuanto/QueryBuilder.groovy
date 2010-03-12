@@ -23,7 +23,8 @@ package cuanto
 
 public class QueryBuilder {
 
-	List processors = [this.&getTestRunClause, this.&getIsFailureClause]
+	List processors = [this.&getTestRunClause, this.&getIsFailureClause, this.&getTestResultClause,
+		this.&getTestCaseFullNameClause, this.&getTestCaseParametersClause, this.&getTestCasePackageClause]
 
 	CuantoQuery buildQueryForTestOutcomeFilter(TestOutcomeQueryFilter queryFilter) {
 		String query = "from cuanto.TestOutcome t where "
@@ -85,11 +86,46 @@ public class QueryBuilder {
 		}
 	}
 	
-	Map getIsFailureClause(TestOutcomeQueryFilter  queryFilter) {
+	Map getIsFailureClause(TestOutcomeQueryFilter queryFilter) {
 		if (queryFilter.isFailure != null) {
 			return [clause: " t.testResult.isFailure = ? ", params: [queryFilter.isFailure]]
 		} else {
 			return [:]
 		}
 	}
+
+	Map getTestResultClause(TestOutcomeQueryFilter queryFilter) {
+		if (queryFilter.testResult != null) {
+			return [clause: " t.testResult = ? ", params: [queryFilter.testResult]]
+		} else {
+			return [:]
+		}
+	}
+
+	Map getTestCaseFullNameClause(TestOutcomeQueryFilter queryFilter) {
+		if (queryFilter.testCaseFullName != null) {
+			return [clause: " upper(t.testCase.fullName) like ? ", params: "%${queryFilter.testCaseFullName}%"]
+		} else {
+			return [:]
+		}
+	}
+
+	Map getTestCaseParametersClause(TestOutcomeQueryFilter queryFilter) {
+		def map = [:]
+		if (queryFilter.testCaseParameters != null) {
+			map = [clause: " upper(t.testCase.parameters) like ? ",
+				params: queryFilter.testCaseParameters.toUpperCase().replaceAll("\\*", "%")]
+		}
+		return map
+	}
+
+	Map getTestCasePackageClause(TestOutcomeQueryFilter queryFilter) {
+		def map = [:]
+		if (queryFilter.testCasePackage != null) {
+			map = [clause: " t.testCase.package like ? ",
+				params: queryFilter.testCasePackage.replaceAll("\\*", "%")]
+		}
+		return map
+	}
+
 }

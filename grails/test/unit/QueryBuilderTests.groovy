@@ -2,10 +2,9 @@ import cuanto.TestOutcomeQueryFilter
 import cuanto.TestRun
 import cuanto.CuantoQuery
 import cuanto.QueryBuilder
-import cuanto.TestOutcomeQueryFilter
 import cuanto.test.WordGenerator
-import cuanto.TestResult
 import cuanto.SortParameters
+import cuanto.TestResult
 
 /**
  * User: Todd Wells
@@ -66,7 +65,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
 		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
-		assertEquals "TestRun", expectedQuery, actualQuery
+		assertEquals "IsFailure", expectedQuery, actualQuery
 	}
 
 	void testTestResultIsNotFailureAndTestRun() {
@@ -85,8 +84,112 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
 		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
-		assertEquals "TestRun", expectedQuery, actualQuery
+		assertEquals "IsNotFailure", expectedQuery, actualQuery
 	}
+
+	void testTestResultAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+		qf.testResult = new TestResult(name: "Fail", isFailure: true, includeInCalculations: true)
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testResult = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.testResult]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testTestCaseFullNameAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+		qf.testCaseFullName = "my.sample.testcase"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.testCase.fullName) like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, "%${qf.testCaseFullName}%"]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testTestCaseParametersAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.testCaseParameters = "foo, bar"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.testCase.parameters) like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.testCaseParameters.toUpperCase()]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testTestCaseParametersWildcardAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.testCaseParameters = "foo, *, bar"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.testCase.parameters) like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, "FOO, %, BAR"]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testTestCasePackageAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.testCasePackage = "my.pack.age"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testCase.package like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testTestCasePackageWildcardAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.testCasePackage = "my.pack.age.*"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testCase.package like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage.replaceAll("\\*", "%")]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
 
 	void assertEquals(String message, CuantoQuery expected, CuantoQuery actual) {
 		assertEqualsIgnoringWhitespace "${message}: Wrong hql", expected.hql,  actual.hql

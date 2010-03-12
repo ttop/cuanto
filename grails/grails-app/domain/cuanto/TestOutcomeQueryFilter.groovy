@@ -29,10 +29,15 @@ public class TestOutcomeQueryFilter {
 		sorts(nullable: true)
 		queryOffset(nullable: true)
 		queryMax(nullable:true)
+		testResult(nullable:true)
 	}
 
 	TestRun testRun
 	Boolean isFailure
+	TestResult testResult
+	String testCaseFullName
+	String testCaseParameters
+	String testCasePackage
 	
 	List sorts
 	Long queryOffset
@@ -45,7 +50,6 @@ public class TestOutcomeQueryFilter {
 	  TestCase (which would return history)
 	  TestCase name
 	  DateRange - start and end dates, operator (lt, gt, <=, >=)
-	  TestResult
 	  IncludeIgnored
 	  AnalysisState
 	  duration
