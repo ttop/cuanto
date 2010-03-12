@@ -113,6 +113,13 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 */
 	Bug bug
 
+
+	/**
+	 * If not null, only TestOutcomes that reference this owner will be returned. Case-insensitive match.
+	 */
+	String owner
+	
+
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
 	 */

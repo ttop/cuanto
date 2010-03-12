@@ -25,15 +25,15 @@ import cuanto.QueryFilter
 import cuanto.TestOutcome
 
 
-public class BugQueryModule implements QueryModule{
+public class OwnerQueryModule implements QueryModule {
 
 	/**
-	 * If queryFilter.bug is not null, then only TestOutcomes that reference this bug will be returned.  
+	 * If not null, only TestOutcomes that reference this owner will be returned. Case-insensitive match.
 	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
-		if (queryFilter.bug) {
-			map = [clause: " t.bug = ? ", params: queryFilter.bug]
+		if (queryFilter.owner) {
+			map = [clause: " upper(t.owner) = ? ", params: queryFilter.owner.toUpperCase()]
 		}
 		return map
 	}

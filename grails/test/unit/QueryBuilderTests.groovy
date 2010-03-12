@@ -19,6 +19,7 @@ import cuanto.queryprocessor.AnalysisStateQueryModule
 import cuanto.AnalysisState
 import cuanto.queryprocessor.BugQueryModule
 import cuanto.Bug
+import cuanto.queryprocessor.OwnerQueryModule
 
 /**
  * User: Todd Wells
@@ -37,7 +38,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
-		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule()]
+		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule()]
 	}
 
 	void testTestRun() {
@@ -138,7 +139,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.testCase.fullName) like ? order by t.testCase.fullName asc"
-		expectedQuery.positionalParameters = [qf.testRun, "%${qf.testCaseFullName}%"]
+		expectedQuery.positionalParameters = [qf.testRun, "%${qf.testCaseFullName.toUpperCase()}%"]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
@@ -249,6 +250,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+
 	void testIsAnalyzedAndTestRun(){
 		def qf = new TestOutcomeQueryFilter()
 		qf.testRun = new TestRun(note: "foo")
@@ -265,6 +267,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
+
 
 	void testAnalysisStateAndTestRun(){
 		def qf = new TestOutcomeQueryFilter()
@@ -283,6 +286,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+
 	void testBugAndTestRun(){
 		def qf = new TestOutcomeQueryFilter()
 		qf.testRun = new TestRun(note: "foo")
@@ -294,6 +298,24 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.bug = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun, qf.bug]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
+	void testOwnerAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.owner = "Bob"
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.owner) = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.owner.toUpperCase()]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
