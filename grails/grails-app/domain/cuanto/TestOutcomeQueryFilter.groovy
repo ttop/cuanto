@@ -28,10 +28,16 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	static constraints = {
 		testRun(nullable: true)
 		isFailure(nullable: true)
+		testResult(nullable:true)
+		testCaseFullName(nullable:true)
+		testCaseParameters(nullable:true)
+		testCasePackage(nullable:true)
+		project(nullable:true)
+		testResultIncludedInCalculations(nullable:true)
+		isAnalyzed(nullable:true)
 		sorts(nullable: true)
 		queryOffset(nullable: true)
 		queryMax(nullable:true)
-		testResult(nullable:true)
 	}
 
 	/**
@@ -118,7 +124,6 @@ public class TestOutcomeQueryFilter implements QueryFilter {
      Filters for:
 	  TestCase (which would return history)
 	  DateRange - start and end dates, operator (lt, gt, <=, >=)
-	  IncludeIgnored
 	  AnalysisState
 	  duration
 	  bug
