@@ -35,6 +35,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		project(nullable:true)
 		testResultIncludedInCalculations(nullable:true)
 		isAnalyzed(nullable:true)
+		analysisState(nullable:true)
 		sorts(nullable: true)
 		queryOffset(nullable: true)
 		queryMax(nullable:true)
@@ -98,7 +99,16 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 * If null, TestOutcomes will not be filtered based on their isAnalyzed state.
 	 */
 	Boolean isAnalyzed
-	
+
+
+
+
+
+	/**
+	 * If not null, only TestOutcomes with this AnalysisState will be returned. 
+	 */
+	AnalysisState analysisState
+
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
 	 */

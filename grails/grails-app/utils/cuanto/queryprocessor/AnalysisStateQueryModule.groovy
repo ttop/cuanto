@@ -24,18 +24,23 @@ package cuanto.queryprocessor
 import cuanto.QueryFilter
 import cuanto.TestOutcome
 
-public class IsAnalyzedQueryModule implements QueryModule {
 
+public class AnalysisStateQueryModule implements QueryModule {
+
+	/**
+	 * If queryFilter.analysisState is not null, only TestOutcomes with this AnalysisState will be returned.
+	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
-		if (queryFilter.isAnalyzed != null) {
-			map = [clause: " t.analysisState.isAnalyzed = ?", params: [queryFilter.isAnalyzed]]
+		if (queryFilter.analysisState) {
+			map = [clause: " t.analysisState = ? ", params: [queryFilter.analysisState]]
 		}
 		return map
 	}
 
 
 	public List<Class> getObjectTypes() {
-		[TestOutcome.class]
+		return [TestOutcome.class]
 	}
+
 }
