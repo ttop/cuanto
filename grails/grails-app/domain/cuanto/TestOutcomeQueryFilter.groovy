@@ -80,10 +80,17 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 	/**
 	 * If true, the TestOutcomes returned will include TestResults that are ignored when calculating statistics, like
-	 * "Ignore" or "Unexecuted". If false, all TestOutcomes will only contain un-ignored values.
+	 * "Ignore" or "Unexecuted".
+	 * If false, all TestOutcomes will only contain un-ignored values.
 	 */
 	Boolean testResultIncludedInCalculations
 
+	/**
+	 * If true, only TestOutcomes with their AnalysisState.isAnalyzed == true will be returned.
+	 * If false, only TestOutcomes with their AnalysisState.isAnalyzed == false will be returned.
+	 * If null, TestOutcomes will not be filtered based on their isAnalyzed state.
+	 */
+	Boolean isAnalyzed
 	
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.

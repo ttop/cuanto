@@ -14,6 +14,7 @@ import cuanto.queryprocessor.TestCaseParametersQueryModule
 import cuanto.queryprocessor.TestCasePackageQueryModule
 import cuanto.queryprocessor.ProjectQueryModule
 import cuanto.queryprocessor.TestResultIncludedInCalculationsQueryModule
+import cuanto.queryprocessor.IsAnalyzedQueryModule
 
 /**
  * User: Todd Wells
@@ -31,7 +32,8 @@ public class QueryBuilderTests extends GroovyTestCase {
 		queryBuilder = new QueryBuilder()
 		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
-		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule()]
+		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
+		new IsAnalyzedQueryModule()]
 	}
 
 	void testTestRun() {
@@ -242,6 +244,25 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
+
+	void testIsAnalyzedAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.isAnalyzed = true
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.analysisState.isAnalyzed = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.isAnalyzed]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
 
 
 	void assertEquals(String message, CuantoQuery expected, CuantoQuery actual) {
