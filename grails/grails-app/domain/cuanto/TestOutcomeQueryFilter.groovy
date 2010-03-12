@@ -101,13 +101,17 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	Boolean isAnalyzed
 
 
-
-
-
 	/**
 	 * If not null, only TestOutcomes with this AnalysisState will be returned. 
 	 */
 	AnalysisState analysisState
+
+
+
+	/**
+	 * If not null, only TestOutcomes that reference this bug will be returned. 
+	 */
+	Bug bug
 
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
@@ -128,15 +132,12 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
 
-
 	/* TODO:
 
      Filters for:
 	  TestCase (which would return history)
 	  DateRange - start and end dates, operator (lt, gt, <=, >=)
-	  AnalysisState
 	  duration
-	  bug
 	  note
 	  owner
 	  testoutput

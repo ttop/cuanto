@@ -21,26 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.queryprocessor
 
-import cuanto.QueryFilter
-import cuanto.TestOutcome
 
-
-public class AnalysisStateQueryModule implements QueryModule {
-
-	/**
-	 * If queryFilter.analysisState is not null, only TestOutcomes with this AnalysisState will be returned.
-	 */
-	public Map getQueryParts(QueryFilter queryFilter) {
-		def map = [:]
-		if (queryFilter.analysisState) {
-			map = [clause: " t.analysisState = ? ", params: [queryFilter.analysisState]]
-		}
-		return map
-	}
-
-
-	public List<Class> getObjectTypes() {
-		[TestOutcome.class]
-	}
+public class BugQueryModule {
 
 }

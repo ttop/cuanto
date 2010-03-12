@@ -17,6 +17,8 @@ import cuanto.queryprocessor.TestResultIncludedInCalculationsQueryModule
 import cuanto.queryprocessor.IsAnalyzedQueryModule
 import cuanto.queryprocessor.AnalysisStateQueryModule
 import cuanto.AnalysisState
+import cuanto.queryprocessor.BugQueryModule
+import cuanto.Bug
 
 /**
  * User: Todd Wells
@@ -35,7 +37,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
-		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule()]
+		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule()]
 	}
 
 	void testTestRun() {
@@ -275,6 +277,23 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.analysisState = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun, qf.analysisState]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	void testBugAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.bug = new Bug(title: "bar", url: "http://foobar")
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.bug = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.bug]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)

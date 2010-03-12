@@ -35,6 +35,9 @@ import cuanto.queryprocessor.TestCaseParametersQueryModule
 import cuanto.queryprocessor.TestCasePackageQueryModule
 import cuanto.queryprocessor.ProjectQueryModule
 import cuanto.queryprocessor.TestResultIncludedInCalculationsQueryModule
+import cuanto.queryprocessor.IsAnalyzedQueryModule
+import cuanto.queryprocessor.AnalysisStateQueryModule
+import cuanto.queryprocessor.BugQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -64,7 +67,10 @@ beans = {
 			new TestCaseParametersQueryModule(),
 			new TestCasePackageQueryModule(),
 			new ProjectQueryModule(),
-			new TestResultIncludedInCalculationsQueryModule()
+			new TestResultIncludedInCalculationsQueryModule(),
+			new IsAnalyzedQueryModule(),
+			new AnalysisStateQueryModule(),
+			new BugQueryModule()
 		]
 	}
 }
