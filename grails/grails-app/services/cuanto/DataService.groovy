@@ -24,7 +24,7 @@ package cuanto
 class DataService {
 
 	boolean transactional = true
-
+	def queryBuilder
 
 	Bug getBug(String title, String url) throws CuantoException {
 		if (!title && !url) {
@@ -366,7 +366,7 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 
 
 	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) {
-		CuantoQuery cuantoQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(queryFilter)
+		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
 		if (cuantoQuery.paginateParameters) {
 			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
 		} else {

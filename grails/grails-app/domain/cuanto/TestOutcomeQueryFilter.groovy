@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-public class TestOutcomeQueryFilter {
+public class TestOutcomeQueryFilter implements QueryFilter {
 
 	static hasMany = [sorts: SortParameters]
 
@@ -77,8 +77,15 @@ public class TestOutcomeQueryFilter {
 	 */
 	Project project
 
+
+	/**
+	 * If true, the TestOutcomes returned will include TestResults that are ignored when calculating statistics, like
+	 * "Ignore" or "Unexecuted". If false, all TestOutcomes will only contain un-ignored values.
+	 */
+	Boolean testResultIncludedInCalculations
+
 	
-	 /**
+    /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
 	 */
 	List sorts
@@ -96,12 +103,12 @@ public class TestOutcomeQueryFilter {
 	Long queryMax
 
 
+
+
 	/* TODO:
 
      Filters for:
-      Project (if it's not with a TestRun)
 	  TestCase (which would return history)
-	  TestCase name
 	  DateRange - start and end dates, operator (lt, gt, <=, >=)
 	  IncludeIgnored
 	  AnalysisState
@@ -113,4 +120,13 @@ public class TestOutcomeQueryFilter {
 
 	*/
 
+
+	public String fromClause() {
+		return "from cuanto.TestOutcome t where "
+	}
+
+
+	public Class appliesToClass() {
+		return TestOutcome.class
+	}
 }

@@ -6,6 +6,14 @@ import cuanto.test.WordGenerator
 import cuanto.SortParameters
 import cuanto.TestResult
 import cuanto.Project
+import cuanto.queryprocessor.TestRunQueryModule
+import cuanto.queryprocessor.TestResultIsFailureQueryModule
+import cuanto.queryprocessor.TestResultQueryModule
+import cuanto.queryprocessor.TestCaseFullNameQueryModule
+import cuanto.queryprocessor.TestCaseParametersQueryModule
+import cuanto.queryprocessor.TestCasePackageQueryModule
+import cuanto.queryprocessor.ProjectQueryModule
+import cuanto.queryprocessor.TestResultIncludedInCalculationsQueryModule
 
 /**
  * User: Todd Wells
@@ -17,6 +25,14 @@ import cuanto.Project
 public class QueryBuilderTests extends GroovyTestCase {
 
 	WordGenerator wordGen = new WordGenerator()
+	QueryBuilder queryBuilder
+
+	void setUp() {
+		queryBuilder = new QueryBuilder()
+		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
+		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
+		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule()]
+	}
 
 	void testTestRun() {
 		def qf = new TestOutcomeQueryFilter()
@@ -29,7 +45,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestRun", expectedQuery, actualQuery
 	}
 
@@ -47,7 +63,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun]
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestRun", expectedQuery, actualQuery
 	}
 
@@ -66,7 +82,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, true]
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "IsFailure", expectedQuery, actualQuery
 	}
 
@@ -85,7 +101,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, false]
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "IsNotFailure", expectedQuery, actualQuery
 	}
 
@@ -102,7 +118,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, qf.testResult]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -119,7 +135,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, "%${qf.testCaseFullName}%"]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -136,7 +152,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, qf.testCaseParameters.toUpperCase()]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -153,7 +169,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, "FOO, %, BAR"]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -170,7 +186,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -188,7 +204,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage.replaceAll("\\*", "%")]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
@@ -205,10 +221,27 @@ public class QueryBuilderTests extends GroovyTestCase {
 		expectedQuery.positionalParameters = [qf.project]
 		expectedQuery.paginateParameters = [:]
 
-		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+
+	void testIncludeIgnoredAndTestRun(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testRun = new TestRun(note: "foo")
+	    qf.testResultIncludedInCalculations = true
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testResult.includeInCalculations = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, qf.testResultIncludedInCalculations]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
 
 
 	void assertEquals(String message, CuantoQuery expected, CuantoQuery actual) {

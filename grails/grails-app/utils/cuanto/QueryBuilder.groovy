@@ -21,19 +21,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
+import cuanto.queryprocessor.QueryModule
+
 public class QueryBuilder {
 
-	List processors = [this.&getTestRunClause, this.&getIsFailureClause, this.&getTestResultClause,
-		this.&getTestCaseFullNameClause, this.&getTestCaseParametersClause, this.&getTestCasePackageClause,
-	this.&getProjectClause]
+	List<QueryModule> queryModules
 
-	CuantoQuery buildQueryForTestOutcomeFilter(TestOutcomeQueryFilter queryFilter) {
-		String query = "from cuanto.TestOutcome t where "
+	Map <Class, List<QueryModule>> moduleMap
+
+	CuantoQuery buildQuery(QueryFilter queryFilter) {
+		String query = " ${queryFilter.fromClause()} "
 		List params = []
 		List queryClauses = []
 
-		processors.each { queryProcessor ->
-			def details = queryProcessor(queryFilter)
+		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
+
+		processors.each { QueryModule queryProcessor ->
+			def details = queryProcessor.getQueryParts(queryFilter)
 			if (details.clause?.trim()) {
 				queryClauses << details.clause
 				params += details.params
@@ -79,64 +83,33 @@ public class QueryBuilder {
 		return cuantoQuery
 	}
 
-	Map getTestRunClause(TestOutcomeQueryFilter queryFilter) {
-		if (queryFilter.testRun) {
-			return [clause: " t.testRun = ? ", params: [queryFilter.testRun]]
-		} else {
-			return [:]
-		}
-	}
-	
-	Map getIsFailureClause(TestOutcomeQueryFilter queryFilter) {
-		if (queryFilter.isFailure != null) {
-			return [clause: " t.testResult.isFailure = ? ", params: [queryFilter.isFailure]]
-		} else {
-			return [:]
-		}
-	}
 
-	Map getTestResultClause(TestOutcomeQueryFilter queryFilter) {
-		if (queryFilter.testResult != null) {
-			return [clause: " t.testResult = ? ", params: [queryFilter.testResult]]
-		} else {
-			return [:]
-		}
-	}
-
-	Map getTestCaseFullNameClause(TestOutcomeQueryFilter queryFilter) {
-		if (queryFilter.testCaseFullName != null) {
-			return [clause: " upper(t.testCase.fullName) like ? ", params: "%${queryFilter.testCaseFullName}%"]
-		} else {
-			return [:]
-		}
-	}
-
-	Map getTestCaseParametersClause(TestOutcomeQueryFilter queryFilter) {
+	Map getIncludeIgnoredClause(TestOutcomeQueryFilter queryFilter) {
 		def map = [:]
-		if (queryFilter.testCaseParameters != null) {
-			map = [clause: " upper(t.testCase.parameters) like ? ",
-				params: queryFilter.testCaseParameters.toUpperCase().replaceAll("\\*", "%")]
-		}
-		return map
-	}
-
-	Map getTestCasePackageClause(TestOutcomeQueryFilter queryFilter) {
-		def map = [:]
-		if (queryFilter.testCasePackage != null) {
-			map = [clause: " t.testCase.package like ? ",
-				params: queryFilter.testCasePackage.replaceAll("\\*", "%")]
-		}
-		return map
-	}
-
-	Map getProjectClause(TestOutcomeQueryFilter queryFilter) {
-		def map = [:]
-		if (queryFilter.project != null) {
-			map = [clause: " t.testCase.project = ? ",
-				params: queryFilter.project]
+		if (queryFilter.includeIgnored != null) {
+			map = [clause: " t.testCase.includeInCalculations = ? ",
+				params: queryFilter.includeIgnored]
 		}
 		return map
 	}
 
 
+	List<QueryModule> getProcessors(Class clazz) {
+		if (!moduleMap) {
+			moduleMap = new HashMap<Class, List<QueryModule>>();
+			queryModules.each { QueryModule module ->
+				module.objectTypes.each { Class modClass ->
+					if (!moduleMap.containsKey(modClass)) {
+						moduleMap[modClass] = new ArrayList<QueryModule>();
+					}
+					moduleMap[modClass] << module
+				}
+			}
+		}
+		List<QueryModule> modToReturn = moduleMap[clazz]
+		if (!modToReturn) {
+			throw new IllegalArgumentException("No QueryModule found for ${clazz.canonicalName}")
+		}
+		return modToReturn
+	}
 }
