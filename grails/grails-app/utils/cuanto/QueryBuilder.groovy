@@ -27,7 +27,7 @@ public class QueryBuilder {
 
 	List<QueryModule> queryModules
 
-	Map <Class, List<QueryModule>> moduleMap
+	private Map <Class, List<QueryModule>> moduleMap
 
 	CuantoQuery buildQuery(QueryFilter queryFilter) {
 		String query = " ${queryFilter.fromClause()} "
@@ -81,16 +81,6 @@ public class QueryBuilder {
 		def cuantoQuery = new CuantoQuery(hql: query, positionalParameters: params.flatten() as List,
 			paginateParameters:pagination )
 		return cuantoQuery
-	}
-
-
-	Map getIncludeIgnoredClause(TestOutcomeQueryFilter queryFilter) {
-		def map = [:]
-		if (queryFilter.includeIgnored != null) {
-			map = [clause: " t.testCase.includeInCalculations = ? ",
-				params: queryFilter.includeIgnored]
-		}
-		return map
 	}
 
 
