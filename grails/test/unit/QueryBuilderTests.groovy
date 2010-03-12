@@ -5,6 +5,7 @@ import cuanto.QueryBuilder
 import cuanto.test.WordGenerator
 import cuanto.SortParameters
 import cuanto.TestResult
+import cuanto.Project
 
 /**
  * User: Todd Wells
@@ -37,11 +38,12 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.testRun = new TestRun(note: wordGen.getSentence(10))
 		qf.sorts = []
 		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "desc")
+		qf.sorts << new SortParameters(sort: "testCase.parameters", sortOrder: "desc")
 		qf.queryMax = 10
 		qf.queryOffset = 5
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.testCase.fullName desc"
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? order by t.testCase.fullName desc, t.testCase.parameters desc"
 		expectedQuery.positionalParameters = [qf.testRun]
 		expectedQuery.paginateParameters = [max: qf.queryMax, offset: qf.queryOffset]
 
@@ -172,6 +174,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+
 	void testTestCasePackageWildcardAndTestRun(){
 		def qf = new TestOutcomeQueryFilter()
 		qf.testRun = new TestRun(note: "foo")
@@ -183,6 +186,23 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testCase.package like ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage.replaceAll("\\*", "%")]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
+	void testProject(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.project = new Project("foobar")
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testCase.project = ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.project]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = new QueryBuilder().buildQueryForTestOutcomeFilter(qf)

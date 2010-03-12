@@ -24,7 +24,8 @@ package cuanto
 public class QueryBuilder {
 
 	List processors = [this.&getTestRunClause, this.&getIsFailureClause, this.&getTestResultClause,
-		this.&getTestCaseFullNameClause, this.&getTestCaseParametersClause, this.&getTestCasePackageClause]
+		this.&getTestCaseFullNameClause, this.&getTestCaseParametersClause, this.&getTestCasePackageClause,
+	this.&getProjectClause]
 
 	CuantoQuery buildQueryForTestOutcomeFilter(TestOutcomeQueryFilter queryFilter) {
 		String query = "from cuanto.TestOutcome t where "
@@ -127,5 +128,15 @@ public class QueryBuilder {
 		}
 		return map
 	}
+
+	Map getProjectClause(TestOutcomeQueryFilter queryFilter) {
+		def map = [:]
+		if (queryFilter.project != null) {
+			map = [clause: " t.testCase.project = ? ",
+				params: queryFilter.project]
+		}
+		return map
+	}
+
 
 }
