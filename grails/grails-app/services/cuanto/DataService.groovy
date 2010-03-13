@@ -245,8 +245,7 @@ class DataService {
 	List getTestOutcomesByTestRun(TestRun run, String sort, String order, Map paging) {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
 		filter.testRun = run
-		def results = getTestOutcomes(filter)
-		return results
+		return getTestOutcomes(filter)
 	}
 
 
@@ -276,8 +275,7 @@ class DataService {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
 		filter.testRun = run
 		filter.isFailure = true
-		def results = getTestOutcomes(filter)
-		return results
+		return getTestOutcomes(filter)
 	}
 
 	TestOutcomeQueryFilter getTestOutcomeQueryFilterWithOptions(String sort, String order, Map paging) {
@@ -299,8 +297,7 @@ class DataService {
 		filter.testRun = run
 		filter.isFailure = true
 		filter.isAnalyzed = false
-		def results = getTestOutcomes(filter)
-		return results
+		return getTestOutcomes(filter)
 	}
 
 
@@ -323,8 +320,7 @@ class DataService {
 			filter.queryOffset = paging.offset
 		}
 
-		def results = getTestOutcomes(filter)
-		return results
+		return getTestOutcomes(filter)
 	}
 
 
@@ -440,38 +436,24 @@ class DataService {
 
 
 	List<TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
-		def qry = "from cuanto.TestOutcome t where t.testCase = ?"
-		if (sort) {
-			qry += "order by t.${sort} "
-			if (order) {
-				qry += " ${order} "
-			}
-		}
-
-		def results = TestOutcome.executeQuery(qry, [testCase], [max: maxOutcomes, offset: startIndex])
-		return results              
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, [max: maxOutcomes, offset: startIndex])
+		filter.testCase = testCase
+		return getTestOutcomes(filter)
 	}
 
 
 	List<TestOutcome> getTestOutcomeFailureHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
-		def qry = """from cuanto.TestOutcome t where t.testCase = ? and
-t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
-		if (sort) {
-			qry += "order by t.${sort} "
-			if (order) {
-				qry += " ${order} "
-			}
-		}
-		def results = TestOutcome.executeQuery(qry, [testCase], [max: maxOutcomes, offset: startIndex])
-		return results
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, [max: maxOutcomes, offset: startIndex])
+		filter.testCase = testCase
+		filter.isFailure = true
+		return getTestOutcomes(filter)
 	}
 
 
 	List<TestOutcome> getTestOutcomeAnalyses(testCase) {
 		def qry = """from cuanto.TestOutcome t where t.testCase = ? and
 			t.testResult.isFailure = true and t.analysisState.isAnalyzed = true order by t.testRun.dateExecuted desc"""
-		def results = TestOutcome.executeQuery(qry, [testCase])
-		return results
+		return TestOutcome.executeQuery(qry, [testCase])
 	}
 
 
