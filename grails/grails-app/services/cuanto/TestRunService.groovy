@@ -243,14 +243,14 @@ class TestRunService {
 		}
 
 		def sortMap = [:]
-		sortMap.testCase = "t.testCase.fullName"
-		sortMap.result = "t.testResult.name"
-		sortMap.analysisState = "t.analysisState.name"
+		sortMap.testCase = "testCase.fullName"
+		sortMap.result = "testResult.name"
+		sortMap.analysisState = "analysisState.name"
 		sortMap.duration = "duration"
-		sortMap.bug = "t.bug.title"
-		sortMap.owner = "t.owner"
-		sortMap.note = "t.note"
-		sortMap.output = "t.testOutput"
+		sortMap.bug = "bug.title"
+		sortMap.owner = "owner"
+		sortMap.note = "note"
+		sortMap.output = "testOutput"
 
 		if (params?.sort == null) {
 			sort = sortMap.testCase
