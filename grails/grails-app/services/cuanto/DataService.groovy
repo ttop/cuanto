@@ -24,7 +24,7 @@ package cuanto
 class DataService {
 
 	boolean transactional = true
-	def queryBuilder
+	QueryBuilder queryBuilder
 
 	Bug getBug(String title, String url) throws CuantoException {
 		if (!title && !url) {
@@ -243,71 +243,88 @@ class DataService {
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomesByTestRun(TestRun run, String sort, String order, Map paging) {
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		def results = getTestOutcomes(filter)
+		return results
+	}
+
+
+	String processSort(String sort) {
+		if (!sort) {
+			sort = "testCase.fullName"
+		} else {
+			sort = sort.replaceAll("^t\\.", "") //todo: remove once sorts with "t." are out of the code -- see TestRunService
+		}
+		return sort
+	}
+
+
+	String processOrder(String order) {
 		if (!order) {
 			order = "asc"
 		}
 		if (order.toLowerCase() != "asc" && order.toLowerCase() != "desc") {
 			throw new IllegalArgumentException("${order} is not a valid sort order")
 		}
-
-		if (!sort) {
-			sort = "t.testCase.fullName"
-		}
-
-		def query = "from cuanto.TestOutcome t where t.testRun = ? order by ${sort} ${order}, t.testCase.parameters asc"
-
-		def results
-		if (paging) {
-			results = TestOutcome.executeQuery(query, [run], paging)
-		} else {
-			results = TestOutcome.executeQuery(query, [run])
-		}
-		return results
+		return order
 	}
-	
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
-		return TestOutcome.executeQuery("from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true order by ${sort} ${order}, t.testCase.parameters asc",
-			[run], paging)
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		filter.isFailure = true
+		def results = getTestOutcomes(filter)
+		return results
 	}
 
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterWithOptions(String sort, String order, Map paging) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.sorts = [new SortParameters('sort': processSort(sort), sortOrder: processOrder(order))]
+		if (paging && paging.max) {
+			filter.queryMax = paging.max
+		}
+		if (paging && paging.offset) {
+			filter.queryOffset = paging.offset
+		}
+		return filter
+	}
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeUnanalyzedFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
-		return TestOutcome.executeQuery("""from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true
-and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.parameters asc""",
-			[run], paging)
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		filter.isFailure = true
+		filter.isAnalyzed = false
+		def results = getTestOutcomes(filter)
+		return results
 	}
 
 
 	List getTestOutcomesByTestRun(TestRun run, String pkg, String order, Map paging, boolean includeIgnored) {
-		def queryArgs = [run]
-		def query = "from cuanto.TestOutcome t where t.testRun = ? "
-
-		if (pkg) {
-			queryArgs << pkg
-			queryArgs << pkg + ".%"
-			query += " and (t.testCase.packageName = ? or t.testCase.packageName like ?)"
-		}
-
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testRun = run
+		filter.testCasePackage = pkg
 		if (!includeIgnored) {
-			query += "and t.testResult.includeInCalculations = true "
-		}
-		if (!order) {
-			order = "asc"
+			filter.testResultIncludedInCalculations = true
 		}
 
-		query += "order by t.testCase.fullName ${order}, t.testCase.parameters asc "
-		def outcomes
-		if (paging) {
-			outcomes = TestOutcome.executeQuery(query, queryArgs, paging)
-		} else {
-			outcomes = TestOutcome.executeQuery(query, queryArgs)
+		filter.sorts = []
+		filter.sorts << new SortParameters('sort': "testCase.fullName", sortOrder: processOrder(order))
+		filter.sorts << new SortParameters('sort': "testCase.parameters", sortOrder: processOrder(order))
+
+		if (paging && paging.max) {
+			filter.queryMax = paging.max
 		}
-		return outcomes
+		if (paging && paging.offset) {
+			filter.queryOffset = paging.offset
+		}
+
+		def results = getTestOutcomes(filter)
+		return results
 	}
 
 
