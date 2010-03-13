@@ -450,10 +450,17 @@ class DataService {
 	}
 
 
-	List<TestOutcome> getTestOutcomeAnalyses(testCase) {
-		def qry = """from cuanto.TestOutcome t where t.testCase = ? and
-			t.testResult.isFailure = true and t.analysisState.isAnalyzed = true order by t.testRun.dateExecuted desc"""
-		return TestOutcome.executeQuery(qry, [testCase])
+	List<TestOutcome> getTestOutcomeAnalyses(TestCase testCase) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testCase = testCase
+		filter.isFailure = true
+		filter.isAnalyzed = true
+
+		filter.sorts = []
+		filter.sorts << new SortParameters('sort': "finishedAt", sortOrder: "desc")
+		filter.sorts << new SortParameters('sort': "testRun.dateExecuted", sortOrder: "desc")
+		filter.sorts << new SortParameters('sort': "dateCreated", sortOrder: "desc")
+		return getTestOutcomes(filter)
 	}
 
 

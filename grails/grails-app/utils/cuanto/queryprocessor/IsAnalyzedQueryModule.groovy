@@ -29,7 +29,7 @@ public class IsAnalyzedQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.isAnalyzed != null) {
-			map = [where: " t.analysisState.isAnalyzed = ?", params: [queryFilter.isAnalyzed]]
+			map = [where: " t.analysisState.isAnalyzed = ? ", params: [queryFilter.isAnalyzed]]
 		}
 		return map
 	}

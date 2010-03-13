@@ -43,7 +43,7 @@ public class QueryBuilder {
 			// todo: build from clause
 
 			if (details.where?.trim()) {
-				whereClauses << details.where
+				whereClauses << " ${details.where} "
 				params += details.params
 			}
 		}
@@ -51,7 +51,7 @@ public class QueryBuilder {
 		whereClauses.eachWithIndex { clause, idx ->
 			query += " ${clause}"
 			if (idx < whereClauses.size() - 1) {
-				query += "and "
+				query += " and "
 			} else {
 				query += " "
 			}
