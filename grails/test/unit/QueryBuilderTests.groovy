@@ -20,6 +20,8 @@ import cuanto.AnalysisState
 import cuanto.queryprocessor.BugQueryModule
 import cuanto.Bug
 import cuanto.queryprocessor.OwnerQueryModule
+import cuanto.TestCase
+import cuanto.queryprocessor.TestCaseQueryModule
 
 /**
  * User: Todd Wells
@@ -38,7 +40,8 @@ public class QueryBuilderTests extends GroovyTestCase {
 		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
-		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule()]
+		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
+		new TestCaseQueryModule()]
 	}
 
 	void testTestRun() {
@@ -319,6 +322,23 @@ public class QueryBuilderTests extends GroovyTestCase {
 		CuantoQuery expectedQuery = new CuantoQuery()
 		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.owner) = ? order by t.testCase.fullName asc"
 		expectedQuery.positionalParameters = [qf.testRun, qf.owner.toUpperCase()]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
+	void testTestCase(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testCase = new TestCase(fullName: wordGen.getSentence(3))
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "dateExecuted", sortOrder: "desc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testCase = ? order by t.dateExecuted desc"
+		expectedQuery.positionalParameters = [qf.testCase]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)

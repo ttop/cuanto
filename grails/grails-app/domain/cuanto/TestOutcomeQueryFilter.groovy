@@ -121,6 +121,12 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	String owner
 	
 
+	/**
+	 * If not null, only TestOutcomes that reference this test case will be returned. 
+	 */
+	TestCase testCase
+
+
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
 	 */
@@ -148,6 +154,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	  duration
 	  note
 	  testoutput
+	  count -- this makes the clause select count(t)
 
 	*/
 
