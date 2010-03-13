@@ -33,7 +33,7 @@ public class AnalysisStateQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.analysisState) {
-			map = [clause: " t.analysisState = ? ", params: [queryFilter.analysisState]]
+			map = [where: " t.analysisState = ? ", params: [queryFilter.analysisState]]
 		}
 		return map
 	}

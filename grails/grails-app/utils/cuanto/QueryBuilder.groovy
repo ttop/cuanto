@@ -31,22 +31,26 @@ public class QueryBuilder {
 
 	CuantoQuery buildQuery(QueryFilter queryFilter) {
 		String query = " ${queryFilter.fromClause()} "
+
 		List params = []
-		List queryClauses = []
+		List whereClauses = []
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
 
 		processors.each { QueryModule queryProcessor ->
 			def details = queryProcessor.getQueryParts(queryFilter)
-			if (details.clause?.trim()) {
-				queryClauses << details.clause
+
+			// todo: build from clause
+
+			if (details.where?.trim()) {
+				whereClauses << details.where
 				params += details.params
 			}
 		}
 
-		queryClauses.eachWithIndex { clause, idx ->
+		whereClauses.eachWithIndex { clause, idx ->
 			query += " ${clause}"
-			if (idx < queryClauses.size() - 1) {
+			if (idx < whereClauses.size() - 1) {
 				query += "and "
 			} else {
 				query += " "

@@ -35,7 +35,7 @@ public class ProjectQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.project != null) {
-			map = [clause: " t.testCase.project = ? ", params: queryFilter.project]
+			map = [where: " t.testCase.project = ? ", params: queryFilter.project]
 		}
 		return map
 	}

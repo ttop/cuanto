@@ -26,7 +26,7 @@ import cuanto.QueryFilter
 public interface QueryModule {
 
 	/**
-	 * Return a map of [clause: "HQL where fragment", params: [list of positional params required by the HQL fragment] 
+	 * Return a map of [where: "HQL where fragment", params: [list of positional params required by the HQL fragment] 
 	 */
 	Map getQueryParts(QueryFilter queryFilter)
 

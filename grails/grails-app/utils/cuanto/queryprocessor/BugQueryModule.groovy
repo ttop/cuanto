@@ -33,7 +33,7 @@ public class BugQueryModule implements QueryModule{
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.bug) {
-			map = [clause: " t.bug = ? ", params: queryFilter.bug]
+			map = [where: " t.bug = ? ", params: queryFilter.bug]
 		}
 		return map
 	}

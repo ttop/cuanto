@@ -34,7 +34,7 @@ public class TestResultIncludedInCalculationsQueryModule implements QueryModule 
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.testResultIncludedInCalculations != null) {
-			map = [clause: " t.testResult.includeInCalculations = ? ",
+			map = [where: " t.testResult.includeInCalculations = ? ",
 				params: queryFilter.testResultIncludedInCalculations]
 		}
 		return map

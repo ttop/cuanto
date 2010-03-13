@@ -32,7 +32,7 @@ public class TestCaseFullNameQueryModule implements QueryModule {
 	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		if (queryFilter.testCaseFullName != null) {
-			return [clause: " upper(t.testCase.fullName) like ? ", params: "%${queryFilter.testCaseFullName.toUpperCase()}%"]
+			return [where: " upper(t.testCase.fullName) like ? ", params: "%${queryFilter.testCaseFullName.toUpperCase()}%"]
 		} else {
 			return [:]
 		}

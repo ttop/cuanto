@@ -30,7 +30,7 @@ public class TestResultQueryModule implements QueryModule {
 	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		if (queryFilter.testResult != null) {
-			return [clause: " t.testResult = ? ", params: [queryFilter.testResult]]
+			return [where: " t.testResult = ? ", params: [queryFilter.testResult]]
 		} else {
 			return [:]
 		}

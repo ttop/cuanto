@@ -33,7 +33,7 @@ public class OwnerQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.owner) {
-			map = [clause: " upper(t.owner) = ? ", params: queryFilter.owner.toUpperCase()]
+			map = [where: " upper(t.owner) = ? ", params: queryFilter.owner.toUpperCase()]
 		}
 		return map
 	}

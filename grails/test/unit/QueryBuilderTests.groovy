@@ -189,8 +189,9 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testCase.package like ? order by t.testCase.fullName asc"
-		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage]
+		expectedQuery.hql =	"""from cuanto.TestOutcome t where t.testRun = ? and (t.testCase.packageName like ? or
+			t.testCase.packageName like ?) order by t.testCase.fullName asc"""
+		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage, qf.testCasePackage + "%"]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
@@ -207,8 +208,10 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and t.testCase.package like ? order by t.testCase.fullName asc"
-		expectedQuery.positionalParameters = [qf.testRun, qf.testCasePackage.replaceAll("\\*", "%")]
+		expectedQuery.hql = """from cuanto.TestOutcome t where t.testRun = ? and
+			(t.testCase.packageName like ? or t.testCase.packageName like ?) order by t.testCase.fullName asc"""
+		String expectedPkg = qf.testCasePackage.replaceAll("\\*", "%")
+		expectedQuery.positionalParameters = [qf.testRun, expectedPkg, "${expectedPkg}%"]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)

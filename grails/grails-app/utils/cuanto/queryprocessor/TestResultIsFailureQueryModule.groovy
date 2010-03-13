@@ -33,7 +33,7 @@ public class TestResultIsFailureQueryModule implements QueryModule {
 	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		if (queryFilter.isFailure != null) {
-			return [clause: " t.testResult.isFailure = ? ", params: [queryFilter.isFailure]]
+			return [where: " t.testResult.isFailure = ? ", params: [queryFilter.isFailure]]
 		} else {
 			return [:]
 		}

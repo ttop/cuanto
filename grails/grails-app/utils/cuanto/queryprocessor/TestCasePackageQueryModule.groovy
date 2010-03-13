@@ -27,14 +27,17 @@ import cuanto.TestOutcome
 public class TestCasePackageQueryModule implements QueryModule {
 
 	/**
-	 * If queryFilter.testCasePackage is not null, then all returned outcomes must have this exact package string.
-	 * '*' may be used as a wildcard.
+	 * If queryFilter.testCasePackage is not null, then all returned outcomes must have this exact package string or
+	 * start with this package string. '*' may be used as a wildcard.
 	 */
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
+
 		if (queryFilter.testCasePackage != null) {
-			map = [clause: " t.testCase.package like ? ",
-				params: queryFilter.testCasePackage.replaceAll("\\*", "%")]
+			def exact = queryFilter.testCasePackage.replaceAll("\\*", "%")
+			def startsWith = exact + "%"
+			map = [where: " (t.testCase.packageName like ? or t.testCase.packageName like ?)",
+				params: [exact, startsWith]]
 		}
 		return map
 	}

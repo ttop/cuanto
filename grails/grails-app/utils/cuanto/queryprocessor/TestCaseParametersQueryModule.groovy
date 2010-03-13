@@ -34,7 +34,7 @@ public class TestCaseParametersQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.testCaseParameters != null) {
-			map = [clause: " upper(t.testCase.parameters) like ? ",
+			map = [where: " upper(t.testCase.parameters) like ? ",
 				params: queryFilter.testCaseParameters.toUpperCase().replaceAll("\\*", "%")]
 		}
 		return map

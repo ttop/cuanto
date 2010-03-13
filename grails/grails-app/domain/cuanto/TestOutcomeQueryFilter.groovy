@@ -74,7 +74,8 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
 	/**
-	 * If not null, then all returned outcomes must have this exact package string. '*' may be used as a wildcard.
+	 * If not null, then all returned outcomes must have this exact package string or start with this package string.
+	 * '*' may be used as a wildcard.
 	 */
 	String testCasePackage
 
@@ -146,7 +147,6 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	  DateRange - start and end dates, operator (lt, gt, <=, >=)
 	  duration
 	  note
-	  owner
 	  testoutput
 
 	*/
