@@ -645,7 +645,8 @@ class DataServiceTests extends GroovyTestCase {
 		def fetched = TestOutcome.findAllByTestRun(testRun)
 		assertEquals "Wrong number of test outcomes", outcomes.size(), fetched.size()
 
-		assertEquals "Wrong total outcome count for test case", 2, dataService.countTestCaseOutcomes(testCases[0])
+		assertEquals "Wrong total outcome count for test case", 2,
+			dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCases[0] as TestCase))
 		assertEquals "Wrong Test Case total for project", testCases.size(), dataService.countTestCases(proj)
 	}
 

@@ -460,11 +460,6 @@ class DataService {
 	}
 
 
-	Integer countTestCaseOutcomes(TestCase testCase) {
-		TestOutcome.countByTestCase(testCase)
-	}
-
-
 	Integer countTestCases(project) {
 		TestCase.countByProject(project)
 	}

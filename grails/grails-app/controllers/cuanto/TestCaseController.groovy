@@ -72,7 +72,8 @@ class TestCaseController {
 				List<TestOutcome> outcomes
 
 				if (params.filter == "allresults") {
-					totalCount = dataService.countTestCaseOutcomes(testCase)
+					//totalCount = dataService.countTestCaseOutcomes(testCase)
+					totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCase))
 					outcomes = testOutcomeService.getTestOutcomeHistory(testCase, startIndex, numOutcomes, params.sort, params.order)
 				} else {
 					totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCase, isFailure:true,
