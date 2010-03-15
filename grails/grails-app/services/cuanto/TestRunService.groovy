@@ -730,7 +730,7 @@ class TestRunService {
 			testOutcome.testResult = dataService.result("Unexecuted")
 			testOutcomesToSave << testOutcome
 		}
-		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
+		dataService.saveTestOutcomes(testOutcomesToSave)
 		statisticService.queueTestRunStats testRun
 		return testRun
 	}

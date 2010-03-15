@@ -198,7 +198,7 @@ class TestOutcomeService {
 		def totalCount
 
 		if (params.filter?.equalsIgnoreCase("allFailures")) {
-			totalCount = dataService.countFailuresForTestRun(testRun)
+			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
 		} else if (params.filter?.equalsIgnoreCase("newFailures")){
 			totalCount = testRunService.countNewFailuresForTestRun(testRun)
 		} else if (params.outcome) {
@@ -312,10 +312,11 @@ class TestOutcomeService {
 			testOutcomes = testRunService.searchTestOutcomes(params)
 		} else if (filter?.equalsIgnoreCase("allFailures")) {
 			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = dataService.countFailuresForTestRun(testRun)
+			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
 		} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
 			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = dataService.countUnanalyzedFailuresForTestRun(testRun)
+			totalCount = dataService.countTestOutcomes(
+				new TestOutcomeQueryFilter(testRun: run, isAnalyzed:false, isFailure:true))
 		} else if (filter?.equalsIgnoreCase("newFailures")) {
 			testOutcomes = testRunService.getNewFailures(testRun, queryParams)
 			totalCount = testRunService.countNewFailuresForTestRun(testRun)

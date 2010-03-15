@@ -58,12 +58,6 @@ class DataService {
 	}
 
 
-	def getTestRunFailureCount(TestRun run) {
-		TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true",
-			[run])[0]
-	}
-
-
 	/**
 	 Delete all outcomes for a testrun, then delete the testrun
 	 */
@@ -177,11 +171,9 @@ class DataService {
 	}
 
 
-	def saveTestOutcomes(TestRun testRun, List outcomes) {
-
-		//todo: remove testRun argument
+	def saveTestOutcomes(List outcomes) {
 		for (outcome in outcomes) {
-			saveDomainObject outcome 
+			saveDomainObject outcome
 		}
 	}
 
@@ -343,6 +335,7 @@ class DataService {
 	}
 
 
+	//todo: convert to QueryBuilder
 	TestOutcome getPreviousOutcome(testCase, priorToDate) {
 		def qry = "from cuanto.TestOutcome tout where tout.testCase = ? and tout.testRun.dateExecuted < ? order by \
                       tout.testRun.dateExecuted desc"
@@ -438,18 +431,6 @@ class DataService {
 	}
 
 
-	def countFailuresForTestRun(TestRun run) {
-		def total = TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true  ", [run])
-		return total[0]
-	}
-
-	def countUnanalyzedFailuresForTestRun(TestRun run) {
-		def total = TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and " +
-			"t.analysisState is not null and t.analysisState.isAnalyzed = false and t.testResult.isFailure = true  ", [run])
-		return total[0]
-	}
-
-
 	List<TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, [max: maxOutcomes, offset: startIndex])
 		filter.testCase = testCase
@@ -486,14 +467,6 @@ class DataService {
 
 	Integer countTestCases(project) {
 		TestCase.countByProject(project)
-	}
-
-
-	Integer countTestCaseFailures(TestCase testCase) {
-		def results = TestOutcome.executeQuery("""select count(*) from cuanto.TestOutcome t where t.testCase = ? and
-			t.testResult.isFailure = true and t.testResult.includeInCalculations = true""",
-			[testCase])
-		return results[0]
 	}
 
 
@@ -600,7 +573,7 @@ class DataService {
 
 
 	def deleteEmptyTestRuns() {
-		def now = new Date().getTime()
+		def now = new Date().time
 		def TEN_MINUTES = 1000 * 60 * 10
 		def cutoffDate = new Date(now - TEN_MINUTES)
 
@@ -656,6 +629,7 @@ class DataService {
 		outFilter.testRun = testRun
 		outFilter.setForSearchTerm(searchField, searchTerm)
 
+		//todo: refactor the following series of if statements
 		def filter = params?.filter?.toLowerCase()
 
 		if (filter == "allfailures" || filter == "newfailures") {
@@ -689,6 +663,7 @@ class DataService {
 		outFilter.testRun = testRun
 		outFilter.setForSearchTerm(searchField, searchTerm)
 
+		//todo: refactor the following series of if statements
 		def filter = params?.filter?.toLowerCase()
 
 		if (filter == "allfailures" || filter == "newfailures") {

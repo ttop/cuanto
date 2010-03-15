@@ -639,7 +639,7 @@ class DataServiceTests extends GroovyTestCase {
 			outcomes << to.getTestOutcome(testCase, testRun)
 		}
 
-		dataService.saveTestOutcomes(testRun, outcomes)
+		dataService.saveTestOutcomes(outcomes)
 
 		assertEquals "Wrong number of test outcomes", outcomes.size(), TestOutcome.list().size()
 		def fetched = TestOutcome.findAllByTestRun(testRun)
@@ -791,7 +791,7 @@ class DataServiceTests extends GroovyTestCase {
 			outcomes << to.getTestOutcome(testCase, testRun)
 		}
 
-		dataService.saveTestOutcomes(testRun, outcomes)
+		dataService.saveTestOutcomes(outcomes)
 
 		outcomes.each { outcome ->
 			assertEquals "Wrong outcome", outcome.id, dataService.getTestOutcome(outcome.id).id

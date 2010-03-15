@@ -198,7 +198,8 @@ class TestOutcomeTests extends GroovyTestCase {
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[2]))
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[8]))
 
-		assertEquals "wrong number of total failures", 3, dataService.countFailuresForTestRun(testRunTwo)
+		assertEquals "wrong number of total failures", 3,
+			dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: testRunTwo, isFailure: true))
 	}
 
 
