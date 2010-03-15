@@ -24,6 +24,8 @@ import cuanto.TestCase
 import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
+import cuanto.queryprocessor.TestRunDateExecutedQueryModule
+import cuanto.DateCriteria
 
 /**
  * User: Todd Wells
@@ -43,7 +45,8 @@ public class QueryBuilderTests extends GroovyTestCase {
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
 		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
-		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule()]
+		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule(),
+			new TestRunDateExecutedQueryModule()]
 	}
 
 	void testTestRun() {
@@ -381,6 +384,42 @@ public class QueryBuilderTests extends GroovyTestCase {
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+
+	void testDateRangeQuery(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.dateCriteria =[new DateCriteria(date: new Date(), operator: ">")]
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "dateExecuted", sortOrder: "desc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun.dateExecuted > ? order by t.dateExecuted desc"
+		expectedQuery.positionalParameters = [qf.dateCriteria[0].date]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+	
+	void testMultipleDateRangeQuery(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.dateCriteria =[
+			new DateCriteria(date: new Date(), operator: ">"),
+			new DateCriteria(date: new Date() + 2, operator: "<")
+		]
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "dateExecuted", sortOrder: "desc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun.dateExecuted > ? and t.testRun.dateExecuted < ? order by t.dateExecuted desc"
+		expectedQuery.positionalParameters = [qf.dateCriteria[0].date, qf.dateCriteria[1].date]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
 
 
 	void assertEquals(String message, CuantoQuery expected, CuantoQuery actual) {

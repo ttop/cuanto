@@ -23,7 +23,7 @@ package cuanto
 
 public class TestOutcomeQueryFilter implements QueryFilter {
 
-	static hasMany = [sorts: SortParameters]
+	static hasMany = [sorts: SortParameters, dateCriteria: DateCriteria]
 
 	static constraints = {
 		testRun(nullable: true)
@@ -136,6 +136,12 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 * If not null, only TestOutcomes that have testOutput containing this string will be returned.
 	 */
 	String testOutput
+
+	/**
+	 * If not null, only TestOutcomes that meet all of these dateCriteria will be returned.
+	 */
+	List<DateCriteria> dateCriteria
+
 
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.

@@ -42,6 +42,7 @@ import cuanto.queryprocessor.OwnerQueryModule
 import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
+import cuanto.queryprocessor.TestRunDateExecutedQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -78,7 +79,8 @@ beans = {
 			new OwnerQueryModule(),
 			new TestCaseQueryModule(),
 			new NoteQueryModule(),
-			new TestOutputQueryModule()
+			new TestOutputQueryModule(),
+			new TestRunDateExecutedQueryModule()
 		]
 	}
 }
