@@ -424,15 +424,6 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
-	public void getTestRunId() {
-		TestRun tr = to.getTestRun(to.wordGen.getCamelWords(3))
-		tr.save()
-
-		assertEquals "Wrong test run", tr.id, dataService.getTestRun(tr.id)
-		assertNull dataService.getTestRun(0)
-	}
-
-
 	public void testDeleteTestRunWithStats() {
 		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
@@ -500,18 +491,6 @@ class DataServiceTests extends GroovyTestCase {
 		assertNull "Test run not deleted", TestRun.get(testRun.id)
 		assertEquals "Test outcomes not deleted", 0, TestOutcome.list().size()
 		assertEquals "Test run statistics not deleted", 0, TestRunStats.list().size()
-	}
-
-
-	void testGetTestRun() {
-		Project proj = to.project
-		proj.save()
-
-		def testRun = to.getTestRun(proj)
-		if (!testRun.save()) {
-			reportError testRun
-		}
-		assertEquals "getTestRunId incorrect", testRun.id, dataService.getTestRun(testRun.id).id 
 	}
 
 

@@ -46,11 +46,6 @@ class DataService {
 	}
 
 
-	TestRun getTestRun(id) {
-		return TestRun.get(id)
-	}
-
-
 	List getRawTestRunStats(TestRun run) { /* return the count, total test time and average test time for the test run*/
 		def queryResults = TestRun.executeQuery("select count(*), sum(duration), avg(duration) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.includeInCalculations = true",
 			[run])
@@ -613,42 +608,52 @@ class DataService {
 	}
 
 
-	def countTestOutcomesBySearch(searchField, searchTerm, testRun, params) {
-		// todo: consolidate with searchTestOutcomes
-		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
+	Long countTestOutcomesBySearch(searchField, searchTerm, testRun, params) {
+		TestOutcomeQueryFilter outFilter = getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField)
+		Long count
 
-		def qOrder = getSortOrder(params.order)
-		def qSort = getFieldByFriendlyName(params.sort)
-		outFilter.sorts = [new SortParameters(sort: qSort, sortOrder: qOrder)]
-
-		outFilter.testRun = testRun
-		outFilter.setForSearchTerm(searchField, searchTerm)
-
-		//todo: refactor the following series of if statements
 		def filter = params?.filter?.toLowerCase()
 
-		if (filter == "allfailures" || filter == "newfailures") {
+		if (filter == "allfailures") {
 			outFilter.isFailure = true
-		}
-
-		if (filter == "unanalyzedfailures") {
+			count = countTestOutcomes(outFilter)
+		} else if (filter == "newfailures") {
+			outFilter.isFailure = true
+			def newFailures = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
+			count = newFailures.size()
+		}  else if (filter == "unanalyzedfailures") {
 			outFilter.isAnalyzed = false
-		}
-
-		def count
-		if (filter == "newfailures") {
-			def outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
-			count = outs.size()
-		} else {
+			count = countTestOutcomes(outFilter)
+		}  else {
 			count = countTestOutcomes(outFilter)
 		}
-
 		return count
 	}
 
 
-	def searchTestOutcomes(searchField, searchTerm, testRun, params) {
+	List<TestOutcome> searchTestOutcomes(searchField, searchTerm, testRun, params) {
 		// valid params are sort, order, offset, max plus an optional filter
+		TestOutcomeQueryFilter outFilter = getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField)
+		List<TestOutcome> outs
+
+		def filter = params?.filter?.toLowerCase()
+
+		if (filter == "allfailures") {
+			outFilter.isFailure = true
+			outs = getTestOutcomes(outFilter)
+		} else if (filter == "newfailures") {
+			outFilter.isFailure = true
+			outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
+		}  else if (filter == "unanalyzedfailures") {
+			outFilter.isAnalyzed = false
+			outs = getTestOutcomes(outFilter)
+		}  else {
+			outs = getTestOutcomes(outFilter)
+		}
+		return outs
+	}
+
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField) {
 		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
 
 		def qOrder = getSortOrder(params.order)
@@ -657,27 +662,7 @@ class DataService {
 
 		outFilter.testRun = testRun
 		outFilter.setForSearchTerm(searchField, searchTerm)
-
-		//todo: refactor the following series of if statements
-		def filter = params?.filter?.toLowerCase()
-
-		if (filter == "allfailures" || filter == "newfailures") {
-			outFilter.isFailure = true
-		}
-
-		if (filter == "unanalyzedfailures") {
-			outFilter.isAnalyzed = false
-		}
-
-		def outs
-
-		if (filter == "newfailures") {
-			outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
-		} else {
-			outs = getTestOutcomes(outFilter)
-		}
-
-		return outs
+		return outFilter
 	}
 
 

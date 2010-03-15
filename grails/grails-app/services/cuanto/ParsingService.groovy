@@ -78,7 +78,7 @@ class ParsingService {
 		def project = null
 
 		if (testRunId) {
-			testRun = dataService.getTestRun(testRunId)
+			testRun = TestRun.get(testRunId)
 		}
 
 		if (testRun) {
