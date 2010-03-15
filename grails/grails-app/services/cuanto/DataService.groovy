@@ -330,12 +330,14 @@ class DataService {
 	}
 
 
-	//todo: convert to QueryBuilder
-	TestOutcome getPreviousOutcome(testCase, priorToDate) {
-		def qry = "from cuanto.TestOutcome tout where tout.testCase = ? and tout.testRun.dateExecuted < ? order by \
-                      tout.testRun.dateExecuted desc"
-		def out = TestOutcome.find(qry, [testCase, priorToDate]) as TestOutcome
-		return out
+	TestOutcome getPreviousOutcome(TestCase testCase, Date priorToDate) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testCase = testCase
+		filter.dateCriteria = [new DateCriteria(date: priorToDate, operator: "<")]
+		filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
+		filter.queryOffset = 0
+		filter.queryMax = 1
+		return getTestOutcomes(filter)[0] as TestOutcome
 	}
 
 
