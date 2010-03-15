@@ -19,21 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.queryprocessor
 
-public interface QueryFilter {
-
-	/**
-	 * @return the HQL 'from' clause that is the basis of queries that this QueryFilter will use.  
-	 */
-    String fromClause()
+import cuanto.QueryFilter
+import cuanto.TestOutcome
 
 
-	/**
-	 * @return the HQL 'from' clause that is the basis of count queries using this QueryFilter.
-	 */
-	String countClause()
+public class NoteQueryModule implements QueryModule {
 
-	
-	Class appliesToClass()
+
+	public Map getQueryParts(QueryFilter queryFilter) {
+		def map = [:]
+		if (queryFilter.note) {
+			map = [where: " upper(t.note) like ? ", params: ["%${queryFilter.note.toUpperCase()}%".toString()]]
+		}
+		return map
+	}
+
+
+	public List<Class> getObjectTypes() {
+		[TestOutcome.class]
+	}
+
 }

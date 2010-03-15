@@ -346,7 +346,7 @@ class DataService {
 	TestOutcome getPreviousOutcome(testCase, priorToDate) {
 		def qry = "from cuanto.TestOutcome tout where tout.testCase = ? and tout.testRun.dateExecuted < ? order by \
                       tout.testRun.dateExecuted desc"
-		def out = TestOutcome.find(qry, [testCase, priorToDate])
+		def out = TestOutcome.find(qry, [testCase, priorToDate]) as TestOutcome
 		return out
 	}
 
@@ -386,6 +386,21 @@ class DataService {
 			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
 		}
 	}
+
+
+	Long countTestOutcomes(TestOutcomeQueryFilter queryFilter) {
+		CuantoQuery cuantoQuery = queryBuilder.buildCount(queryFilter)
+		def results
+		if (cuantoQuery.paginateParameters) {
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+		} else if (cuantoQuery.positionalParameters) {
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+		} else {
+			results = TestOutcome.executeQuery(cuantoQuery.hql)
+		}
+		return results[0]
+	}
+
 
 	TestResult result(String nameStartsWith) {
 		TestResult.findByNameIlike(nameStartsWith + "%")
@@ -630,74 +645,69 @@ class DataService {
 	}
 
 
-	def countTestOutcomesBySearch(search, searchTerm, testRun, params) {
-		def queries = ""
-		def qField = "out." + getFieldByFriendlyName(search)
+	def countTestOutcomesBySearch(searchField, searchTerm, testRun, params) {
+		// todo: consolidate with searchTestOutcomes
+		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
 
-		def queryList = []
-		searchTerm.tokenize().each {term ->
-			queries += " and upper($qField) like ? "
-			queryList << "%${term.toUpperCase()}%".toString()
-		}
-
-		def filter = params.filter?.toLowerCase()
-
-		if (filter == "allfailures" || filter == "newfailures") {
-			queries += " and out.testResult.isFailure = true "
-		}
-
-		def qArgs = [testRun, queryList].flatten()
-
-		def count = 0
-		def outCount = TestOutcome.executeQuery(
-			"select count(*)from cuanto.TestOutcome as out where out.testRun = ? ${queries.toString()}", qArgs)
-
-
-		if (filter == "newfailures") {
-			def outcomes = searchTestOutcomes(search, searchTerm, testRun, params)
-			def newFailures = getNewFailures(outcomes, testRun.dateExecuted)
-			count = newFailures.size()
-		} else {
-			count = outCount[0]
-		}
-		return count
-	}
-
-
-	def searchTestOutcomes(search, searchTerm, testRun, params) {
-		// valid params are sort, order, offset, max plus an optional filter
 		def qOrder = getSortOrder(params.order)
 		def qSort = getFieldByFriendlyName(params.sort)
-		def queries = ""
-		def qField = "out." + getFieldByFriendlyName(search)
+		outFilter.sorts = [new SortParameters(sort: qSort, sortOrder: qOrder)]
 
-		def queryList = []
-		searchTerm.tokenize().each {term ->
-			queries += " and upper($qField) like ? "
-			queryList << "%${term.toUpperCase()}%"
-		}
+		outFilter.testRun = testRun
+		outFilter.setForSearchTerm(searchField, searchTerm)
 
 		def filter = params?.filter?.toLowerCase()
 
 		if (filter == "allfailures" || filter == "newfailures") {
-			queries += " and out.testResult.isFailure = true "
+			outFilter.isFailure = true
 		}
 
 		if (filter == "unanalyzedfailures") {
-			queries += " and out.analysisState.isAnalyzed = false"
+			outFilter.isAnalyzed = false
 		}
 
-		def qArgs = [testRun, queryList].flatten()
-		def outcomesToReturn
-		def outs = TestOutcome.findAll(
-			"from cuanto.TestOutcome as out where out.testRun = ? $queries order by out.${qSort} ${qOrder}",
-			qArgs, ['max': Integer.valueOf(params.max), 'offset': Integer.valueOf(params.offset)])
+		def count
 		if (filter == "newfailures") {
-			outcomesToReturn = getNewFailures(outs, testRun.dateExecuted)
+			def outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
+			count = outs.size()
 		} else {
-			outcomesToReturn = outs
+			count = countTestOutcomes(outFilter)
 		}
-		return outcomesToReturn
+
+		return count
+	}
+
+
+	def searchTestOutcomes(searchField, searchTerm, testRun, params) {
+		// valid params are sort, order, offset, max plus an optional filter
+		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
+
+		def qOrder = getSortOrder(params.order)
+		def qSort = getFieldByFriendlyName(params.sort)
+		outFilter.sorts = [new SortParameters(sort: qSort, sortOrder: qOrder)]
+
+		outFilter.testRun = testRun
+		outFilter.setForSearchTerm(searchField, searchTerm)
+
+		def filter = params?.filter?.toLowerCase()
+
+		if (filter == "allfailures" || filter == "newfailures") {
+			outFilter.isFailure = true
+		}
+
+		if (filter == "unanalyzedfailures") {
+			outFilter.isAnalyzed = false
+		}
+
+		def outs
+
+		if (filter == "newfailures") {
+			outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
+		} else {
+			outs = getTestOutcomes(outFilter)
+		}
+
+		return outs
 	}
 
 
@@ -716,7 +726,7 @@ class DataService {
 		if (name == "name" || name == "testcase") {
 			qSort = "testCase.fullName"
 		} else if (name == "result") {
-			qSort = "testResult.name"  
+			qSort = "testResult"
 		} else if (name == "state") {
 			qSort = "analysisState.name"
 		} else if (name == "duration") {

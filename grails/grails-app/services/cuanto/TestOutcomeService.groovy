@@ -295,7 +295,8 @@ class TestOutcomeService {
 		def offset
 		def totalCount
 		def testOutcomes
-		
+
+		// todo: hunt down this difference in parameters and unify the usage
 		if (params.containsKey("recordStartIndex")) {
 			offset = Integer.valueOf(params.recordStartIndex)
 		} else if (params.containsKey("offset")) {

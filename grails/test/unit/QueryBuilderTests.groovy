@@ -22,6 +22,8 @@ import cuanto.Bug
 import cuanto.queryprocessor.OwnerQueryModule
 import cuanto.TestCase
 import cuanto.queryprocessor.TestCaseQueryModule
+import cuanto.queryprocessor.NoteQueryModule
+import cuanto.queryprocessor.TestOutputQueryModule
 
 /**
  * User: Todd Wells
@@ -41,7 +43,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
 		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
-		new TestCaseQueryModule()]
+		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule()]
 	}
 
 	void testTestRun() {
@@ -320,8 +322,8 @@ public class QueryBuilderTests extends GroovyTestCase {
 		qf.sorts << new SortParameters(sort: "testCase.fullName", sortOrder: "asc")
 
 		CuantoQuery expectedQuery = new CuantoQuery()
-		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.owner) = ? order by t.testCase.fullName asc"
-		expectedQuery.positionalParameters = [qf.testRun, qf.owner.toUpperCase()]
+		expectedQuery.hql = "from cuanto.TestOutcome t where t.testRun = ? and upper(t.owner) like ? order by t.testCase.fullName asc"
+		expectedQuery.positionalParameters = [qf.testRun, "%${qf.owner.toUpperCase()}%"]
 		expectedQuery.paginateParameters = [:]
 
 		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
@@ -345,6 +347,39 @@ public class QueryBuilderTests extends GroovyTestCase {
 		assertEquals "TestResult", expectedQuery, actualQuery
 	}
 
+	
+	void testNoteQuery(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.note = wordGen.getSentence(5)
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "dateExecuted", sortOrder: "desc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where upper(t.note) like ? order by t.dateExecuted desc"
+		expectedQuery.positionalParameters = ["%${qf.note.toUpperCase()}%"]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
+
+
+	void testOutputQuery(){
+		def qf = new TestOutcomeQueryFilter()
+		qf.testOutput = wordGen.getSentence(5)
+
+		qf.sorts = []
+		qf.sorts << new SortParameters(sort: "dateExecuted", sortOrder: "desc")
+
+		CuantoQuery expectedQuery = new CuantoQuery()
+		expectedQuery.hql = "from cuanto.TestOutcome t where upper(t.testOutput) like ? order by t.dateExecuted desc"
+		expectedQuery.positionalParameters = ["%${qf.testOutput.toUpperCase()}%"]
+		expectedQuery.paginateParameters = [:]
+
+		CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+		assertEquals "TestResult", expectedQuery, actualQuery
+	}
 
 
 

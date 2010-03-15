@@ -127,6 +127,16 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	TestCase testCase
 
 
+	/**
+	 * If not null, only TestOutcomes that have a note which contains this text will be returned.
+	 */
+	String note
+
+	/**
+	 * If not null, only TestOutcomes that have testOutput containing this string will be returned.
+	 */
+	String testOutput
+
     /**
 	 * A list of SortParameters to be applied to the TestOutcomes in order of precedence.
 	 */
@@ -159,12 +169,33 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	*/
 
 
-	public String fromClause() {
+	String fromClause() {
 		return "from cuanto.TestOutcome t where "
 	}
 
 
-	public Class appliesToClass() {
+	String countClause() {
+		return "select count(*) from cuanto.TestOutcome t where "
+	}
+
+
+	Class appliesToClass() {
 		return TestOutcome.class
+	}
+
+	void setForSearchTerm (String searchField, String searchTerm) {
+		/* 'Name', 'Note', 'Output', 'Owner' */
+		String field = searchField.toLowerCase()
+
+		if (field == "name" ) {
+			this.testCaseFullName = searchTerm
+		} else if (field == "note") {
+			this.note = searchTerm
+		} else if (field == "output") {
+			this.testOutput = searchTerm
+		} else if (field == "owner") {
+			this.owner = searchTerm
+		}
+
 	}
 }

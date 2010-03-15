@@ -26,41 +26,22 @@ import cuanto.queryprocessor.QueryModule
 public class QueryBuilder {
 
 	List<QueryModule> queryModules
+	private Map <Class, List<QueryModule>> moduleProcessors
 
-	private Map <Class, List<QueryModule>> moduleMap
+	CuantoQuery buildCount(QueryFilter queryFilter) {
+		String query = " ${queryFilter.countClause()} "
+		Map base = buildQueryForBaseQuery(query, queryFilter)
+		return new CuantoQuery(hql: base.hql as String, positionalParameters: base.params as List)
+	}
+
 
 	CuantoQuery buildQuery(QueryFilter queryFilter) {
-		String query = " ${queryFilter.fromClause()} "
+		Map base = buildQueryForBaseQuery(" ${queryFilter.fromClause()} ", queryFilter)
+		String query = base.hql as String
 
-		List params = []
-		List whereClauses = []
-
-		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
-
-		processors.each { QueryModule queryProcessor ->
-			def details = queryProcessor.getQueryParts(queryFilter)
-
-			// todo: build from clause
-
-			if (details.where?.trim()) {
-				whereClauses << " ${details.where} "
-				params += details.params
-			}
-		}
-
-		whereClauses.eachWithIndex { clause, idx ->
-			query += " ${clause}"
-			if (idx < whereClauses.size() - 1) {
-				query += " and "
-			} else {
-				query += " "
-			}
-		}
-
-		// add sort & sortOrder if specified
 		if (queryFilter.sorts) {
 			query += " order by "
-			queryFilter.sorts.eachWithIndex { it, idx ->
+			queryFilter.sorts.eachWithIndex {it, idx ->
 				def order
 				if (it.sortOrder) {
 					order = it.sortOrder
@@ -73,7 +54,6 @@ public class QueryBuilder {
 				}
 			}
 		}
-
 		def pagination = [:]
 		if (queryFilter.queryMax) {
 			pagination.max = queryFilter.queryMax
@@ -81,26 +61,54 @@ public class QueryBuilder {
 		if (queryFilter.queryOffset) {
 			pagination.offset = queryFilter.queryOffset
 		}
-
-		def cuantoQuery = new CuantoQuery(hql: query, positionalParameters: params.flatten() as List,
-			paginateParameters:pagination )
+		def cuantoQuery = new CuantoQuery(hql: query.toString(), positionalParameters: base.params as List,
+			paginateParameters: pagination)
 		return cuantoQuery
 	}
 
 
+	def buildQueryForBaseQuery(String fromClause, QueryFilter queryFilter) {
+		List params = []
+		List whereClauses = []
+
+		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
+		String query = fromClause;
+		
+		processors.each {QueryModule queryProcessor ->
+			def details = queryProcessor.getQueryParts(queryFilter)
+
+			if (details.where?.trim()) {
+				whereClauses << " ${details.where} "
+				params += details.params
+			}
+		}
+
+		whereClauses.eachWithIndex {clause, idx ->
+			query += " ${clause}"
+			if (idx < whereClauses.size() - 1) {
+				query += " and "
+			} else {
+				query += " "
+			}
+		}
+
+		return [hql: query.toString(), 'params': params.flatten()]
+	}
+
+
 	List<QueryModule> getProcessors(Class clazz) {
-		if (!moduleMap) {
-			moduleMap = new HashMap<Class, List<QueryModule>>();
+		if (!moduleProcessors) {
+			moduleProcessors = new HashMap<Class, List<QueryModule>>();
 			queryModules.each { QueryModule module ->
 				module.objectTypes.each { Class modClass ->
-					if (!moduleMap.containsKey(modClass)) {
-						moduleMap[modClass] = new ArrayList<QueryModule>();
+					if (!moduleProcessors.containsKey(modClass)) {
+						moduleProcessors[modClass] = new ArrayList<QueryModule>();
 					}
-					moduleMap[modClass] << module
+					moduleProcessors[modClass] << module
 				}
 			}
 		}
-		List<QueryModule> modToReturn = moduleMap[clazz]
+		List<QueryModule> modToReturn = moduleProcessors[clazz]
 		if (!modToReturn) {
 			throw new IllegalArgumentException("No QueryModule found for ${clazz.canonicalName}")
 		}
