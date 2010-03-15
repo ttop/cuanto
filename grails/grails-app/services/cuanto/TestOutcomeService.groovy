@@ -312,11 +312,11 @@ class TestOutcomeService {
 			testOutcomes = testRunService.searchTestOutcomes(params)
 		} else if (filter?.equalsIgnoreCase("allFailures")) {
 			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
+			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: testRun, isFailure: true))
 		} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
 			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
 			totalCount = dataService.countTestOutcomes(
-				new TestOutcomeQueryFilter(testRun: run, isAnalyzed:false, isFailure:true))
+				new TestOutcomeQueryFilter(testRun: testRun, isAnalyzed:false, isFailure:true))
 		} else if (filter?.equalsIgnoreCase("newFailures")) {
 			testOutcomes = testRunService.getNewFailures(testRun, queryParams)
 			totalCount = testRunService.countNewFailuresForTestRun(testRun)

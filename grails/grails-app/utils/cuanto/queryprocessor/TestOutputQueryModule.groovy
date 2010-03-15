@@ -30,7 +30,10 @@ public class TestOutputQueryModule implements QueryModule {
 
 	public Map getQueryParts(QueryFilter queryFilter) {
 		if (queryFilter.testOutput) {
-			return [where: ' upper(t.testOutput) like ? ', params: ["%${queryFilter.testOutput.toUpperCase()}%"]]
+			return [
+				where: ' upper(t.testOutput) like ? ',
+				params: ["%" + queryFilter.testOutput.toUpperCase() + "%"]
+			]
 		} else {
 			return [:]
 		}

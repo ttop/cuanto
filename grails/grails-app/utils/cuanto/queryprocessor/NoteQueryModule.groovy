@@ -31,7 +31,10 @@ public class NoteQueryModule implements QueryModule {
 	public Map getQueryParts(QueryFilter queryFilter) {
 		def map = [:]
 		if (queryFilter.note) {
-			map = [where: " upper(t.note) like ? ", params: ["%${queryFilter.note.toUpperCase()}%".toString()]]
+			map = [
+				where: " upper(t.note) like ? ",
+				params: ["%" + queryFilter.note.toUpperCase() + "%"]
+			]
 		}
 		return map
 	}
