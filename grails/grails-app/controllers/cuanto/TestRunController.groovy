@@ -194,7 +194,7 @@ class TestRunController {
 
 
 	def outcomes = {
-		Map results = testOutcomeService.getTestOutcomes(params)
+		Map results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
 
 		withFormat {
 			json {

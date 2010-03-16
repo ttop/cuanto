@@ -105,7 +105,9 @@ class StatisticService {
 				calculatedStats.tests = rawTestRunStats[0]
 				calculatedStats.totalDuration = rawTestRunStats[1]
 				calculatedStats.averageDuration = rawTestRunStats[2]
-				calculatedStats.failed = dataService.getTestRunFailureCount(testRun)
+				calculatedStats.failed = TestOutcome.executeQuery("""select count(*) from cuanto.TestOutcome t where \
+t.testRun = ? and t.testResult.isFailure = true""",
+					[testRun])[0]
 				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
 
 				if (calculatedStats.tests > 0) {

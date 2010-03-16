@@ -55,7 +55,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		testOutcomeService.updateTestOutcome(params)
 
 		// the notes are the same
-		def persistedOutcome = testRunService.getOutcomesForTestRun(testRun, [includeIgnored: true])[0]
+		def persistedOutcome = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: testRun, testResultIncludedInCalculations: true))[0]
 		assertEquals textWithoutScriptTags, persistedOutcome.note
 		assertEquals textWithoutScriptTags, persistedOutcome.owner
 		assertEquals textWithoutScriptTags, persistedOutcome.bug.title
@@ -94,7 +94,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		testOutcomeService.updateTestOutcome(params)
 
 		// the notes are the same
-		def persistedOutcome = testRunService.getOutcomesForTestRun(testRun, [includeIgnored: true])[0]
+		def persistedOutcome = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: testRun, testResultIncludedInCalculations: true))[0]
 		assertEquals textWithSanitizedScriptTags, persistedOutcome.note
 		assertEquals textWithSanitizedScriptTags, persistedOutcome.owner
 		assertEquals textWithSanitizedScriptTags, persistedOutcome.bug.title

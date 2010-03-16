@@ -37,7 +37,7 @@ class ManualParserTests extends GroovyTestCase{
 		TestRun returnedRun = parsingService.parseFileWithTestRun(testResultFile, run.id)
 		assertEquals run, returnedRun
 
-		def outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 8, outcomes.size()
 
 		TestResult expectedResult = dataService.result("unexecuted")
@@ -77,7 +77,7 @@ class ManualParserTests extends GroovyTestCase{
 		def updatedResultFile = getFile("manual_tests_update.xml")
 		parsingService.parseFileWithTestRun(updatedResultFile, updatedRun.id,)
 
-		def outcomes = testRunService.getOutcomesForTestRun(updatedRun, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: updatedRun))
 		assertEquals 9, outcomes.size()
 
 		def cherryStOutcome = outcomes.find { it.testCase.testName == "Cherry Street Test" }

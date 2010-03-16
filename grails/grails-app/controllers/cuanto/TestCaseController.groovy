@@ -72,10 +72,12 @@ class TestCaseController {
 				List<TestOutcome> outcomes
 
 				if (params.filter == "allresults") {
-					totalCount = dataService.countTestCaseOutcomes(testCase)
+					//totalCount = dataService.countTestCaseOutcomes(testCase)
+					totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCase))
 					outcomes = testOutcomeService.getTestOutcomeHistory(testCase, startIndex, numOutcomes, params.sort, params.order)
 				} else {
-					totalCount = dataService.countTestCaseFailures(testCase)
+					totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCase, isFailure:true,
+						testResultIncludedInCalculations: true))
 					outcomes = testOutcomeService.getTestOutcomeFailureHistory(testCase, startIndex, numOutcomes, params.sort, params.order)
 				}
 				def myJson = getJsonForOutcomes(outcomes, testCase, totalCount, startIndex)

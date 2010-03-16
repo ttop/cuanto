@@ -87,7 +87,9 @@ class TestCaseTests extends GroovyTestCase {
 			}
 		}
 
-		assertEquals "Wrong failure count", 5, dataService.countTestCaseFailures(dataService.getTestCases(project)[0])
+		TestCase testCase = dataService.getTestCases(project)[0] 
+		assertEquals "Wrong failure count", 5, dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCase, isFailure:true,
+			testResultIncludedInCalculations: true))
 	}
 
 

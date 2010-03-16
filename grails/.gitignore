@@ -1,0 +1,6 @@
+lib/build/
+lib/compile/
+lib/runtime/
+lib/test/
+target/
+*.war

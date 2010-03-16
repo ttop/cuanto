@@ -27,6 +27,22 @@ import cuanto.formatter.ManualFormatter
 import cuanto.parsers.JunitReportParser
 import cuanto.parsers.CuantoManualParser
 import cuanto.parsers.TestNgParser
+import cuanto.queryprocessor.TestRunQueryModule
+import cuanto.queryprocessor.TestResultIsFailureQueryModule
+import cuanto.queryprocessor.TestResultQueryModule
+import cuanto.queryprocessor.TestCaseFullNameQueryModule
+import cuanto.queryprocessor.TestCaseParametersQueryModule
+import cuanto.queryprocessor.TestCasePackageQueryModule
+import cuanto.queryprocessor.ProjectQueryModule
+import cuanto.queryprocessor.TestResultIncludedInCalculationsQueryModule
+import cuanto.queryprocessor.IsAnalyzedQueryModule
+import cuanto.queryprocessor.AnalysisStateQueryModule
+import cuanto.queryprocessor.BugQueryModule
+import cuanto.queryprocessor.OwnerQueryModule
+import cuanto.queryprocessor.TestCaseQueryModule
+import cuanto.queryprocessor.NoteQueryModule
+import cuanto.queryprocessor.TestOutputQueryModule
+import cuanto.queryprocessor.TestRunDateExecutedQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -44,6 +60,27 @@ beans = {
 			new ParentPackageFormatter(),
 			new MethodOnlyFormatter(),
 			new ManualFormatter()
+		]
+	}
+
+	queryBuilder(cuanto.QueryBuilder) {
+		queryModules = [
+			new TestRunQueryModule(),
+			new TestResultIsFailureQueryModule(),
+			new TestResultQueryModule(),
+			new TestCaseFullNameQueryModule(),
+			new TestCaseParametersQueryModule(),
+			new TestCasePackageQueryModule(),
+			new ProjectQueryModule(),
+			new TestResultIncludedInCalculationsQueryModule(),
+			new IsAnalyzedQueryModule(),
+			new AnalysisStateQueryModule(),
+			new BugQueryModule(),
+			new OwnerQueryModule(),
+			new TestCaseQueryModule(),
+			new NoteQueryModule(),
+			new TestOutputQueryModule(),
+			new TestRunDateExecutedQueryModule()
 		]
 	}
 }

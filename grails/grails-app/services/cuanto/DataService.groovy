@@ -24,7 +24,7 @@ package cuanto
 class DataService {
 
 	boolean transactional = true
-
+	QueryBuilder queryBuilder
 
 	Bug getBug(String title, String url) throws CuantoException {
 		if (!title && !url) {
@@ -46,21 +46,10 @@ class DataService {
 	}
 
 
-	TestRun getTestRun(id) {
-		return TestRun.get(id)
-	}
-
-
 	List getRawTestRunStats(TestRun run) { /* return the count, total test time and average test time for the test run*/
 		def queryResults = TestRun.executeQuery("select count(*), sum(duration), avg(duration) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.includeInCalculations = true",
 			[run])
 		return queryResults[0]
-	}
-
-
-	def getTestRunFailureCount(TestRun run) {
-		TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true",
-			[run])[0]
 	}
 
 
@@ -177,11 +166,9 @@ class DataService {
 	}
 
 
-	def saveTestOutcomes(TestRun testRun, List outcomes) {
-
-		//todo: remove testRun argument
+	def saveTestOutcomes(List outcomes) {
 		for (outcome in outcomes) {
-			saveDomainObject outcome 
+			saveDomainObject outcome
 		}
 	}
 
@@ -243,71 +230,61 @@ class DataService {
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomesByTestRun(TestRun run, String sort, String order, Map paging) {
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		return getTestOutcomes(filter)
+	}
+
+
+	String processSort(String sort) {
+		if (!sort) {
+			sort = "testCase.fullName"
+		} else {
+			sort = sort.replaceAll("^t\\.", "") //todo: remove once sorts with "t." are out of the code -- see TestRunService
+		}
+		return sort
+	}
+
+
+	String processOrder(String order) {
 		if (!order) {
 			order = "asc"
 		}
 		if (order.toLowerCase() != "asc" && order.toLowerCase() != "desc") {
 			throw new IllegalArgumentException("${order} is not a valid sort order")
 		}
-
-		if (!sort) {
-			sort = "t.testCase.fullName"
-		}
-
-		def query = "from cuanto.TestOutcome t where t.testRun = ? order by ${sort} ${order}, t.testCase.parameters asc"
-
-		def results
-		if (paging) {
-			results = TestOutcome.executeQuery(query, [run], paging)
-		} else {
-			results = TestOutcome.executeQuery(query, [run])
-		}
-		return results
+		return order
 	}
-	
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
-		return TestOutcome.executeQuery("from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true order by ${sort} ${order}, t.testCase.parameters asc",
-			[run], paging)
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		filter.isFailure = true
+		return getTestOutcomes(filter)
 	}
 
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterWithOptions(String sort, String order, Map paging) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.sorts = [new SortParameters('sort': processSort(sort), sortOrder: processOrder(order))]
+		if (paging && paging.max) {
+			filter.queryMax = paging.max
+		}
+		if (paging && paging.offset) {
+			filter.queryOffset = paging.offset
+		}
+		return filter
+	}
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
 	List getTestOutcomeUnanalyzedFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
-		return TestOutcome.executeQuery("""from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true
-and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.parameters asc""",
-			[run], paging)
-	}
-
-
-	List getTestOutcomesByTestRun(TestRun run, String pkg, String order, Map paging, boolean includeIgnored) {
-		def queryArgs = [run]
-		def query = "from cuanto.TestOutcome t where t.testRun = ? "
-
-		if (pkg) {
-			queryArgs << pkg
-			queryArgs << pkg + ".%"
-			query += " and (t.testCase.packageName = ? or t.testCase.packageName like ?)"
-		}
-
-		if (!includeIgnored) {
-			query += "and t.testResult.includeInCalculations = true "
-		}
-		if (!order) {
-			order = "asc"
-		}
-
-		query += "order by t.testCase.fullName ${order}, t.testCase.parameters asc "
-		def outcomes
-		if (paging) {
-			outcomes = TestOutcome.executeQuery(query, queryArgs, paging)
-		} else {
-			outcomes = TestOutcome.executeQuery(query, queryArgs)
-		}
-		return outcomes
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
+		filter.testRun = run
+		filter.isFailure = true
+		filter.isAnalyzed = false
+		return getTestOutcomes(filter)
 	}
 
 
@@ -330,11 +307,14 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 	}
 
 
-	TestOutcome getPreviousOutcome(testCase, priorToDate) {
-		def qry = "from cuanto.TestOutcome tout where tout.testCase = ? and tout.testRun.dateExecuted < ? order by \
-                      tout.testRun.dateExecuted desc"
-		def out = TestOutcome.find(qry, [testCase, priorToDate])
-		return out
+	TestOutcome getPreviousOutcome(TestCase testCase, Date priorToDate) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testCase = testCase
+		filter.dateCriteria = [new DateCriteria(date: priorToDate, operator: "<")]
+		filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
+		filter.queryOffset = 0
+		filter.queryMax = 1
+		return getTestOutcomes(filter)[0] as TestOutcome
 	}
 
 
@@ -360,8 +340,32 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 	}
 
 
-	List<TestOutcome> getTestOutcomes(outcomeIds) {
+	List<TestOutcome> getTestOutcomes(List outcomeIds) {
 		TestOutcome.findAll("from cuanto.TestOutcome out where out.id in (:outList)", [outList: outcomeIds])
+	}
+
+
+	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) {
+		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
+		if (cuantoQuery.paginateParameters) {
+			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+		} else {
+			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+		}
+	}
+
+
+	Long countTestOutcomes(TestOutcomeQueryFilter queryFilter) {
+		CuantoQuery cuantoQuery = queryBuilder.buildCount(queryFilter)
+		def results
+		if (cuantoQuery.paginateParameters) {
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+		} else if (cuantoQuery.positionalParameters) {
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+		} else {
+			results = TestOutcome.executeQuery(cuantoQuery.hql)
+		}
+		return results[0]
 	}
 
 
@@ -401,69 +405,37 @@ and t.analysisState.isAnalyzed = false order by ${sort} ${order}, t.testCase.par
 	}
 
 
-	def countFailuresForTestRun(TestRun run) {
-		def total = TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and t.testResult.isFailure = true  ", [run])
-		return total[0]
-	}
-
-	def countUnanalyzedFailuresForTestRun(TestRun run) {
-		def total = TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testRun = ? and " +
-			"t.analysisState is not null and t.analysisState.isAnalyzed = false and t.testResult.isFailure = true  ", [run])
-		return total[0]
-	}
-
-
 	List<TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
-		def qry = "from cuanto.TestOutcome t where t.testCase = ?"
-		if (sort) {
-			qry += "order by t.${sort} "
-			if (order) {
-				qry += " ${order} "
-			}
-		}
-
-		def results = TestOutcome.executeQuery(qry, [testCase], [max: maxOutcomes, offset: startIndex])
-		return results
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, [max: maxOutcomes, offset: startIndex])
+		filter.testCase = testCase
+		return getTestOutcomes(filter)
 	}
 
 
 	List<TestOutcome> getTestOutcomeFailureHistory(TestCase testCase, int startIndex, int maxOutcomes, String sort, String order) {
-		def qry = """from cuanto.TestOutcome t where t.testCase = ? and
-t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
-		if (sort) {
-			qry += "order by t.${sort} "
-			if (order) {
-				qry += " ${order} "
-			}
-		}
-		def results = TestOutcome.executeQuery(qry, [testCase], [max: maxOutcomes, offset: startIndex])
-		return results
+		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, [max: maxOutcomes, offset: startIndex])
+		filter.testCase = testCase
+		filter.isFailure = true
+		return getTestOutcomes(filter)
 	}
 
 
-	List<TestOutcome> getTestOutcomeAnalyses(testCase) {
-		def qry = """from cuanto.TestOutcome t where t.testCase = ? and
-			t.testResult.isFailure = true and t.analysisState.isAnalyzed = true order by t.testRun.dateExecuted desc"""
-		def results = TestOutcome.executeQuery(qry, [testCase])
-		return results
-	}
+	List<TestOutcome> getTestOutcomeAnalyses(TestCase testCase) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testCase = testCase
+		filter.isFailure = true
+		filter.isAnalyzed = true
 
-
-	Integer countTestCaseOutcomes(TestCase testCase) {
-		TestOutcome.countByTestCase(testCase)
+		filter.sorts = []
+		filter.sorts << new SortParameters('sort': "finishedAt", sortOrder: "desc")
+		filter.sorts << new SortParameters('sort': "testRun.dateExecuted", sortOrder: "desc")
+		filter.sorts << new SortParameters('sort': "dateCreated", sortOrder: "desc")
+		return getTestOutcomes(filter)
 	}
 
 
 	Integer countTestCases(project) {
 		TestCase.countByProject(project)
-	}
-
-
-	Integer countTestCaseFailures(TestCase testCase) {
-		def results = TestOutcome.executeQuery("""select count(*) from cuanto.TestOutcome t where t.testCase = ? and
-			t.testResult.isFailure = true and t.testResult.includeInCalculations = true""",
-			[testCase])
-		return results[0]
 	}
 
 
@@ -570,7 +542,7 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 
 
 	def deleteEmptyTestRuns() {
-		def now = new Date().getTime()
+		def now = new Date().time
 		def TEN_MINUTES = 1000 * 60 * 10
 		def cutoffDate = new Date(now - TEN_MINUTES)
 
@@ -615,74 +587,16 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 	}
 
 
-	def countTestOutcomesBySearch(search, searchTerm, testRun, params) {
-		def queries = ""
-		def qField = "out." + getFieldByFriendlyName(search)
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField) {
+		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
 
-		def queryList = []
-		searchTerm.tokenize().each {term ->
-			queries += " and upper($qField) like ? "
-			queryList << "%${term.toUpperCase()}%".toString()
-		}
-
-		def filter = params.filter?.toLowerCase()
-
-		if (filter == "allfailures" || filter == "newfailures") {
-			queries += " and out.testResult.isFailure = true "
-		}
-
-		def qArgs = [testRun, queryList].flatten()
-
-		def count = 0
-		def outCount = TestOutcome.executeQuery(
-			"select count(*)from cuanto.TestOutcome as out where out.testRun = ? ${queries.toString()}", qArgs)
-
-
-		if (filter == "newfailures") {
-			def outcomes = searchTestOutcomes(search, searchTerm, testRun, params)
-			def newFailures = getNewFailures(outcomes, testRun.dateExecuted)
-			count = newFailures.size()
-		} else {
-			count = outCount[0]
-		}
-		return count
-	}
-
-
-	def searchTestOutcomes(search, searchTerm, testRun, params) {
-		// valid params are sort, order, offset, max plus an optional filter
 		def qOrder = getSortOrder(params.order)
 		def qSort = getFieldByFriendlyName(params.sort)
-		def queries = ""
-		def qField = "out." + getFieldByFriendlyName(search)
+		outFilter.sorts = [new SortParameters(sort: qSort, sortOrder: qOrder)]
 
-		def queryList = []
-		searchTerm.tokenize().each {term ->
-			queries += " and upper($qField) like ? "
-			queryList << "%${term.toUpperCase()}%"
-		}
-
-		def filter = params?.filter?.toLowerCase()
-
-		if (filter == "allfailures" || filter == "newfailures") {
-			queries += " and out.testResult.isFailure = true "
-		}
-
-		if (filter == "unanalyzedfailures") {
-			queries += " and out.analysisState.isAnalyzed = false"
-		}
-
-		def qArgs = [testRun, queryList].flatten()
-		def outcomesToReturn
-		def outs = TestOutcome.findAll(
-			"from cuanto.TestOutcome as out where out.testRun = ? $queries order by out.${qSort} ${qOrder}",
-			qArgs, ['max': Integer.valueOf(params.max), 'offset': Integer.valueOf(params.offset)])
-		if (filter == "newfailures") {
-			outcomesToReturn = getNewFailures(outs, testRun.dateExecuted)
-		} else {
-			outcomesToReturn = outs
-		}
-		return outcomesToReturn
+		outFilter.testRun = testRun
+		outFilter.setForSearchTerm(searchField, searchTerm)
+		return outFilter
 	}
 
 
@@ -701,7 +615,7 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 		if (name == "name" || name == "testcase") {
 			qSort = "testCase.fullName"
 		} else if (name == "result") {
-			qSort = "testResult.name"  
+			qSort = "testResult"
 		} else if (name == "state") {
 			qSort = "analysisState.name"
 		} else if (name == "duration") {
@@ -742,6 +656,8 @@ t.testResult.isFailure = true and t.testResult.includeInCalculations = true """
 	def findOutcomeForTestCase(testCase, testRun) {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
+
+
 }
 
 

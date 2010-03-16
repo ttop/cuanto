@@ -39,7 +39,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 34 tests
-		def outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 34, outcomes.size()
 
 		TestOutcome leCarre = outcomes.find {
@@ -86,7 +86,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 34 tests
-		def outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 34, outcomes.size()
 
 		TestOutcome leCarre = outcomes.find {
@@ -140,7 +140,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 56 tests
-		def outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 56, outcomes.size()
 
 		def expectedFailures = ["Melville", "Williams", "Ferry", "Morrisson", "LeCarre", "Azimov", "Brownies", "Tart",
@@ -185,7 +185,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 56 tests
-		def outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 56, outcomes.size()
 
 		def expectedFailures = ["Melville", "Williams", "Ferry", "Morrisson", "LeCarre", "Azimov", "Brownies", "Tart",
@@ -229,7 +229,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 4 tests
-		List outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 4, outcomes.size()
 
 		def passingTests = outcomes.findAll {
@@ -269,7 +269,7 @@ class JunitReportParserTests extends GroovyTestCase{
 		assertEquals run, returnedRun
 
 		// should be 13 tests
-		List outcomes = testRunService.getOutcomesForTestRun(run, null)
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: run))
 		assertEquals 13, outcomes.size()
 
 		def passingTests = outcomes.findAll {

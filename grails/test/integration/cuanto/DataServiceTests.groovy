@@ -424,15 +424,6 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
-	public void getTestRunId() {
-		TestRun tr = to.getTestRun(to.wordGen.getCamelWords(3))
-		tr.save()
-
-		assertEquals "Wrong test run", tr.id, dataService.getTestRun(tr.id)
-		assertNull dataService.getTestRun(0)
-	}
-
-
 	public void testDeleteTestRunWithStats() {
 		Project proj = to.project
 		proj.testType = TestType.findByName("JUnit")
@@ -500,18 +491,6 @@ class DataServiceTests extends GroovyTestCase {
 		assertNull "Test run not deleted", TestRun.get(testRun.id)
 		assertEquals "Test outcomes not deleted", 0, TestOutcome.list().size()
 		assertEquals "Test run statistics not deleted", 0, TestRunStats.list().size()
-	}
-
-
-	void testGetTestRun() {
-		Project proj = to.project
-		proj.save()
-
-		def testRun = to.getTestRun(proj)
-		if (!testRun.save()) {
-			reportError testRun
-		}
-		assertEquals "getTestRunId incorrect", testRun.id, dataService.getTestRun(testRun.id).id 
 	}
 
 
@@ -639,13 +618,14 @@ class DataServiceTests extends GroovyTestCase {
 			outcomes << to.getTestOutcome(testCase, testRun)
 		}
 
-		dataService.saveTestOutcomes(testRun, outcomes)
+		dataService.saveTestOutcomes(outcomes)
 
 		assertEquals "Wrong number of test outcomes", outcomes.size(), TestOutcome.list().size()
 		def fetched = TestOutcome.findAllByTestRun(testRun)
 		assertEquals "Wrong number of test outcomes", outcomes.size(), fetched.size()
 
-		assertEquals "Wrong total outcome count for test case", 2, dataService.countTestCaseOutcomes(testCases[0])
+		assertEquals "Wrong total outcome count for test case", 2,
+			dataService.countTestOutcomes(new TestOutcomeQueryFilter(testCase: testCases[0] as TestCase))
 		assertEquals "Wrong Test Case total for project", testCases.size(), dataService.countTestCases(proj)
 	}
 
@@ -791,7 +771,7 @@ class DataServiceTests extends GroovyTestCase {
 			outcomes << to.getTestOutcome(testCase, testRun)
 		}
 
-		dataService.saveTestOutcomes(testRun, outcomes)
+		dataService.saveTestOutcomes(outcomes)
 
 		outcomes.each { outcome ->
 			assertEquals "Wrong outcome", outcome.id, dataService.getTestOutcome(outcome.id).id
@@ -840,10 +820,10 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "Wrong field name", "testCase.fullName", dataService.getFieldByFriendlyName("foobar")
 		assertEquals "Wrong field name", "testCase.fullName", dataService.getFieldByFriendlyName("NAME")
 		assertEquals "Wrong field name", "testCase.fullName", dataService.getFieldByFriendlyName("TestCase")
-		assertEquals "Wrong field name", "testResult.name", dataService.getFieldByFriendlyName("result")
+		assertEquals "Wrong field name", "testResult", dataService.getFieldByFriendlyName("result")
 		assertEquals "Wrong field name", "analysisState.name", dataService.getFieldByFriendlyName("state")
 		assertEquals "Wrong field name", "duration", dataService.getFieldByFriendlyName("duration")
-		assertEquals "Wrong field name", "bug.title", dataService.getFieldByFriendlyName("bug")
+		//assertEquals "Wrong field name", "bug.title", dataService.getFieldByFriendlyName("bug")
 		assertEquals "Wrong field name", "owner", dataService.getFieldByFriendlyName("owner")
 		assertEquals "Wrong field name", "note", dataService.getFieldByFriendlyName("note")
 		assertEquals "Wrong field name", "testOutput", dataService.getFieldByFriendlyName("output")

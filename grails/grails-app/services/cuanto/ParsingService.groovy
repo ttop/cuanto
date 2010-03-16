@@ -58,7 +58,7 @@ class ParsingService {
 			testOutcomesToSave.add(testOutcome)
 		}
 
-		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
+		dataService.saveTestOutcomes(testOutcomesToSave)
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
 		if (testRun) {
 			statisticService.queueTestRunStats(testRun)
@@ -78,7 +78,7 @@ class ParsingService {
 		def project = null
 
 		if (testRunId) {
-			testRun = dataService.getTestRun(testRunId)
+			testRun = TestRun.get(testRunId)
 		}
 
 		if (testRun) {
@@ -95,7 +95,7 @@ class ParsingService {
 			throw new RuntimeException("bug parsing from TestOutcomeApi not yet implemented")
 		}
 
-		dataService.saveTestOutcomes(testRun, [testOutcome])
+		dataService.saveTestOutcomes([testOutcome])
 		if (testRun) {
 			statisticService.queueTestRunStats(testRun)
 		}

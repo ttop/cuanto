@@ -60,14 +60,14 @@ class TestOutcomeTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def outcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		def outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun:testRunOne))
 
 		assertEquals("Wrong number of outcomes", numTests, outcomes.size())
 		for (outcome in outcomes) {
 			assertEquals("Wrong testRun", testRunOne, outcome.testRun)
 		}
 
-		outcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		outcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: testRunTwo))
 
 		assertEquals("Wrong number of outcomes", numTests, outcomes.size())
 		for (outcome in outcomes) {
@@ -130,13 +130,16 @@ class TestOutcomeTests extends GroovyTestCase {
 			dataService.saveDomainObject outcome
 		}
 
-		def abOutcomes = testRunService.getOutcomesForTestRun(testRun, "a.b", null, false)
+		def abOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRun, testCasePackage: "a.b", testResultIncludedInCalculations: true))
 		assertEquals("Wrong number of a.b outcomes", 20, abOutcomes.size())
 
-		def abcOutcomes = testRunService.getOutcomesForTestRun(testRun, 'a.b.c', null, false)
+		def abcOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun:testRun, testCasePackage: "a.b.c", testResultIncludedInCalculations: true))
 		assertEquals("Wrong number of a.b.c outcomes", 10, abcOutcomes.size())
 
-		def xyzOutcomes = testRunService.getOutcomesForTestRun(testRun, "x.y.z", null, false)
+		def xyzOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun:testRun, testCasePackage: "x.y.z", testResultIncludedInCalculations: true))
 		assertEquals("Wrong number of x.y.z outcomes", 9, xyzOutcomes.size())
 	}
 
@@ -156,6 +159,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		// create 2 test Runs
 		TestRun testRunOne = to.getTestRun(proj)
 		testRunOne.save()
+		sleep 1000
 		TestRun testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
@@ -168,37 +172,47 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 		}
 
+		TestOutcomeQueryFilter outcomeFilter = new TestOutcomeQueryFilter()
+		outcomeFilter.testRun = testRunTwo
+		outcomeFilter.isFailure = true
+
 		// results are identical
-		def testRunOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: true])
-		def testRunTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: true])
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		def testRunOneOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun:testRunOne))
+		def testRunTwoOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunTwo)
+		)
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
 
 		// one failure in old testRun, none in new testRun
 		testRunOneOutcomes[0].testResult = dataService.result("fail")
 		testRunOneOutcomes[0].save(flush: true)
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
+
 
 		// same test case failed in both testRuns
 		testRunTwoOutcomes[0].testResult = dataService.result("fail")
 		testRunTwoOutcomes[0].save(flush: true)
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
+
 
 		// one failures in new testRun
 		testRunTwoOutcomes[2].testResult = dataService.result("fail")
 		testRunTwoOutcomes[2].save(flush: true)
-		def failures = testRunService.getNewFailures(testRunTwo, null)
+		def failures = testOutcomeService.getNewFailures(outcomeFilter)
 		assertEquals("One failure should've been found", 1, failures.size())
 		assertEquals "Wrong failure outcome returned", testRunTwoOutcomes[2], failures[0]
 
 		// two failures in new testRun
 		testRunTwoOutcomes[8].testResult = dataService.result("fail")
 		testRunTwoOutcomes[8].save(flush: true)
-		failures = testRunService.getNewFailures(testRunTwo, null)
+		failures = testOutcomeService.getNewFailures(outcomeFilter)
 		assertEquals("Two failure should've been found", 2, failures.size())
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[2]))
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[8]))
 
-		assertEquals "wrong number of total failures", 3, dataService.countFailuresForTestRun(testRunTwo)
+		assertEquals "wrong number of total failures", 3,
+			dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: testRunTwo, isFailure: true))
 	}
 
 
@@ -508,55 +522,61 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 		}
 
-		def targetRun = testRuns[0]
-		def outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, null)
+		def targetRun = testRuns[0] as TestRun
+		def outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun:targetRun))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 10, offset: 0], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 10, queryOffset: 0, testResultIncludedInCalculations: true))
 		assertEquals "Wrong number of outcomes", numTestCases - 1, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 10, offset: 0], true)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 10, queryOffset: 0))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
 		shouldFail(IllegalArgumentException) {
-			dataService.getTestOutcomesByTestRun(targetRun, null, "foo", null)
+			dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, sorts: [new SortParameters(sortOrder: "foo")]))
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1, testResultIncludedInCalculations: true)
+		)
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, "desc", [max: 3, offset: 1], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, 
+				queryMax: 3, queryOffset: 1, testResultIncludedInCalculations:true)
+		)
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1], true)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1))
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1])
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1))
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, null)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun

@@ -1,0 +1,12 @@
+* You can now associate arbitrary properties and hyperlinks with a TestRun:
+(ant example here)
+* The Build, Milestone and Target Environment properties have been removed from TestRun, any existing values will be
+migrated to the new property style with corresponding names.
+* Test outcomes now have startedAt and finishedAt properties (if the test typee supports them -- presently just TestNG)
+* Fix a JUnit parsing error when JUnit test time exceeds 1000 seconds
+* Allow exporting test results in CSV, TSV and XML formats
+* Normalize all time units to milliseconds, pretty-print time formats as HH:MM:ss.zzz
+* Clicking on the output panel icon when that outcome's output is already being displayed will now hide the output panel
+* Fix CUANTO-34, Searching with the Unanalyzed Failures filter returns non-failures.
+* Sorting by test output now works
+* Other minor bug fixes

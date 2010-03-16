@@ -222,137 +222,13 @@ class TestRunService {
 			return null
 		}
 	}
-
-	/*
-		 params contains sorting and paging info
-		 sort = sort field,
-		 max = max results
-		 offset = first result
-		 filter = "allfailures", "unanalyzedfailures" or blank for all results
-		 includeIgnored determines whether or not results that have the "includeInCalculations"
-		 value set to false (e.g. Ignored, Unexecuted, etc) are included in the search.
-	*/
-	def getOutcomesForTestRun(TestRun testRun, Map params) {
-		def order
-		def sort
-
-		if (!params?.order || params?.order?.equalsIgnoreCase("asc")) {
-			order = ""
-		} else {
-			order = params.order
-		}
-
-		def sortMap = [:]
-		sortMap.testCase = "t.testCase.fullName"
-		sortMap.result = "t.testResult.name"
-		sortMap.analysisState = "t.analysisState.name"
-		sortMap.duration = "duration"
-		sortMap.bug = "t.bug.title"
-		sortMap.owner = "t.owner"
-		sortMap.note = "t.note"
-		sortMap.output = "t.testOutput"
-
-		if (params?.sort == null) {
-			sort = sortMap.testCase
-		} else if (!sortMap.containsKey(params.sort)) {
-			throw new CuantoException("Unknown sort option: ${params.sort}")
-		} else {
-			sort = sortMap[params.sort]
-		}
-
-		def paging = [:]
-		if (params?.max) {
-			paging.max = Integer.valueOf(params.max)
-		}
-		if (params?.offset) {
-			paging.offset = Integer.valueOf(params.offset)
-		}
-
-		def outcomes
-		if (params?.filter?.equalsIgnoreCase("allfailures")) {
-			outcomes = dataService.getTestOutcomeFailuresByTestRun(testRun, sort, order, paging)
-		} else if (params?.filter?.equalsIgnoreCase("unanalyzedfailures")) {
-			outcomes = dataService.getTestOutcomeUnanalyzedFailuresByTestRun(testRun, sort, order, paging)
-		}
-		else {
-			outcomes = dataService.getTestOutcomesByTestRun(testRun, sort, order, paging)
-		}
-
-		return outcomes
-	}
-
-
-	def getOutcomesForTestRun(TestRun testRun, String pkg, Map params, boolean includeIgnored) {
-		def order
-		if (!params?.order || params?.order?.equalsIgnoreCase("asc")) {
-			order = ""
-		} else {
-			order = params.order
-		}
-
-		def paging = [:]
-		if (params?.max) {
-			paging.max = Integer.valueOf(params.max)
-		}
-		if (params?.offset) {
-			paging.offset = Integer.valueOf(params.offset)
-		}
-
-		def outcomes = dataService.getTestOutcomesByTestRun(testRun, pkg, order, paging, includeIgnored)
-		return outcomes
-	}
-
+	
 
 	def countOutcomes(TestRun testRun) {
 		if (testRun) {
 			return TestOutcome.countByTestRun(testRun)
 		} else {
 			return 0
-		}
-	}
-
-
-	def countNewFailuresForTestRun(TestRun testRun) {
-		return getNewFailures(testRun, null).size()
-	}
-
-
-	def getNewFailures(TestRun testRun, Map params) {
-		def queryParams = [filter: "allfailures"]
-		if (params?.order) {
-			queryParams.order = params.order
-		}
-		if (params?.sort) {
-			queryParams.sort = params.sort
-		}
-
-		def currentFailedOutcomes = getOutcomesForTestRun(testRun, queryParams)
-		def newFailedOutcomes = dataService.getNewFailures(currentFailedOutcomes, testRun.dateExecuted)
-
-		def startRange
-		if (params?.offset) {
-			startRange = Integer.valueOf(params.offset)
-		} else {
-			startRange = 0
-		}
-
-		def endRange
-		if (params?.max) {
-			endRange = startRange + Integer.valueOf(params.max)
-			if (endRange > newFailedOutcomes.size() - 1) {
-				endRange = newFailedOutcomes.size() - 1
-			}
-		} else {
-			endRange = newFailedOutcomes.size() - 1
-			if (endRange < 0) {
-				endRange = 0
-			}
-		}
-
-		if (newFailedOutcomes.size() == 0) {
-			return []
-		} else {
-			return newFailedOutcomes[startRange..endRange]
 		}
 	}
 
@@ -707,9 +583,11 @@ class TestRunService {
 		return testRun
 	}
 
+
 	def getUrlFromString(String urlString) {
 		return new URL(urlString).toString()
 	}
+
 
 	def getProject(projectString) {
 		def project = Project.findByProjectKey(projectString)
@@ -719,6 +597,7 @@ class TestRunService {
 		return project
 
 	}
+
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
@@ -730,7 +609,7 @@ class TestRunService {
 			testOutcome.testResult = dataService.result("Unexecuted")
 			testOutcomesToSave << testOutcome
 		}
-		dataService.saveTestOutcomes(testRun, testOutcomesToSave)
+		dataService.saveTestOutcomes(testOutcomesToSave)
 		statisticService.queueTestRunStats testRun
 		return testRun
 	}
@@ -745,56 +624,6 @@ class TestRunService {
 			bugList << entry
 		}
 		return bugList
-	}
-
-
-
-	def countTestOutcomesBySearch(Map params) {
-		def queryDetails = parseQueryFromParams(params)
-		def searchField = queryDetails['searchField']
-		def searchTerms = queryDetails['searchTerms']
-
-		def count = 0
-		def testRun = TestRun.get(params.id)
-		if (testRun && allowedSearches.contains(searchField)) {
-			def validParams = extractValidParams(params)
-			count = dataService.countTestOutcomesBySearch(searchField, searchTerms, testRun, validParams)
-		}
-		return count 
-	}
-	
-
-	def searchTestOutcomes(Map params) {
-		def queryDetails = parseQueryFromParams(params)
-		def searchField = queryDetails['searchField']
-		def searchTerms = queryDetails['searchTerms']
-
-		def testOutcomes = []
-		def testRun = TestRun.get(params.id)
-		if (testRun && allowedSearches.contains(searchField)) {
-			def validParams = extractValidParams(params)
-			testOutcomes = dataService.searchTestOutcomes(searchField, searchTerms, testRun, validParams)
-		}
-		return testOutcomes
-	}
-
-	def parseQueryFromParams(params) {
-		// returns a map with 'searchField' and 'searchTerms'
-		def searchField, query
-		if (params.qry) {
-			def delim = params?.qry?.indexOf("|")
-			if (delim == -1) {
-				searchField = "Name"
-				query = params.qry
-			} else {
-				searchField = params.qry.substring(0, delim)
-				query = params.qry.substring(delim + 1)
-			}
-
-			return ['searchField': searchField.toLowerCase(), 'searchTerms': query]
-		} else {
-			throw new CuantoException("No query parameter was provided")
-		}
 	}
 
 
