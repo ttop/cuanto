@@ -288,29 +288,6 @@ class DataService {
 	}
 
 
-	List getTestOutcomesByTestRun(TestRun run, String pkg, String order, Map paging, boolean includeIgnored) {
-		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
-		filter.testRun = run
-		filter.testCasePackage = pkg
-		if (!includeIgnored) {
-			filter.testResultIncludedInCalculations = true
-		}
-
-		filter.sorts = []
-		filter.sorts << new SortParameters('sort': "testCase.fullName", sortOrder: processOrder(order))
-		filter.sorts << new SortParameters('sort': "testCase.parameters", sortOrder: processOrder(order))
-
-		if (paging && paging.max) {
-			filter.queryMax = paging.max
-		}
-		if (paging && paging.offset) {
-			filter.queryOffset = paging.offset
-		}
-
-		return getTestOutcomes(filter)
-	}
-
-
 	List getNewFailures(testOutcomes, priorToDate) {
 		// return a list of the outcomes where the test case outcome's result immediately prior to priorToDate was a
 		// pass

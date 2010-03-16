@@ -522,55 +522,61 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 		}
 
-		def targetRun = testRuns[0]
-		def outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, null)
+		def targetRun = testRuns[0] as TestRun
+		def outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun:targetRun))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 10, offset: 0], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 10, queryOffset: 0, testResultIncludedInCalculations: true))
 		assertEquals "Wrong number of outcomes", numTestCases - 1, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 10, offset: 0], true)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 10, queryOffset: 0))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
 		shouldFail(IllegalArgumentException) {
-			dataService.getTestOutcomesByTestRun(targetRun, null, "foo", null)
+			dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, sorts: [new SortParameters(sortOrder: "foo")]))
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1, testResultIncludedInCalculations: true)
+		)
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, "desc", [max: 3, offset: 1], false)
+		outs = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: targetRun, 
+				queryMax: 3, queryOffset: 1, testResultIncludedInCalculations:true)
+		)
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1], true)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1))
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, [max: 3, offset: 1])
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun, queryMax: 3, queryOffset: 1))
 		assertEquals "Wrong number of outcomes", 3, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun
 		}
 
-		outs = dataService.getTestOutcomesByTestRun(targetRun, null, null, null)
+		outs = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: targetRun))
 		assertEquals "Wrong number of outcomes", numTestCases, outs.size()
 		outs.each {outcome ->
 			assertEquals "Wrong test run for outcome", targetRun, outcome.testRun

@@ -390,22 +390,24 @@ class TestOutcomeService {
 
 	List<SortParameters> getSortParametersFromParamStrings(String sortParam, String orderParam) {
 		def sorts = []
-		if (sortParam) {
-			final String sortName = resolveTestOutcomeSortName(sortParam)
-			def primarySort = new SortParameters(sort: sortName)
-			if (orderParam) {
-				primarySort.sortOrder = orderParam
+		final String sortName = resolveTestOutcomeSortName(sortParam)
+		def primarySort = new SortParameters(sort: sortName)
+		if (orderParam) {
+			if (!orderParam) {
+				orderParam = "asc"
 			}
-			sorts << primarySort
-
-			if (sortName == "testCase.fullName") {
-				def secondarySort = new SortParameters(sort: "testCase.parameters")
-				if (orderParam) {
-					secondarySort.sortOrder = primarySort.sortOrder
-				}
-				sorts << secondarySort
-			}
+			primarySort.sortOrder = orderParam
 		}
+		sorts << primarySort
+
+		if (sortName == "testCase.fullName") {
+			def secondarySort = new SortParameters(sort: "testCase.parameters")
+			if (orderParam) {
+				secondarySort.sortOrder = primarySort.sortOrder
+			}
+			sorts << secondarySort
+		}
+
 		return sorts
 	}
 

@@ -44,7 +44,11 @@ public class QueryBuilder {
 			queryFilter.sorts.eachWithIndex {it, idx ->
 				def order
 				if (it.sortOrder) {
-					order = it.sortOrder
+					if (it.sortOrder.toLowerCase() == "asc" || it.sortOrder.toLowerCase() == "desc") {
+						order = it.sortOrder
+					} else {
+						throw new IllegalArgumentException("${it.sortOrder} is not a valid sort order")
+					}
 				} else {
 					order = "asc"
 				}
