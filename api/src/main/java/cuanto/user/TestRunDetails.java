@@ -58,12 +58,12 @@ public class TestRunDetails {
 	}
 
 
-	public void setLinks(List<Link> links) {
+	void setLinks(List<Link> links) {
 		this.links = links;
 	}
 
 
-	public void setTestProperties(List<TestProperty> testProperties) {
+	void setTestProperties(List<TestProperty> testProperties) {
 		this.testProperties = testProperties;
 	}
 
