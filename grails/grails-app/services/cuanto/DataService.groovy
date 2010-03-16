@@ -587,51 +587,6 @@ class DataService {
 	}
 
 
-	Long countTestOutcomesBySearch(searchField, searchTerm, testRun, params) {
-		TestOutcomeQueryFilter outFilter = getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField)
-		Long count
-
-		def filter = params?.filter?.toLowerCase()
-
-		if (filter == "allfailures") {
-			outFilter.isFailure = true
-			count = countTestOutcomes(outFilter)
-		} else if (filter == "newfailures") {
-			outFilter.isFailure = true
-			def newFailures = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
-			count = newFailures.size()
-		}  else if (filter == "unanalyzedfailures") {
-			outFilter.isAnalyzed = false
-			count = countTestOutcomes(outFilter)
-		}  else {
-			count = countTestOutcomes(outFilter)
-		}
-		return count
-	}
-
-
-	List<TestOutcome> searchTestOutcomes(searchField, searchTerm, testRun, params) {
-		// valid params are sort, order, offset, max plus an optional filter
-		TestOutcomeQueryFilter outFilter = getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField)
-		List<TestOutcome> outs
-
-		def filter = params?.filter?.toLowerCase()
-
-		if (filter == "allfailures") {
-			outFilter.isFailure = true
-			outs = getTestOutcomes(outFilter)
-		} else if (filter == "newfailures") {
-			outFilter.isFailure = true
-			outs = getNewFailures(getTestOutcomes(outFilter), testRun.dateExecuted)
-		}  else if (filter == "unanalyzedfailures") {
-			outFilter.isAnalyzed = false
-			outs = getTestOutcomes(outFilter)
-		}  else {
-			outs = getTestOutcomes(outFilter)
-		}
-		return outs
-	}
-
 	TestOutcomeQueryFilter getTestOutcomeQueryFilterForSearch(testRun, params, searchTerm, searchField) {
 		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
 
