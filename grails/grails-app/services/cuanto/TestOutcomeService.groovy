@@ -200,7 +200,8 @@ class TestOutcomeService {
 		if (params.filter?.equalsIgnoreCase("allFailures")) {
 			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
 		} else if (params.filter?.equalsIgnoreCase("newFailures")){
-			totalCount = testRunService.countNewFailuresForTestRun(testRun)
+			def queryFilter = getTestOutcomeQueryFilterForParams(params)
+			totalCount = getNewFailures(queryFilter).size()
 		} else if (params.outcome) {
 			/* todo: why is this parameter here? it smells bad */
 			totalCount = params.totalCount

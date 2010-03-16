@@ -232,12 +232,7 @@ class TestRunService {
 		}
 	}
 
-	//todo: refactor this away
-	def countNewFailuresForTestRun(TestRun testRun) {
-		return getNewFailures(testRun, null).size()
-	}
 
-	
 	// given a List of TestOutcomes, return a Set of TestCases
 	Set getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
 		def tCases = new HashSet()
@@ -593,6 +588,7 @@ class TestRunService {
 		return new URL(urlString).toString()
 	}
 
+
 	def getProject(projectString) {
 		def project = Project.findByProjectKey(projectString)
 		if (!project) {
@@ -601,6 +597,7 @@ class TestRunService {
 		return project
 
 	}
+
 	
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
