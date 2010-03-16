@@ -222,86 +222,7 @@ class TestRunService {
 			return null
 		}
 	}
-
-	/*
-		 params contains sorting and paging info
-		 sort = sort field,
-		 max = max results
-		 offset = first result
-		 filter = "allfailures", "unanalyzedfailures" or blank for all results
-		 includeIgnored determines whether or not results that have the "includeInCalculations"
-		 value set to false (e.g. Ignored, Unexecuted, etc) are included in the search.
-	*/
-	def getOutcomesForTestRun(TestRun testRun, Map params) {
-		def order
-		def sort
-
-		if (!params?.order || params?.order?.equalsIgnoreCase("asc")) {
-			order = ""
-		} else {
-			order = params.order
-		}
-
-		def sortMap = [:]
-		sortMap.testCase = "testCase.fullName"
-		sortMap.result = "testResult.name"
-		sortMap.analysisState = "analysisState.name"
-		sortMap.duration = "duration"
-		sortMap.bug = "bug.title"
-		sortMap.owner = "owner"
-		sortMap.note = "note"
-		sortMap.output = "testOutput"
-
-		if (params?.sort == null) {
-			sort = sortMap.testCase
-		} else if (!sortMap.containsKey(params.sort)) {
-			throw new CuantoException("Unknown sort option: ${params.sort}")
-		} else {
-			sort = sortMap[params.sort]
-		}
-
-		def paging = [:]
-		if (params?.max) {
-			paging.max = Integer.valueOf(params.max)
-		}
-		if (params?.offset) {
-			paging.offset = Integer.valueOf(params.offset)
-		}
-
-		def outcomes
-		if (params?.filter?.equalsIgnoreCase("allfailures")) {
-			outcomes = dataService.getTestOutcomeFailuresByTestRun(testRun, sort, order, paging)
-		} else if (params?.filter?.equalsIgnoreCase("unanalyzedfailures")) {
-			outcomes = dataService.getTestOutcomeUnanalyzedFailuresByTestRun(testRun, sort, order, paging)
-		}
-		else {
-			outcomes = dataService.getTestOutcomesByTestRun(testRun, sort, order, paging)
-		}
-
-		return outcomes
-	}
-
-
-	def getOutcomesForTestRun(TestRun testRun, String pkg, Map params, boolean includeIgnored) {
-		def order
-		if (!params?.order || params?.order?.equalsIgnoreCase("asc")) {
-			order = ""
-		} else {
-			order = params.order
-		}
-
-		def paging = [:]
-		if (params?.max) {
-			paging.max = Integer.valueOf(params.max)
-		}
-		if (params?.offset) {
-			paging.offset = Integer.valueOf(params.offset)
-		}
-
-		def outcomes = dataService.getTestOutcomesByTestRun(testRun, pkg, order, paging, includeIgnored)
-		return outcomes
-	}
-
+	
 
 	def countOutcomes(TestRun testRun) {
 		if (testRun) {
@@ -311,7 +232,7 @@ class TestRunService {
 		}
 	}
 
-
+	//todo: refactor this away
 	def countNewFailuresForTestRun(TestRun testRun) {
 		return getNewFailures(testRun, null).size()
 	}

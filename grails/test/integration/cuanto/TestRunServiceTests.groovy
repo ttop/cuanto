@@ -101,13 +101,17 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		def runOneOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunOne, testResultIncludedInCalculations: true))
 		runOneOutcomes[0].note = "Pacific Ocean Blue"
 		runOneOutcomes[0].save()
 		runOneOutcomes[1].note = "Lost in the Pacific"
 		runOneOutcomes[1].save()
 
-		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		//def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		def runTwoOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunTwo, testResultIncludedInCalculations: true))
+
 		runTwoOutcomes[0].note = "Pacific Lake Blue"
 		runTwoOutcomes[0].save()
 		runTwoOutcomes[1].note = "Found in the Pacific"
@@ -168,13 +172,16 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		def runOneOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunOne, testResultIncludedInCalculations: true))
+
 		runOneOutcomes[0].testCase.fullName = "a Pacific Ocean Blue"
 		runOneOutcomes[0].testCase.save()
 		runOneOutcomes[1].testCase.fullName = "b Lost in the Pacific"
 		runOneOutcomes[1].testCase.save()
 
-		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		def runTwoOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunTwo, testResultIncludedInCalculations: true))
 		runTwoOutcomes[0].testCase.fullName = "a Pacific Lake Blue"
 		runTwoOutcomes[0].testCase.save()
 		runTwoOutcomes[1].testCase.fullName = "b Found in the Pacific"
@@ -224,13 +231,17 @@ class TestRunServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject out
 		}
 
-		def runOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: false])
+		def runOneOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunOne, testResultIncludedInCalculations: true)
+		)
 		runOneOutcomes[0].owner = "Pacific Ocean Blue"
 		runOneOutcomes[0].save()
 		runOneOutcomes[1].owner = "Lost in the Pacific"
 		runOneOutcomes[1].save()
 
-		def runTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: false])
+		def runTwoOutcomes = dataService.getTestOutcomes(
+			new TestOutcomeQueryFilter(testRun: testRunTwo, testResultIncludedInCalculations: true)
+		)
 		runTwoOutcomes[0].owner = "Pacific Lake Blue"
 		runTwoOutcomes[0].save()
 		runTwoOutcomes[1].owner = "Found in the Pacific"
