@@ -267,31 +267,13 @@ class TestOutcomeService {
 		}
 	}
 	
-	
-	
-
 
 	/**
 	* Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
 	*/
-	Map getTestOutcomes(Map params) {
-		
-		def queryParams = [:]
-
-		def possibleQueryParams = ["sort", "order", "max", "offset", "filter", "qry"]
-		possibleQueryParams.each {possibleParam ->
-			if (params.containsKey(possibleParam)) {
-				queryParams[possibleParam] = params[possibleParam]
-			}
-		}
-
-		def testRun = TestRun.get(params.id)
-		if (!testRun) {
-			throw new CuantoException("Test Run ${params.id} not found")
-		}
-		
+	Map getTestOutcomeQueryResultsForParams(Map params) {
+		TestOutcomeQueryFilter testOutcomeFilter = getTestOutcomeQueryFilterForParams(params)
 		def outputChars = params.outputChars ? params.outputChars : 180
-
 		def offset
 		def totalCount
 		def testOutcomes
@@ -305,34 +287,155 @@ class TestOutcomeService {
 			offset = 0
 		}
 
-		def filter = params.filter
-
-		if (params.qry) {
-			totalCount = testRunService.countTestOutcomesBySearch(params)
-			testOutcomes = testRunService.searchTestOutcomes(params)
-		} else if (filter?.equalsIgnoreCase("allFailures")) {
-			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: testRun, isFailure: true))
-		} else if (filter?.equalsIgnoreCase("unanalyzedFailures")) {
-			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = dataService.countTestOutcomes(
-				new TestOutcomeQueryFilter(testRun: testRun, isAnalyzed:false, isFailure:true))
-		} else if (filter?.equalsIgnoreCase("newFailures")) {
-			testOutcomes = testRunService.getNewFailures(testRun, queryParams)
-			totalCount = testRunService.countNewFailuresForTestRun(testRun)
-		} else if (params.outcome) {
+		if (params.filter?.equalsIgnoreCase("newFailures")) {
+			TestRun testRun = TestRun.get(params.id)
+			if (!testRun) {
+				throw new RuntimeException("No TestRun specified for getNewFailures()")
+			}
+			testOutcomes = getNewFailures(testOutcomeFilter)
+			totalCount = testOutcomes.size()
+		} else if (params.outcome) { // todo: hmm, look at this
 			testOutcomes = [dataService.getTestOutcome(params.outcome)]
 			offset = (Integer.valueOf(params.recordStartIndex))
 			totalCount = params.totalCount
 		} else {
-			testOutcomes = testRunService.getOutcomesForTestRun(testRun, queryParams)
-			totalCount = testRunService.countOutcomes(testRun)
+			testOutcomes = dataService.getTestOutcomes(testOutcomeFilter)
+			totalCount = dataService.countTestOutcomes(testOutcomeFilter)
 		}
-
+			
 		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
 	}
 
-	
+
+	List<TestOutcome> getNewFailures(TestOutcomeQueryFilter testOutcomeFilter) {
+		if (!testOutcomeFilter.testRun) {
+			throw new RuntimeException("No TestRun specified for new failures")
+		}
+		TestOutcomeQueryFilter modifiedFilter = new TestOutcomeQueryFilter(testOutcomeFilter)
+		modifiedFilter.queryMax = null
+		modifiedFilter.queryOffset = null
+		def currentFailedOutcomes = dataService.getTestOutcomes(modifiedFilter)
+		def newFailedOutcomes = dataService.getNewFailures(currentFailedOutcomes, testOutcomeFilter.testRun?.dateExecuted)
+		def startRange = testOutcomeFilter.queryOffset ? testOutcomeFilter.queryOffset : 0
+		def endRange = testOutcomeFilter.queryMax ? testOutcomeFilter.queryMax + startRange - 1 : newFailedOutcomes.size() - 1
+		if (endRange > newFailedOutcomes.size() - 1) {
+			endRange = newFailedOutcomes.size() - 1
+		}
+		if (endRange < 0) {
+			endRange = 0
+		}
+		if (newFailedOutcomes.size() == 0) {
+			return []
+		} else {
+			return newFailedOutcomes[startRange..endRange]
+		}
+	}
+
+
+	Map parseQueryFromString(String rawQuery) {
+		// returns a map with 'searchField' and 'searchTerms'
+		String query
+		String searchField
+		def delim = rawQuery.indexOf("|")
+		if (delim == -1) {
+			searchField = "Name"
+			query = rawQuery
+		} else {
+			searchField = rawQuery.substring(0, delim)
+			query = rawQuery.substring(delim + 1)
+		}
+		return ['searchField': searchField.toLowerCase(), 'searchTerms': query]
+	}
+
+
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterForParams(Map params) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+
+		if (params.id) {
+			def testRun = TestRun.get(params.id) as TestRun
+			if (!testRun) {
+				throw new CuantoException("Test Run ${params.id} not found")
+			}
+			filter.testRun = testRun
+		}
+
+		filter.sorts = getSortParametersFromParamStrings(params.sort, params.order)
+
+		if (params.max) {
+			filter.queryMax = Integer.valueOf(params.max)
+		}
+
+		if (params.offset) {
+			filter.queryOffset = Integer.valueOf(params.offset)
+		} else if (params.recordStartIndex) {
+			filter.queryOffset = Integer.valueOf(params.recordStartIndex ) // todo: hunt down this difference in parameters and unify the usage
+		}
+
+		if (params.qry) {
+			Map searchDetails = parseQueryFromString(params.qry)
+			filter.setForSearchTerm(searchDetails.searchField, searchDetails.searchTerms)
+		}
+
+		if (params.filter?.equalsIgnoreCase("allFailures") || params.filter?.equalsIgnoreCase("newFailures")) {
+			filter.isFailure = true
+		} else if (params.filter?.equalsIgnoreCase("unanalyzedFailures")) {
+			filter.isFailure = true
+			filter.isAnalyzed = false
+		}
+
+		return filter
+	}
+
+
+	List<SortParameters> getSortParametersFromParamStrings(String sortParam, String orderParam) {
+		def sorts = []
+		if (sortParam) {
+			final String sortName = resolveTestOutcomeSortName(sortParam)
+			def primarySort = new SortParameters(sort: sortName)
+			if (orderParam) {
+				primarySort.sortOrder = orderParam
+			}
+			sorts << primarySort
+
+			if (sortName == "testCase.fullName") {
+				def secondarySort = new SortParameters(sort: "testCase.parameters")
+				if (orderParam) {
+					secondarySort.sortOrder = primarySort.sortOrder
+				}
+				sorts << secondarySort
+			}
+		}
+		return sorts
+	}
+
+
+	//todo: migrate to TestOutcomeQueryFilter? 
+	String resolveTestOutcomeSortName(String friendlyName) {
+		def qSort
+		def name = friendlyName?.toLowerCase()
+		if (name == "name" || name == "testcase") {
+			qSort = "testCase.fullName"
+		} else if (name == "result") {
+			qSort = "testResult"
+		} else if (name == "state") {
+			qSort = "analysisState.name"
+		} else if (name == "duration") {
+			qSort = "duration"
+		} else if (name == "bug") {
+			qSort = "bug.title"
+		} else if (name == "owner") {
+			qSort = "owner"
+		} else if (name == "note") {
+			qSort = "note"
+		} else if (name == "output") {
+			qSort = "testOutput"
+		} else {
+			qSort = "testCase.fullName"
+		}
+		return qSort
+
+	}
+
 	String getDelimitedTextForTestOutcomes(List<TestOutcome> outcomes, String delimiter) {
 		StringBuffer buff = new StringBuffer()
 		String d = delimiter

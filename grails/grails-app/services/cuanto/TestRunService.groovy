@@ -316,47 +316,7 @@ class TestRunService {
 		return getNewFailures(testRun, null).size()
 	}
 
-
-	def getNewFailures(TestRun testRun, Map params) {
-		def queryParams = [filter: "allfailures"]
-		if (params?.order) {
-			queryParams.order = params.order
-		}
-		if (params?.sort) {
-			queryParams.sort = params.sort
-		}
-
-		def currentFailedOutcomes = getOutcomesForTestRun(testRun, queryParams)
-		def newFailedOutcomes = dataService.getNewFailures(currentFailedOutcomes, testRun.dateExecuted)
-
-		def startRange
-		if (params?.offset) {
-			startRange = Integer.valueOf(params.offset)
-		} else {
-			startRange = 0
-		}
-
-		def endRange
-		if (params?.max) {
-			endRange = startRange + Integer.valueOf(params.max)
-			if (endRange > newFailedOutcomes.size() - 1) {
-				endRange = newFailedOutcomes.size() - 1
-			}
-		} else {
-			endRange = newFailedOutcomes.size() - 1
-			if (endRange < 0) {
-				endRange = 0
-			}
-		}
-
-		if (newFailedOutcomes.size() == 0) {
-			return []
-		} else {
-			return newFailedOutcomes[startRange..endRange]
-		}
-	}
-
-
+	
 	// given a List of TestOutcomes, return a Set of TestCases
 	Set getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
 		def tCases = new HashSet()
@@ -707,6 +667,7 @@ class TestRunService {
 		return testRun
 	}
 
+
 	def getUrlFromString(String urlString) {
 		return new URL(urlString).toString()
 	}
@@ -745,56 +706,6 @@ class TestRunService {
 			bugList << entry
 		}
 		return bugList
-	}
-
-
-
-	def countTestOutcomesBySearch(Map params) {
-		def queryDetails = parseQueryFromParams(params)
-		def searchField = queryDetails['searchField']
-		def searchTerms = queryDetails['searchTerms']
-
-		def count = 0
-		def testRun = TestRun.get(params.id)
-		if (testRun && allowedSearches.contains(searchField)) {
-			def validParams = extractValidParams(params)
-			count = dataService.countTestOutcomesBySearch(searchField, searchTerms, testRun, validParams)
-		}
-		return count 
-	}
-	
-
-	def searchTestOutcomes(Map params) {
-		def queryDetails = parseQueryFromParams(params)
-		def searchField = queryDetails['searchField']
-		def searchTerms = queryDetails['searchTerms']
-
-		def testOutcomes = []
-		def testRun = TestRun.get(params.id)
-		if (testRun && allowedSearches.contains(searchField)) {
-			def validParams = extractValidParams(params)
-			testOutcomes = dataService.searchTestOutcomes(searchField, searchTerms, testRun, validParams)
-		}
-		return testOutcomes
-	}
-
-	def parseQueryFromParams(params) {
-		// returns a map with 'searchField' and 'searchTerms'
-		def searchField, query
-		if (params.qry) {
-			def delim = params?.qry?.indexOf("|")
-			if (delim == -1) {
-				searchField = "Name"
-				query = params.qry
-			} else {
-				searchField = params.qry.substring(0, delim)
-				query = params.qry.substring(delim + 1)
-			}
-
-			return ['searchField': searchField.toLowerCase(), 'searchTerms': query]
-		} else {
-			throw new CuantoException("No query parameter was provided")
-		}
 	}
 
 

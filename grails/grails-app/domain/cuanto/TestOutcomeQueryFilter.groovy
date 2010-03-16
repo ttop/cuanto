@@ -36,10 +36,28 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		testResultIncludedInCalculations(nullable:true)
 		isAnalyzed(nullable:true)
 		analysisState(nullable:true)
+		bug(nullable:true)
+		owner(nullable:true)
+		testCase(nullable:true)
+		note(nullable:true)
+		testOutput(nullable:true)
+		dateCriteria(nullable:true)
 		sorts(nullable: true)
 		queryOffset(nullable: true)
 		queryMax(nullable:true)
 	}
+
+	TestOutcomeQueryFilter() {}
+
+	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
+		["testRun", "isFailure", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
+		"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
+		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax"].each {
+			this.setProperty(it, filterToCopy.getProperty(it))
+		}
+	}
+
+
 
 	/**
 	 * If not null, all returned outcomes will be associated with this TestRun.
@@ -202,6 +220,5 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		} else if (field == "owner") {
 			this.owner = searchTerm
 		}
-
 	}
 }

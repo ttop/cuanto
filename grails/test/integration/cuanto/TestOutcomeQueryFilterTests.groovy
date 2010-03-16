@@ -76,14 +76,10 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
 		fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
 		assertTrue "Wrong sort sortOrder", fetchedOutcomes[0].testCase.fullName > fetchedOutcomes[1].testCase.fullName
 
-		
 
-		//assertEquals "Outcome 1", outcomesA[0], fetchedOutcomes[0]
-		//assertEquals "Outcome 2", outcomesA[1], fetchedOutcomes[1]
-
-		// verify QueryFilter returns only outcomes for A
-		// create QueryFilter for TestRun B
-		// verify QueryFilter returns only outcomes for B
+		// todo: verify QueryFilter returns only outcomes for A
+		// todo: create QueryFilter for TestRun B
+		// todo: verify QueryFilter returns only outcomes for B
 
 
 	}

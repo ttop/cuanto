@@ -156,6 +156,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		// create 2 test Runs
 		TestRun testRunOne = to.getTestRun(proj)
 		testRunOne.save()
+		sleep 1000
 		TestRun testRunTwo = to.getTestRun(proj)
 		testRunTwo.save()
 
@@ -168,32 +169,38 @@ class TestOutcomeTests extends GroovyTestCase {
 			}
 		}
 
+		TestOutcomeQueryFilter outcomeFilter = new TestOutcomeQueryFilter()
+		outcomeFilter.testRun = testRunTwo
+		outcomeFilter.isFailure = true
+
 		// results are identical
 		def testRunOneOutcomes = testRunService.getOutcomesForTestRun(testRunOne, [includeIgnored: true])
 		def testRunTwoOutcomes = testRunService.getOutcomesForTestRun(testRunTwo, [includeIgnored: true])
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
 
 		// one failure in old testRun, none in new testRun
 		testRunOneOutcomes[0].testResult = dataService.result("fail")
 		testRunOneOutcomes[0].save(flush: true)
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
+
 
 		// same test case failed in both testRuns
 		testRunTwoOutcomes[0].testResult = dataService.result("fail")
 		testRunTwoOutcomes[0].save(flush: true)
-		assertEquals("No failures should've been found", 0, testRunService.getNewFailures(testRunTwo, null).size())
+		assertEquals("No failures should've been found", 0, testOutcomeService.getNewFailures(outcomeFilter).size())
+
 
 		// one failures in new testRun
 		testRunTwoOutcomes[2].testResult = dataService.result("fail")
 		testRunTwoOutcomes[2].save(flush: true)
-		def failures = testRunService.getNewFailures(testRunTwo, null)
+		failures = testOutcomeService.getNewFailures(outcomeFilter)
 		assertEquals("One failure should've been found", 1, failures.size())
 		assertEquals "Wrong failure outcome returned", testRunTwoOutcomes[2], failures[0]
 
 		// two failures in new testRun
 		testRunTwoOutcomes[8].testResult = dataService.result("fail")
 		testRunTwoOutcomes[8].save(flush: true)
-		failures = testRunService.getNewFailures(testRunTwo, null)
+		failures = testOutcomeService.getNewFailures(outcomeFilter)
 		assertEquals("Two failure should've been found", 2, failures.size())
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[2]))
 		assertTrue("Expected outcome not found", failures.contains(testRunTwoOutcomes[8]))
