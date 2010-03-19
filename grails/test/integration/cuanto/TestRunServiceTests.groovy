@@ -2,11 +2,11 @@ package cuanto
 
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
-import cuanto.api.TestCase as TestCaseApi
-import cuanto.api.TestOutcome as TestOutcomeApi
-import cuanto.api.TestRun as TestRunApi
-import cuanto.api.Link as LinkApi
-import cuanto.api.TestProperty as TestPropertyApi
+import cuanto.testapi.TestCase as TestCaseApi
+import cuanto.testapi.TestOutcome as TestOutcomeApi
+import cuanto.testapi.TestRun as TestRunApi
+import cuanto.testapi.Link as LinkApi
+import cuanto.testapi.TestProperty as TestPropertyApi
 
 class TestRunServiceTests extends GroovyTestCase {
 

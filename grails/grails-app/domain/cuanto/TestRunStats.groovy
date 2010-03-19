@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.api.TestRunStats as TestRunStatsApi
+import cuanto.testapi.TestRunStats as TestRunStatsApi
 
 class TestRunStats {  
 

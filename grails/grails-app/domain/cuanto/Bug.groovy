@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.api.Bug as BugApi
+import cuanto.testapi.Bug as BugApi
 
 class Bug {
 	String title

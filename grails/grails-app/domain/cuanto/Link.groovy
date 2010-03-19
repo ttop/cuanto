@@ -18,7 +18,7 @@
 */
 
 package cuanto
-import cuanto.api.Link as LinkApi
+import cuanto.testapi.Link as LinkApi
 
 class Link implements Comparable {
 

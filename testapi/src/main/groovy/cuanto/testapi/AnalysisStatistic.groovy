@@ -18,19 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+package cuanto.testapi
 
-package cuanto.api
+import cuanto.testapi.AnalysisState
 
 /**
- * A bug or defect that is associated with a TestOutcome
+ * A helper object used in statistics, represents an analysis state and a quantity of TestOutcomes that are in that analysis state.
  */
-public class Bug {
-	String title
-	String url
+public class AnalysisStatistic {
+	AnalysisState state
+	Long qty
 
-	boolean equals(Bug bug) {
-		if (this.title != bug.title) {
-			return false
-		} else return this.url == bug.url
+	String toString() {
+		return "${state.toString()}: ${qty}"
 	}
+
 }

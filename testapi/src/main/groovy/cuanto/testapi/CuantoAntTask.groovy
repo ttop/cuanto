@@ -18,17 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.api
+package cuanto.testapi
 
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.types.FileSet
-import cuanto.api.Link
+import cuanto.testapi.Link
 import java.text.SimpleDateFormat
 import org.apache.tools.ant.taskdefs.Property
-import cuanto.api.TestProperty
-import cuanto.api.TestRun
-import cuanto.api.TestRun
-import cuanto.api.CuantoClient
+import cuanto.testapi.TestProperty
+import cuanto.testapi.TestRun
+import cuanto.testapi.CuantoClient
 
 
 /**

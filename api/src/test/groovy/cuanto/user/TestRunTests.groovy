@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2010 Todd Wells
+
+Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,17 +19,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.api
+package cuanto.user
 
-/**
- * A helper object used in statistics, represents an analysis state and a quantity of TestOutcomes that are in that analysis state.
- */
-public class AnalysisStatistic {
-	AnalysisState state
-	Long qty
 
-	String toString() {
-		return "${state.toString()}: ${qty}"
+public class TestRunTests extends GroovyTestCase {
+
+	CuantoConnector client
+
+	void setUp() {
+		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
 	}
 
+	void testGetTestRun() {
+		//todo: get a created test run
+		client.getTestRun(2622)
+
+	}
+
+	void testToJSON() {
+		TestRun testRun = new TestRun()
+		testRun.dateExecuted = new Date();
+		testRun.id = 135L;
+		testRun.note = "My note"
+		testRun.projectKey = "my key"
+		System.out.println(testRun.toJSON());
+	}
 }

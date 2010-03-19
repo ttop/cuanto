@@ -17,7 +17,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cuanto.api
+package cuanto.testapi
 
 /**
  * A simple name-value association.

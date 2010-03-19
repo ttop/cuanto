@@ -1,33 +1,89 @@
+
 package cuanto.user;
 
-import java.util.List;
-import java.util.Date;
+
+import net.sf.json.JSONObject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.Collections;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
- * The immutable TestRun as retrieved from the Cuanto server.
+ *
  */
 public class TestRun {
 	String projectKey;
 	String note;
-	String dateCreated;
+	Date dateCreated;
 	Date dateExecuted;
 	Boolean valid;
-	List<Link> links;
-	List<TestProperty> testProperties;
+	SortedSet<Link> links;
+	SortedSet<TestProperty> testProperties;
 	Long id;
 
+	//private final static String JSON_DATE = "yyyy-MM-dd HH:mm:ss.zzz";
+	//private final static String jsonDateFormat = "yyyy-MM-dd HH:mm:ss";
+	//private final static String jsonDateFormat = "yyyy-MM-DD'T'HH:mm:ssZ";
+
+	//private final static SimpleDateFormat jsonDateFormatter = new SimpleDateFormat(jsonDateFormat);
 
 	TestRun() {}
 
 
-	TestRun(String projectKey) {
-		this.projectKey = projectKey;
-		links = new ArrayList<Link>();
-		testProperties = new ArrayList<TestProperty>();
+	public TestRun(Date dateExecuted) {
+		if (dateExecuted == null) {
+			throw new NullPointerException("null is not a valid value for dateExecuted");
+		}
+		this.dateExecuted = dateExecuted;
+		links = new TreeSet<Link>();
+		testProperties = new TreeSet<TestProperty>();
 	}
 
+
+	TestRun(String projectKey) {
+		this.projectKey = projectKey;
+		links = new TreeSet<Link>();
+		testProperties = new TreeSet<TestProperty>();
+	}
+
+	
+	static TestRun fromJSON(String json) throws ParseException {
+		JSONObject jsonTestRun = JSONObject.fromObject(json);
+		TestRun testRun = new TestRun(jsonTestRun.getJSONObject("project").getString("projectKey"));
+		testRun.setId(jsonTestRun.getLong("id"));
+		testRun.setDateExecuted(parseJsonDate(jsonTestRun.getString("dateExecuted")));
+		testRun.setDateCreated(parseJsonDate(jsonTestRun.getString("dateCreated")));
+		testRun.setNote(jsonTestRun.getString("note"));
+		//todo: process links
+		//for (Link link : jsonTestRun.getJSONArray("links").)
+		return testRun;
+	}
+
+
+	public String toJSON() {
+		return "";
+	}
+
+
+	private static Date parseJsonDate(String dateString) throws ParseException {
+		return new SimpleDateFormat(CuantoConnector.jsonDateFormat).parse(dateString);
+	}
+
+
+	public TestRun addTestProperty(String name, String value) {
+		testProperties.add(new TestProperty(name, value));
+		return this;
+	}
+
+	public TestRun addLink(String url, String description) {
+		Link link = new Link(url, description);
+		links.add(link);
+		return this;
+	}
 
 	public String getProjectKey() {
 		return projectKey;
@@ -39,7 +95,7 @@ public class TestRun {
 	}
 
 
-	public String getDateCreated() {
+	public Date getDateCreated() {
 		return dateCreated;
 	}
 
@@ -54,13 +110,13 @@ public class TestRun {
 	}
 
 
-	public List<Link> getLinks() {
-		return Collections.unmodifiableList(links);
+	public SortedSet<Link> getLinks() {
+		return Collections.unmodifiableSortedSet(links);
 	}
 
 
-	public List<TestProperty> getTestProperties() {
-		return Collections.unmodifiableList(testProperties);
+	public SortedSet<TestProperty> getTestProperties() {
+		return Collections.unmodifiableSortedSet(testProperties);
 	}
 
 
@@ -69,49 +125,37 @@ public class TestRun {
 	}
 
 
-	/**
-	 * Get a new TestRunDetails object with details that correspond to this TestRun's values
-	 * @return A new TestRunDetails object with details that correspond to this TestRun's values 
-	 */
-	public TestRunDetails getTestRunDetails() {
-		TestRunDetails details = new TestRunDetails(this.dateExecuted);
-		details.setLinks(new ArrayList<Link>(links));
-		details.setTestProperties(new ArrayList<TestProperty>(testProperties));
-		return details;
-	}
-
-
 	void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
 
 
-	void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
 
-	void setDateCreated(String dateCreated) {
+	void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 
-	void setDateExecuted(Date dateExecuted) {
+	public void setDateExecuted(Date dateExecuted) {
 		this.dateExecuted = dateExecuted;
 	}
 
 
-	void setValid(Boolean valid) {
+	public void setValid(Boolean valid) {
 		this.valid = valid;
 	}
 
 
-	void setLinks(List<Link> links) {
+	void setLinks(SortedSet<Link> links) {
 		this.links = links;
 	}
 
 
-	void setTestProperties(List<TestProperty> testProperties) {
+	void setTestProperties(SortedSet<TestProperty> testProperties) {
 		this.testProperties = testProperties;
 	}
 

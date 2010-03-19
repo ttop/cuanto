@@ -3,8 +3,8 @@ package cuanto
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
 import cuanto.*
-import cuanto.api.TestOutcome as TestOutcomeApi
-import cuanto.api.TestCase as TestCaseApi
+import cuanto.testapi.TestOutcome as TestOutcomeApi
+import cuanto.testapi.TestCase as TestCaseApi
 
 public class TestOutcomeServiceTests extends GroovyTestCase {
 

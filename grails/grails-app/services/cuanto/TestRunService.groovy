@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
-import cuanto.api.Link as ApiLink
-import cuanto.api.TestProperty as ApiProperty
-import cuanto.api.TestRun as TestRunApi
+import cuanto.testapi.Link as ApiLink
+import cuanto.testapi.TestProperty as ApiProperty
+import cuanto.testapi.TestRun as TestRunApi
 
 class TestRunService {
 

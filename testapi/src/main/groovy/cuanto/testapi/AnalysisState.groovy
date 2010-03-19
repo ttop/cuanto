@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009 Todd Wells
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,10 +18,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.api
 
-class CuantoClientException extends Exception{
-	CuantoClientException(String message) {
-		super(message)
+package cuanto.testapi
+
+/**
+ * A state of the analysis, or cause of a failure. The possible values are determined by the Cuanto database.
+ * The analysisStates in a default installation are "Unanalyzed", "Bug", "Environment", "Harness", "No Repro", "Other",
+ * "Test Bug", and "Investigate".
+ */
+public class AnalysisState {
+
+	String name
+
+	/**
+	 * @param isAnalyzed Whether this analysis state should be considered "Analyzed" or not when determining what 
+	 * TestOutcomes have been analyzed.
+	 */
+	Boolean isAnalyzed
+
+	/**
+	* @return Whether this AnalysisState is
+	*/
+	Boolean isDefault
+	Boolean isBug
+
+
+	String toString() {
+		name
 	}
+
+
 }

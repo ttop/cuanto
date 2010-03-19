@@ -27,6 +27,7 @@ package cuanto
  */
 class Defaults {
 	public static String dateFormat = "yyyy-MM-dd HH:mm:ss"
+	public static String jsonDateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 	public static String chartDateFormat = "MM/dd"
 	public static Integer ItemsPerFeed = 14
 }

@@ -96,6 +96,20 @@
     <module2copyright>
       <element module="Production" copyright="Cuanto-Todd" />
     </module2copyright>
+    <LanguageOptions name="JAVA">
+      <option name="fileTypeOverride" value="3" />
+      <option name="relativeBefore" value="true" />
+      <option name="addBlankAfter" value="true" />
+      <option name="fileLocation" value="1" />
+      <option name="block" value="true" />
+      <option name="separateBefore" value="false" />
+      <option name="separateAfter" value="false" />
+      <option name="prefixLines" value="false" />
+      <option name="lenBefore" value="80" />
+      <option name="lenAfter" value="80" />
+      <option name="box" value="false" />
+      <option name="filler" value=" " />
+    </LanguageOptions>
   </component>
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
@@ -131,6 +145,7 @@
       <facet-type id="Groovy">
         <modules>
           <module name="cuanto-api" />
+          <module name="testapi" />
         </modules>
       </facet-type>
     </autodetection-disabled>
@@ -730,7 +745,7 @@
     <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="false" />
     <option name="DEPRECATION" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.5" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="JavadocGenerationManager">
@@ -762,7 +777,6 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/api/pom.xml" />
-        <option value="$PROJECT_DIR$/generator/pom.xml" />
       </list>
     </option>
   </component>
@@ -901,6 +915,7 @@
       <module fileurl="file://$PROJECT_DIR$/api/cuanto-api.iml" filepath="$PROJECT_DIR$/api/cuanto-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/dist/dist.iml" filepath="$PROJECT_DIR$/dist/dist.iml" />
       <module fileurl="file://$PROJECT_DIR$/doc/doc.iml" filepath="$PROJECT_DIR$/doc/doc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testapi/testapi.iml" filepath="$PROJECT_DIR$/testapi/testapi.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
@@ -1051,28 +1066,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.codehaus.jettison:jettison:1.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/jettison/jettison/1.1/jettison-1.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/jettison/jettison/1.1/jettison-1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: stax:stax-api:1.0.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/stax/stax-api/1.0.1/stax-api-1.0.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/stax/stax-api/1.0.1/stax-api-1.0.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/stax/stax-api/1.0.1/stax-api-1.0.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.codehaus.groovy.maven:gmaven-mojo:1.0-rc-5">
@@ -1244,8 +1237,12 @@
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar!/" />
       </CLASSES>
-      <JAVADOC />
-      <SOURCES />
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Maven: org.apache.maven:maven-profile:2.0.9">
       <CLASSES>
@@ -1335,15 +1332,62 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/maven/runtime/gmaven-runtime-1.6/1.0-rc-5/gmaven-runtime-1.6-1.0-rc-5-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: javax.xml.stream:stax-api:1.0-2">
+    <library name="Maven: commons-beanutils:commons-beanutils:1.8.0">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-collections:commons-collections:3.2.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-lang:commons-lang:2.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: net.sf.ezmorph:ezmorph:1.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: net.sf.json-lib:json-lib:jdk15:2.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

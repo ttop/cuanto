@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -17,30 +17,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
-
-package cuanto.api
-
-import cuanto.api.Link
-import cuanto.api.TestProperty
+package cuanto.testapi
 
 /**
- * Represents a group of tests that were executed together.
+ * A URL and a description of the URL.
  */
-class TestRun {
-	String projectKey
-	String note
-	String dateCreated 
-	Date dateExecuted
-	Boolean valid
-	List<Link> links = []
-	List<TestProperty> testProperties = []
-	Long id
+public class Link {
+	String description
+	String url
 
-
-	TestRun() {}
-
-	TestRun(String projectKey) {
-		this.projectKey = projectKey
+	public Link() {}
+	
+	public Link(String description, String url) {
+		this.description = description
+		this.url = url
 	}
+
 }

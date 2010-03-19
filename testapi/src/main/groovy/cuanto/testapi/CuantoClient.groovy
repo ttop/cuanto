@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package cuanto.api
+package cuanto.testapi
 
 import com.thoughtworks.xstream.XStream
 import org.apache.commons.httpclient.HttpClient

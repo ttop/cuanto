@@ -20,9 +20,9 @@
 
 def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
-def apiDir = "${cuantoBase}/api"
+def testApiDir = "${cuantoBase}/testapi"
 def sqlDir = "${cuantoBase}/grails/sql"
-def javadocDir = "${apiDir}/target/site/apidocs"
+def javadocDir = "${testApiDir}/target/site/apidocs"
 
 def propfileName = "${cuantoBase}/grails/application.properties"
 ant.property(file: propfileName)
@@ -36,7 +36,7 @@ def targetSqlDir = "${zipDir}/sql"
 
 def sqlFileCount;
 
-def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
+def pomXml = new XmlSlurper().parse(new File("${testApiDir}/pom.xml"))
 println "API pom version is ${pomXml.version}"
 
 if (cuantoVersion.toString() != pomXml.version.toString()) {
@@ -44,22 +44,22 @@ if (cuantoVersion.toString() != pomXml.version.toString()) {
 }
 
 
-target(cuantoapi: "Build the Cuanto API") {
-	println "Packaging the Cuanto API"
+target(cuantoapi: "Build the Cuanto test API") {
+	println "Packaging the Cuanto test API"
 
 	// Update the Cuanto Java Client version to match the grails application version.
 	String userAgent = "final static String HTTP_USER_AGENT = 'Cuanto Java Client ${cuantoVersion.toString()}; Jakarta Commons-HttpClient/3.1'"
-	ant.replaceregexp(file: "${apiDir}/src/main/groovy/cuanto/api/CuantoClient.groovy",
+	ant.replaceregexp(file: "${testApiDir}/src/main/groovy/cuanto/testapi/CuantoClient.groovy",
 		match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
 
-	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()
+	def packageProcess = "mvn -f ${testApiDir}/pom.xml clean package".execute()
 	packageProcess.waitFor()
 	if (packageProcess.exitValue() != 0) {
 		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
 	}
-	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
+	"mvn -f ${testApiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
-	def javadocProcess = "mvn -f ${apiDir}/pom.xml javadoc:javadoc".execute()
+	def javadocProcess = "mvn -f ${testApiDir}/pom.xml javadoc:javadoc".execute()
 	javadocProcess.waitFor()
 	if (javadocProcess.exitValue() != 0) {
 		ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
@@ -69,11 +69,11 @@ target(cuantoapi: "Build the Cuanto API") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
 	}
 	
-	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
+	def distClientJar = "${testApiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
 	ant.copy(file: distClientJar, todir: "lib", verbose: "true")
 	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
 	ant.copy(todir: targetApiDir, verbose: "true") {
-		fileset(dir:"${apiDir}/target/dependency", includes: "*.jar")
+		fileset(dir:"${testApiDir}/target/dependency", includes: "*.jar")
 	}
 
 	grailsSettings.compileDependencies << new File(distClientJar)

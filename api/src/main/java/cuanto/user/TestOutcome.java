@@ -1,7 +1,6 @@
 package cuanto.user;
 
-import cuanto.api.Bug;
-import cuanto.api.AnalysisState;
+
 
 import java.util.Date;
 
@@ -10,7 +9,7 @@ import java.util.Date;
  */
 public class TestOutcome {
 	TestCase testCase;
-	String testResult;
+	TestResult testResult;
     String testOutput;
     Long duration;
     String owner;
@@ -27,13 +26,33 @@ public class TestOutcome {
 		// no public constructor
 	}
 
+	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName, TestResult testResult) {
+		return newInstance(testCasePackageName, testCaseTestName, null, testResult);
+	}
+
+
+	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName, String testCaseParameters,
+		TestResult testResult) {
+		TestCase testCase = new TestCase();
+
+		testCase = new TestCase();
+		testCase.setPackageName(testCasePackageName);
+		testCase.setTestName(testCaseTestName);
+		testCase.setParameters(testCaseParameters);
+
+		TestOutcome testOutcome = new TestOutcome();
+		testOutcome.testCase = testCase;
+		testOutcome.testResult = testResult;
+		return testOutcome;
+	}
+
 
 	public TestCase getTestCase() {
 		return testCase;
 	}
 
 
-	public String getTestResult() {
+	public TestResult getTestResult() {
 		return testResult;
 	}
 
@@ -93,23 +112,6 @@ public class TestOutcome {
 	}
 
 
-	/**
-	 * Get a TestOutcomeDetails object with details that correspond to this TestOutcome's values.
-	 * @return a TestOutcomeDetails object with details that correspond to this TestOutcome's values.
-	 */
-	public TestOutcomeDetails getTestOutcomeDetails() {
-		if (this.testCase == null) {
-			throw new RuntimeException("This test outcome has no associated TestCase");
-		}
-		TestOutcomeDetails details = TestOutcomeDetails.newInstance(this.testCase.getPackageName(), 
-			this.testCase.getTestName(), this.testCase.getParameters());
-		details.setTestOutput(this.testOutput);
-		details.setDuration(this.duration);
-		details.setStartedAt(this.startedAt);
-		details.setFinishedAt(this.finishedAt);
-		details.setTestResult(TestResult.forStatus(this.testResult));
-		return details;
-	}
 
 
 	void setTestCase(TestCase testCase) {
@@ -117,32 +119,32 @@ public class TestOutcome {
 	}
 
 
-	void setTestResult(String testResult) {
+	public void setTestResult(TestResult testResult) {
 		this.testResult = testResult;
 	}
 
 
-	void setTestOutput(String testOutput) {
+	public void setTestOutput(String testOutput) {
 		this.testOutput = testOutput;
 	}
 
 
-	void setDuration(Long duration) {
+	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
 
 
-	void setOwner(String owner) {
+	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
 
-	void setBug(Bug bug) {
+	public void setBug(Bug bug) {
 		this.bug = bug;
 	}
 
 
-	void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -152,17 +154,17 @@ public class TestOutcome {
 	}
 
 
-	void setAnalysisState(AnalysisState analysisState) {
+	public void setAnalysisState(AnalysisState analysisState) {
 		this.analysisState = analysisState;
 	}
 
 
-	void setStartedAt(Date startedAt) {
+	public void setStartedAt(Date startedAt) {
 		this.startedAt = startedAt;
 	}
 
 
-	void setFinishedAt(Date finishedAt) {
+	public void setFinishedAt(Date finishedAt) {
 		this.finishedAt = finishedAt;
 	}
 

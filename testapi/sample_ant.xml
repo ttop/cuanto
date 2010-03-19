@@ -7,12 +7,12 @@
 	<target name="init">
 		<path id="api.class.path">
 		   <fileset dir="target">
-		     <include name="cuanto-api-2.4.0.jar"/>
+		     <include name="cuanto-test-api-2.4.0.jar"/>
 		     <include name="dependency/*.jar"/>
 		   </fileset>
 		 </path>
 
-		<taskdef name="cuanto" classname="cuanto.api.CuantoAntTask" classpathref="api.class.path"/>
+		<taskdef name="cuanto" classname="cuanto.testapi.CuantoAntTask" classpathref="api.class.path"/>
 	</target>
 
 	<target name="submitResults" depends="init">

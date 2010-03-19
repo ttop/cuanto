@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 thePlatform, Inc.
+ Copyright (c) 2009 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -18,36 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto
+package cuanto.testapi
 
-import cuanto.testapi.AnalysisStatistic as AnalysisStatisticApi
-
-class AnalysisStatistic {
-
-	AnalysisState state
-	Long qty
-
-	static belongsTo = [testRunStats: TestRunStats]
-    static constraints = {
-	    state(nullable:false)
-	    qty(nullable:false)
-    }
-
-
-	static mapping = {
-		cache true
-	}
-
-
-	String toString() {
-		return "${state.toString()}: ${qty}"
-	}
-
-
-	AnalysisStatisticApi toAnalysisStatisticApi() {
-		def api = new AnalysisStatisticApi()
-		api.state = this.state?.toAnalysisStateApi()
-		api.qty = this.qty
-		return api
+class CuantoClientException extends Exception{
+	CuantoClientException(String message) {
+		super(message)
 	}
 }

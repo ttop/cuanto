@@ -22,7 +22,7 @@ package cuanto
 
 import cuanto.ProjectGroup
 import cuanto.TestType
-import cuanto.api.Project as ProjectApi
+import cuanto.testapi.Project as ProjectApi
 
 class Project implements Comparable {
 

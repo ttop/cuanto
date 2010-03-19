@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.parsers
 
-import cuanto.api.TestOutcome as ParsableTestOutcome
-import cuanto.api.TestCase as ParsableTestCase
+import cuanto.testapi.TestOutcome as ParsableTestOutcome
+import cuanto.testapi.TestCase as ParsableTestCase
 import java.text.SimpleDateFormat
 
 /**

@@ -1,17 +1,32 @@
 package cuanto.user;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.io.IOException;
 
 /**
  *
  */
 public class CuantoConnector {
 
-	private Long projectId;
+	private final static String HTTP_USER_AGENT = "Cuanto Java Client 2.4.0; Jakarta Commons-HttpClient/3.1";
+
+	private String projectKey;
 	private String cuantoUrl;
+	private String proxyHost;
+	private Integer proxyPort;
+	private static final String HTTP_GET = "get";
+	private static final String HTTP_POST = "post";
+	public final static String jsonDateFormat = "yyyy-MM-DD'T'HH:mm:ssZ";
 
 
 	private CuantoConnector() {
@@ -27,49 +42,99 @@ public class CuantoConnector {
 	 * @return The CuantoConnector instance.
 	 */
 	public static CuantoConnector newInstance(String cuantoServerUrl, String projectKey) {
-		return newInstance(cuantoServerUrl, getProjectId(projectKey));
+		return newInstance(cuantoServerUrl, projectKey, null, null);
 	}
 
 
-	/**
-	 * Create a new instance of CuantoConnector.
-	 *
-	 * @param cuantoServerUrl The URL of the Cuanto server instance.
-	 * @param projectId       The id for the project that this client will be utilizing.
-	 * @return The CuantoConnector instance.
-	 */
-	public static CuantoConnector newInstance(String cuantoServerUrl, Long projectId) {
+	public static CuantoConnector newInstance(String cuantoServerUrl, String projectKey, String proxyHost,
+		Integer proxyPort) {
 		CuantoConnector connector = new CuantoConnector();
 		connector.setCuantoUrl(cuantoServerUrl);
-		connector.setProjectId(projectId);
+		connector.setProjectKey(projectKey);
+		connector.setProxyHost(proxyHost);
+		connector.setProxyPort(proxyPort);
 		return connector;
 	}
 
 
 	/**
-	 * Create a new TestRun on the Cuanto server using the details provided.
+	 * Get the TestRun from the Cuanto server.
 	 *
-	 * @param testRunDetails The TestRun details to use when creating the new TestRun.
-	 * @return The created TestRun.
+	 * @param testRunId The TestRun to retrieve.
+	 * @return The retrieved TestRun
 	 */
-	public TestRun createTestRun(TestRunDetails testRunDetails) {
-		validateProject();
-		testRunDetails.validate();
-		//todo: implement createTestRun
-		return new TestRun();
+	public TestRun getTestRun(Long testRunId) {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestRun/" + testRunId.toString());
+
+		TestRun testRun;
+		try {
+			getHttpClient().executeMethod(get);
+			String out = get.getResponseBodyAsString();
+			testRun = TestRun.fromJSON(out);
+			return testRun;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response", e);
+		}
 	}
 
 
 	/**
-	 * Update a TestRun on the Cuanto server using the details provided.
+	 * A TestRun represents tests that were executed together. Create a new TestRun on the Cuanto server using the values provided. The projectKey will be assigned the same
+	 * projectKey as this CuantoConnector. The testRun passed in will have it's id value assigned. 
 	 *
-	 * @param updatedDetails The TestRun details to use when updating the existing TestRun.
-	 * @param testRunId      The ID of the TestRun to update.
+	 * @param testRun The test run to create
+	 * @return The created TestRun.
+	 */
+	public TestRun createTestRun(TestRun testRun) {
+		validateProject();
+		//todo: implement createTestRun
+
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/createTestRun");
+
+		HttpClient httpClient = getHttpClient();
+
+		return new TestRun();
+	}
+
+
+	private HttpClient getHttpClient() {
+		HttpClient client = new HttpClient();
+		if (getProxyHost() != null && getProxyPort() != null) {
+			client.getHostConfiguration().setProxy(getProxyHost(), getProxyPort());
+		}
+		return client;
+	}
+
+
+	private HttpMethod getHttpMethod(String methodType, String url) {
+		HttpMethod method;
+		if (methodType.toLowerCase().equals(HTTP_GET)) {
+			method = new GetMethod(url);
+		} else if (methodType.toLowerCase() == HTTP_POST) {
+			method = new PostMethod(url);
+		} else {
+			throw new RuntimeException("Unknown HTTP method: ${methodType}");
+		}
+		method.setRequestHeader("User-Agent", HTTP_USER_AGENT);
+		return method;
+	}
+
+
+	/**
+	 * Update the TestRun with this id on the Cuanto Server to have all the properties specified in this
+	 * TestRun. If the TestRun argument does not already have an id, it needs to be retrieved from the server as you
+	 * can't set the ID on a TestRun directly. You can either retrieve the TestRun from the server by querying by ID or
+	 * other values. If the TestRun does not already exist, then use createTestRun instead.
+	 *
+	 * @param testRun a TestRun with the updated values
+	 *
 	 * @return The updated TestRun.
 	 */
-	public TestRun updateTestRun(TestRunDetails updatedDetails, Long testRunId) {
+	public TestRun updateTestRun(TestRun testRun) {
 		validateProject();
-		if (testRunId == null) {
+		if (testRun == null) {
 			throw new NullPointerException("null is not a valid testRunId");
 		}
 		// todo: implement updateTestRun
@@ -78,14 +143,17 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new TestOutcome for the specified TestRun on the server using the details provided.
+	 * Create a new TestOutcome for the specified TestRun on the Cuanto server using the details provided.  The ID value
+	 * on the testOutcome argument will be set upon successful creation.
 	 *
-	 * @param testOutcomeDetails The details that should be assigned to the new TestOutcome.
-	 * @param testRunId          The TestRun to which the TestOutcome should be added.
+	 * @param testOutcome The TestOutcome to be created on the Cuanto server.
+	 * @param testRunId   The TestRun to which the TestOutcome should be added.
 	 * @return The server representation of the TestOutcome.
 	 */
-	public TestOutcome createTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testRunId) {
+	public TestOutcome createTestOutcome(TestOutcome testOutcome, Long testRunId) {
 		//todo: implement createTestOutcome
+
+		//todo: populate TestOutcome with the projectKey
 		return new TestOutcome();
 	}
 
@@ -94,11 +162,13 @@ public class CuantoConnector {
 	 * Create a new TestOutcome that is not associated with any TestRun. This is probably not what you want, use
 	 * createTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testRunId) instead.
 	 *
-	 * @param testOutcomeDetails The details that should be assigned to the new TestOutcome.
+	 * @param testOutcome The details that should be assigned to the new TestOutcome.
 	 * @return The server representation of the TestOutcome.
 	 */
-	public TestOutcome createTestOutcome(TestOutcomeDetails testOutcomeDetails) {
+	public TestOutcome createTestOutcome(TestOutcome testOutcome) {
 		//todo: implement createTestOutcome
+		//todo: populate TestOutcome with the projectKey
+
 		return new TestOutcome();
 	}
 
@@ -106,12 +176,12 @@ public class CuantoConnector {
 	/**
 	 * Update a TestOutcome on the Cuanto server with the details provided.
 	 *
-	 * @param testOutcomeDetails The new details that will replace the corresponding values of the existing TestOutcome
-	 * @param testOutcomeId      The ID of the existing TestOutcome to update.
+	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome
 	 * @return The TestOutcome with the updated values.
 	 */
-	public TestOutcome updateTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testOutcomeId) {
+	public TestOutcome updateTestOutcome(TestOutcome testOutcome) {
 		// todo: implement updateTestOutcome
+		// todo: throw exception if testOutcome doesn't have an ID. It should be retrieved from the server first.
 		return new TestOutcome();
 	}
 
@@ -154,16 +224,6 @@ public class CuantoConnector {
 	}
 
 
-	/**
-	 * Get the TestRun from the Cuanto server.
-	 *
-	 * @param testRunId The TestRun to retrieve.
-	 * @return The retrieved TestRun
-	 */
-	public TestRun getTestRun(Long testRunId) {
-		// todo: implement getTestRun
-		return new TestRun();
-	}
 
 
 	/**
@@ -223,24 +283,9 @@ public class CuantoConnector {
 
 
 	private void validateProject() {
-		if (projectId == null) {
-			throw new IllegalStateException("No project ID was specified");
-		}
-	}
-
-
-	/**
-	 * Get the project ID associated with this client.
-	 *
-	 * @return the Project ID associate with this client
-	 */
-	public Long getProjectId() {
-		return Long.valueOf(projectId);
-	}
-
-
-	void setProjectId(Long projectId) {
-		this.projectId = projectId;
+		//if (projectId == null) {
+		//	throw new IllegalStateException("No project ID was specified");
+		//}
 	}
 
 
@@ -255,6 +300,39 @@ public class CuantoConnector {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+		if (cuantoUrl.endsWith("/")) {
+			cuantoUrl = cuantoUrl.substring(0, cuantoUrl.lastIndexOf('/')); // todo: does this include the slash?
+		}
 		this.cuantoUrl = cuantoUrl;
+	}
+
+
+	private String getProxyHost() {
+		return proxyHost;
+	}
+
+
+	private void setProxyHost(String proxyHost) {
+		this.proxyHost = proxyHost;
+	}
+
+
+	private Integer getProxyPort() {
+		return proxyPort;
+	}
+
+
+	private void setProxyPort(Integer proxyPort) {
+		this.proxyPort = proxyPort;
+	}
+
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+
+	void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
 	}
 }

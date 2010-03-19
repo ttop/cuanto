@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.api
+package cuanto.testapi
 /**
  * Represents a single unique test case. Each execution of a TestCase is called a TestOutcome. A TestCase typically has
  * a <b>packageName</b> (a logical grouping, such as package + class name in Java), a <b>testName</b> and optionally

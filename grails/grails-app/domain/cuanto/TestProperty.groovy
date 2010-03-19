@@ -19,7 +19,7 @@
 
 package cuanto
 
-import cuanto.api.TestProperty as TestPropertyApi
+import cuanto.testapi.TestProperty as TestPropertyApi
 
 public class TestProperty implements Comparable {
 

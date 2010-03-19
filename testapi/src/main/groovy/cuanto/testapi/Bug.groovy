@@ -17,20 +17,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-package cuanto.api
+
+
+package cuanto.testapi
 
 /**
- * A URL and a description of the URL.
+ * A bug or defect that is associated with a TestOutcome
  */
-public class Link {
-	String description
+public class Bug {
+	String title
 	String url
 
-	public Link() {}
-	
-	public Link(String description, String url) {
-		this.description = description
-		this.url = url
+	boolean equals(Bug bug) {
+		if (this.title != bug.title) {
+			return false
+		} else return this.url == bug.url
 	}
-
 }

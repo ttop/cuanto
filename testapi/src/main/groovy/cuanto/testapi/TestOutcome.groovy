@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.api
+package cuanto.testapi
 
-import cuanto.api.TestCase
-
+import cuanto.testapi.TestCase
+import cuanto.testapi.AnalysisState
 
 /**
 * A TestOutcome contains information about one execution of a test case. Valid <b>TestResults</b> are determined by the Cuanto

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.api.Project as ParsableProject
+import cuanto.testapi.Project as ParsableProject
 
 import cuanto.CuantoException
 import cuanto.Project

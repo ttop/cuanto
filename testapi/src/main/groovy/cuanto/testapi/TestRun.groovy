@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010 Todd Wells
+ Copyright (c) 2008 thePlatform, Inc.
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -19,33 +19,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package cuanto.api
+package cuanto.testapi
+
+import cuanto.testapi.Link
+import cuanto.testapi.TestProperty
 
 /**
- * A state of the analysis, or cause of a failure. The possible values are determined by the Cuanto database.
- * The analysisStates in a default installation are "Unanalyzed", "Bug", "Environment", "Harness", "No Repro", "Other",
- * "Test Bug", and "Investigate".
+ * Represents a group of tests that were executed together.
  */
-public class AnalysisState {
-
-	String name
-
-	/**
-	 * @param isAnalyzed Whether this analysis state should be considered "Analyzed" or not when determining what 
-	 * TestOutcomes have been analyzed.
-	 */
-	Boolean isAnalyzed
-
-	/**
-	* @return Whether this AnalysisState is
-	*/
-	Boolean isDefault
-	Boolean isBug
+class TestRun {
+	String projectKey
+	String note
+	String dateCreated 
+	Date dateExecuted
+	Boolean valid
+	List<Link> links = []
+	List<TestProperty> testProperties = []
+	Long id
 
 
-	String toString() {
-		name
+	TestRun() {}
+
+	TestRun(String projectKey) {
+		this.projectKey = projectKey
 	}
-
-
 }

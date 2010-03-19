@@ -28,7 +28,7 @@ import cuanto.ProjectGroup
 import cuanto.TestRun
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import cuanto.api.Project as ParsableProject
+import cuanto.testapi.Project as ParsableProject
 import com.thoughtworks.xstream.XStream
 
 class ProjectController {

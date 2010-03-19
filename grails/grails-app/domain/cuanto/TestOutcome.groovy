@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto
-import cuanto.api.TestOutcome as TestOutcomeApi
+import cuanto.testapi.TestOutcome as TestOutcomeApi
 
 class TestOutcome {
 

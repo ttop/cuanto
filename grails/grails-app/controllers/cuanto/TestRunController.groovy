@@ -23,8 +23,8 @@ package cuanto
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestRun as TestRunApi
-import cuanto.api.TestRunStats as TestRunStatsApi
+import cuanto.testapi.TestRun as TestRunApi
+import cuanto.testapi.TestRunStats as TestRunStatsApi
 
 class TestRunController {
 	def parsingService

@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
-import cuanto.api.Link as ApiLink
-import cuanto.api.TestRun as TestRunApi
+import cuanto.testapi.Link as ApiLink
+import cuanto.testapi.TestRun as TestRunApi
 
 class TestRun {
 
@@ -50,6 +50,7 @@ class TestRun {
 	Project project
 	SortedSet<Link> links
 	SortedSet<TestProperty> testProperties
+	private final static SimpleDateFormat defaultDateFormatter = new SimpleDateFormat(Defaults.dateFormat)
 
 	def beforeInsert = {
 
@@ -76,18 +77,47 @@ class TestRun {
 		return true
 	}
 
-	Map toJSONWithDateFormat(SimpleDateFormat dateFormat) {
+	Map toJSONWithDateFormat(String dateFormat) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat)
+		def jsonMap = [:]
+		jsonMap.id = this.id
+		jsonMap.dateCreated = dateFormatter.format(dateCreated)
+		jsonMap.dateExecuted = dateFormatter.format(dateExecuted)
+		jsonMap.valid = this.valid
+		jsonMap.project = this.project.toJSONMap()
+		jsonMap.note = this.note
+
+		def jsonLinks = []
+		this.links.each {
+			jsonLinks << [description: it.description, url: it.url]
+		}
+		jsonMap.links = jsonLinks
+		jsonMap.testProperties = getJsonTestProperties()
+
+		return jsonMap
+
+	}
+
+	//todo: delete
+	Map orig_toJSONWithDateFormat(SimpleDateFormat dateFormat) {
 		def jsonMap = this.toJSONMap()
+		jsonMap.dateCreated = dateFormat.format(this.dateCreated)
 		jsonMap.dateExecuted = dateFormat.format(this.dateExecuted)
 		return jsonMap
 	}
-	
+
 	Map toJSONMap() {
+		return toJSONWithDateFormat(Defaults.jsonDateFormat)
+	}
+
+	//todo: delete
+	Map orig_toJSONMap() {
 		def jsonMap = [:]
 		jsonMap.id = this.id
-		jsonMap.dateExecuted = this.dateExecuted.toString()
+		jsonMap.dateCreated = defaultDateFormatter.format(dateCreated)
+		jsonMap.dateExecuted = defaultDateFormatter.format(dateExecuted)
 		jsonMap.valid = this.valid
-		jsonMap.project = this.project.toString()
+		jsonMap.project = this.project.toJSONMap()
 		jsonMap.note = this.note
 
 		def jsonLinks = []

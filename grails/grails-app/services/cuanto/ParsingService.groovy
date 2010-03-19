@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
-import cuanto.api.TestOutcome as TestOutcomeApi
+import cuanto.testapi.TestOutcome as TestOutcomeApi
 
 class ParsingService {
 	static transactional = false
