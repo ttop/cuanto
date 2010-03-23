@@ -88,11 +88,14 @@ class ParsingService {
 		}
 
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
-		JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
-		if (jsonTestRun != null) {
-			testOutcome.testRun = TestRun.get(jsonTestRun.getLong("id"))
-		}
 
+
+		if (jsonTestOutcome.has("testRun")) {
+			JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
+			if (jsonTestRun != null) {
+				testOutcome.testRun = TestRun.get(jsonTestRun.getLong("id"))
+			}
+		}
 		testOutcome.testResult = dataService.result(jsonTestOutcome.getString("result").toLowerCase())
 
 		testOutcome.startedAt = getDateFromJson(jsonTestOutcome, "startedAt")

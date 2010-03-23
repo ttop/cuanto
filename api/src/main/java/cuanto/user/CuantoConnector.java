@@ -207,10 +207,7 @@ public class CuantoConnector {
 	 * @return The server-assigned ID of the TestOutcome
 	 */
 	public Long addTestOutcome(TestOutcome testOutcome) {
-		//todo: implement addTestOutcome
-		//todo: populate TestOutcome with the projectKey
-
-		return new Long(0L);
+		return addTestOutcome(testOutcome, null);
 	}
 
 

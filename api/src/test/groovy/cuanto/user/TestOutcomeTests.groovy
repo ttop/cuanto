@@ -31,7 +31,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 	}
 
 	
-	void testAddTestOutcomeAndGetTestOutcome() {
+	void testAddTestOutcomeAndGetTestOutcomeWithTestRun() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
@@ -62,6 +62,38 @@ public class TestOutcomeTests extends GroovyTestCase {
 		assertEquals "note", outcome.note, fetchedOutcome.note
 		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
 		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+	}
+
+
+	void testAddTestOutcomeAndGetTestOutcomeWithoutTestRun() {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+		outcome.analysisState = "Bug"
+		outcome.startedAt = new Date()
+		outcome.finishedAt = new Date() + 1
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = "Cuanto"
+		outcome.note = "Cuanto note"
+		outcome.testOutput = "Fantastic test output"
+
+		Long outcomeId = client.addTestOutcome(outcome)
+
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+
+		assertNotNull "No outcome fetched", fetchedOutcome
+		assertEquals "Wrong testCase", outcome.testCase, fetchedOutcome.testCase
+		assertNotNull "Bug", fetchedOutcome.bug
+		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+		assertEquals "duration", outcome.duration, fetchedOutcome.duration
+		assertEquals "owner", outcome.owner, fetchedOutcome.owner
+		assertEquals "note", outcome.note, fetchedOutcome.note
+		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+		assertEquals "testRun", null, fetchedOutcome.testRun
 	}
 
 
