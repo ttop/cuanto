@@ -30,26 +30,8 @@ public class TestOutcomeTests extends GroovyTestCase {
 		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
 	}
 
-	void testGetTestOutcome() {
-		TestOutcome tout = client.getTestOutcome(667300L)
-		//TestOutcome tout = client.getTestOutcome(666141L)
-		assertEquals "Wrong id", 667300L, tout.id
-		assertNotNull "TestCase", tout.testCase
-		assertEquals "Wrong test name", "testCreateListResponse", tout.testCase.testName
-		assertEquals "Wrong test package", "com.theplatform.test.assettype.compliance.AtomFormatComplianceTest",
-			tout.testCase.packageName
-		assertEquals "Wrong parameters", null, tout.testCase.parameters
-		assertEquals "Wrong result", TestResult.valueOf("Fail"), tout.testResult
-		assertEquals "Wrong owner", null, tout.owner
-		assertEquals "Wrong note", null, tout.note
-		assertEquals "Wrong duration", 1420L, tout.duration
-		assertEquals "Wrong startedAt", null, tout.startedAt
-		assertEquals "Wrong finishedAt", null, tout.finishedAt
-		println tout.toJSON()
-	}
 	
-
-	void testAddTestOutcome() {
+	void testAddTestOutcomeAndGetTestOutcome() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
@@ -82,9 +64,6 @@ public class TestOutcomeTests extends GroovyTestCase {
 		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
 	}
 
-	void testStartedAtAndFinishedAt() {
-		fail "test not implemented"
-	}
 
 	void assertEquals(String message, Date expected, Date actual) {
 		// Date should be within one second
