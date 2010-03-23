@@ -83,6 +83,7 @@ class TestRun {
 		jsonMap.id = this.id
 		jsonMap.dateCreated = dateFormatter.format(dateCreated)
 		jsonMap.dateExecuted = dateFormatter.format(dateExecuted)
+		jsonMap.lastUpdated = dateFormatter.format(lastUpdated)
 		jsonMap.valid = this.valid
 		jsonMap.project = this.project.toJSONMap()
 		jsonMap.note = this.note
@@ -98,36 +99,9 @@ class TestRun {
 
 	}
 
-	//todo: delete
-	Map orig_toJSONWithDateFormat(SimpleDateFormat dateFormat) {
-		def jsonMap = this.toJSONMap()
-		jsonMap.dateCreated = dateFormat.format(this.dateCreated)
-		jsonMap.dateExecuted = dateFormat.format(this.dateExecuted)
-		return jsonMap
-	}
-
+	
 	Map toJSONMap() {
-		return toJSONWithDateFormat(Defaults.jsonDateFormat)
-	}
-
-	//todo: delete
-	Map orig_toJSONMap() {
-		def jsonMap = [:]
-		jsonMap.id = this.id
-		jsonMap.dateCreated = defaultDateFormatter.format(dateCreated)
-		jsonMap.dateExecuted = defaultDateFormatter.format(dateExecuted)
-		jsonMap.valid = this.valid
-		jsonMap.project = this.project.toJSONMap()
-		jsonMap.note = this.note
-
-		def jsonLinks = []
-		this.links.each {
-			jsonLinks << [description: it.description, url: it.url]
-		}
-		jsonMap.links = jsonLinks
-		jsonMap.testProperties = getJsonTestProperties()
-
-		return jsonMap
+		return toJSONWithDateFormat(Defaults.fullDateFormat)
 	}
 
 

@@ -24,5 +24,53 @@
 package cuanto.user;
 
 public class Bug {
-	//todo: implement
+
+	private String title;
+	private String url;
+	private Long id;
+
+
+	Bug() {
+	}
+
+
+	public Bug(String title, String url) {
+		this.title = title;
+		this.url = url;
+	}
+
+	Bug(String title, String url, Long id) {
+		this.title = title;
+		this.url = url;
+	}
+
+
+	public String getTitle() {
+		return title;
+	}
+
+
+	void setTitle(String title) {
+		this.title = title;
+	}
+
+
+	public String getUrl() {
+		return url;
+	}
+
+
+	void setUrl(String url) {
+		this.url = url;
+	}
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+	void setId(Long id) {
+		this.id = id;
+	}
 }

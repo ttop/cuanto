@@ -2,16 +2,20 @@ package cuanto.user;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ArrayList;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -26,7 +30,7 @@ public class CuantoConnector {
 	private Integer proxyPort;
 	private static final String HTTP_GET = "get";
 	private static final String HTTP_POST = "post";
-	public final static String jsonDateFormat = "yyyy-MM-DD'T'HH:mm:ssZ";
+	public final static String jsonDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 
 	private CuantoConnector() {
@@ -66,12 +70,14 @@ public class CuantoConnector {
 	public TestRun getTestRun(Long testRunId) {
 		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestRun/" + testRunId.toString());
 
-		TestRun testRun;
 		try {
-			getHttpClient().executeMethod(get);
-			String out = get.getResponseBodyAsString();
-			testRun = TestRun.fromJSON(out);
-			return testRun;
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return TestRun.fromJSON(getResponseBodyAsString(get));
+			} else {
+				throw new RuntimeException("Getting the TestRun failed with HTTP status code " + httpStatus + ":\n" +
+				getResponseBodyAsString(get));
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (ParseException e) {
@@ -81,21 +87,37 @@ public class CuantoConnector {
 
 
 	/**
-	 * A TestRun represents tests that were executed together. Create a new TestRun on the Cuanto server using the values provided. The projectKey will be assigned the same
-	 * projectKey as this CuantoConnector. The testRun passed in will have it's id value assigned. 
+	 * A TestRun represents tests that were executed together. Create a new TestRun on the Cuanto server using the values
+	 * provided. The projectKey will be assigned the same projectKey as this CuantoConnector. The testRun passed in will
+	 * have it's id value assigned to the server-assigned ID of the created TestRun.
 	 *
 	 * @param testRun The test run to create
-	 * @return The created TestRun.
+	 * @return The server-assigned ID of the created TestRun.
 	 */
-	public TestRun createTestRun(TestRun testRun) {
+	public Long addTestRun(TestRun testRun) {
 		validateProject();
-		//todo: implement createTestRun
-
-		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/createTestRun");
-
-		HttpClient httpClient = getHttpClient();
-
-		return new TestRun();
+		testRun.setProjectKey(getProjectKey());
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/addTestRun");
+		try {
+			post.setRequestEntity(new StringRequestEntity(testRun.toJSON(), "application/json", null));
+			int httpStatus = getHttpClient().executeMethod(post);
+			//todo: make charset explicit?
+			if (httpStatus == HttpStatus.SC_CREATED) {
+				TestRun created =  TestRun.fromJSON(getResponseBodyAsString(post));
+				testRun.setProjectKey(this.projectKey);
+				testRun.setId(created.getId());
+				return created.getId();
+			} else {
+				throw new RuntimeException("Adding the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Error parsing server response", e);
+		}
 	}
 
 
@@ -133,12 +155,13 @@ public class CuantoConnector {
 	 * @return The updated TestRun.
 	 */
 	public TestRun updateTestRun(TestRun testRun) {
-		validateProject();
+		throw new RuntimeException("Not implemented");
+		/*validateProject();
 		if (testRun == null) {
 			throw new NullPointerException("null is not a valid testRunId");
 		}
 		// todo: implement updateTestRun
-		return new TestRun();
+		return new TestRun();*/
 	}
 
 
@@ -147,14 +170,32 @@ public class CuantoConnector {
 	 * on the testOutcome argument will be set upon successful creation.
 	 *
 	 * @param testOutcome The TestOutcome to be created on the Cuanto server.
-	 * @param testRunId   The TestRun to which the TestOutcome should be added.
-	 * @return The server representation of the TestOutcome.
+	 * @param testRun   The TestRun to which the TestOutcome should be added.
+	 * @return The server-assigned ID of the TestOutcome
 	 */
-	public TestOutcome createTestOutcome(TestOutcome testOutcome, Long testRunId) {
-		//todo: implement createTestOutcome
-
-		//todo: populate TestOutcome with the projectKey
-		return new TestOutcome();
+	public Long addTestOutcome(TestOutcome testOutcome, TestRun testRun) {
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/addTestOutcome");
+		try {
+			testOutcome.setTestRun(testRun);
+			testOutcome.setProjectKey(this.projectKey);
+			post.setRequestEntity(new StringRequestEntity(testOutcome.toJSON(), "application/json", null));
+			int httpStatus = getHttpClient().executeMethod(post);
+			//todo: make charset explicit?
+			if (httpStatus == HttpStatus.SC_CREATED) {
+				TestOutcome fetchedOutcome = TestOutcome.fromJSON(getResponseBodyAsString(post));
+				testOutcome.setId(fetchedOutcome.getId());
+				return fetchedOutcome.getId();
+			} else {
+				throw new RuntimeException("Adding the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Error parsing server response", e);
+		}
 	}
 
 
@@ -163,13 +204,13 @@ public class CuantoConnector {
 	 * createTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testRunId) instead.
 	 *
 	 * @param testOutcome The details that should be assigned to the new TestOutcome.
-	 * @return The server representation of the TestOutcome.
+	 * @return The server-assigned ID of the TestOutcome
 	 */
-	public TestOutcome createTestOutcome(TestOutcome testOutcome) {
-		//todo: implement createTestOutcome
+	public Long addTestOutcome(TestOutcome testOutcome) {
+		//todo: implement addTestOutcome
 		//todo: populate TestOutcome with the projectKey
 
-		return new TestOutcome();
+		return new Long(0L);
 	}
 
 
@@ -179,10 +220,11 @@ public class CuantoConnector {
 	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome
 	 * @return The TestOutcome with the updated values.
 	 */
-	public TestOutcome updateTestOutcome(TestOutcome testOutcome) {
+	public void updateTestOutcome(TestOutcome testOutcome) {
 		// todo: implement updateTestOutcome
 		// todo: throw exception if testOutcome doesn't have an ID. It should be retrieved from the server first.
-		return new TestOutcome();
+
+		throw new RuntimeException("Not implemented");
 	}
 
 
@@ -193,8 +235,22 @@ public class CuantoConnector {
 	 * @return The retrieved TestOutcome.
 	 */
 	public TestOutcome getTestOutcome(Long testOutcomeId) {
-		// todo: implement getTestOutcome
-		return new TestOutcome();
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutcome/" + testOutcomeId.toString());
+
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return TestOutcome.fromJSON(getResponseBodyAsString(get));
+			} else {
+				throw new RuntimeException("Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+				getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response: " + e.getMessage(), e);
+		}
+
 	}
 
 
@@ -207,8 +263,10 @@ public class CuantoConnector {
 	 * @return A list of all the TestOutcomes for the specified TestCase and TestRun
 	 */
 	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
+		throw new RuntimeException("Not implemented");
+
 		//todo: implement getTestOutcomes
-		return new ArrayList<TestOutcome>();
+		//return new ArrayList<TestOutcome>();
 	}
 
 
@@ -220,7 +278,7 @@ public class CuantoConnector {
 	 */
 	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
 		//todo: implement getAllTestOutcomes
-		return new ArrayList<TestOutcome>();
+		throw new RuntimeException("Not implemented");
 	}
 
 
@@ -236,7 +294,7 @@ public class CuantoConnector {
 	 */
 	public List<TestRun> getTestRunsWithProperties(List<TestProperty> testProperties) {
 		//todo: implement getTestRunsWithProperties
-		return new ArrayList<TestRun>();
+		throw new RuntimeException("Not implemented");
 	}
 
 
@@ -253,7 +311,7 @@ public class CuantoConnector {
 	 */
 	public TestCase getTestCase(String testPackage, String testName, String parameters) {
 		//todo: implement getTestCase
-		return new TestCase();
+		throw new RuntimeException("Not implemented");
 	}
 
 
@@ -277,10 +335,26 @@ public class CuantoConnector {
 	 * @return the server ID value of the project.
 	 */
 	static Long getProjectId(String projectKey) {
-		throw new IllegalArgumentException("Couldn't find project with Project Key" + projectKey);
-		//throw new RuntimeException("not implemented");
+		throw new RuntimeException("Not implemented");
+		//throw new IllegalArgumentException("Couldn't find project with Project Key" + projectKey);
 	}
 
+
+	public String getTestOutput(TestOutcome testOutcome) {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutput/" + 
+			testOutcome.id.toString());
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return getResponseBodyAsString(get);
+			} else {
+				throw new RuntimeException("Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+				getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private void validateProject() {
 		//if (projectId == null) {
@@ -334,5 +408,17 @@ public class CuantoConnector {
 
 	void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
+	}
+
+
+	private String getResponseBodyAsString(HttpMethod method) throws IOException {
+		InputStreamReader reader = new InputStreamReader(method.getResponseBodyAsStream());
+		StringWriter writer = new StringWriter();
+		int in;
+		while ((in = reader.read()) != -1) {
+			writer.write(in);
+		}
+		reader.close();
+		return writer.toString();
 	}
 }

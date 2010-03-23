@@ -19,25 +19,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package cuanto
+
 import cuanto.testapi.TestOutcome as TestOutcomeApi
+
+import java.text.SimpleDateFormat
 
 class TestOutcome {
 
 	static constraints = {
-	    testCase(nullable:false)
-	    testResult(nullable:false)
-		testRun(nullable:true)
-	    analysisState(nullable:true)
-	    duration(nullable:true)
-	    bug(nullable:true)
-	    note(blank:true, nullable:true)
-	    owner(blank:true, nullable:true)
-		testOutput(nullable:true, blank:true, maxSize:10000)
-		startedAt(nullable:true)
-		finishedAt(nullable:true)
-		dateCreated(nullable:true)
-		lastUpdated(nullable:true)
-    }
+		testCase(nullable: false)
+		testResult(nullable: false)
+		testRun(nullable: true)
+		analysisState(nullable: true)
+		duration(nullable: true)
+		bug(nullable: true)
+		note(blank: true, nullable: true)
+		owner(blank: true, nullable: true)
+		testOutput(nullable: true, blank: true, maxSize: 10000)
+		startedAt(nullable: true)
+		finishedAt(nullable: true)
+		dateCreated(nullable: true)
+		lastUpdated(nullable: true)
+	}
 	static mapping = {
 		cache true
 		analysisState lazy: false
@@ -46,16 +49,17 @@ class TestOutcome {
 	TestCase testCase
 	TestRun testRun
 	TestResult testResult
-    AnalysisState analysisState
-    String testOutput
-    Long duration
-    String owner
-    Bug bug
-    String note
+	AnalysisState analysisState
+	String testOutput
+	Long duration
+	String owner
+	Bug bug
+	String note
 	Date startedAt // when the test started
 	Date finishedAt // when the test finished
 	Date dateCreated  // this is the timestamp for when the database record was created
 	Date lastUpdated // timestamp for when the database record was last updated
+
 
 	TestOutcomeApi toTestOutcomeApi() {
 		TestOutcomeApi out = new TestOutcomeApi()
@@ -73,5 +77,33 @@ class TestOutcome {
 		out.dateCreated = this.dateCreated
 		out.lastUpdated = this.lastUpdated
 		return out
+	}
+
+
+	Map toJSONmap(Boolean includeTestOutput = false) {
+		def outcome = this
+		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
+
+		def myJson = [
+			id: outcome.id,
+			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
+			testCase: [testName: outcome.testCase.testName, packageName: outcome.testCase.packageName,
+				parameters: outcome.testCase.parameters, description: testCase.description, id: outcome.testCase?.id],
+			result: outcome.testResult?.name,
+			owner: outcome.owner,
+			note: outcome.note,
+			duration: outcome.duration,
+			testRun: outcome.testRun?.toJSONMap(),
+			dateCreated: dateFormatter.format(dateCreated),
+			lastUpdated: dateFormatter.format(lastUpdated)
+		]
+
+		if (includeTestOutput) {
+			myJson.testOutput = outcome.testOutput
+		}
+		myJson.bug = outcome.bug == null ? null : [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id]
+		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
+		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
+		return myJson
 	}
 }

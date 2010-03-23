@@ -24,6 +24,8 @@ import java.text.SimpleDateFormat
 import cuanto.testapi.Link as ApiLink
 import cuanto.testapi.TestProperty as ApiProperty
 import cuanto.testapi.TestRun as TestRunApi
+import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestRunService {
 
@@ -583,6 +585,36 @@ class TestRunService {
 		return testRun
 	}
 
+
+	TestRun createTestRun(JSONObject jsonObj) {
+		String projectKey = jsonObj.getString("projectKey")
+		def project = projectService.getProject(projectKey)
+		if (!project) {
+			throw new CuantoException("Unable to locate project with the project key or full title of '${projectKey}'")
+		}
+
+		def testRun = new TestRun('project': project)
+		testRun.note = jsonObj.getString("note")
+		testRun.valid = jsonObj.getBoolean("valid")
+		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
+
+		JSONArray jsonLinks = jsonObj.getJSONArray("links")
+		jsonLinks.each { JSONObject link ->
+			def description = link.getString("description")
+			def url = link.getString("url")
+			testRun.addToLinks(new Link(description, url))
+		}
+
+		JSONArray jsonProps = jsonObj.getJSONArray("testProperties")
+		jsonProps.each { JSONObject prop ->
+			def name = prop.getString("name")
+			def value = prop.getString("value")
+			testRun.addToTestProperties(new TestProperty(name, value))
+		}
+
+		dataService.saveTestRun(testRun)
+		return testRun
+	}
 
 	def getUrlFromString(String urlString) {
 		return new URL(urlString).toString()

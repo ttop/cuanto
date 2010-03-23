@@ -51,7 +51,7 @@ class TestOutcomeController {
 				'testType': outcome.testCase?.testType?.name],
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
-			note: outcome.note + "lol",
+			note: outcome.note,
 			testOutput: outcome.testOutput,
 			duration: outcome.duration]
 		render myJson as JSON

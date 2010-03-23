@@ -22,6 +22,8 @@ package cuanto
 
 import com.thoughtworks.xstream.XStream
 import cuanto.testapi.TestOutcome as TestOutcomeApi
+import org.codehaus.groovy.grails.web.json.JSONObject
+import java.text.SimpleDateFormat
 
 class ParsingService {
 	static transactional = false
@@ -31,6 +33,7 @@ class ParsingService {
 	def bugService
 	def testParserRegistry
 	def statisticService
+	def projectService
 	private XStream xstream = new XStream()
 
 
@@ -70,6 +73,91 @@ class ParsingService {
 	TestOutcome parseTestOutcome(InputStream inputStream, Long testRunId, Long projectId = null) {
 		TestOutcomeApi testOutcomeApi = (TestOutcomeApi) xstream.fromXML(inputStream)
 		return parseTestOutcome(testOutcomeApi, testRunId, projectId)
+	}
+
+
+	TestOutcome parseTestOutcome(JSONObject jsonTestOutcome) {
+		Project project = getProjectFromJsonObject(jsonTestOutcome)
+
+		TestCase testCase = parseTestCase(jsonTestOutcome.getJSONObject("testCase"), project)
+		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
+		if (matchingTestCase) {
+			testCase = matchingTestCase
+		} else {
+			dataService.addTestCases(project, [testCase])
+		}
+
+		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
+		JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
+		if (jsonTestRun != null) {
+			testOutcome.testRun = TestRun.get(jsonTestRun.getLong("id"))
+		}
+
+		testOutcome.testResult = dataService.result(jsonTestOutcome.getString("result").toLowerCase())
+
+		testOutcome.startedAt = getDateFromJson(jsonTestOutcome, "startedAt")
+		testOutcome.finishedAt = getDateFromJson(jsonTestOutcome, "finishedAt")
+
+		if (!jsonTestOutcome.isNull("duration")) {
+			testOutcome.duration = jsonTestOutcome.getLong("duration")
+		} else if (testOutcome.startedAt != null && testOutcome.finishedAt != null) {
+			testOutcome.duration = testOutcome.finishedAt.time - testOutcome.startedAt.time
+		}
+
+		testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
+		testOutcome.note = parseJsonForString(jsonTestOutcome, "note")
+		testOutcome.owner = parseJsonForString(jsonTestOutcome, "owner")
+
+		if (!jsonTestOutcome.isNull("bug")) {
+			def jsonBug = jsonTestOutcome.getJSONObject("bug")
+			String bugTitle = jsonBug.getString("title")
+			String bugUrl = jsonBug.getString("url")
+			testOutcome.bug = bugService.getBug(bugTitle, bugUrl)
+		} else {
+			processTestFailure(testOutcome, project)
+		}
+
+		if (!jsonTestOutcome.isNull("analysisState")) {
+			testOutcome.analysisState = dataService.getAnalysisStateByName(jsonTestOutcome.getString("analysisState"))
+		}
+
+		dataService.saveTestOutcomes([testOutcome])
+
+		if (testOutcome.testRun) {
+			statisticService.queueTestRunStats(testOutcome.testRun)
+		}
+
+		return testOutcome;
+		
+	}
+
+
+	Project getProjectFromJsonObject(JSONObject jsonTestOutcome) {
+		String projectKey = jsonTestOutcome.getString("projectKey")
+		Project project = projectService.getProject(projectKey)
+		if (!project) {
+			throw new CuantoException("Unable to locate project with the project key or full title of '${projectKey}'")
+		}
+		return project
+	}
+
+
+	String parseJsonForString(JSONObject jsonObj, String field) {
+		if (jsonObj.isNull(field)) {
+			return null
+		} else {
+			return jsonObj.getString(field)
+		}
+	}
+
+
+	Date getDateFromJson(JSONObject jsonTestOutcome, String fieldName) {
+		if (jsonTestOutcome.isNull(fieldName)) {
+			return null
+		} else {
+			def formatter = new SimpleDateFormat(Defaults.fullDateFormat)
+			return formatter.parse(jsonTestOutcome.getString(fieldName))
+		}
 	}
 
 
@@ -134,11 +222,33 @@ class ParsingService {
 	}
 
 
-	private TestCase parseTestCase(TestOutcomeApi, project) {
+	private TestCase parseTestCase(JSONObject jsonTestCase, Project project) {
+		TestCase testCase = new TestCase(testName: jsonTestCase.getString("testName"), 'project': project)
+
+		if (!jsonTestCase.isNull("packageName")) {
+			testCase.packageName = jsonTestCase.getString("packageName")
+			testCase.fullName = testCase.packageName + "." + testCase.testName
+		} else {
+			testCase.packageName = ""
+			testCase.fullName = testCase.testName
+		}
+
+		if (!jsonTestCase.isNull("parameters")) {
+			testCase.parameters = jsonTestCase.getString("parameters")
+		}
+
+		if (!jsonTestCase.isNull("description")) {
+			testCase.description = jsonTestCase.getString("description")
+		}
+		return testCase
+	}
+
+
+	private TestCase parseTestCase(TestOutcomeApi testOutcomeApi, Project project) {
 		TestCase testCase = new TestCase(
-			testName: TestOutcomeApi.testCase.testName,
-			packageName: TestOutcomeApi.testCase.packageName,
-			parameters: TestOutcomeApi.testCase.parameters,
+			testName: testOutcomeApi.testCase.testName,
+			packageName: testOutcomeApi.testCase.packageName,
+			parameters: testOutcomeApi.testCase.parameters,
 			'project': project
 		)
 
@@ -195,14 +305,14 @@ class ParsingService {
 	}
 
 
-	def processTestFailure(testOutcome, project) {
+	def processTestFailure(TestOutcome testOutcome, Project project) {
 		if (testOutcome.testResult?.isFailure) {
 			if (project?.bugUrlPattern) {
 				def urls = parseUrls(testOutcome.testOutput)
 				def firstUrl = urls.find {it -> project.getBugMap(it).url }
 				def bugInfo = project.getBugMap(firstUrl)
 				if (bugInfo && bugInfo.url) {
-					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) //todo: will this work? Test!
+					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) 
 					testOutcome.analysisState = AnalysisState.findByIsBug(true)
 					testOutcome.note = "Bug auto-populated based on the test output matching the project's bug pattern."
 				}

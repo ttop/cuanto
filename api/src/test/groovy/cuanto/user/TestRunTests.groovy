@@ -30,18 +30,46 @@ public class TestRunTests extends GroovyTestCase {
 		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
 	}
 
-	void testGetTestRun() {
-		//todo: get a created test run
-		client.getTestRun(2622)
 
+	void addTestRunAndGetTestRun() {
+		TestRun testRun = new TestRun(new Date())
+		testRun.note = "My note"
+		testRun.addLink("http://foo", "FOO")
+		testRun.addLink("http://bar", "BAR")
+		testRun.addTestProperty("Radio", "KEXP");
+		testRun.addTestProperty("Computer", "Apple");
+		Long testRunId = client.addTestRun(testRun)
+		TestRun createdTestRun = client.getTestRun(testRunId)
+
+		assertNotNull "Wrong TestRun id", createdTestRun.id
+		assertEquals "Wrong TestRun note", testRun.note, createdTestRun.note
+		assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, createdTestRun.dateExecuted
+		assertNotNull "Wrong TestRun dateCreated", createdTestRun.dateCreated
+		assertNotNull "Wrong TestRun lastUpdated", createdTestRun.lastUpdated
+
+		assertEquals "Wrong number of links", testRun.links.size(), createdTestRun.links.size()
+		List expectedLinks = new ArrayList(testRun.links)
+		List actualLinks = new ArrayList(createdTestRun.links)
+		expectedLinks.eachWithIndex { it, idx ->
+			assertEquals "Wrong link description", it.description, actualLinks[idx].description
+			assertEquals "Wrong link url", it.url, actualLinks[idx].url
+		}
+
+		assertEquals "Wrong number of test properties", testRun.testProperties.size(), createdTestRun.testProperties.size()
+		List expectedProps = new ArrayList(testRun.testProperties)
+		List actualProps = new ArrayList(createdTestRun.testProperties)
+		expectedProps.eachWithIndex { it, idx ->
+			assertEquals "Wrong property name", it.name, actualProps[idx].name
+			assertEquals "Wrong property value", it.value, actualProps[idx].value
+		}
+		
+		assertEquals "Wrong project key", testRun.projectKey, createdTestRun.projectKey
 	}
 
-	void testToJSON() {
-		TestRun testRun = new TestRun()
-		testRun.dateExecuted = new Date();
-		testRun.id = 135L;
-		testRun.note = "My note"
-		testRun.projectKey = "my key"
-		System.out.println(testRun.toJSON());
+
+	void assertEquals(String message, Date expected, Date actual) {
+		// Date should be within one second
+		assertTrue message + ". Expected time ${expected.time}, actual time ${actual.time}",
+			Math.abs(expected.time - actual.time) < 1000
 	}
 }

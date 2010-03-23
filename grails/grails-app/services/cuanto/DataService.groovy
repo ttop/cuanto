@@ -551,8 +551,25 @@ class DataService {
 
 		if (runs.size() > 0) {
 			log.info "found ${runs.size()} empty test runs to delete"
-			TestRun.executeUpdate("delete cuanto.TestRun as tr where tr.testRunStatistics is null and " +
-				"tr.dateExecuted < ?", [cutoffDate])
+
+			runs.each {run ->
+				if (run.links) {
+					def linksToRemove = new ArrayList(run.links)
+					linksToRemove.each {link ->
+						run.removeFromLinks(link)
+						link.delete()
+					}
+				}
+
+				if (run.testProperties) {
+					def propsToRemove = new ArrayList(run.testProperties)
+					propsToRemove.each {prop ->
+						run.removeFromTestProperties(prop)
+						prop.delete()
+					}
+				}
+				run.delete()
+			}
 		}
 	}
 
