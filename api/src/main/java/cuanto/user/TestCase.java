@@ -1,5 +1,8 @@
 package cuanto.user;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JSONNull;
+
 /**
  * An immutable class that represents a Cuanto server-side TestCase.
  */
@@ -119,5 +122,23 @@ public class TestCase {
 		result = 31 * result + (description != null ? description.hashCode() : 0);
 		result = 31 * result + (id != null ? id.hashCode() : 0);
 		return result;
+	}
+
+
+	public static TestCase fromJSON(String jsonString) {
+		JSONObject jsonTestCase = JSONObject.fromObject(jsonString);
+		TestCase testCase = new TestCase();
+		if (!(jsonTestCase.get("packageName") instanceof JSONNull)) {
+			testCase.setPackageName(jsonTestCase.getString("packageName"));
+		}
+		testCase.setTestName(jsonTestCase.getString("testName"));
+
+		if (!(jsonTestCase.get("parameters") instanceof JSONNull)) {
+			testCase.setParameters(jsonTestCase.getString("parameters"));
+		}
+		if (!(jsonTestCase.get("description") instanceof JSONNull)) {
+			testCase.setDescription(jsonTestCase.getString("description"));
+		}
+		return testCase;
 	}
 }

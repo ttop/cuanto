@@ -10,6 +10,9 @@ class ApiController {
 	def testRunService
 	def testOutcomeService
 	def parsingService
+	def dataService
+	def projectService
+
 
     def index = { }
 
@@ -89,7 +92,21 @@ class ApiController {
 
 
 	def getTestCase = {
-
+		Project project = projectService.getProject(params.projectKey)
+		if (!project) {
+			response.status = response.SC_BAD_REQUEST
+			render "ProjectKey ${params.projectKey} was not found"
+		} else {
+			TestCase testCase = new TestCase(packageName: params.packageName, testName: params.testName, parameters: params.parameters)
+			TestCase foundTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
+			if (foundTestCase) {
+				render foundTestCase as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "Test case not found for packageName '${params.packageName}', testName: '${params.testName}, " +
+					"parameters: ${params.parameters}"
+			}
+		}
 	}
 
 

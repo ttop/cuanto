@@ -64,4 +64,11 @@ class TestCase implements Comparable{
 		tc.id = this.id
 		return tc
 	}
+
+	Map toJSONmap() {
+		return [
+			testCase: [testName: this.testName, packageName: this.packageName,
+				parameters: this.parameters, description: this.description, id: this.id]
+		]
+	}
 }

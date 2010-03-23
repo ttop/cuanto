@@ -3,18 +3,18 @@ package cuanto.user;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -298,7 +298,7 @@ public class CuantoConnector {
 	/**
 	 * Get a test case on the server that corresponds to the specified values.
 	 *
-	 * @param testPackage A test package is the namespace for a particular test. In the case of JUnit or TestNG, it would
+	 * @param packageName A test package is the namespace for a particular test. In the case of JUnit or TestNG, it would
 	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass
 	 * @param testName    The name of the test, in JUnit or TestNG this would be the method name.
 	 * @param parameters  A string representing the parameters for this test, if it is a parameterized test. Otherwise this
@@ -306,9 +306,26 @@ public class CuantoConnector {
 	 *                    parameters don't match, a TestCase will not be returned.
 	 * @return The found TestCase or null if no match is found.
 	 */
-	public TestCase getTestCase(String testPackage, String testName, String parameters) {
-		//todo: implement getTestCase
-		throw new RuntimeException("Not implemented");
+	public TestCase getTestCase(String packageName, String testName, String parameters) {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestCase");
+		get.setQueryString(new NameValuePair[]{
+			new NameValuePair("projectKey", this.projectKey),
+			new NameValuePair("packageName", packageName),
+			new NameValuePair("testName", testName),
+			new NameValuePair("parameters", parameters)
+		});
+		
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return TestCase.fromJSON(getResponseBodyAsString(get));
+			} else {
+				throw new RuntimeException("Getting the TestCase failed with HTTP status code " + httpStatus + ":\n" +
+				getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} 
 	}
 
 
@@ -322,18 +339,6 @@ public class CuantoConnector {
 	 */
 	public TestCase getTestCase(String testPackage, String testName) {
 		return getTestCase(testPackage, testName, null);
-	}
-
-
-	/**
-	 * Get the project ID for the provided project key.
-	 *
-	 * @param projectKey The projectKey associated with the project on the Cuanto server.
-	 * @return the server ID value of the project.
-	 */
-	static Long getProjectId(String projectKey) {
-		throw new RuntimeException("Not implemented");
-		//throw new IllegalArgumentException("Couldn't find project with Project Key" + projectKey);
 	}
 
 
