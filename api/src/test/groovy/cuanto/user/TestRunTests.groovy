@@ -31,7 +31,7 @@ public class TestRunTests extends GroovyTestCase {
 	}
 
 
-	void addTestRunAndGetTestRun() {
+	void testAddTestRunAndGetTestRun() {
 		TestRun testRun = new TestRun(new Date())
 		testRun.note = "My note"
 		testRun.addLink("http://foo", "FOO")
@@ -48,19 +48,16 @@ public class TestRunTests extends GroovyTestCase {
 		assertNotNull "Wrong TestRun lastUpdated", createdTestRun.lastUpdated
 
 		assertEquals "Wrong number of links", testRun.links.size(), createdTestRun.links.size()
-		List expectedLinks = new ArrayList(testRun.links)
-		List actualLinks = new ArrayList(createdTestRun.links)
-		expectedLinks.eachWithIndex { it, idx ->
-			assertEquals "Wrong link description", it.description, actualLinks[idx].description
-			assertEquals "Wrong link url", it.url, actualLinks[idx].url
+
+		testRun.links.keySet.each {url, descr ->
+			assertTrue "Link not found: ${url}", createdTestRun.links.containsKey(url)
+			assertEquals "Wrong link description", descr, createdTestRun.links[url]
 		}
 
-		assertEquals "Wrong number of test properties", testRun.testProperties.size(), createdTestRun.testProperties.size()
-		List expectedProps = new ArrayList(testRun.testProperties)
-		List actualProps = new ArrayList(createdTestRun.testProperties)
-		expectedProps.eachWithIndex { it, idx ->
-			assertEquals "Wrong property name", it.name, actualProps[idx].name
-			assertEquals "Wrong property value", it.value, actualProps[idx].value
+		testRun.testProperties.each {name, value ->
+			assertTrue "TestProperty not found: ${name}", createdTestRun.testProperties.containsKey(name)
+			assertEquals "Wrong value for TestProperty ${name}", value, createdTestRun.testProperties[name]
+
 		}
 		
 		assertEquals "Wrong project key", testRun.projectKey, createdTestRun.projectKey

@@ -88,31 +88,29 @@ class TestRun {
 		jsonMap.project = this.project.toJSONMap()
 		jsonMap.note = this.note
 
-		def jsonLinks = []
+		def jsonLinks = [:]
 		this.links.each {
-			jsonLinks << [description: it.description, url: it.url]
+			jsonLinks[it.url] = it.description
 		}
 		jsonMap.links = jsonLinks
-		jsonMap.testProperties = getJsonTestProperties()
+		jsonMap.testProperties = jsonTestProperties()
 
 		return jsonMap
-
-	}
-
-	
-	Map toJSONMap() {
-		return toJSONWithDateFormat(Defaults.fullDateFormat)
 	}
 
 
-	List getJsonTestProperties() {
-		def jsonProps = []
+	Map jsonTestProperties() {
+		def jsonProps = [:]
 		this.testProperties.each {
-			jsonProps << [name: it.name, value: it.value]
+			jsonProps[it.name] = it.value
 		}
 		return jsonProps
 	}
 
+
+	Map toJSONMap() {
+		return toJSONWithDateFormat(Defaults.fullDateFormat)
+	}
 
 	TestRunApi toTestRunApi(dateFormat = Defaults.dateFormat) {
 		TestRunApi pTestRun = new TestRunApi()

@@ -300,7 +300,7 @@ class ProjectController {
 
 			return [projectName: testRun?.project?.name, projectKey: testRun?.project?.projectKey, id: testRun?.id,
 				dateExecuted: friendlyDate,
-				testProperties: testRun?.getJsonTestProperties(),
+				testProperties: testRun?.jsonTestProperties(),
 				dateCreated: testRun?.dateCreated, note: testRun?.note,
 				valid: testRun?.valid, successRate: stats?.successRate ? stats?.successRate : 0,
 				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,

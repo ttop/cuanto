@@ -18,8 +18,8 @@ public class TestRun {
 	Date dateExecuted;
 	Date lastUpdated;
 	Boolean valid;
-	SortedSet<Link> links;
-	SortedSet<TestProperty> testProperties;
+	Map<String, String> links;
+	Map<String, String> testProperties;
 	Long id;
 
 
@@ -32,16 +32,16 @@ public class TestRun {
 			throw new NullPointerException("null is not a valid value for dateExecuted");
 		}
 		this.dateExecuted = dateExecuted;
-		links = new TreeSet<Link>();
-		testProperties = new TreeSet<TestProperty>();
+		links = new HashMap<String, String>();
+		testProperties = new HashMap<String, String>();
 		valid = true;
 	}
 
 
 	TestRun(String projectKey) {
 		this.projectKey = projectKey;
-		links = new TreeSet<Link>();
-		testProperties = new TreeSet<TestProperty>();
+		links = new HashMap<String, String>();
+		testProperties = new HashMap<String, String>();
 		valid = true;
 	}
 
@@ -55,14 +55,17 @@ public class TestRun {
 		testRun.setLastUpdated(parseJsonDate(jsonTestRun.getString("lastUpdated")));
 		testRun.setNote(jsonTestRun.getString("note"));
 
-		for (Object jsonLink : jsonTestRun.getJSONArray("links")) {
-			JSONObject jlink = (JSONObject) jsonLink;
-			testRun.addLink(jlink.getString("url"), jlink.getString("description"));
+
+		JSONObject links = jsonTestRun.getJSONObject("links");
+		for (Object urlObj : links.keySet()) {
+			String url = (String) urlObj;
+			testRun.addLink(url, links.getString(url));
 		}
 
-		for (Object jsonProp : jsonTestRun.getJSONArray("testProperties")) {
-			JSONObject testProp = (JSONObject) jsonProp;
-			testRun.addTestProperty(testProp.getString("name"), testProp.getString("value"));
+		JSONObject props = jsonTestRun.getJSONObject("testProperties");
+		for (Object nameObj : props.keySet()) {
+			String name = (String) nameObj;
+			testRun.addTestProperty(name, props.getString(name));
 		}
 
 		return testRun;
@@ -70,11 +73,6 @@ public class TestRun {
 
 
 	public String toJSON() {
-		/* {"id":2622,"dateCreated":"2010-03-18T08:17:03-0700","dateExecuted":"2010-03-18T08:17:03-0700","valid":true,
-		"project":{"id":113,"name":"CuantoClientTest","projectGroup":{"name":"Sample","id":9},"projectKey":"ClientTest",
-		"bugUrlPattern":"http://url/{BUG}","testType":{"name":"JUnit","id":1}},
-		"note":null,"links":[{"description":"Test Link 1","url":"http://testlink1"},{"description":"Test Link 2","url":"http://testlink2"}],"testProperties":[{"name":"build","value":"233093"},{"name":"Custom Property 1","value":"Custom value 1"},{"name":"Custom Property 2","value":"Custom value 2"},{"name":"milestone","value":"1.0"},{"name":"targetEnv","value":"test lab"}]} */
-
 		JSONObject jsonTestRun = JSONObject.fromObject(toJsonMap());
 		return jsonTestRun.toString();
 	}
@@ -87,41 +85,9 @@ public class TestRun {
 		jsonMap.put("valid", this.valid);
 		jsonMap.put("projectKey", this.projectKey);
 		jsonMap.put("note", this.note);
-		jsonMap.put("links", JSONArray.fromObject(getJsonLinks()));
-		jsonMap.put("testProperties", JSONArray.fromObject(getJsonTestProperties()));
+		jsonMap.put("links", links);
+		jsonMap.put("testProperties", testProperties);
 		return jsonMap;
-	}
-
-
-	private List getJsonTestProperties() {
-		if (this.testProperties == null) {
-			return null;
-		} else {
-			List propList = new ArrayList();
-			for (TestProperty testProp : this.testProperties) {
-				Map propMap = new HashMap();
-				propMap.put("name", testProp.getName());
-				propMap.put("value", testProp.getValue());
-				propList.add(propMap);
-			}
-			return propList;
-		}
-	}
-
-
-	private List getJsonLinks() {
-		if (this.links == null) {
-			return null;
-		} else {
-			List linkList = new ArrayList();
-			for (Link link : this.links) {
-				Map linkMap = new HashMap();
-				linkMap.put("description", link.getDescription());
-				linkMap.put("url", link.getUrl());
-				linkList.add(linkMap);
-			}
-			return linkList;
-		}
 	}
 
 
@@ -140,17 +106,20 @@ public class TestRun {
 
 
 	public TestRun addTestProperty(String name, String value) {
-		testProperties.add(new TestProperty(name, value));
+		testProperties.put(name, value);
 		return this;
 	}
 
 
 	public TestRun addLink(String url, String description) {
-		Link link = new Link(url, description);
-		links.add(link);
+		links.put(url, description);
 		return this;
 	}
 
+
+	public void setTestProperty(String name, String value) {
+		testProperties.put(name, value);
+	}
 
 	public String getProjectKey() {
 		return projectKey;
@@ -177,13 +146,13 @@ public class TestRun {
 	}
 
 
-	public SortedSet<Link> getLinks() {
-		return Collections.unmodifiableSortedSet(links);
+	public Map getLinks() {
+		return Collections.unmodifiableMap(links);
 	}
 
 
-	public SortedSet<TestProperty> getTestProperties() {
-		return Collections.unmodifiableSortedSet(testProperties);
+	public Map getTestProperties() {
+		return Collections.unmodifiableMap(testProperties);
 	}
 
 
@@ -216,17 +185,7 @@ public class TestRun {
 		this.valid = valid;
 	}
 
-
-	void setLinks(SortedSet<Link> links) {
-		this.links = links;
-	}
-
-
-	void setTestProperties(SortedSet<TestProperty> testProperties) {
-		this.testProperties = testProperties;
-	}
-
-
+	
 	void setId(Long id) {
 		this.id = id;
 	}

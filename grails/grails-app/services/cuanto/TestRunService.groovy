@@ -598,18 +598,12 @@ class TestRunService {
 		testRun.valid = jsonObj.getBoolean("valid")
 		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
 
-		JSONArray jsonLinks = jsonObj.getJSONArray("links")
-		jsonLinks.each { JSONObject link ->
-			def description = link.getString("description")
-			def url = link.getString("url")
-			testRun.addToLinks(new Link(description, url))
+		jsonObj.getJSONObject("links").each {key, value ->
+			testRun.addToLinks(new Link(value, key))
 		}
 
-		JSONArray jsonProps = jsonObj.getJSONArray("testProperties")
-		jsonProps.each { JSONObject prop ->
-			def name = prop.getString("name")
-			def value = prop.getString("value")
-			testRun.addToTestProperties(new TestProperty(name, value))
+		jsonObj.getJSONObject("testProperties").each {key, value ->
+			testRun.addToTestProperties(new TestProperty(key, value))
 		}
 
 		dataService.saveTestRun(testRun)
