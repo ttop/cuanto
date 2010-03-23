@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -76,7 +77,7 @@ public class CuantoConnector {
 				return TestRun.fromJSON(getResponseBodyAsString(get));
 			} else {
 				throw new RuntimeException("Getting the TestRun failed with HTTP status code " + httpStatus + ":\n" +
-				getResponseBodyAsString(get));
+					getResponseBodyAsString(get));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -103,7 +104,7 @@ public class CuantoConnector {
 			int httpStatus = getHttpClient().executeMethod(post);
 			//todo: make charset explicit?
 			if (httpStatus == HttpStatus.SC_CREATED) {
-				TestRun created =  TestRun.fromJSON(getResponseBodyAsString(post));
+				TestRun created = TestRun.fromJSON(getResponseBodyAsString(post));
 				testRun.setProjectKey(this.projectKey);
 				testRun.setId(created.getId());
 				return created.getId();
@@ -145,13 +146,12 @@ public class CuantoConnector {
 
 
 	/**
-	 * Update the TestRun with this id on the Cuanto Server to have all the properties specified in this
-	 * TestRun. If the TestRun argument does not already have an id, it needs to be retrieved from the server as you
-	 * can't set the ID on a TestRun directly. You can either retrieve the TestRun from the server by querying by ID or
-	 * other values. If the TestRun does not already exist, then use createTestRun instead.
+	 * Update the TestRun with this id on the Cuanto Server to have all the properties specified in this TestRun. If the
+	 * TestRun argument does not already have an id, it needs to be retrieved from the server as you can't set the ID on a
+	 * TestRun directly. You can either retrieve the TestRun from the server by querying by ID or other values. If the
+	 * TestRun does not already exist, then use createTestRun instead.
 	 *
 	 * @param testRun a TestRun with the updated values
-	 *
 	 * @return The updated TestRun.
 	 */
 	public TestRun updateTestRun(TestRun testRun) {
@@ -166,11 +166,11 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new TestOutcome for the specified TestRun on the Cuanto server using the details provided.  The ID value
-	 * on the testOutcome argument will be set upon successful creation.
+	 * Create a new TestOutcome for the specified TestRun on the Cuanto server using the details provided.  The ID value on
+	 * the testOutcome argument will be set upon successful creation.
 	 *
 	 * @param testOutcome The TestOutcome to be created on the Cuanto server.
-	 * @param testRun   The TestRun to which the TestOutcome should be added.
+	 * @param testRun     The TestRun to which the TestOutcome should be added.
 	 * @return The server-assigned ID of the TestOutcome
 	 */
 	public Long addTestOutcome(TestOutcome testOutcome, TestRun testRun) {
@@ -232,15 +232,17 @@ public class CuantoConnector {
 	 * @return The retrieved TestOutcome.
 	 */
 	public TestOutcome getTestOutcome(Long testOutcomeId) {
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutcome/" + testOutcomeId.toString());
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,
+			getCuantoUrl() + "/api/getTestOutcome/" + testOutcomeId.toString());
 
 		try {
 			int httpStatus = getHttpClient().executeMethod(get);
 			if (httpStatus == HttpStatus.SC_OK) {
 				return TestOutcome.fromJSON(getResponseBodyAsString(get));
 			} else {
-				throw new RuntimeException("Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
-				getResponseBodyAsString(get));
+				throw new RuntimeException(
+					"Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+						getResponseBodyAsString(get));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -279,17 +281,16 @@ public class CuantoConnector {
 	}
 
 
-
-
 	/**
 	 * Get all TestRuns that include the specified TestProperties. The properties can be a subset of a TestRun's
 	 * properties, but all of the specified properties must match for a TestRun to be returned.
 	 *
-	 * @param testProperties The properties for which to search.
+	 * @param testProperties The properties for which to search. This is a Map with property names as the keys and the
+	 *                       property values as the values.
 	 * @return All TestRuns that contain the specified properties. A zero-length array is returned if no matching TestRuns
 	 *         are found.
 	 */
-	public List<TestRun> getTestRunsWithProperties(List<TestProperty> testProperties) {
+	public List<TestRun> getTestRunsWithProperties(Map<String, String> testProperties) {
 		//todo: implement getTestRunsWithProperties
 		throw new RuntimeException("Not implemented");
 	}
