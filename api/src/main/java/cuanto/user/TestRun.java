@@ -2,14 +2,13 @@ package cuanto.user;
 
 
 import net.sf.json.JSONObject;
-import net.sf.json.JSONArray;
 
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 /**
- *
+ * Represents a group of related tests that were executed together.
  */
 public class TestRun {
 	String projectKey;
@@ -27,6 +26,12 @@ public class TestRun {
 	}
 
 
+	/**
+	 * Create a new TestRun object with the specified dateExecuted. Note the TestRun is not added to the Cuanto server
+	 * until you call CuantoConnector.addTestRun().
+	 *
+	 * @param dateExecuted The timestamp for when the TestRun executed.
+	 */
 	public TestRun(Date dateExecuted) {
 		if (dateExecuted == null) {
 			throw new NullPointerException("null is not a valid value for dateExecuted");
@@ -72,6 +77,10 @@ public class TestRun {
 	}
 
 
+	/**
+	 * Get a JSON representation of this TestRun.
+	 * @return The JSON string representing the TestRun.
+	 */
 	public String toJSON() {
 		JSONObject jsonTestRun = JSONObject.fromObject(toJsonMap());
 		return jsonTestRun.toString();
@@ -92,7 +101,7 @@ public class TestRun {
 
 
 	private static Date parseJsonDate(String dateString) throws ParseException {
-		return new SimpleDateFormat(CuantoConnector.jsonDateFormat).parse(dateString);
+		return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).parse(dateString);
 	}
 
 
@@ -100,26 +109,56 @@ public class TestRun {
 		if (date == null) {
 			return null;
 		} else {
-			return new SimpleDateFormat(CuantoConnector.jsonDateFormat).format(date);
+			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).format(date);
 		}
 	}
 
 
+	/**
+	 * Add or update a TestProperty. This change is not reflected on the Cuanto service until you create or update the
+	 * TestRun with the CuantoConnector.
+	 * @param name The name of the property
+	 * @param value The value of the property
+	 * @return The TestRun associated with the TestProperty
+	 */
 	public TestRun addTestProperty(String name, String value) {
 		testProperties.put(name, value);
 		return this;
 	}
 
 
+	/**
+	 * Delete a TestProperty from this TestRun object. This change is not reflected on the Cuanto server until you
+	 * create or update the TestRun with the CuantoConnector.
+	 * @param name The TestProperty name to delete.
+	 */
+	public void deleteTestProperty(String name) {
+		testProperties.remove(name);
+	}
+
+
+	/**
+	 * Add or update a Link. This change is not reflected on the Cuanto server until you create or update the TestRun
+	 * with the CuantoConnector.
+	 * @param url The url of the link
+	 * @param description The description of the link
+	 * @return The TestRun associated with this link
+	 */
 	public TestRun addLink(String url, String description) {
 		links.put(url, description);
 		return this;
 	}
 
 
-	public void setTestProperty(String name, String value) {
-		testProperties.put(name, value);
+	/**
+	 * Delete a Link from this TestRun object. This change is not reflected on the Cuanto server until you
+	 * create or update the TestRun with the CuantoConnector.
+	 * @param url The url of the link to delete.
+	 */
+	public void deleteLink(String url) {
+		links.remove(url);
 	}
+
 
 	public String getProjectKey() {
 		return projectKey;

@@ -27,7 +27,7 @@ public class TestRunTests extends GroovyTestCase {
 	CuantoConnector client
 
 	void setUp() {
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
+		client = CuantoConnector.newInstance("http://localhost:8080/cuanto/", "ClientTest")
 	}
 
 
@@ -61,6 +61,52 @@ public class TestRunTests extends GroovyTestCase {
 		}
 		
 		assertEquals "Wrong project key", testRun.projectKey, createdTestRun.projectKey
+	}
+
+
+	void testUpdateTestRun() {
+		TestRun testRun = new TestRun(new Date())
+		testRun.note = "My note"
+		testRun.addLink("http://foo", "FOO")
+		testRun.addLink("http://bar", "BAR")
+		testRun.addTestProperty("Radio", "KEXP");
+		testRun.addTestProperty("Computer", "Apple");
+		Long testRunId = client.addTestRun(testRun)
+
+		testRun.note = "new note"
+
+		testRun.addLink("http://foo", "UPDATED foo")
+		testRun.addLink("http://blahblah", "Blah")
+		testRun.deleteLink("http://bar")
+
+		testRun.addTestProperty("Twin", "Peaks")
+		testRun.addTestProperty("Computer", "Mac")
+		testRun.deleteTestProperty("Radio")
+		
+		client.updateTestRun(testRun)
+
+		TestRun updatedTestRun = client.getTestRun(testRunId)
+
+		assertNotNull "Wrong TestRun id", updatedTestRun.id
+		assertEquals "Wrong TestRun note", testRun.note, updatedTestRun.note
+		assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, updatedTestRun.dateExecuted
+		assertNotNull "Wrong TestRun dateCreated", updatedTestRun.dateCreated
+		assertNotNull "Wrong TestRun lastUpdated", updatedTestRun.lastUpdated
+
+		assertEquals "Wrong number of links", testRun.links.size(), updatedTestRun.links.size()
+
+		testRun.links.keySet.each {url, descr ->
+			assertTrue "Link not found: ${url}", updatedTestRun.links.containsKey(url)
+			assertEquals "Wrong link description", descr, updatedTestRun.links[url]
+		}
+
+		testRun.testProperties.each {name, value ->
+			assertTrue "TestProperty not found: ${name}", updatedTestRun.testProperties.containsKey(name)
+			assertEquals "Wrong value for TestProperty ${name}", value, updatedTestRun.testProperties[name]
+
+		}
+
+		assertEquals "Wrong project key", testRun.projectKey, updatedTestRun.projectKey
 	}
 
 

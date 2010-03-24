@@ -23,15 +23,19 @@ import java.util.Map;
  */
 public class CuantoConnector {
 
+	/**
+	 * The Date format which this connector and it's associated objects use and expect for JSON serialization and deserialization.
+	 */
+	public final static String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private final static String HTTP_USER_AGENT = "Cuanto Java Client 2.4.0; Jakarta Commons-HttpClient/3.1";
+
+	private static final String HTTP_GET = "get";
+	private static final String HTTP_POST = "post";
 
 	private String projectKey;
 	private String cuantoUrl;
 	private String proxyHost;
 	private Integer proxyPort;
-	private static final String HTTP_GET = "get";
-	private static final String HTTP_POST = "post";
-	public final static String jsonDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 
 	private CuantoConnector() {
@@ -40,17 +44,25 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new instance of CuantoConnector.
+	 * Create a new instance of CuantoConnector that connects to the specified URL and Cuanto project.
 	 *
 	 * @param cuantoServerUrl The URL of the Cuanto server instance.
 	 * @param projectKey      The key for the project that this client will be utilizing.
-	 * @return The CuantoConnector instance.
+	 * @return The new CuantoConnector instance.
 	 */
 	public static CuantoConnector newInstance(String cuantoServerUrl, String projectKey) {
 		return newInstance(cuantoServerUrl, projectKey, null, null);
 	}
 
 
+	/**
+	 * Create a new instance of CuantoConnector that connects to the specified URL and Cuanto project via a HTTP proxy server.
+	 * @param cuantoServerUrl The URL of the Cuanto server instance.
+	 * @param projectKey The key for the project that this client will be utilizing.
+	 * @param proxyHost The hostname of the HTTP proxy.
+	 * @param proxyPort The port for the HTTP proxy.
+	 * @return The new CuantoConnector instance.
+	 */
 	public static CuantoConnector newInstance(String cuantoServerUrl, String projectKey, String proxyHost,
 		Integer proxyPort) {
 		CuantoConnector connector = new CuantoConnector();
@@ -66,7 +78,7 @@ public class CuantoConnector {
 	 * Get the TestRun from the Cuanto server.
 	 *
 	 * @param testRunId The TestRun to retrieve.
-	 * @return The retrieved TestRun
+	 * @return The retrieved TestRun.
 	 */
 	public TestRun getTestRun(Long testRunId) {
 		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestRun/" + testRunId.toString());
@@ -92,7 +104,7 @@ public class CuantoConnector {
 	 * provided. The projectKey will be assigned the same projectKey as this CuantoConnector. The testRun passed in will
 	 * have it's id value assigned to the server-assigned ID of the created TestRun.
 	 *
-	 * @param testRun The test run to create
+	 * @param testRun The test run to create.
 	 * @return The server-assigned ID of the created TestRun.
 	 */
 	public Long addTestRun(TestRun testRun) {
@@ -122,6 +134,10 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 *
+	 * @return An HTTP client, optionally configured to use a proxy.
+	 */
 	private HttpClient getHttpClient() {
 		HttpClient client = new HttpClient();
 		if (getProxyHost() != null && getProxyPort() != null) {
@@ -131,6 +147,12 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 *
+	 * @param methodType HTTP_GET or HTTP_POST
+	 * @param url The URL for this method to contact
+	 * @return The HTTP method configured with the correct User-Agent header.
+	 */
 	private HttpMethod getHttpMethod(String methodType, String url) {
 		HttpMethod method;
 		if (methodType.toLowerCase().equals(HTTP_GET)) {
@@ -151,17 +173,29 @@ public class CuantoConnector {
 	 * TestRun directly. You can either retrieve the TestRun from the server by querying by ID or other values. If the
 	 * TestRun does not already exist, then use createTestRun instead.
 	 *
-	 * @param testRun a TestRun with the updated values
-	 * @return The updated TestRun.
+	 * @param testRun a TestRun with the updated values.
 	 */
-	public TestRun updateTestRun(TestRun testRun) {
-		throw new RuntimeException("Not implemented");
-		/*validateProject();
+	public void updateTestRun(TestRun testRun) {
 		if (testRun == null) {
 			throw new NullPointerException("null is not a valid testRunId");
 		}
-		// todo: implement updateTestRun
-		return new TestRun();*/
+
+		validateProject();
+		testRun.setProjectKey(getProjectKey());
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/updateTestRun");
+		try {
+			post.setRequestEntity(new StringRequestEntity(testRun.toJSON(), "application/json", null));
+			int httpStatus = getHttpClient().executeMethod(post);
+			//todo: make charset explicit?
+			if (httpStatus != HttpStatus.SC_OK) {
+				throw new RuntimeException("Adding the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
@@ -171,7 +205,7 @@ public class CuantoConnector {
 	 *
 	 * @param testOutcome The TestOutcome to be created on the Cuanto server.
 	 * @param testRun     The TestRun to which the TestOutcome should be added.
-	 * @return The server-assigned ID of the TestOutcome
+	 * @return The server-assigned ID of the TestOutcome.
 	 */
 	public Long addTestOutcome(TestOutcome testOutcome, TestRun testRun) {
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/addTestOutcome");
@@ -204,8 +238,9 @@ public class CuantoConnector {
 	 * createTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testRunId) instead.
 	 *
 	 * @param testOutcome The details that should be assigned to the new TestOutcome.
-	 * @return The server-assigned ID of the TestOutcome
+	 * @return The server-assigned ID of the TestOutcome.
 	 */
+
 	public Long addTestOutcome(TestOutcome testOutcome) {
 		return addTestOutcome(testOutcome, null);
 	}
@@ -214,8 +249,7 @@ public class CuantoConnector {
 	/**
 	 * Update a TestOutcome on the Cuanto server with the details provided.
 	 *
-	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome
-	 * @return The TestOutcome with the updated values.
+	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome.
 	 */
 	public void updateTestOutcome(TestOutcome testOutcome) {
 		// todo: implement updateTestOutcome
@@ -259,7 +293,7 @@ public class CuantoConnector {
 	 *
 	 * @param testRunId  The ID of the TestRun to search.
 	 * @param testCaseId The ID of the TestCase for which to retrieve TestOutcomes.
-	 * @return A list of all the TestOutcomes for the specified TestCase and TestRun
+	 * @return A list of all the TestOutcomes for the specified TestCase and TestRun.
 	 */
 	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
 		throw new RuntimeException("Not implemented");
@@ -334,7 +368,7 @@ public class CuantoConnector {
 	 * Get a test case on the server that corresponds to the specified values.
 	 *
 	 * @param testPackage A test package is the namespace for a particular test. In the case of JUnit or TestNG, it would
-	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass
+	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass.
 	 * @param testName    The name of the test, in JUnit or TestNG this would be the method name.
 	 * @return The found TestCase or null if no match is found.
 	 */
@@ -343,6 +377,11 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 * Fetches the test output for the specified test outcome from the Cuanto server.
+	 * @param testOutcome The test outcome for which to retrieve output.
+	 * @return The output for the given test outcome.
+	 */
 	public String getTestOutput(TestOutcome testOutcome) {
 		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutput/" + 
 			testOutcome.id.toString());
@@ -366,11 +405,19 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 * Get the URL of the Cuanto server that this instance was configured to communicate with.
+	 * @return The URL of the Cuanto server
+	 */
 	public String getCuantoUrl() {
 		return cuantoUrl;
 	}
 
 
+	/**
+	 * Set the URL of the Cuanto server that this instance should communicate with.
+	 * @param cuantoUrl The URL of the Cuanto server.
+	 */
 	void setCuantoUrl(String cuantoUrl) {
 		try {
 			new URL(cuantoUrl);
@@ -378,7 +425,7 @@ public class CuantoConnector {
 			throw new RuntimeException(e);
 		}
 		if (cuantoUrl.endsWith("/")) {
-			cuantoUrl = cuantoUrl.substring(0, cuantoUrl.lastIndexOf('/')); // todo: does this include the slash?
+			cuantoUrl = cuantoUrl.substring(0, cuantoUrl.lastIndexOf('/'));
 		}
 		this.cuantoUrl = cuantoUrl;
 	}
@@ -404,6 +451,10 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 * Get the project key for the project this connector is configured to connect to.
+	 * @return The project key.
+	 */
 	public String getProjectKey() {
 		return projectKey;
 	}
@@ -414,6 +465,13 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 * This is here to substitute for HttpMethod.getResponseBodyAsString(), which logs an annoying error message each
+	 * time it's called.
+	 * @param method The method for which to get the response.
+	 * @return The full response body as a String.
+	 * @throws IOException If something bad happened.
+	 */
 	private String getResponseBodyAsString(HttpMethod method) throws IOException {
 		InputStreamReader reader = new InputStreamReader(method.getResponseBodyAsStream());
 		StringWriter writer = new StringWriter();

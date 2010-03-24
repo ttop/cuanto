@@ -18,14 +18,27 @@ class ApiController {
 
 	
 	def addTestRun = {
-		TestRun testRun = testRunService.createTestRun(request.JSON)
+		TestRun testRun = parsingService.parseTestRun(request.JSON)
+		dataService.saveTestRun(testRun)
 		response.status = response.SC_CREATED
 		render testRun.toJSONMap() as JSON
 	}
 
 
 	def updateTestRun = {
-
+		try {
+			TestRun testRun = parsingService.parseTestRun(request.JSON)
+			if (testRun) {
+				testRunService.update(testRun)
+				render "TestRun updated"
+			} else {
+				response.status = response.SC_INTERNAL_SERVER_ERROR
+				render "Didn't successfully parse TestRun"
+			}
+		} catch (Exception e) {
+		    response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unknown error: ${e.getMessage()}"
+		}
 	}
 
 

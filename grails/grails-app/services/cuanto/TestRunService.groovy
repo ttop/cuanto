@@ -259,7 +259,7 @@ class TestRunService {
 	}
 
 
-	def update(TestRunApi testRun) {
+	def update(testRun) {
 		TestRun.withTransaction {
 			TestRun origTestRun = TestRun.get(testRun.id)
 			if (!origTestRun) {
@@ -279,7 +279,7 @@ class TestRunService {
 	}
 
 
-	void updatePropertiesOfTestRun(TestRun origTestRun, TestRunApi testRun) {
+	void updatePropertiesOfTestRun(TestRun origTestRun, testRun) {
 		testRun.testProperties?.each { tp ->
 			TestProperty origProp = origTestRun.testProperties?.find{ it.name == tp.name }
 			if (origProp) {
@@ -306,7 +306,7 @@ class TestRunService {
 	}
 
 
-	void updateLinksOfTestRun(TestRun origTestRun, TestRunApi testRun) {
+	void updateLinksOfTestRun(TestRun origTestRun, testRun) {
 		testRun.links?.each { link ->
 			Link origLink = origTestRun.links?.find { it.description == link.description }
 			if (origLink) {
@@ -585,30 +585,6 @@ class TestRunService {
 		return testRun
 	}
 
-
-	TestRun createTestRun(JSONObject jsonObj) {
-		String projectKey = jsonObj.getString("projectKey")
-		def project = projectService.getProject(projectKey)
-		if (!project) {
-			throw new CuantoException("Unable to locate project with the project key or full title of '${projectKey}'")
-		}
-
-		def testRun = new TestRun('project': project)
-		testRun.note = jsonObj.getString("note")
-		testRun.valid = jsonObj.getBoolean("valid")
-		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
-
-		jsonObj.getJSONObject("links").each {key, value ->
-			testRun.addToLinks(new Link(value, key))
-		}
-
-		jsonObj.getJSONObject("testProperties").each {key, value ->
-			testRun.addToTestProperties(new TestProperty(key, value))
-		}
-
-		dataService.saveTestRun(testRun)
-		return testRun
-	}
 
 	def getUrlFromString(String urlString) {
 		return new URL(urlString).toString()

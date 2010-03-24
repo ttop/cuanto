@@ -325,7 +325,7 @@ duration":1420,"startedAt":null,"finishedAt":null}
 		if (dateString == null) {
 			return null;
 		} else {
-			return new SimpleDateFormat(CuantoConnector.jsonDateFormat).parse(dateString);
+			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).parse(dateString);
 		}
 	}
 
@@ -334,7 +334,7 @@ duration":1420,"startedAt":null,"finishedAt":null}
 		if (date == null) {
 			return null;
 		} else {
-			return new SimpleDateFormat(CuantoConnector.jsonDateFormat).format(date);
+			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).format(date);
 		}
 	}
 	

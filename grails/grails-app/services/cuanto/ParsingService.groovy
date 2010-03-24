@@ -135,6 +135,35 @@ class ParsingService {
 	}
 
 
+	/**
+	 * Parse a TestRun from the JSONObject.
+	 */
+	TestRun parseTestRun(JSONObject jsonObj) {
+		String projectKey = jsonObj.getString("projectKey")
+		def project = projectService.getProject(projectKey)
+		if (!project) {
+			throw new CuantoException("Unable to locate project with the project key or full title of '${projectKey}'")
+		}
+
+		def testRun = new TestRun('project': project)
+		if (!jsonObj.isNull("id")) {
+			testRun.id = jsonObj.getLong("id")
+		}
+		testRun.note = jsonObj.getString("note")
+		testRun.valid = jsonObj.getBoolean("valid")
+		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
+
+		jsonObj.getJSONObject("links").each {key, value ->
+			testRun.addToLinks(new Link(value, key))
+		}
+
+		jsonObj.getJSONObject("testProperties").each {key, value ->
+			testRun.addToTestProperties(new TestProperty(key, value))
+		}
+		return testRun
+	}
+	
+
 	Project getProjectFromJsonObject(JSONObject jsonTestOutcome) {
 		String projectKey = jsonTestOutcome.getString("projectKey")
 		Project project = projectService.getProject(projectKey)
