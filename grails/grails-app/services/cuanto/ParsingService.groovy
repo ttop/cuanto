@@ -89,6 +89,9 @@ class ParsingService {
 
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
 
+		if (!jsonTestOutcome.isNull("id")) {
+			testOutcome.id = jsonTestOutcome.getLong("id")
+		}
 
 		if (jsonTestOutcome.has("testRun")) {
 			JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
@@ -124,14 +127,7 @@ class ParsingService {
 			testOutcome.analysisState = dataService.getAnalysisStateByName(jsonTestOutcome.getString("analysisState"))
 		}
 
-		dataService.saveTestOutcomes([testOutcome])
-
-		if (testOutcome.testRun) {
-			statisticService.queueTestRunStats(testOutcome.testRun)
-		}
-
 		return testOutcome;
-		
 	}
 
 

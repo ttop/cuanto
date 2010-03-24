@@ -61,15 +61,15 @@ class TestOutcomeService {
 	}
 
 
-	def updateTestOutcome(TestOutcomeApi pOutcome) {
+	def updateTestOutcome(pOutcome) {
 		if (pOutcome) {
 			TestOutcome origOutcome = dataService.getTestOutcome(pOutcome.id)
 			TestOutcome outcome = dataService.getTestOutcome(pOutcome.id)
 			if (outcome) {
-				applyTestResultToTestOutcome(outcome, dataService.result(pOutcome.testResult))
+				applyTestResultToTestOutcome(outcome, dataService.result(pOutcome.testResult.toString()))
 
 				if (pOutcome.analysisState) {
-					outcome.analysisState = dataService.getAnalysisStateByName(pOutcome.analysisState)
+					outcome.analysisState = dataService.getAnalysisStateByName(pOutcome.analysisState.toString())
 				}
 
 				def origBug = outcome.bug
@@ -77,6 +77,7 @@ class TestOutcomeService {
 				outcome.note = pOutcome.note
 				outcome.owner = pOutcome.owner
 				outcome.testOutput = pOutcome.testOutput
+				outcome.duration = pOutcome.duration
 
 				["startedAt", "finishedAt"].each {
 					if (pOutcome.getProperty(it)) {

@@ -12,6 +12,7 @@ class ApiController {
 	def parsingService
 	def dataService
 	def projectService
+	def statisticService
 
 
     def index = { }
@@ -60,13 +61,32 @@ class ApiController {
 
 	def addTestOutcome = {
 		TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
+		dataService.saveTestOutcomes([testOutcome])
+
+		if (testOutcome.testRun) {
+			statisticService.queueTestRunStats(testOutcome.testRun)
+		}
+
 		response.status = response.SC_CREATED
 		render testOutcome.toJSONmap() as JSON
 	}
 
 
 	def updateTestOutcome = {
-
+		try {
+			TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
+			if (testOutcome) {
+				testOutcomeService.updateTestOutcome(testOutcome)
+				response.status = response.SC_CREATED
+				render "TestOutcome updated"
+			} else {
+				response.status = response.SC_INTERNAL_SERVER_ERROR
+				render "Didn't successfully parse TestOutcome"
+			}
+		} catch (Exception e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unknown error: ${e.getMessage()}"
+		}
 	}
 
 

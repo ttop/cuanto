@@ -252,10 +252,24 @@ public class CuantoConnector {
 	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome.
 	 */
 	public void updateTestOutcome(TestOutcome testOutcome) {
-		// todo: implement updateTestOutcome
-		// todo: throw exception if testOutcome doesn't have an ID. It should be retrieved from the server first.
-
-		throw new RuntimeException("Not implemented");
+		if (testOutcome.getId() == null) {
+			throw new IllegalArgumentException("The specified TestOutcome has no ID value. Any TestOutcome you wish to" +
+				" update should be fetched from the server first.");
+		}
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/updateTestOutcome");
+		try {
+			post.setRequestEntity(new StringRequestEntity(testOutcome.toJSON(), "application/json", null));
+			int httpStatus = getHttpClient().executeMethod(post);
+			//todo: make charset explicit?
+			if (httpStatus != HttpStatus.SC_CREATED) {
+				throw new RuntimeException("Adding the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
