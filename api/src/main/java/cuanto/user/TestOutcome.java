@@ -208,23 +208,17 @@ public class TestOutcome {
 
 	public static TestOutcome fromJSON(String jsonString) throws ParseException {
 		JSONObject jsonOutcome = JSONObject.fromObject(jsonString);
+		return fromJSON(jsonOutcome);
+	}
+
+
+	static TestOutcome fromJSON(JSONObject jsonOutcome) throws ParseException {
 		TestOutcome testOutcome = new TestOutcome();
 		testOutcome.setId(jsonOutcome.getLong("id"));
 
 		TestCase testCase = new TestCase();
 		JSONObject jsonTestCase = jsonOutcome.getJSONObject("testCase");
-		if (!(jsonTestCase.get("packageName") instanceof JSONNull)) {
-			testCase.setPackageName(jsonTestCase.getString("packageName"));
-		}
-		testCase.setTestName(jsonTestCase.getString("testName"));
-
-		if (!(jsonTestCase.get("parameters") instanceof JSONNull)) {
-			testCase.setParameters(jsonTestCase.getString("parameters"));
-		}
-		if (!(jsonTestCase.get("description") instanceof JSONNull)) {
-			testCase.setDescription(jsonTestCase.getString("description"));
-		}
-
+		testCase = TestCase.fromJSON(jsonTestCase);
 		testOutcome.setTestCase(testCase);
 
 		testOutcome.setTestResult(TestResult.valueOf(jsonOutcome.getString("result")));
@@ -247,7 +241,7 @@ public class TestOutcome {
 		if (!(jsonOutcome.get("duration") instanceof JSONNull)) {
 			testOutcome.setDuration(jsonOutcome.getLong("duration"));
 		}
-		
+
 		if (!(jsonOutcome.get("startedAt") instanceof JSONNull)) {
 			testOutcome.setStartedAt(parseJsonDate(jsonOutcome.getString("startedAt")));
 		}
@@ -259,7 +253,7 @@ public class TestOutcome {
 			JSONObject jsonAnalysis = jsonOutcome.getJSONObject("analysisState");
 			testOutcome.setAnalysisState(jsonAnalysis.getString("name"));
 		}
-		
+
 		if (!(jsonOutcome.get("owner") instanceof JSONNull)) {
 			testOutcome.setOwner(jsonOutcome.getString("owner"));
 		}

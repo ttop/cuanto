@@ -114,8 +114,44 @@ class ApiController {
 	}
 
 
-	def getTestOutcomes = {
+	def getTestCaseOutcomesForTestRun = {
+		if (!params.testCase) {
+			response.SC_BAD_REQUEST
+			render "No testCase parameter was specified."
+		}
 
+		TestCase testCase = TestCase.get(params.testCase)
+
+		if (!testCase) {
+			response.SC_NOT_FOUND
+			render "TestCase ${params.testCase} was not found"
+		}
+
+		if (!params.testRun) {
+			response.SC_BAD_REQUEST
+			render "No testRun parameter was specified."
+		}
+
+		TestRun testRun = TestRun.get(params.testRun)
+
+		if (!testRun) {
+			response.SC_NOT_FOUND
+			render "TestRun ${params.testRun} was not found"
+		}
+
+		List<TestOutcome> out = dataService.getTestOutcomes(testCase, testRun)
+		if (!out) {
+			response.status = response.SC_NOT_FOUND
+			render "Test outcome not found for test case ${params.testCase} and test run ${params.testRun}"
+		} else {
+
+			def jsonArray = []
+			out.each {
+				jsonArray << it.toJSONmap()
+			}
+			def jsonMap = [testOutcomes: jsonArray]
+			render jsonMap as JSON
+		}
 	}
 
 

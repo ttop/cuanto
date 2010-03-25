@@ -17,6 +17,10 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 /**
  *
@@ -303,31 +307,69 @@ public class CuantoConnector {
 
 	/**
 	 * Get all TestOutcomes for the specified TestCase in the specified TestRun. In most normal Cuanto usages, a TestRun
-	 * will only have a single TestOutcome per TestCase.
+	 * will only have a single TestOutcome per TestCase. TestOutcomes will be in descending order by their finishedAt
+	 * values (if they have them) or dateCreated otherwise.
 	 *
-	 * @param testRunId  The ID of the TestRun to search.
-	 * @param testCaseId The ID of the TestCase for which to retrieve TestOutcomes.
+	 * @param testRun  The TestRun to search.
+	 * @param testCase The TestCase for which to retrieve TestOutcomes.
 	 * @return A list of all the TestOutcomes for the specified TestCase and TestRun.
 	 */
-	public List<TestOutcome> getTestOutcomes(Long testRunId, Long testCaseId) {
-		throw new RuntimeException("Not implemented");
-
-		//todo: implement getTestOutcomes
-		//return new ArrayList<TestOutcome>();
+	public List<TestOutcome> getTestCaseOutcomesForTestRun(TestCase testCase, TestRun testRun) {
+		if (testRun.id == null) {
+			throw new IllegalArgumentException("The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
+		}
+		if (testCase.id == null) {
+			throw new IllegalArgumentException("The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
+		}
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,	getCuantoUrl() + "/api/getTestCaseOutcomesForTestRun");
+		get.setQueryString(new NameValuePair[]{
+			new NameValuePair("testRun", testRun.id.toString()),
+			new NameValuePair("testCase", testCase.id.toString())
+		});
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
+				JSONArray jsonOutcomes = jsonResponse.getJSONArray("testOutcomes");
+				List<TestOutcome> outcomesToReturn = new ArrayList<TestOutcome>(jsonOutcomes.size());
+				for (Object obj: jsonOutcomes)
+				{
+					JSONObject jsonOutcome = (JSONObject) obj;
+					outcomesToReturn.add(TestOutcome.fromJSON(jsonOutcome));
+				}
+				return outcomesToReturn;
+			} else {
+				throw new RuntimeException(
+					"Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+						getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response: " + e.getMessage(), e);
+		}
 	}
 
 
 	/**
 	 * Get all TestOutcomes for the specified TestRun. TODO: specify order?
 	 *
-	 * @param testRunId The ID of the TestRun.
+	 * @param testRun The TestRun for which to retrieve TestOutcomes.
 	 * @return The TestOutcomes for the specified TestRun.
 	 */
-	public List<TestOutcome> getAllTestOutcomes(Long testRunId) {
+	public List<TestOutcome> getAllTestOutcomesForTestRun(TestRun testRun) {
 		//todo: implement getAllTestOutcomes
 		throw new RuntimeException("Not implemented");
 	}
 
+
+	/**
+	 * Get all TestOutcomes for the specified TestCase - returned in descending order by dateCreated
+	 */
+	public List<TestOutcome> getAllTestOutcomesForTestCase(TestCase testCase) {
+		//todo: implement
+		throw new RuntimeException("Not implemented");
+	}
 
 	/**
 	 * Get all TestRuns that include the specified TestProperties. The properties can be a subset of a TestRun's

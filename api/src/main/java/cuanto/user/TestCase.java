@@ -127,6 +127,11 @@ public class TestCase {
 
 	public static TestCase fromJSON(String jsonString) {
 		JSONObject jsonTestCase = JSONObject.fromObject(jsonString);
+		return fromJSON(jsonTestCase);
+	}
+
+
+	static TestCase fromJSON(JSONObject jsonTestCase) {
 		TestCase testCase = new TestCase();
 		if (!(jsonTestCase.get("packageName") instanceof JSONNull)) {
 			testCase.setPackageName(jsonTestCase.getString("packageName"));
@@ -138,6 +143,12 @@ public class TestCase {
 		}
 		if (!(jsonTestCase.get("description") instanceof JSONNull)) {
 			testCase.setDescription(jsonTestCase.getString("description"));
+		}
+		if (!(jsonTestCase.get("id") instanceof JSONNull)) {
+			testCase.setId(jsonTestCase.getLong("id"));
+		}
+		if (!(jsonTestCase.get("fullName") instanceof JSONNull)) {
+			testCase.setFullName(jsonTestCase.getString("fullName"));
 		}
 		return testCase;
 	}

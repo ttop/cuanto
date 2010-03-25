@@ -50,7 +50,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
 		assertNotNull "No outcome fetched", fetchedOutcome
-		assertEquals "Wrong testCase", outcome.testCase, fetchedOutcome.testCase
+		assertEquals outcome.testCase, fetchedOutcome.testCase
 		assertNotNull "Bug", fetchedOutcome.bug
 		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
 		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
@@ -82,7 +82,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
 		assertNotNull "No outcome fetched", fetchedOutcome
-		assertEquals "Wrong testCase", outcome.testCase, fetchedOutcome.testCase
+		assertEquals outcome.testCase, fetchedOutcome.testCase
 		assertNotNull "Bug", fetchedOutcome.bug
 		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
 		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
@@ -127,7 +127,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
 		assertNotNull "No outcome fetched", fetchedOutcome
-		assertEquals "Wrong testCase", outcome.testCase, fetchedOutcome.testCase
+		assertEquals outcome.testCase, fetchedOutcome.testCase
 		assertNotNull "Bug", fetchedOutcome.bug
 		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
 		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
@@ -142,9 +142,51 @@ public class TestOutcomeTests extends GroovyTestCase {
 	}
 
 
+	void testGetTestOutcomes() {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+		outcome.analysisState = "Bug"
+		outcome.startedAt = new Date()
+		outcome.finishedAt = new Date() + 1
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = "Cuanto"
+		outcome.note = "Cuanto note"
+		outcome.testOutput = "Fantastic test output"
+
+		TestOutcome outcomeTwo = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcomeTwo.bug = new Bug("MyBugTwo", "http://jira.codehaus.org/CUANTO-2")
+		outcomeTwo.analysisState = "Bug"
+		outcomeTwo.startedAt = new Date() + 1
+		outcomeTwo.finishedAt = new Date() + 2
+		outcomeTwo.duration = outcomeTwo.finishedAt.time - outcomeTwo.startedAt.time
+		outcomeTwo.owner = "Cuanto Two"
+		outcomeTwo.note = "Cuanto note two"
+		outcomeTwo.testOutput = "Fantastic test output two"
+
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		 client.addTestOutcome(outcomeTwo, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+
+		List<TestOutcome> outcomes = client.getTestCaseOutcomesForTestRun(fetchedOutcome.testCase, run)
+		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+		assertEquals "Wrong outcome first", outcomeTwo.id, outcomes[0].id
+		assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
+	}
+
+
 	void assertEquals(String message, Date expected, Date actual) {
 		// Date should be within one second
 		assertTrue message + ". Expected time ${expected.time}, actual time ${actual.time}",
 			Math.abs(expected.time - actual.time) < 1000
+	}
+
+	void assertEquals(TestCase expected, TestCase actual) {
+		assertEquals "TestCase packageName", expected.packageName, actual.packageName
+		assertEquals "TestCase testName", expected.testName, actual.testName
+		assertEquals "TestCase parameters", expected.parameters, actual.parameters
 	}
 }

@@ -87,8 +87,9 @@ class TestOutcome {
 		def myJson = [
 			id: outcome.id,
 			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
-			testCase: [testName: outcome.testCase.testName, packageName: outcome.testCase.packageName,
-				parameters: outcome.testCase.parameters, description: testCase.description, id: outcome.testCase?.id],
+			testCase: [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
+				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description, id: outcome.testCase?.id,
+				fullName: outcome.testCase?.fullName],
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
 			note: outcome.note,
