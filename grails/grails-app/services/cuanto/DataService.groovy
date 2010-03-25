@@ -350,7 +350,7 @@ class DataService {
 	}
 
 
-	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) {
+	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) throws CuantoException {
 		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
 		if (cuantoQuery.paginateParameters) {
 			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)

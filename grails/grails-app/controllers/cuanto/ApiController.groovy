@@ -156,7 +156,20 @@ class ApiController {
 
 
 	def getAllTestOutcomes = {
+		Map results
 
+		try {
+			results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
+			def jsonArray = []
+			results?.testOutcomes?.each {
+				jsonArray << it.toJSONmap()
+			}
+			def jsonMap = [testOutcomes: jsonArray]
+			render jsonMap as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
 	}
 
 

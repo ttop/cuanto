@@ -273,7 +273,7 @@ class TestOutcomeService {
 	/**
 	* Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
 	*/
-	Map getTestOutcomeQueryResultsForParams(Map params) {
+	Map getTestOutcomeQueryResultsForParams(Map params) throws CuantoException {
 		TestOutcomeQueryFilter testOutcomeFilter = getTestOutcomeQueryFilterForParams(params)
 		def outputChars = params.outputChars ? params.outputChars : 180
 		def offset

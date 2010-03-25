@@ -35,7 +35,7 @@ public class QueryBuilder {
 	}
 
 
-	CuantoQuery buildQuery(QueryFilter queryFilter) {
+	CuantoQuery buildQuery(QueryFilter queryFilter) throws CuantoException {
 		Map base = buildQueryForBaseQuery(" ${queryFilter.fromClause()} ", queryFilter)
 		String query = base.hql as String
 
@@ -85,6 +85,10 @@ public class QueryBuilder {
 				whereClauses << " ${details.where} "
 				params += details.params
 			}
+		}
+
+		if (whereClauses.size() == 0) {
+			throw new CuantoException("No filter options were specified for query")
 		}
 
 		whereClauses.eachWithIndex {clause, idx ->
