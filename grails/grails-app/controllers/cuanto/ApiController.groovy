@@ -4,6 +4,7 @@ import cuanto.TestOutcome
 import cuanto.TestRun
 import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class ApiController {
 
@@ -55,7 +56,22 @@ class ApiController {
 
 
 	def getTestRunsWithProperties = {
+		JSONObject incomingJson = request.JSON
+		Project project = projectService.getProject(incomingJson.getString("projectKey"))
+		JSONObject jsonTestProperties = incomingJson.getJSONObject("testProperties")
+		def testProperties = []
+		jsonTestProperties.each { key, value ->
+			testProperties << new TestProperty(key, value)
+		}
+		def testRuns = testRunService.getTestRunsWithProperties(project, testProperties)
 
+		def jsonMap = [:]
+		def testRunsToRender = []
+		testRuns.each {
+			testRunsToRender << it.toJSONMap()
+		}
+		jsonMap["testRuns"] = testRunsToRender
+		render jsonMap as JSON
 	}
 
 
@@ -157,7 +173,6 @@ class ApiController {
 
 	def getAllTestOutcomes = {
 		Map results
-
 		try {
 			results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
 			def jsonArray = []

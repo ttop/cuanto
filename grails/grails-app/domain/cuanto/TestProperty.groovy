@@ -62,4 +62,8 @@ public class TestProperty implements Comparable {
 		api.id = this.id
 		return api
 	}
+
+	public String toString() {
+		return this.name + ": " + this.value;
+	}
 }

@@ -110,6 +110,44 @@ public class TestRunTests extends GroovyTestCase {
 	}
 
 
+	void testGetTestRunsWithProperties() {
+
+		WordGenerator wordGen = new WordGenerator()
+
+		def testPropertyNames = []
+
+		1.upto(4) {
+			def word = wordGen.word
+			while (testPropertyNames.contains(word)) {
+				word = wordGen.word
+			}
+			testPropertyNames << word
+		}
+
+		def testRuns = []
+
+		1.upto(5) {
+			TestRun testRun = new TestRun(new Date() + it)
+			testPropertyNames.each { propName ->
+				testRun.addTestProperty(propName, wordGen.getSentence(2))
+			}
+			client.addTestRun(testRun)
+			testRuns << testRun
+		}
+
+		String propOneName = testPropertyNames[0] as String
+		String propOneValue = testRuns[0].testProperties[propOneName]
+		testRuns[1].addTestProperty(propOneName, propOneValue)
+		client.updateTestRun(testRuns[1] as TestRun) 
+
+		def props = [:]
+		props[propOneName] = propOneValue
+		List<TestRun> fetchedTestRuns = client.getTestRunsWithProperties(props)
+		assertEquals "Wrong number of test runs returned", 2, fetchedTestRuns.size()
+
+	}
+
+
 	void assertEquals(String message, Date expected, Date actual) {
 		// Date should be within one second
 		assertTrue message + ". Expected time ${expected.time}, actual time ${actual.time}",

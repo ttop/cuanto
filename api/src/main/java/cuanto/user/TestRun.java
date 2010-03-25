@@ -53,6 +53,11 @@ public class TestRun {
 
 	static TestRun fromJSON(String json) throws ParseException {
 		JSONObject jsonTestRun = JSONObject.fromObject(json);
+		return fromJSON(jsonTestRun);
+	}
+
+
+	static TestRun fromJSON(JSONObject jsonTestRun) throws ParseException {
 		TestRun testRun = new TestRun(jsonTestRun.getJSONObject("project").getString("projectKey"));
 		testRun.setId(jsonTestRun.getLong("id"));
 		testRun.setDateExecuted(parseJsonDate(jsonTestRun.getString("dateExecuted")));
