@@ -336,7 +336,12 @@ class DataService {
 
 
 	List<TestOutcome> getTestOutcomes(TestCase testCase, TestRun testRun) {
-		TestOutcome.findAllByTestCaseAndTestRun(testCase, testRun, [sort: "finishedAt", order: "desc"])
+		TestOutcomeQueryFilter queryFilter = new TestOutcomeQueryFilter()
+		queryFilter.testCase = testCase
+		queryFilter.testRun = testRun
+		queryFilter.sorts = [new SortParameters(sort:"finishedAt", sortOrder: "desc"),
+			new SortParameters(sort:"dateCreated", sortOrder: "desc")]
+		getTestOutcomes(queryFilter)
 	}
 
 
