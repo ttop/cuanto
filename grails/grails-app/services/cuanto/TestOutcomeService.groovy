@@ -350,7 +350,7 @@ class TestOutcomeService {
 	}
 
 
-	TestOutcomeQueryFilter getTestOutcomeQueryFilterForParams(Map params) {
+	TestOutcomeQueryFilter getTestOutcomeQueryFilterForParams(Map params) throws CuantoException {
 		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
 
 		if (params.id) {
@@ -359,6 +359,14 @@ class TestOutcomeService {
 				throw new CuantoException("Test Run ${params.id} not found")
 			}
 			filter.testRun = testRun
+		}
+
+		if (params.testCase) {
+			def testCase = TestCase.get(params.testCase) as TestCase
+			if (!testCase) {
+				throw new CuantoException("Test Case ${params.testCase} not found")
+			}
+			filter.testCase = testCase
 		}
 
 		filter.sorts = getSortParametersFromParamStrings(params.sort, params.order)
@@ -433,6 +441,8 @@ class TestOutcomeService {
 			qSort = "note"
 		} else if (name == "output") {
 			qSort = "testOutput"
+		} else if (name =="datecreated") {
+			qSort = "dateCreated"
 		} else {
 			qSort = "testCase.fullName"
 		}

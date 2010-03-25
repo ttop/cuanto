@@ -177,7 +177,41 @@ public class TestOutcomeTests extends GroovyTestCase {
 		assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
 	}
 
-	
+
+	void testGetTestOutcomesForTestCase() {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+		outcome.analysisState = "Bug"
+		outcome.startedAt = new Date()
+		outcome.finishedAt = new Date() + 1
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = "Cuanto"
+		outcome.note = "Cuanto note"
+		outcome.testOutput = "Fantastic test output"
+
+		TestOutcome outcomeTwo = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcomeTwo.bug = new Bug("MyBugTwo", "http://jira.codehaus.org/CUANTO-2")
+		outcomeTwo.analysisState = "Bug"
+		outcomeTwo.startedAt = new Date() + 1
+		outcomeTwo.finishedAt = new Date() + 2
+		outcomeTwo.duration = outcomeTwo.finishedAt.time - outcomeTwo.startedAt.time
+		outcomeTwo.owner = "Cuanto Two"
+		outcomeTwo.note = "Cuanto note two"
+		outcomeTwo.testOutput = "Fantastic test output two"
+
+		Long outcomeId = client.addTestOutcome(outcome)
+		client.addTestOutcome(outcomeTwo)
+
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		List<TestOutcome> outcomes = client.getAllTestOutcomesForTestCase(fetchedOutcome.testCase)
+		assertTrue "Wrong number of TestOutcomes", outcomes.size() >= 2
+		assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
+		assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
+	}
+
+
 	void testGetAllTestOutcomesForTestRun() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))

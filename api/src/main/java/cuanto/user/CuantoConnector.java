@@ -393,11 +393,42 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get all TestOutcomes for the specified TestCase - returned in descending order by dateCreated
+	 * Get all TestOutcomes for the specified TestCase - returned in descending ordered by dateCreated.
+	 * @param testCase The TestCase for which to fetch TestOutcomes.
+	 * @return The TestOutcomes for the specified TestCase, in descending order by dateCreated.
 	 */
 	public List<TestOutcome> getAllTestOutcomesForTestCase(TestCase testCase) {
-		//todo: implement
-		throw new RuntimeException("Not implemented");
+		if (testCase.id == null) {
+			throw new IllegalArgumentException("The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
+		}
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,	getCuantoUrl() + "/api/getAllTestOutcomes");
+		get.setQueryString(new NameValuePair[]{
+			new NameValuePair("testCase", testCase.id.toString()),
+			new NameValuePair("sort", "dateCreated"),
+			new NameValuePair("order", "desc")
+		});
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
+				JSONArray jsonOutcomes = jsonResponse.getJSONArray("testOutcomes");
+				List<TestOutcome> outcomesToReturn = new ArrayList<TestOutcome>(jsonOutcomes.size());
+				for (Object obj: jsonOutcomes)
+				{
+					JSONObject jsonOutcome = (JSONObject) obj;
+					outcomesToReturn.add(TestOutcome.fromJSON(jsonOutcome));
+				}
+				return outcomesToReturn;
+			} else {
+				throw new RuntimeException(
+					"Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+						getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response: " + e.getMessage(), e);
+		}
 	}
 
 	/**
