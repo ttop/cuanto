@@ -22,8 +22,9 @@ class DeleteEmptyTestRunJob {
 
 	def dataService
 
-	def MINUTE = 1000 * 60
-    def timeout = MINUTE * 10
+	static triggers = {
+		simple name: 'DeleteEmptyTestRuns', startDelay: 10000, repeatInterval: 60000
+	}
 
     def execute() {
         // execute task
