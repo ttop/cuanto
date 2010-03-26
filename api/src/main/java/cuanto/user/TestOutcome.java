@@ -414,6 +414,12 @@ public class TestOutcome {
 		if (!(jsonOutcome.get("finishedAt") instanceof JSONNull)) {
 			testOutcome.setFinishedAt(parseJsonDate(jsonOutcome.getString("finishedAt")));
 		}
+		if (!(jsonOutcome.get("dateCreated") instanceof JSONNull)) {
+			testOutcome.setDateCreated(parseJsonDate(jsonOutcome.getString("dateCreated")));
+		}
+		if (!(jsonOutcome.get("lastUpdated") instanceof JSONNull)) {
+			testOutcome.setLastUpdated(parseJsonDate(jsonOutcome.getString("lastUpdated")));
+		}
 
 		if (!jsonOutcome.getJSONObject("analysisState").isNullObject()) {
 			JSONObject jsonAnalysis = jsonOutcome.getJSONObject("analysisState");
@@ -450,7 +456,12 @@ public class TestOutcome {
 			bugMap.put("url", this.bug.getUrl());
 			jsonMap.put("bug", bugMap);
 		}
-		jsonMap.put("analysisState", this.analysisState.toString());
+
+		String analysisStr = null;
+		if (this.analysisState != null) {
+			analysisStr = this.analysisState.toString();
+		}
+		jsonMap.put("analysisState", analysisStr);
 
 		Map testCaseMap = new HashMap();
 		testCaseMap.put("id", this.testCase.getId());
