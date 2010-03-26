@@ -26,14 +26,14 @@ import java.util.Arrays;
 
 public class AnalysisState {
 
-	private static final AnalysisState Unanalyzed = new AnalysisState("Unanalyzed");
-	private static final AnalysisState Bug = new AnalysisState("Bug");
-	private static final AnalysisState Environment = new AnalysisState("Environment");
-	private static final AnalysisState Harness = new AnalysisState("Harness");
-	private static final AnalysisState NoRepro = new AnalysisState("No Repro");
-	private static final AnalysisState Other = new AnalysisState("Other");
-	private static final AnalysisState TestBug = new AnalysisState("Test Bug");
-	private static final AnalysisState Investigate = new AnalysisState("Investigate");
+	public static final AnalysisState Unanalyzed = new AnalysisState("Unanalyzed");
+	public static final AnalysisState Bug = new AnalysisState("Bug");
+	public static final AnalysisState Environment = new AnalysisState("Environment");
+	public static final AnalysisState Harness = new AnalysisState("Harness");
+	public static final AnalysisState NoRepro = new AnalysisState("No Repro");
+	public static final AnalysisState Other = new AnalysisState("Other");
+	public static final AnalysisState TestBug = new AnalysisState("Test Bug");
+	public static final AnalysisState Investigate = new AnalysisState("Investigate");
 
 	private final String analysisState;
 
@@ -86,5 +86,25 @@ public class AnalysisState {
 	 */
 	public static List<AnalysisState> getAnalysisStateList() {
 		return Arrays.asList(Unanalyzed, Bug, Environment, Harness, NoRepro, Other, TestBug, Investigate);
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		AnalysisState that = (AnalysisState) o;
+
+		if (analysisState != null ? !analysisState.equals(that.analysisState) : that.analysisState != null)
+			return false;
+
+		return true;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return analysisState != null ? analysisState.hashCode() : 0;
 	}
 }
