@@ -152,7 +152,10 @@ class ProjectController {
 			def testRuns = testRunService.getTestRunsForGroupName(params.group)
 			def jsonRuns = []
 			testRuns.each { testRun ->
-				jsonRuns += getJsonForTestRun(testRun, false)
+				Map run = getJsonForTestRun(testRun, false)
+				if (run) {
+					jsonRuns += run
+				}
 			}
 			def myJson = [count: jsonRuns.size(), 'testRuns': jsonRuns]
 			render myJson as JSON

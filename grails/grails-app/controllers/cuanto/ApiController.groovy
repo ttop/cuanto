@@ -94,6 +94,9 @@ class ApiController {
 			if (testOutcome) {
 				testOutcomeService.updateTestOutcome(testOutcome)
 				response.status = response.SC_CREATED
+				if (testOutcome.testRun) {
+					statisticService.queueTestRunStats(testOutcome.testRun)
+				}
 				render "TestOutcome updated"
 			} else {
 				response.status = response.SC_INTERNAL_SERVER_ERROR
