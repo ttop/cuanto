@@ -21,11 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
-import cuanto.testapi.Link as ApiLink
-import cuanto.testapi.TestProperty as ApiProperty
-import cuanto.testapi.TestRun as TestRunApi
-import org.codehaus.groovy.grails.web.json.JSONObject
-import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestRunService {
 
@@ -543,46 +538,6 @@ class TestRunService {
 			}
 		}
 		return propsToAdd
-	}
-
-
-	TestRun createTestRun(TestRunApi pTestRun) {
-
-		def project = projectService.getProject(pTestRun.projectKey)
-		if (!project) {
-			throw new CuantoException("Unable to locate project with the project key or full title of ${pTestRun.projectKey}")
-		}
-
-		def testRun = new TestRun('project': project)
-		testRun.note = pTestRun.note
-		if (pTestRun.valid != null) {
-			testRun.valid = pTestRun.valid
-		}
-
-		if (pTestRun.dateExecuted) {
-			testRun.dateExecuted = pTestRun.dateExecuted
-		} else {
-			testRun.dateExecuted = new Date()
-		}
-
-		pTestRun.links?.each {ApiLink aLink->
-			try {
-				// todo: make description and link HTML-safe?
-				testRun.addToLinks(new Link(aLink.description, aLink.url))
-			} catch (MalformedURLException e) {
-				// Don't persist the link, just log an error
-				log.error "Malformed URL: ${e.message}"
-			}
-		}
-
-		pTestRun.testProperties?.each { ApiProperty aProperty ->
-			// todo: make name and value HTML-safe?
-			testRun.addToTestProperties(new TestProperty(aProperty.name, aProperty.value))
-		}
-
-		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
-		dataService.saveTestRun(testRun)
-		return testRun
 	}
 
 

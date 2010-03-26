@@ -2,11 +2,6 @@ package cuanto
 
 import cuanto.test.TestObjects
 import cuanto.test.WordGenerator
-import cuanto.testapi.TestCase as TestCaseApi
-import cuanto.testapi.TestOutcome as TestOutcomeApi
-import cuanto.testapi.TestRun as TestRunApi
-import cuanto.testapi.Link as LinkApi
-import cuanto.testapi.TestProperty as TestPropertyApi
 
 class TestRunServiceTests extends GroovyTestCase {
 
@@ -331,57 +326,6 @@ class TestRunServiceTests extends GroovyTestCase {
 		dataService.deleteTestRun(fetchedTr)
 		assertNull TestRun.get(fetchedTr.id)
 		assertEquals 0, Link.list().size()
-	}
-
-
-	void testUpdateTestRun() {
-		Project proj = to.project
-		dataService.saveDomainObject proj, true
-
-		def params = [:]
-		params.project = proj.projectKey
-		params.note = to.wordGen.getSentence(5)
-
-		def links = ["http://gurdy||hurdy", "http://easy||squeezy", "malformed"]
-		assertEquals 0, Link.list().size()
-		params.link = links
-
-		def props = ["CustomProp1||Custom Value 1", "CustomProp2||Custom Value 2"]
-		assertEquals 0, TestProperty.list().size()
-		params.testProperty = props
-
-		TestRun createdTr = testRunService.createTestRun(params)
-
-		TestRunApi updatedTr = new TestRunApi(id: createdTr.id)
-		updatedTr.note = to.wordGen.getSentence(5)
-		updatedTr.valid = false
-		updatedTr.links = [new LinkApi("newlink", "http://newlink"), new LinkApi("hurdy", "http://foo")]
-		updatedTr.testProperties = [new TestPropertyApi("CustomProp1", "Custom Value 1"),
-			new TestPropertyApi("newprop", "new value")]
-		testRunService.update(updatedTr)
-
-		TestRun fetchedTr = TestRun.get(createdTr.id)
-		assertNotNull fetchedTr
-
-		assertEquals "note", updatedTr.note, fetchedTr.note
-		assertEquals "valid", updatedTr.valid, fetchedTr.valid
-		assertEquals "links length", 2, fetchedTr.links.size()
-
-		def link0 = fetchedTr.links.find {it.description == updatedTr.links[0].description }
-		assertNotNull link0
-		assertEquals "link 0 url", updatedTr.links[0].url, link0.url
-
-		def link1 = fetchedTr.links.find { it.description == updatedTr.links[1].description }
-		assertNotNull link1
-		assertEquals "link 1 url", updatedTr.links[1].url, link1.url
-
-		def prop0 = fetchedTr.testProperties.find { it.name == updatedTr.testProperties[0].name }
-		assertNotNull prop0
-		assertEquals "prop 0 value", updatedTr.testProperties[0].value, prop0.value
-		
-		def prop1 = fetchedTr.testProperties.find { it.name == updatedTr.testProperties[1].name }
-		assertNotNull prop1
-		assertEquals "prop 1 value", updatedTr.testProperties[1].value, prop1.value
 	}
 
 

@@ -23,8 +23,6 @@ package cuanto
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import com.thoughtworks.xstream.XStream
-import cuanto.testapi.TestRun as TestRunApi
-import cuanto.testapi.TestRunStats as TestRunStatsApi
 
 class TestRunController {
 	def parsingService
@@ -108,20 +106,6 @@ class TestRunController {
 				flash.message = "Test Run updated."
 			}
 			redirect(controller: "testRun", action: edit, id: testRun?.id)
-		} else if (request.format == 'xml') {
-			try {
-				def testRunApi = (TestRunApi) xstream.fromXML(request.inputStream)
-				if (testRunApi) {
-					testRunService.update(testRunApi)
-					render "OK"
-				} else {
-					response.status = response.SC_NOT_FOUND
-					render "Did not parse test run"
-				}
-			} catch (Exception e) {
-				response.status = response.SC_INTERNAL_SERVER_ERROR
-				render e.message
-			}
 		} else {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render "Unable to process update" 
@@ -346,14 +330,6 @@ class TestRunController {
 			json {
 				render testRunMap as JSON
 			}
-			xml {
-				if (testRun) {
-					render xstream.toXML(testRun.toTestRunApi())
-				} else {
-					response.status = response.SC_NOT_FOUND
-					render "Test Run with id parameter of ${params.id} was not found"
-				}
-			}
 		}
 	}
 
@@ -449,16 +425,6 @@ class TestRunController {
 		}
 	}
 
-	def createXml = {
-		def testRun = (TestRunApi) xstream.fromXML(request.inputStream)
-		try {
-			def parsedTestRun = testRunService.createTestRun(testRun)
-			render(view: "create", model: ['testRunId': parsedTestRun.id])
-		} catch (CuantoException e) {
-			response.status = response.SC_INTERNAL_SERVER_ERROR
-			render e.getMessage()
-		}
-	}
 
 	def createManual = {
 		if (!params.id) {
@@ -493,27 +459,6 @@ class TestRunController {
 	}
 
 
-	def getWithProperties = {
-		def testProps = []
-		Project project = Project.get(params.project)
-		if (project) {
-			params.each { String paramName, String paramValue ->
-				def propMatcher = (paramName =~ /^prop\[(\d+)]/)
-				if (propMatcher.matches()) {
-					def propIndex = propMatcher[0][1] as Integer
-					def propValue = params["propValue[${propIndex}]"]
-					testProps << new TestProperty(paramValue, propValue)
-				}
-			}
-			List testRuns = testRunService.getTestRunsWithProperties(project, testProps)
-			def toRender = testRuns.collect {it.toTestRunApi()}
-			render xstream.toXML(toRender)
-		} else {
-			response.status = response.SC_BAD_REQUEST
-			render "Couldn't find project ${params?.project}"
-		}
-
-	}
 
 	def export = {
 		[testRun: TestRun.get(params.id)]

@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
-import cuanto.testapi.Link as ApiLink
-import cuanto.testapi.TestRun as TestRunApi
 
 class TestRun {
 
@@ -112,24 +110,4 @@ class TestRun {
 		return toJSONWithDateFormat(Defaults.fullDateFormat)
 	}
 
-	TestRunApi toTestRunApi(dateFormat = Defaults.dateFormat) {
-		TestRunApi pTestRun = new TestRunApi()
-		pTestRun.dateCreated =  new SimpleDateFormat(dateFormat).format(this.dateCreated)
-		pTestRun.dateExecuted = this.dateExecuted
-		pTestRun.note = this.note
-		pTestRun.valid = this.valid
-		pTestRun.projectKey = this.project.projectKey
-		pTestRun.id = this.id
-
-		pTestRun.links = new ArrayList<ApiLink>()
-		this.links?.each {
-			pTestRun.links << it.toLinkApi()
-		}
-
-		pTestRun.testProperties = new ArrayList<TestProperty>()
-		this.testProperties?.each {
-			pTestRun.testProperties << it.toTestPropertyApi()
-		}
-		return pTestRun
-	}
 }
