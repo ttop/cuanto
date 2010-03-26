@@ -33,85 +33,78 @@ public class TestRunTests extends GroovyTestCase {
 
 	void testAddTestRunAndGetTestRun() {
 		TestRun testRun = new TestRun(new Date())
-		testRun.note = "My note"
-		testRun.addLink("http://foo", "FOO")
-		testRun.addLink("http://bar", "BAR")
-		testRun.addTestProperty("Radio", "KEXP");
-		testRun.addTestProperty("Computer", "Apple");
-		Long testRunId = client.addTestRun(testRun)
-		TestRun createdTestRun = client.getTestRun(testRunId)
+		try {
+			testRun.note = "My note"
+			testRun.addLink("http://foo", "FOO")
+			testRun.addLink("http://bar", "BAR")
+			testRun.addTestProperty("Radio", "KEXP")
+			testRun.addTestProperty("Computer", "Apple")
+			Long testRunId = client.addTestRun(testRun)
+			TestRun createdTestRun = client.getTestRun(testRunId)
+			assertNotNull "Wrong TestRun id", createdTestRun.id
+			assertEquals "Wrong TestRun note", testRun.note, createdTestRun.note
+			assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, createdTestRun.dateExecuted
+			assertNotNull "Wrong TestRun dateCreated", createdTestRun.dateCreated
+			assertNotNull "Wrong TestRun lastUpdated", createdTestRun.lastUpdated
+			assertEquals "Wrong number of links", testRun.links.size(), createdTestRun.links.size()
+			testRun.links.keySet.each {url, descr ->
+				assertTrue "Link not found: ${url}", createdTestRun.links.containsKey(url)
+				assertEquals "Wrong link description", descr, createdTestRun.links[url]
+			}
+			testRun.testProperties.each {name, value ->
+				assertTrue "TestProperty not found: ${name}", createdTestRun.testProperties.containsKey(name)
+				assertEquals "Wrong value for TestProperty ${name}", value, createdTestRun.testProperties[name]
 
-		assertNotNull "Wrong TestRun id", createdTestRun.id
-		assertEquals "Wrong TestRun note", testRun.note, createdTestRun.note
-		assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, createdTestRun.dateExecuted
-		assertNotNull "Wrong TestRun dateCreated", createdTestRun.dateCreated
-		assertNotNull "Wrong TestRun lastUpdated", createdTestRun.lastUpdated
-
-		assertEquals "Wrong number of links", testRun.links.size(), createdTestRun.links.size()
-
-		testRun.links.keySet.each {url, descr ->
-			assertTrue "Link not found: ${url}", createdTestRun.links.containsKey(url)
-			assertEquals "Wrong link description", descr, createdTestRun.links[url]
+			}
+			assertEquals "Wrong project key", testRun.projectKey, createdTestRun.projectKey
+		} finally {
+			client.deleteTestRun testRun
 		}
-
-		testRun.testProperties.each {name, value ->
-			assertTrue "TestProperty not found: ${name}", createdTestRun.testProperties.containsKey(name)
-			assertEquals "Wrong value for TestProperty ${name}", value, createdTestRun.testProperties[name]
-
-		}
-		
-		assertEquals "Wrong project key", testRun.projectKey, createdTestRun.projectKey
 	}
 
 
 	void testUpdateTestRun() {
 		TestRun testRun = new TestRun(new Date())
-		testRun.note = "My note"
-		testRun.addLink("http://foo", "FOO")
-		testRun.addLink("http://bar", "BAR")
-		testRun.addTestProperty("Radio", "KEXP");
-		testRun.addTestProperty("Computer", "Apple");
-		Long testRunId = client.addTestRun(testRun)
+		try {
+			testRun.note = "My note"
+			testRun.addLink("http://foo", "FOO")
+			testRun.addLink("http://bar", "BAR")
+			testRun.addTestProperty("Radio", "KEXP")
+			testRun.addTestProperty("Computer", "Apple")
+			Long testRunId = client.addTestRun(testRun)
+			testRun.note = "new note"
+			testRun.addLink("http://foo", "UPDATED foo")
+			testRun.addLink("http://blahblah", "Blah")
+			testRun.deleteLink("http://bar")
+			testRun.addTestProperty("Twin", "Peaks")
+			testRun.addTestProperty("Computer", "Mac")
+			testRun.deleteTestProperty("Radio")
+			client.updateTestRun(testRun)
+			TestRun updatedTestRun = client.getTestRun(testRunId)
+			assertNotNull "Wrong TestRun id", updatedTestRun.id
+			assertEquals "Wrong TestRun note", testRun.note, updatedTestRun.note
+			assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, updatedTestRun.dateExecuted
+			assertNotNull "Wrong TestRun dateCreated", updatedTestRun.dateCreated
+			assertNotNull "Wrong TestRun lastUpdated", updatedTestRun.lastUpdated
+			assertEquals "Wrong number of links", testRun.links.size(), updatedTestRun.links.size()
+			testRun.links.keySet.each {url, descr ->
+				assertTrue "Link not found: ${url}", updatedTestRun.links.containsKey(url)
+				assertEquals "Wrong link description", descr, updatedTestRun.links[url]
+			}
+			testRun.testProperties.each {name, value ->
+				assertTrue "TestProperty not found: ${name}", updatedTestRun.testProperties.containsKey(name)
+				assertEquals "Wrong value for TestProperty ${name}", value, updatedTestRun.testProperties[name]
 
-		testRun.note = "new note"
-
-		testRun.addLink("http://foo", "UPDATED foo")
-		testRun.addLink("http://blahblah", "Blah")
-		testRun.deleteLink("http://bar")
-
-		testRun.addTestProperty("Twin", "Peaks")
-		testRun.addTestProperty("Computer", "Mac")
-		testRun.deleteTestProperty("Radio")
-		
-		client.updateTestRun(testRun)
-
-		TestRun updatedTestRun = client.getTestRun(testRunId)
-
-		assertNotNull "Wrong TestRun id", updatedTestRun.id
-		assertEquals "Wrong TestRun note", testRun.note, updatedTestRun.note
-		assertEquals "Wrong TestRun dateExecuted", testRun.dateExecuted, updatedTestRun.dateExecuted
-		assertNotNull "Wrong TestRun dateCreated", updatedTestRun.dateCreated
-		assertNotNull "Wrong TestRun lastUpdated", updatedTestRun.lastUpdated
-
-		assertEquals "Wrong number of links", testRun.links.size(), updatedTestRun.links.size()
-
-		testRun.links.keySet.each {url, descr ->
-			assertTrue "Link not found: ${url}", updatedTestRun.links.containsKey(url)
-			assertEquals "Wrong link description", descr, updatedTestRun.links[url]
+			}
+			assertEquals "Wrong project key", testRun.projectKey, updatedTestRun.projectKey
+		} finally {
+			client.deleteTestRun testRun
 		}
 
-		testRun.testProperties.each {name, value ->
-			assertTrue "TestProperty not found: ${name}", updatedTestRun.testProperties.containsKey(name)
-			assertEquals "Wrong value for TestProperty ${name}", value, updatedTestRun.testProperties[name]
-
-		}
-
-		assertEquals "Wrong project key", testRun.projectKey, updatedTestRun.projectKey
 	}
 
 
 	void testGetTestRunsWithProperties() {
-
 		WordGenerator wordGen = new WordGenerator()
 
 		def testPropertyNames = []
@@ -126,25 +119,56 @@ public class TestRunTests extends GroovyTestCase {
 
 		def testRuns = []
 
-		1.upto(5) {
-			TestRun testRun = new TestRun(new Date() + it)
-			testPropertyNames.each { propName ->
-				testRun.addTestProperty(propName, wordGen.getSentence(2))
+		try {
+			1.upto(5) {
+				TestRun testRun = new TestRun(new Date() + it)
+				testPropertyNames.each {propName ->
+					testRun.addTestProperty(propName, wordGen.getSentence(2))
+				}
+				client.addTestRun(testRun)
+				testRuns << testRun
 			}
-			client.addTestRun(testRun)
-			testRuns << testRun
+			String propOneName = testPropertyNames[0] as String
+			String propOneValue = testRuns[0].testProperties[propOneName]
+			testRuns[1].addTestProperty(propOneName, propOneValue)
+			client.updateTestRun(testRuns[1] as TestRun)
+
+			def props = [:]
+			props[propOneName] = propOneValue
+			List<TestRun> fetchedTestRuns = client.getTestRunsWithProperties(props)
+			assertEquals "Wrong number of test runs returned", 2, fetchedTestRuns.size()
+		} finally {
+			testRuns.each {
+				client.deleteTestRun it
+			}
 		}
+	}
 
-		String propOneName = testPropertyNames[0] as String
-		String propOneValue = testRuns[0].testProperties[propOneName]
-		testRuns[1].addTestProperty(propOneName, propOneValue)
-		client.updateTestRun(testRuns[1] as TestRun) 
 
-		def props = [:]
-		props[propOneName] = propOneValue
-		List<TestRun> fetchedTestRuns = client.getTestRunsWithProperties(props)
-		assertEquals "Wrong number of test runs returned", 2, fetchedTestRuns.size()
+	void testGetAllTestRuns() {
+		def testRuns = []
 
+		try {
+			1.upto(5) {
+				TestRun testRun = new TestRun(new Date() + it)
+				sleep 500
+				client.addTestRun(testRun)
+				testRuns << testRun
+			}
+
+			List<TestRun> fetchedRuns = client.getAllTestRuns()
+			assertTrue "Not enough TestRuns returned", fetchedRuns.size() >= testRuns.size()
+
+			fetchedRuns.eachWithIndex { TestRun run, indx ->
+				if (indx != testRuns.size() - 1) {
+					assertTrue "TestRun was not in descending order", run.dateExecuted.time >= fetchedRuns[indx].dateExecuted.time
+				}
+			}
+		} finally {
+			testRuns.each {
+				client.deleteTestRun it
+			}
+		}
 	}
 
 

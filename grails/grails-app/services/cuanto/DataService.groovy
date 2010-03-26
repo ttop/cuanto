@@ -116,7 +116,7 @@ class DataService {
 
 
 	def getTestRunsByProject(proj) {
-		TestRun.findAllByProject(proj)
+		TestRun.findAllByProject(proj, [sort: "dateExecuted", order: "desc"])
 	}
 
 

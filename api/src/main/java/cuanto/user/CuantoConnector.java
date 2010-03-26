@@ -631,6 +631,44 @@ public class CuantoConnector {
 
 
 	/**
+	 * Gets all TestRuns for the current project from the Cuanto server.
+	 * @return All of the TestRuns for the current project in descending order by dateExecuted.
+	 */
+	public List<TestRun> getAllTestRuns() {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllTestRuns");
+		get.setQueryString(new NameValuePair[]{
+			new NameValuePair("projectKey", this.projectKey)
+		});
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				JSONObject jsonReturned = JSONObject.fromObject(getResponseBodyAsString(get));
+				List<TestRun> testRuns = new ArrayList<TestRun>();
+				if (jsonReturned.has("testRuns")) {
+					JSONArray returnedRuns = jsonReturned.getJSONArray("testRuns");
+					for (Object run : returnedRuns) {
+						JSONObject jsonRun = (JSONObject) run;
+						testRuns.add(TestRun.fromJSON(jsonRun));
+					}
+				} else {
+					throw new RuntimeException("JSON response didn't have testRuns node");
+				}
+				return testRuns;
+			} else {
+				throw new RuntimeException("Getting the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(get));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response: " + e.getMessage(), e);
+		}
+	}
+
+
+	/**
 	 * Gets the URL of the Cuanto server that this instance was configured to communicate with.
 	 *
 	 * @return The URL of the Cuanto server
@@ -710,5 +748,21 @@ public class CuantoConnector {
 		}
 		reader.close();
 		return writer.toString();
+	}
+
+
+	void deleteTestRun(TestRun testRun) {
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/deleteTestRun/" + testRun.id);
+		try {
+			int httpStatus = getHttpClient().executeMethod(post);
+			if (httpStatus != HttpStatus.SC_OK) {
+				throw new RuntimeException("Deleting the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

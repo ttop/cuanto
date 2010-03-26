@@ -15,6 +15,7 @@ class ApiController {
 	def projectService
 	def statisticService
 
+	static def allowedMethods = [deleteTestRun: 'POST']
 
     def index = { }
 
@@ -74,6 +75,28 @@ class ApiController {
 		render jsonMap as JSON
 	}
 
+
+	def getAllTestRuns = {
+		if (!params.projectKey) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey parameter was specified"
+		}
+
+		Project project = projectService.getProject(params.projectKey)
+		if (project) {
+			def testRuns = dataService.getTestRunsByProject(project)
+			def jsonMap = [:]
+			def testRunsToRender = []
+			testRuns.each {
+				testRunsToRender << it.toJSONMap()
+			}
+			jsonMap["testRuns"] = testRunsToRender
+			render jsonMap as JSON
+		} else {
+			response.status = response.SC_NOT_FOUND
+			render "Project was not found for projectKey ${params.projectKey}"
+		}
+	}
 
 	def addTestOutcome = {
 		TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
@@ -209,9 +232,14 @@ class ApiController {
 		}
 	}
 
-
-	def getProject = {
-
+	def deleteTestRun = {
+		TestRun testRun = TestRun.get(params.id)
+		if (!testRun) {
+			response.status = response.SC_NOT_FOUND
+			render "TestRun ${params.id} not found"
+		} else {
+			dataService.deleteTestRun(testRun)
+			render "Deleted TestRun ${params.id}"
+		}
 	}
-
 }

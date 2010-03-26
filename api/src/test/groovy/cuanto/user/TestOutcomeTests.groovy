@@ -26,11 +26,12 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 	CuantoConnector client
 
+
 	void setUp() {
 		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
 	}
 
-	
+
 	void testAddTestOutcomeAndGetTestOutcomeWithTestRun() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
@@ -45,23 +46,27 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		Long outcomeId = client.addTestOutcome(outcome, run)
+		try {
+			Long outcomeId = client.addTestOutcome(outcome, run)
+			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+			assertNotNull "No outcome fetched", fetchedOutcome
+			assertEquals outcome.testCase, fetchedOutcome.testCase
+			assertNotNull "Bug", fetchedOutcome.bug
+			assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+			assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+			assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+			assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+			assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+			assertEquals "duration", outcome.duration, fetchedOutcome.duration
+			assertEquals "owner", outcome.owner, fetchedOutcome.owner
+			assertEquals "note", outcome.note, fetchedOutcome.note
+			assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+			assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+		} finally {
+			client.deleteTestRun run
+		}
 
-		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
-		assertNotNull "No outcome fetched", fetchedOutcome
-		assertEquals outcome.testCase, fetchedOutcome.testCase
-		assertNotNull "Bug", fetchedOutcome.bug
-		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
-		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
-		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
-		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
-		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
-		assertEquals "duration", outcome.duration, fetchedOutcome.duration
-		assertEquals "owner", outcome.owner, fetchedOutcome.owner
-		assertEquals "note", outcome.note, fetchedOutcome.note
-		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
-		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
 	}
 
 
@@ -111,34 +116,39 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		Long outcomeId = client.addTestOutcome(outcome, run)
+		try {
+			Long outcomeId = client.addTestOutcome(outcome, run)
+			outcome.bug = new Bug("MyOtherBug", "http://jira.codehaus.org/CUANTO-2")
+			outcome.analysisState = AnalysisState.Other
+			outcome.startedAt = new Date()
+			outcome.finishedAt = new Date() + 2
+			outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+			outcome.owner = "New Cuanto"
+			outcome.note = "New Cuanto note"
+			outcome.testOutput = "Stupendous test output"
+			client.updateTestOutcome(outcome)
 
-		outcome.bug = new Bug("MyOtherBug", "http://jira.codehaus.org/CUANTO-2")
-		outcome.analysisState = AnalysisState.Other
-		outcome.startedAt = new Date()
-		outcome.finishedAt = new Date() + 2
-		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
-		outcome.owner = "New Cuanto"
-		outcome.note = "New Cuanto note"
-		outcome.testOutput = "Stupendous test output"
 
-		client.updateTestOutcome(outcome) 
 
-		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
-		assertNotNull "No outcome fetched", fetchedOutcome
-		assertEquals outcome.testCase, fetchedOutcome.testCase
-		assertNotNull "Bug", fetchedOutcome.bug
-		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
-		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
-		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
-		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
-		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
-		assertEquals "duration", outcome.duration, fetchedOutcome.duration
-		assertEquals "owner", outcome.owner, fetchedOutcome.owner
-		assertEquals "note", outcome.note, fetchedOutcome.note
-		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
-		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+			assertNotNull "No outcome fetched", fetchedOutcome
+			assertEquals outcome.testCase, fetchedOutcome.testCase
+			assertNotNull "Bug", fetchedOutcome.bug
+			assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+			assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+			assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+			assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+			assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+			assertEquals "duration", outcome.duration, fetchedOutcome.duration
+			assertEquals "owner", outcome.owner, fetchedOutcome.owner
+			assertEquals "note", outcome.note, fetchedOutcome.note
+			assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+			assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+		} finally {
+			client.deleteTestRun run
+		}
+
 	}
 
 
@@ -167,14 +177,18 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		Long outcomeId = client.addTestOutcome(outcome, run)
-		 client.addTestOutcome(outcomeTwo, run)
-		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		try {
+			Long outcomeId = client.addTestOutcome(outcome, run)
+			client.addTestOutcome(outcomeTwo, run)
+			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+			List<TestOutcome> outcomes = client.getTestCaseOutcomesForTestRun(fetchedOutcome.testCase, run)
+			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+			assertEquals "Wrong outcome first", outcomeTwo.id, outcomes[0].id
+			assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
+		} finally {
+			client.deleteTestRun run
+		}
 
-		List<TestOutcome> outcomes = client.getTestCaseOutcomesForTestRun(fetchedOutcome.testCase, run)
-		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
-		assertEquals "Wrong outcome first", outcomeTwo.id, outcomes[0].id
-		assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
 	}
 
 
@@ -208,11 +222,11 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 		List<TestOutcome> outcomes = client.getAllTestOutcomesForTestCase(fetchedOutcome.testCase)
 		assertTrue "Wrong number of TestOutcomes", outcomes.size() >= 2
-		
-	    int indexOfOutcomeOne = null;
+
+		int indexOfOutcomeOne = null;
 		int indexOfOutcomeTwo = null;
 
-		outcomes.eachWithIndex { it, indx ->
+		outcomes.eachWithIndex {it, indx ->
 			if (it.id == outcome.id) {
 				indexOfOutcomeOne = indx
 			}
@@ -255,14 +269,18 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		client.addTestOutcome(outcome, run)
-		sleep 1000
-		client.addTestOutcome(outcomeTwo, run)
+		try {
+			client.addTestOutcome(outcome, run)
+			sleep 1000
+			client.addTestOutcome(outcomeTwo, run)
+			List<TestOutcome> outcomes = client.getAllTestOutcomesForTestRun(run)
+			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+			assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
+			assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
+		} finally {
+			client.deleteTestRun run
+		}
 
-		List<TestOutcome> outcomes = client.getAllTestOutcomesForTestRun(run)
-		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
-		assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
-		assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
 	}
 
 
@@ -271,6 +289,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		assertTrue message + ". Expected time ${expected.time}, actual time ${actual.time}",
 			Math.abs(expected.time - actual.time) < 1000
 	}
+
 
 	void assertEquals(TestCase expected, TestCase actual) {
 		assertEquals "TestCase packageName", expected.packageName, actual.packageName

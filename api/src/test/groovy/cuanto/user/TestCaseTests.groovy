@@ -37,15 +37,18 @@ public class TestCaseTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		client.addTestOutcome(outcome, run)
-
-		final TestCase expectedTestCase = outcome.testCase
-		TestCase fetchedTestCase = client.getTestCase(expectedTestCase.packageName, outcome.testCase.testName,
-			outcome.testCase.parameters);
-		assertNotNull "TestCase", fetchedTestCase
-		assertEquals expectedTestCase.packageName, fetchedTestCase.packageName
-		assertEquals expectedTestCase.testName, fetchedTestCase.testName
-		assertEquals expectedTestCase.parameters,  fetchedTestCase.parameters
+		try {
+			client.addTestOutcome(outcome, run)
+			final TestCase expectedTestCase = outcome.testCase
+			TestCase fetchedTestCase = client.getTestCase(expectedTestCase.packageName, outcome.testCase.testName,
+				outcome.testCase.parameters)
+			assertNotNull "TestCase", fetchedTestCase
+			assertEquals expectedTestCase.packageName, fetchedTestCase.packageName
+			assertEquals expectedTestCase.testName, fetchedTestCase.testName
+			assertEquals expectedTestCase.parameters,  fetchedTestCase.parameters
+		} finally {
+			client.deleteTestRun run
+		}
 	}
 
 
