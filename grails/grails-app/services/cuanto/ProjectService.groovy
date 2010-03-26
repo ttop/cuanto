@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.testapi.Project as ParsableProject
 
 import cuanto.CuantoException
 import cuanto.Project
@@ -86,41 +85,6 @@ class ProjectService {
 		return groupToReturn
 	}
 	
-
-	def createProject(Map params) {
-		def parsedProject = new ParsableProject()
-		parsedProject.bugUrlPattern = params?.bugUrlPattern
-		parsedProject.projectGroup = getProjectGroupByName(params?.group)
-		parsedProject.name = params?.name
-		parsedProject.projectKey = params?.projectKey
-		parsedProject.testType = params?.testType
-		return createProject(parsedProject)
-	}
-
-
-	def createProject(ParsableProject project) {
-		def newProj = new Project()
-		Project.withTransaction { status ->
-			newProj.bugUrlPattern = project?.bugUrlPattern
-			newProj.projectGroup = getProjectGroupByName(project?.projectGroup)
-			newProj.name = project?.name
-			newProj.projectKey = project?.projectKey
-			newProj.testType = dataService.getTestType(project?.testType)
-
-			if (newProj.validate()) {
-				dataService.saveDomainObject(newProj)
-			} else {
-				status.setRollbackOnly() // rollback any potential group creation if anything failed validation
-				def err = ""
-				newProj.errors.allErrors.each {
-					err += "${it}\n"
-				}
-				throw new CuantoException(err)
-			}
-		}
-		return newProj
-	}
-
 	
 	def updateProject(params) {
 		def project = Project.get(params.project)     // todo: refactor with new grails 1.1 validation?

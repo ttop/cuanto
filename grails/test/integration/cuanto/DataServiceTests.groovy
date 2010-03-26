@@ -576,7 +576,7 @@ class DataServiceTests extends GroovyTestCase {
 			assertTrue "incorrect test run found", targetTestRuns.any { it.id == run.id}
 		}
 
-		assertEquals "Wrong test run count", 4, dataService.countTestRunsByProject(targetProject)
+		assertEquals "Wrong test run count", 4, TestRun.countByProject(targetProject)
 	}
 
 

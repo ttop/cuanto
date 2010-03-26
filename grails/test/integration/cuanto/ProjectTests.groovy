@@ -329,33 +329,7 @@ class ProjectTests extends GroovyTestCase {
 		}
 	}
 
-
-	void testCreateProject() {
-		def msg = shouldFail(CuantoException) {
-			projectService.createProject(null)
-		}
-		assertTrue "Wrong message: msg", msg.contains("Field error in object 'cuanto.Project'")
-
-		shouldFail(CuantoException) {
-			projectService.createProject([name: " "])
-		}
-		assertTrue "Wrong message: msg", msg.contains("Field error in object 'cuanto.Project'")
-
-		def projParams = [ name: fakes.wordGen.getSentence(2),
-			group: fakes.wordGen.getSentence(2),
-			bugUrlPattern: "http://foo/{BUG}",
-			projectKey: fakes.projectKey,
-			testType: "JUnit"]
-
-		def proj = projectService.createProject(projParams)
-		assertNotNull "Project not created", proj
-		assertEquals "Wrong name", projParams.name, proj.name
-		assertEquals "Wrong group", projParams.group, proj.projectGroup.name
-		assertEquals "Wrong bug pattern", projParams.bugUrlPattern, proj.bugUrlPattern
-		assertEquals "Wrong test type", dataService.getTestType("JUnit"), proj.testType
-	}
-
-
+	
 	void testCreateTestCaseErrorConditions() {
 		assertNull "No test case should've been returned", projectService.createTestCase(null)
 		assertEquals "No test case should've been created", 0, TestCase.list().size()
