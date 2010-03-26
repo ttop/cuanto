@@ -121,7 +121,8 @@ class DataService {
 
 
 	def countTestRunsByProject(proj) {
-		TestRun.countByProject(proj)
+		TestRun.countByProjectAndTestRunStatisticsIsNotNull(proj)
+
 	}
 
 

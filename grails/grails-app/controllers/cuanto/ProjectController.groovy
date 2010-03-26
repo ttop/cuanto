@@ -130,7 +130,10 @@ class ProjectController {
 					def totalCount = dataService.countTestRunsByProject(proj)
 					def jsonRuns = []
 					testRuns.each { testRun ->
-						jsonRuns += getJsonForTestRun(testRun, false)
+						Map run = getJsonForTestRun(testRun, false)
+						if (run) {
+							jsonRuns += run
+						}
 					}
 
 					def myJson = [count: jsonRuns.size(), 'testRuns': jsonRuns, 'totalCount': totalCount]
