@@ -24,12 +24,14 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
 
 /**
- *
+ * The CuantoConnector is the primary class for interacting with the Cuanto server remotely. A CuantoConnector instance
+ * is always associated with a particular project, which is set when creating a new instance of the CuantoConnector.
  */
 public class CuantoConnector {
 
 	/**
-	 * The Date format which this connector and it's associated objects use and expect for JSON serialization and deserialization.
+	 * The Date format which this connector and it's associated objects use and expect for JSON serialization and
+	 * deserialization.
 	 */
 	public final static String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private final static String HTTP_USER_AGENT = "Cuanto Java Client 2.4.0; Jakarta Commons-HttpClient/3.1";
@@ -49,7 +51,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new instance of CuantoConnector that connects to the specified URL and Cuanto project.
+	 * Creates a new instance of CuantoConnector that connects to the specified URL and Cuanto project.
 	 *
 	 * @param cuantoServerUrl The URL of the Cuanto server instance.
 	 * @param projectKey      The key for the project that this client will be utilizing.
@@ -61,11 +63,13 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new instance of CuantoConnector that connects to the specified URL and Cuanto project via a HTTP proxy server.
+	 * Creates a new instance of CuantoConnector that connects to the specified URL and Cuanto project via a HTTP proxy
+	 * server.
+	 *
 	 * @param cuantoServerUrl The URL of the Cuanto server instance.
-	 * @param projectKey The key for the project that this client will be utilizing.
-	 * @param proxyHost The hostname of the HTTP proxy.
-	 * @param proxyPort The port for the HTTP proxy.
+	 * @param projectKey      The key for the project that this client will be utilizing.
+	 * @param proxyHost       The hostname of the HTTP proxy.
+	 * @param proxyPort       The port for the HTTP proxy.
 	 * @return The new CuantoConnector instance.
 	 */
 	public static CuantoConnector newInstance(String cuantoServerUrl, String projectKey, String proxyHost,
@@ -80,7 +84,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get the TestRun from the Cuanto server.
+	 * Gets the TestRun from the Cuanto server.
 	 *
 	 * @param testRunId The TestRun to retrieve.
 	 * @return The retrieved TestRun.
@@ -105,9 +109,9 @@ public class CuantoConnector {
 
 
 	/**
-	 * A TestRun represents tests that were executed together. Create a new TestRun on the Cuanto server using the values
-	 * provided. The projectKey will be assigned the same projectKey as this CuantoConnector. The testRun passed in will
-	 * have it's id value assigned to the server-assigned ID of the created TestRun.
+	 * Creates a new TestRun on the Cuanto server using the values provided. A TestRun represents tests that were
+	 * executed together. The projectKey will be assigned the same projectKey as this CuantoConnector. The testRun
+	 * passed in will have it's id value assigned to the server-assigned ID of the created TestRun.
 	 *
 	 * @param testRun The test run to create.
 	 * @return The server-assigned ID of the created TestRun.
@@ -138,7 +142,6 @@ public class CuantoConnector {
 
 
 	/**
-	 *
 	 * @return An HTTP client, optionally configured to use a proxy.
 	 */
 	private HttpClient getHttpClient() {
@@ -151,9 +154,8 @@ public class CuantoConnector {
 
 
 	/**
-	 *
 	 * @param methodType HTTP_GET or HTTP_POST
-	 * @param url The URL for this method to contact
+	 * @param url        The URL for this method to contact
 	 * @return The HTTP method configured with the correct User-Agent header.
 	 */
 	private HttpMethod getHttpMethod(String methodType, String url) {
@@ -171,7 +173,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Update the TestRun with this id on the Cuanto Server to have all the properties specified in this TestRun. If the
+	 * Updates the TestRun with this id on the Cuanto Server to have all the properties specified in this TestRun. If the
 	 * TestRun argument does not already have an id, it needs to be retrieved from the server as you can't set the ID on a
 	 * TestRun directly. You can either retrieve the TestRun from the server by querying by ID or other values. If the
 	 * TestRun does not already exist, then use createTestRun instead.
@@ -201,7 +203,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new TestOutcome for the specified TestRun on the Cuanto server using the details provided.  The ID value on
+	 * Creates a new TestOutcome for the specified TestRun on the Cuanto server using the details provided.  The ID value on
 	 * the testOutcome argument will be set upon successful creation.
 	 *
 	 * @param testOutcome The TestOutcome to be created on the Cuanto server.
@@ -234,7 +236,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Create a new TestOutcome that is not associated with any TestRun. This is probably not what you want, use
+	 * Creates a new TestOutcome that is not associated with any TestRun. This is probably not what you want, use
 	 * createTestOutcome(TestOutcomeDetails testOutcomeDetails, Long testRunId) instead.
 	 *
 	 * @param testOutcome The details that should be assigned to the new TestOutcome.
@@ -247,14 +249,15 @@ public class CuantoConnector {
 
 
 	/**
-	 * Update a TestOutcome on the Cuanto server with the details provided.
+	 * Updates a TestOutcome on the Cuanto server with the details provided.
 	 *
 	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome.
 	 */
 	public void updateTestOutcome(TestOutcome testOutcome) {
 		if (testOutcome.getId() == null) {
-			throw new IllegalArgumentException("The specified TestOutcome has no ID value. Any TestOutcome you wish to" +
-				" update should be fetched from the server first.");
+			throw new IllegalArgumentException(
+				"The specified TestOutcome has no ID value. Any TestOutcome you wish to" +
+					" update should be fetched from the server first.");
 		}
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/updateTestOutcome");
 		try {
@@ -273,7 +276,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get the specified TestOutcome from the server.
+	 * Gets the specified TestOutcome from the server.
 	 *
 	 * @param testOutcomeId The ID of the TestOutcome to retrieve.
 	 * @return The retrieved TestOutcome.
@@ -301,7 +304,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get all TestOutcomes for the specified TestCase in the specified TestRun. In most normal Cuanto usages, a TestRun
+	 * Gets all TestOutcomes for the specified TestCase in the specified TestRun. In most normal Cuanto usages, a TestRun
 	 * will only have a single TestOutcome per TestCase. TestOutcomes will be in descending order by their finishedAt
 	 * values (if they have them) or dateCreated otherwise.
 	 *
@@ -311,12 +314,14 @@ public class CuantoConnector {
 	 */
 	public List<TestOutcome> getTestCaseOutcomesForTestRun(TestCase testCase, TestRun testRun) {
 		if (testRun.id == null) {
-			throw new IllegalArgumentException("The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
+			throw new IllegalArgumentException(
+				"The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
 		}
 		if (testCase.id == null) {
-			throw new IllegalArgumentException("The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
+			throw new IllegalArgumentException(
+				"The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
 		}
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,	getCuantoUrl() + "/api/getTestCaseOutcomesForTestRun");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestCaseOutcomesForTestRun");
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("testRun", testRun.id.toString()),
 			new NameValuePair("testCase", testCase.id.toString())
@@ -327,8 +332,7 @@ public class CuantoConnector {
 				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
 				JSONArray jsonOutcomes = jsonResponse.getJSONArray("testOutcomes");
 				List<TestOutcome> outcomesToReturn = new ArrayList<TestOutcome>(jsonOutcomes.size());
-				for (Object obj: jsonOutcomes)
-				{
+				for (Object obj : jsonOutcomes) {
 					JSONObject jsonOutcome = (JSONObject) obj;
 					outcomesToReturn.add(TestOutcome.fromJSON(jsonOutcome));
 				}
@@ -347,18 +351,19 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get all TestOutcomes for the specified TestRun. 
+	 * Gets all TestOutcomes for the specified TestRun.
 	 *
 	 * @param testRun The TestRun for which to retrieve TestOutcomes.
 	 * @return The TestOutcomes for the specified TestRun, in the order they were added to the server.
 	 */
 	public List<TestOutcome> getAllTestOutcomesForTestRun(TestRun testRun) {
 		if (testRun.id == null) {
-			throw new IllegalArgumentException("The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
+			throw new IllegalArgumentException(
+				"The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
 		}
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,	getCuantoUrl() + "/api/getAllTestOutcomes");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllTestOutcomes");
 		get.setQueryString(new NameValuePair[]{
-			new NameValuePair("id", testRun.id.toString()), 
+			new NameValuePair("id", testRun.id.toString()),
 			new NameValuePair("sort", "dateCreated"),
 			new NameValuePair("order", "asc")
 		});
@@ -368,8 +373,7 @@ public class CuantoConnector {
 				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
 				JSONArray jsonOutcomes = jsonResponse.getJSONArray("testOutcomes");
 				List<TestOutcome> outcomesToReturn = new ArrayList<TestOutcome>(jsonOutcomes.size());
-				for (Object obj: jsonOutcomes)
-				{
+				for (Object obj : jsonOutcomes) {
 					JSONObject jsonOutcome = (JSONObject) obj;
 					outcomesToReturn.add(TestOutcome.fromJSON(jsonOutcome));
 				}
@@ -388,15 +392,17 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get all TestOutcomes for the specified TestCase - returned in descending ordered by dateCreated.
+	 * Gets all TestOutcomes for the specified TestCase - returned in descending ordered by dateCreated.
+	 *
 	 * @param testCase The TestCase for which to fetch TestOutcomes.
 	 * @return The TestOutcomes for the specified TestCase, in descending order by dateCreated.
 	 */
 	public List<TestOutcome> getAllTestOutcomesForTestCase(TestCase testCase) {
 		if (testCase.id == null) {
-			throw new IllegalArgumentException("The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
+			throw new IllegalArgumentException(
+				"The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
 		}
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET,	getCuantoUrl() + "/api/getAllTestOutcomes");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllTestOutcomes");
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("testCase", testCase.id.toString()),
 			new NameValuePair("sort", "dateCreated"),
@@ -408,8 +414,7 @@ public class CuantoConnector {
 				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
 				JSONArray jsonOutcomes = jsonResponse.getJSONArray("testOutcomes");
 				List<TestOutcome> outcomesToReturn = new ArrayList<TestOutcome>(jsonOutcomes.size());
-				for (Object obj: jsonOutcomes)
-				{
+				for (Object obj : jsonOutcomes) {
 					JSONObject jsonOutcome = (JSONObject) obj;
 					outcomesToReturn.add(TestOutcome.fromJSON(jsonOutcome));
 				}
@@ -426,8 +431,9 @@ public class CuantoConnector {
 		}
 	}
 
+
 	/**
-	 * Get all TestRuns that include the specified TestProperties. The properties can be a subset of a TestRun's
+	 * Gets all TestRuns that include the specified TestProperties. The properties can be a subset of a TestRun's
 	 * properties, but all of the specified properties must match for a TestRun to be returned.
 	 *
 	 * @param testProperties The properties for which to search. This is a Map with property names as the keys and the
@@ -446,7 +452,7 @@ public class CuantoConnector {
 			int httpStatus = getHttpClient().executeMethod(post);
 			if (httpStatus == HttpStatus.SC_OK) {
 				JSONObject jsonReturned = JSONObject.fromObject(getResponseBodyAsString(post));
-				List <TestRun> testRuns = new ArrayList<TestRun>();
+				List<TestRun> testRuns = new ArrayList<TestRun>();
 				if (jsonReturned.has("testRuns")) {
 					JSONArray returnedRuns = jsonReturned.getJSONArray("testRuns");
 					for (Object run : returnedRuns) {
@@ -457,8 +463,7 @@ public class CuantoConnector {
 					throw new RuntimeException("JSON response didn't have testRuns node");
 				}
 				return testRuns;
-			}
-			else {
+			} else {
 				throw new RuntimeException("Getting the TestRun failed with HTTP status code " + httpStatus + ": \n" +
 					getResponseBodyAsString(post));
 			}
@@ -473,7 +478,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get a test case on the server that corresponds to the specified values.
+	 * Gets a test case on the server that corresponds to the specified values.
 	 *
 	 * @param packageName A test package is the namespace for a particular test. In the case of JUnit or TestNG, it would
 	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass
@@ -491,23 +496,23 @@ public class CuantoConnector {
 			new NameValuePair("testName", testName),
 			new NameValuePair("parameters", parameters)
 		});
-		
+
 		try {
 			int httpStatus = getHttpClient().executeMethod(get);
 			if (httpStatus == HttpStatus.SC_OK) {
 				return TestCase.fromJSON(getResponseBodyAsString(get));
 			} else {
 				throw new RuntimeException("Getting the TestCase failed with HTTP status code " + httpStatus + ":\n" +
-				getResponseBodyAsString(get));
+					getResponseBodyAsString(get));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} 
+		}
 	}
 
 
 	/**
-	 * Get a test case on the server that corresponds to the specified values.
+	 * Gets a test case on the server that corresponds to the specified values.
 	 *
 	 * @param testPackage A test package is the namespace for a particular test. In the case of JUnit or TestNG, it would
 	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass.
@@ -521,19 +526,21 @@ public class CuantoConnector {
 
 	/**
 	 * Fetches the test output for the specified test outcome from the Cuanto server.
+	 *
 	 * @param testOutcome The test outcome for which to retrieve output.
 	 * @return The output for the given test outcome.
 	 */
 	public String getTestOutput(TestOutcome testOutcome) {
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutput/" + 
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutput/" +
 			testOutcome.id.toString());
 		try {
 			int httpStatus = getHttpClient().executeMethod(get);
 			if (httpStatus == HttpStatus.SC_OK) {
 				return getResponseBodyAsString(get);
 			} else {
-				throw new RuntimeException("Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
-				getResponseBodyAsString(get));
+				throw new RuntimeException(
+					"Getting the TestOutcome failed with HTTP status code " + httpStatus + ":\n" +
+						getResponseBodyAsString(get));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -542,7 +549,8 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get the URL of the Cuanto server that this instance was configured to communicate with.
+	 * Gets the URL of the Cuanto server that this instance was configured to communicate with.
+	 *
 	 * @return The URL of the Cuanto server
 	 */
 	public String getCuantoUrl() {
@@ -552,6 +560,7 @@ public class CuantoConnector {
 
 	/**
 	 * Set the URL of the Cuanto server that this instance should communicate with.
+	 *
 	 * @param cuantoUrl The URL of the Cuanto server.
 	 */
 	void setCuantoUrl(String cuantoUrl) {
@@ -588,7 +597,8 @@ public class CuantoConnector {
 
 
 	/**
-	 * Get the project key for the project this connector is configured to connect to.
+	 * Gets the project key for the project this connector is configured to connect to.
+	 *
 	 * @return The project key.
 	 */
 	public String getProjectKey() {
@@ -602,8 +612,9 @@ public class CuantoConnector {
 
 
 	/**
-	 * This is here to substitute for HttpMethod.getResponseBodyAsString(), which logs an annoying error message each
-	 * time it's called.
+	 * This is here to substitute for HttpMethod.getResponseBodyAsString(), which logs an annoying error message each time
+	 * it's called.
+	 *
 	 * @param method The method for which to get the response.
 	 * @return The full response body as a String.
 	 * @throws IOException If something bad happened.

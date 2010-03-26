@@ -4,9 +4,8 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONNull;
 
 /**
- * An immutable class that represents a Cuanto server-side TestCase.
+ * An class that represents a Cuanto server-side TestCase.
  */
-
 public class TestCase {
 	String projectKey;
 	String packageName;
@@ -15,42 +14,85 @@ public class TestCase {
 	String parameters;
 	String description;
 	Long id;
-	
+
+
 	TestCase() {
 		// no public constructor
 	}
 
 
+	/**
+	 * Gets the projectKey for this TestCases' project. Each TestCase is associated with a single project on the Cuanto
+	 * server. This value will only be set if the TestCase was retrieved from the Cuanto server.
+	 *
+	 * @return The projectKey of the TestCase.
+	 */
 	public String getProjectKey() {
 		return projectKey;
 	}
 
 
+	/**
+	 * Gets the packageName associated with this test. A package is a namespace for a particular test. In java (for
+	 * instance, JUnit and TestNG), it will most often correspond to the fully-qualified java class name of a particular
+	 * test method. For example, org.myorganization.my.package.TestClassName.
+	 *
+	 * @return The package name of this TestCase.
+	 */
 	public String getPackageName() {
 		return packageName;
 	}
 
 
+	/**
+	 * Gets the TestName associated with this TestCase. This will almost always be the name of the test method.
+	 *
+	 * @return The TestName of this TestCase.
+	 */
 	public String getTestName() {
 		return testName;
 	}
 
 
+	/**
+	 * Gets the fullName associated with this TestCase. The full name is usually the packageName plus the testName,
+	 * concatenated with a "."  Only TestCases retrieved from the Cuanto server will have this value set.
+	 *
+	 * @return The fullName of this TestCase or null if the TestCase was not retrieved from the server.
+	 */
 	public String getFullName() {
 		return fullName;
 	}
 
 
+	/**
+	 * Gets the parameters associated with this TestCase. Parameters is a string that should represent the actual parameters
+	 * passed to the TestCase. In the case of JUnit and TestNG, this is the parameters joined by ", ", for instance "arg1,
+	 * arg2, arg3".
+	 *
+	 * @return The parameters associated with this TestCase.
+	 */
 	public String getParameters() {
 		return parameters;
 	}
 
 
+	/**
+	 * Gets the description of this TestCase. Description is an arbitrary string that can be associated with a TestCase.
+	 *
+	 * @return The description associated with this TestCase.
+	 */
 	public String getDescription() {
 		return description;
 	}
 
 
+	/**
+	 * Gets the server-assigned ID for this TestCase. TestCases will not have this value assigned unless they were retrieved
+	 * from the Cuanto server.
+	 *
+	 * @return The server-assigned ID for this TestCase or null if the TestCase was not retrieved from the server.
+	 */
 	public Long getId() {
 		return id;
 	}
@@ -91,12 +133,18 @@ public class TestCase {
 	}
 
 
+	/**
+	 * Determine if this TestCase is equal to another TestCase.
+	 *
+	 * @param otherTestCase The TestCase for comparison.
+	 * @return true if this TestCase is equal to the other TestCase, false otherwise.
+	 */
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+	public boolean equals(Object otherTestCase) {
+		if (this == otherTestCase) return true;
+		if (otherTestCase == null || getClass() != otherTestCase.getClass()) return false;
 
-		TestCase testCase = (TestCase) o;
+		TestCase testCase = (TestCase) otherTestCase;
 
 		if (description != null ? !description.equals(testCase.description) : testCase.description != null)
 			return false;
@@ -125,7 +173,7 @@ public class TestCase {
 	}
 
 
-	public static TestCase fromJSON(String jsonString) {
+	static TestCase fromJSON(String jsonString) {
 		JSONObject jsonTestCase = JSONObject.fromObject(jsonString);
 		return fromJSON(jsonTestCase);
 	}

@@ -27,7 +27,7 @@ public class TestRun {
 
 
 	/**
-	 * Create a new TestRun object with the specified dateExecuted. Note the TestRun is not added to the Cuanto server
+	 * Creates a new TestRun object with the specified dateExecuted. Note the TestRun is not added to the Cuanto server
 	 * until you call CuantoConnector.addTestRun().
 	 *
 	 * @param dateExecuted The timestamp for when the TestRun executed.
@@ -83,7 +83,8 @@ public class TestRun {
 
 
 	/**
-	 * Get a JSON representation of this TestRun.
+	 * Gets a JSON representation of this TestRun.
+	 *
 	 * @return The JSON string representing the TestRun.
 	 */
 	public String toJSON() {
@@ -120,9 +121,10 @@ public class TestRun {
 
 
 	/**
-	 * Add or update a TestProperty. This change is not reflected on the Cuanto service until you create or update the
+	 * Adds or updates a TestProperty. This change is not reflected on the Cuanto service until you create or update the
 	 * TestRun with the CuantoConnector.
-	 * @param name The name of the property
+	 *
+	 * @param name  The name of the property
 	 * @param value The value of the property
 	 * @return The TestRun associated with the TestProperty
 	 */
@@ -133,8 +135,9 @@ public class TestRun {
 
 
 	/**
-	 * Delete a TestProperty from this TestRun object. This change is not reflected on the Cuanto server until you
-	 * create or update the TestRun with the CuantoConnector.
+	 * Deletes a TestProperty from this TestRun object. This change is not reflected on the Cuanto server until you create
+	 * or update the TestRun with the CuantoConnector.
+	 *
 	 * @param name The TestProperty name to delete.
 	 */
 	public void deleteTestProperty(String name) {
@@ -143,9 +146,10 @@ public class TestRun {
 
 
 	/**
-	 * Add or update a Link. This change is not reflected on the Cuanto server until you create or update the TestRun
-	 * with the CuantoConnector.
-	 * @param url The url of the link
+	 * Adds or updates a Link. This change is not reflected on the Cuanto server until you create or update the TestRun with
+	 * the CuantoConnector.
+	 *
+	 * @param url         The url of the link
 	 * @param description The description of the link
 	 * @return The TestRun associated with this link
 	 */
@@ -156,8 +160,9 @@ public class TestRun {
 
 
 	/**
-	 * Delete a Link from this TestRun object. This change is not reflected on the Cuanto server until you
-	 * create or update the TestRun with the CuantoConnector.
+	 * Deletes a Link from this TestRun object. This change is not reflected on the Cuanto server until you create or update
+	 * the TestRun with the CuantoConnector.
+	 *
 	 * @param url The url of the link to delete.
 	 */
 	public void deleteLink(String url) {
@@ -165,41 +170,84 @@ public class TestRun {
 	}
 
 
+	/**
+	 * Gets the projectKey for this TestRun's project.
+	 *
+	 * @return The projectKey associated with this TestRun's project.
+	 */
 	public String getProjectKey() {
 		return projectKey;
 	}
 
 
+	/**
+	 * Gets the note associated with this TestRun.
+	 * @return The note associated with this TestRun.
+	 */
 	public String getNote() {
 		return note;
 	}
 
 
+	/**
+	 * Gets the date this TestRun was added to the Cuanto server. This will only be populated if the TestRun was
+	 * retrieved from the Cuanto server.
+	 *
+	 * @return The date this TestRun was added to the Cuanto server or null if this TestRun was not retrieved from the
+	 * server.
+	 */
 	public Date getDateCreated() {
 		return dateCreated;
 	}
 
 
+	/**
+	 * Gets the date this TestRun was executed.
+	 *
+	 * @return The date this TestRun was executed.
+	 */
 	public Date getDateExecuted() {
 		return dateExecuted;
 	}
 
 
+	/**
+	 * Gets whether this TestRun is considered valid. Validity is determined by a user setting the TestRun's valid flag.
+	 * For example, a user may flag a TestRun as invalid if the execution aborted partway through or if an environmental
+	 * problem caused a massive number of failures.
+	 *
+	 * @return Whether this TestRun is considered valid.
+	 */
 	public Boolean isValid() {
 		return valid;
 	}
 
 
+	/**
+	 * Gets any hyperlinks associated with this TestRun.
+	 *
+	 * @return A map where each entry's key is a URL and it's value is a description of that URL.
+	 */
 	public Map getLinks() {
 		return Collections.unmodifiableMap(links);
 	}
 
 
+	/**
+	 * Gets any TestProperties associated with this TestRun.
+	 *
+	 * @return A map where each entry's key is a property name and it's value is the property's value.
+	 */
 	public Map getTestProperties() {
 		return Collections.unmodifiableMap(testProperties);
 	}
 
 
+	/**
+	 * Gets the server-assigned ID of this TestRun. Populated only if the TestRun was retrieved from the Cuanto server.
+	 *
+	 * @return The server-assigned ID of this TestRun or null if the TestRun was not retrieved from the Cuanto server.
+	 */
 	public Long getId() {
 		return id;
 	}
@@ -210,6 +258,12 @@ public class TestRun {
 	}
 
 
+	/**
+	 * Sets a note to be associated with this TestRun. The TestRun will not be updated on the server until you call
+	 * CuantoConnector.addTestRun() or CuantoConnector.updateTestRun() with this TestRun as an argument.
+	 *
+	 * @param note The note to associate with the TestRun.
+	 */
 	public void setNote(String note) {
 		this.note = note;
 	}
@@ -220,21 +274,38 @@ public class TestRun {
 	}
 
 
+	/**
+	 * Sets the date this TestRun was executed.
+	 *
+	 * @param dateExecuted The date this TestRun was executed.
+	 */
 	public void setDateExecuted(Date dateExecuted) {
 		this.dateExecuted = dateExecuted;
 	}
 
 
+	/**
+	 * Sets whether this TestRun should be considered valid. Validity is determined by a user setting the TestRun's valid flag.
+	 * For example, a user may flag a TestRun as invalid if the execution aborted partway through or if an environmental
+	 * problem caused a massive number of failures.
+	 *
+	 * @param valid If the TestRun should be considered valid.
+	 */
 	public void setValid(Boolean valid) {
 		this.valid = valid;
 	}
 
-	
+
 	void setId(Long id) {
 		this.id = id;
 	}
 
 
+	/**
+	 * Gets the last time this TestRun was updated on the Cuanto server.
+	 *
+	 * @return The last time this TestRun was updated on the Cuanto server.
+	 */
 	public Date getLastUpdated() {
 		return lastUpdated;
 	}

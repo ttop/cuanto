@@ -17,22 +17,37 @@ public class TestResult {
 	public static final TestResult Unexecuted = new TestResult("Unexecuted");
 
 
+	/**
+	 * Creates a new TestResult object for this string value. This does not create a TestResult on the Cuanto server, it
+	 * merely instantiates a TestResult object.
+	 * @param result The string for this TestResult.
+	 */
 	TestResult(String result) {
 		this.result = result;
 	}
 
 
+	/**
+	 *
+	 * @return The string value of this TestResult.
+	 */
 	public String toString() {
 		return result;
 	}
 
+
+	/**
+	 * Gets a list of known valid TestResults. These are the default TestResults that Cuanto provides, it is possible
+	 * that additional TestResults have been defined for the Cuanto instance.
+	 * @return a list of known valid TestResults.
+	 */
 	public static List<TestResult> getResultList() {
 		return Arrays.asList(Pass, Fail, Error, Ignore, Skip, Unexecuted);
 	}
 
 	/**
-	 * Create a TestResult for a custom result. This probably isn't what you want -- you should favor the static
-	 * TestResult members on this class. This method is here for the rare case when a Cuanto server has non-default
+	 * Creates a TestResult for a custom result. This probably isn't what you want -- you should favor the static
+	 * TestResult members on this class or valueOf(). This method is here for the rare case when a Cuanto server has non-default
 	 * TestResults that aren't named the same as the static members on this class. If you specify a TestResult
 	 * that doesn't exist, you will get an error when you attempt to create a TestOutcome with that result.
 	 * Consider yourself warned.
@@ -45,7 +60,7 @@ public class TestResult {
 
 
 	/**
-	 * Create a TestResult for this result name. This only works for the static values defined on this TestResult object,
+	 * Creates a TestResult for this result name. This only works for the static values defined on this TestResult class,
 	 * not custom TestResults -- see forResult() if you wish to use custom TestResults.
 	 *
 	 * @param result The string value of a TestResult. Case-insensitive.
