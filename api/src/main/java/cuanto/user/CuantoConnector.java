@@ -21,18 +21,15 @@
 
 package cuanto.user;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -270,6 +267,66 @@ public class CuantoConnector {
 
 
 	/**
+	 * Adds a result file to a TestRun on the Cuanto server. This adds a test result file to the specified TestRun. A
+	 * test result file is not an arbitrary file, but rather it needs to be a file that is in the correct result file
+	 * format for the Cuanto project type. For instance, if the Cuanto project is a JUnit project, then it needs to be
+	 * a JUnit result file.
+	 * @param file A test result file.
+	 * @param testRun The TestRun for adding results.
+	 * @throws FileNotFoundException If the file is not found.
+	 */
+	public void addFileToTestRun(File file, TestRun testRun) throws FileNotFoundException {
+		List<File> files = new ArrayList<File>();
+		files.add(file);
+		addFilesToTestRun(files, testRun);
+	}
+
+
+	/**
+	 * Adds results file to a TestRun on the Cuanto server. This adds a test result files to the specified TestRun. A
+	 * test result file is not an arbitrary file, but rather it needs to be a file that is in the correct result file
+	 * format for the Cuanto project type. For instance, if the Cuanto project is a JUnit project, then it needs to be
+	 * a JUnit result file.
+	 * @param files Test Result files to add.
+	 * @param testRun The TestRun for adding results.
+	 * @throws FileNotFoundException If any of the files are not found.
+	 */
+	public void addFilesToTestRun(List<File> files, TestRun testRun) throws FileNotFoundException {
+		String fullUri = cuantoUrl + "/testRun/submitFile";
+		PostMethod post = (PostMethod)getHttpMethod(HTTP_POST, fullUri);
+
+		if (testRun.id == null) {
+			addTestRun(testRun);
+		}
+
+		post.addRequestHeader("Cuanto-TestRun-Id", testRun.id.toString());
+
+		List<FilePart> parts = new ArrayList<FilePart>();
+		for (File file : files) {
+			parts.add(new FilePart(file.getName(), file));
+		}
+		Part[] fileParts = parts.toArray(new Part[]{});
+		post.setRequestEntity(new MultipartRequestEntity(fileParts, post.getParams()));
+
+		int responseCode;
+		String responseText;
+		try {
+			HttpClient hclient = getHttpClient();
+			responseCode = hclient.executeMethod(post);
+			responseText = getResponseBodyAsString(post);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			post.releaseConnection();
+		}
+		if (responseCode != HttpStatus.SC_OK) {
+			throw new RuntimeException("HTTP Response code " + responseCode + ": " + responseText);
+		}
+	}
+
+
+
+	/**
 	 * Updates a TestOutcome on the Cuanto server with the details provided.
 	 *
 	 * @param testOutcome The new details that will replace the corresponding values of the existing TestOutcome.
@@ -386,6 +443,8 @@ public class CuantoConnector {
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("id", testRun.id.toString()),
 			new NameValuePair("sort", "dateCreated"),
+			new NameValuePair("sort", "finishedAt"),
+			new NameValuePair("order", "asc"),
 			new NameValuePair("order", "asc")
 		});
 		try {
@@ -427,6 +486,8 @@ public class CuantoConnector {
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("testCase", testCase.id.toString()),
 			new NameValuePair("sort", "dateCreated"),
+			new NameValuePair("order", "desc"),
+			new NameValuePair("sort", "finishedAt"),
 			new NameValuePair("order", "desc")
 		});
 		try {

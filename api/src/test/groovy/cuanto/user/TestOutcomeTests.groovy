@@ -35,7 +35,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -69,7 +69,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -101,7 +101,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -114,7 +114,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		Long outcomeId = client.addTestOutcome(outcome, run)
 
 		outcome.bug = new Bug("MyOtherBug", "http://jira.codehaus.org/CUANTO-2")
-		outcome.analysisState = "Other"
+		outcome.analysisState = AnalysisState.Other
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 2
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -146,7 +146,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -157,7 +157,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcomeTwo = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcomeTwo.bug = new Bug("MyBugTwo", "http://jira.codehaus.org/CUANTO-2")
-		outcomeTwo.analysisState = "Bug"
+		outcomeTwo.analysisState = AnalysisState.Bug
 		outcomeTwo.startedAt = new Date() + 1
 		outcomeTwo.finishedAt = new Date() + 2
 		outcomeTwo.duration = outcomeTwo.finishedAt.time - outcomeTwo.startedAt.time
@@ -182,7 +182,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -193,7 +193,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcomeTwo = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcomeTwo.bug = new Bug("MyBugTwo", "http://jira.codehaus.org/CUANTO-2")
-		outcomeTwo.analysisState = "Bug"
+		outcomeTwo.analysisState = AnalysisState.Bug
 		outcomeTwo.startedAt = new Date() + 1
 		outcomeTwo.finishedAt = new Date() + 2
 		outcomeTwo.duration = outcomeTwo.finishedAt.time - outcomeTwo.startedAt.time
@@ -202,13 +202,31 @@ public class TestOutcomeTests extends GroovyTestCase {
 		outcomeTwo.testOutput = "Fantastic test output two"
 
 		Long outcomeId = client.addTestOutcome(outcome)
+		sleep 2000
 		client.addTestOutcome(outcomeTwo)
 
 		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 		List<TestOutcome> outcomes = client.getAllTestOutcomesForTestCase(fetchedOutcome.testCase)
 		assertTrue "Wrong number of TestOutcomes", outcomes.size() >= 2
-		assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
-		assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
+		
+	    int indexOfOutcomeOne = null;
+		int indexOfOutcomeTwo = null;
+
+		outcomes.eachWithIndex { it, indx ->
+			if (it.id == outcome.id) {
+				indexOfOutcomeOne = indx
+			}
+			if (it.id == outcomeTwo.id) {
+				indexOfOutcomeTwo = indx
+			}
+		}
+		if (indexOfOutcomeOne == null) {
+			fail "Outcome one not found"
+		}
+		if (indexOfOutcomeTwo == null) {
+			fail "Outcome two not found"
+		}
+		assertTrue "Outcomes not in correct order", indexOfOutcomeTwo < indexOfOutcomeOne
 	}
 
 
@@ -216,7 +234,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		outcome.analysisState = "Bug"
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
@@ -227,7 +245,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestOutcome outcomeTwo = TestOutcome.newInstance("org.codehaus.cuanto", "testAnother", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcomeTwo.bug = new Bug("MyBugTwo", "http://jira.codehaus.org/CUANTO-2")
-		outcomeTwo.analysisState = "Bug"
+		outcomeTwo.analysisState = AnalysisState.Bug
 		outcomeTwo.startedAt = new Date() + 1
 		outcomeTwo.finishedAt = new Date() + 2
 		outcomeTwo.duration = outcomeTwo.finishedAt.time - outcomeTwo.startedAt.time
@@ -238,6 +256,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
 		client.addTestOutcome(outcome, run)
+		sleep 1000
 		client.addTestOutcome(outcomeTwo, run)
 
 		List<TestOutcome> outcomes = client.getAllTestOutcomesForTestRun(run)
