@@ -22,6 +22,7 @@ package cuanto.user;
 
 
 import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 import java.util.*;
 import java.text.SimpleDateFormat;
@@ -36,9 +37,9 @@ public class TestRun {
 	Date dateCreated;
 	Date dateExecuted;
 	Date lastUpdated;
-	Boolean valid;
-	Map<String, String> links;
-	Map<String, String> testProperties;
+	Boolean valid = true;
+	Map<String, String> links = new HashMap<String, String>();
+	Map<String, String> testProperties = new HashMap<String, String>();
 	Long id;
 
 
@@ -57,17 +58,11 @@ public class TestRun {
 			throw new NullPointerException("null is not a valid value for dateExecuted");
 		}
 		this.dateExecuted = dateExecuted;
-		links = new HashMap<String, String>();
-		testProperties = new HashMap<String, String>();
-		valid = true;
 	}
 
 
 	TestRun(String projectKey) {
 		this.projectKey = projectKey;
-		links = new HashMap<String, String>();
-		testProperties = new HashMap<String, String>();
-		valid = true;
 	}
 
 
@@ -92,10 +87,10 @@ public class TestRun {
 			testRun.addLink(url, links.getString(url));
 		}
 
-		JSONObject props = jsonTestRun.getJSONObject("testProperties");
-		for (Object nameObj : props.keySet()) {
-			String name = (String) nameObj;
-			testRun.addTestProperty(name, props.getString(name));
+		JSONArray props = jsonTestRun.getJSONArray("testProperties");
+		for (Object propObj : props) {
+			JSONObject prop = (JSONObject) propObj;
+			testRun.addTestProperty(prop.getString("name"), prop.getString("value"));
 		}
 
 		return testRun;
