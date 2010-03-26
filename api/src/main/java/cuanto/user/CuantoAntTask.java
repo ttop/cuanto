@@ -157,15 +157,15 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 
 	private void processDeprecatedAttributes(TestRun testRun) {
 		if (build != null) {
-			testRun.testProperties.put("build", build);
+			testRun.testProperties.put("Build", build);
 			logDeprecatedUsage("build");
 		}
 		if (milestone != null) {
-			testRun.testProperties.put("milestone", milestone);
+			testRun.testProperties.put("Milestone", milestone);
 			logDeprecatedUsage("milestone");
 		}
 		if (targetEnv != null) {
-			testRun.testProperties.put("targetEnv", targetEnv);
+			testRun.testProperties.put("Target Environment", targetEnv);
 			logDeprecatedUsage("targetEnv");
 		}
 	}
