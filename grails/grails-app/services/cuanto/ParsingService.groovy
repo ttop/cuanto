@@ -55,9 +55,9 @@ class ParsingService {
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
-		for (TestOutcomeApi TestOutcomeApi in outcomes) {
+		for (TestOutcomeApi testOutcomeApi in outcomes) {
 			numberOfOutcomes++
-			def testOutcome = processParsableOutcome(TestOutcomeApi, testRun, project)
+			def testOutcome = processParsableOutcome(testOutcomeApi, testRun, project)
 			testOutcomesToSave.add(testOutcome)
 		}
 
@@ -67,12 +67,6 @@ class ParsingService {
 			statisticService.queueTestRunStats(testRun)
 		}
 		return testRun
-	}
-
-
-	TestOutcome parseTestOutcome(InputStream inputStream, Long testRunId, Long projectId = null) {
-		TestOutcomeApi testOutcomeApi = (TestOutcomeApi) xstream.fromXML(inputStream)
-		return parseTestOutcome(testOutcomeApi, testRunId, projectId)
 	}
 
 
@@ -193,36 +187,6 @@ class ParsingService {
 			def formatter = new SimpleDateFormat(Defaults.fullDateFormat)
 			return formatter.parse(jsonTestOutcome.getString(fieldName))
 		}
-	}
-
-
-	TestOutcome parseTestOutcome(TestOutcomeApi testOutcomeApi, testRunId, projectId = null) {
-		def testRun = null
-		def project = null
-
-		if (testRunId) {
-			testRun = TestRun.get(testRunId)
-		}
-
-		if (testRun) {
-			project = testRun.project
-		} else if (projectId) {
-			project = Project.get(projectId)
-		} else {
-			throw new ParsingException("No TestRun ID or Project ID was provided")
-		}
-
-		def testOutcome = processParsableOutcome(testOutcomeApi, testRun, project)
-
-		if (testOutcomeApi.bug) {
-			throw new RuntimeException("bug parsing from TestOutcomeApi not yet implemented")
-		}
-
-		dataService.saveTestOutcomes([testOutcome])
-		if (testRun) {
-			statisticService.queueTestRunStats(testRun)
-		}
-		return testOutcome
 	}
 
 

@@ -148,35 +148,6 @@ class TestRunController {
 	}
 
 
-	def submitSingleTest = {
-		def testRunId = null
-		def projectId = null
-
-		String testRunHeader = request.getHeader("Cuanto-TestRun-Id")
-		if (testRunHeader) {
-			testRunId = Long.valueOf(testRunHeader)
-		}
-
-		String projectHeader = request.getHeader("Cuanto-Project-Id")
-		if (projectHeader) {
-			projectId = Long.valueOf(projectHeader)
-		}
-
-		def testOutcome
-		try {
-			testOutcome = parsingService.parseTestOutcome(request.getInputStream(), testRunId, projectId)
-			render testOutcome?.id
-
-		} catch (ParsingException e) {
-		    response.status = response.SC_BAD_REQUEST
-			render e.message
-		} catch (CuantoException e) {
-			response.status = response.SC_INTERNAL_SERVER_ERROR
-			render e.message
-		}
-	}
-
-
 	def outcomes = {
 		Map results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
 

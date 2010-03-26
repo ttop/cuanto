@@ -143,43 +143,6 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 	}
 
-	void testUpdateTestOutcome() {
-		Project proj = to.project
-		dataService.saveDomainObject proj, true
-
-		TestOutcomeApi origApiOutcome = new TestOutcomeApi()
-		origApiOutcome.testCase = new TestCaseApi(project: proj.projectKey, packageName: "foo.bar", testName: "testUpdate")
-		origApiOutcome.setDuration 200
-		origApiOutcome.setTestResult "Pass"
-		origApiOutcome.setNote to.wordGen.getSentence(13)
-		origApiOutcome.startedAt = new Date() - 3
-		origApiOutcome.finishedAt = new Date() - 2
-
-		TestOutcome createdOutcome = parsingService.parseTestOutcome(origApiOutcome, null, proj.id)
-
-		TestOutcomeApi changedApiOutcome = new TestOutcomeApi()
-		["testCase", "duration", "testResult", "note"].each {
-			changedApiOutcome.setProperty it, origApiOutcome.getProperty(it)
-		}
-
-		changedApiOutcome.note = "New Note!"
-		changedApiOutcome.testOutput = to.wordGen.getSentence(15)
-		changedApiOutcome.id = createdOutcome.id
-		changedApiOutcome.testResult = "Fail"
-		changedApiOutcome.startedAt = new Date() - 2
-		changedApiOutcome.finishedAt = new Date() - 1
-
-		testOutcomeService.updateTestOutcome(changedApiOutcome)
-		TestOutcome changedOutcome = TestOutcome.get(createdOutcome.id)
-
-		assertEquals "Wrong note", changedApiOutcome.note, changedOutcome.note
-		assertEquals "Wrong output", changedApiOutcome.testOutput, changedOutcome.testOutput
-		assertEquals "Wrong test case", createdOutcome.testCase.fullName, changedOutcome.testCase.fullName
-		assertEquals "Wrong duration", origApiOutcome.duration, changedOutcome.duration
-		assertEquals "Wrong result", "Fail", changedOutcome.testResult.toString()
-		assertEquals "Wrong startedAt", changedApiOutcome.startedAt, changedOutcome.startedAt
-		assertEquals "Wrong finishedAt", changedApiOutcome.finishedAt, changedOutcome.finishedAt
-	}
 
 	void testGetCsvForTestOutcomes() {
 		//todo: submit results
