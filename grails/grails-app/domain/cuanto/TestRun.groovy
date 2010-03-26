@@ -99,10 +99,10 @@ class TestRun {
 	}
 
 
-	Map jsonTestProperties() {
-		def jsonProps = [:]
+	List jsonTestProperties() {
+		def jsonProps = []
 		this.testProperties.each {
-			jsonProps[it.name] = it.value
+			jsonProps << [name: it.name, value: it.value]
 		}
 		return jsonProps
 	}

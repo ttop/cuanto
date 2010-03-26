@@ -397,27 +397,31 @@ class TestOutcomeService {
 	}
 
 
-	List<SortParameters> getSortParametersFromParamStrings(String sortParam, String orderParam) {
+	List<SortParameters> getSortParametersFromParamStrings(sortParam,  orderParam) {
 		def sorts = []
-		final String sortName = resolveTestOutcomeSortName(sortParam)
-		def primarySort = new SortParameters(sort: sortName)
-		if (orderParam) {
-			if (!orderParam) {
-				orderParam = "asc"
-			}
-			primarySort.sortOrder = orderParam
-		}
-		sorts << primarySort
+		def sortParams = [sortParam].flatten()
+		def orderParams = [orderParam].flatten()
 
-		if (sortName == "testCase.fullName") {
-			def secondarySort = new SortParameters(sort: "testCase.parameters")
-			if (orderParam) {
-				secondarySort.sortOrder = primarySort.sortOrder
-			}
-			sorts << secondarySort
+		if (sortParams.size() != orderParams.size()) {
+			throw new CuantoException("Number of sorts and number of orders don't match")
 		}
 
-		return sorts
+		sortParams.eachWithIndex{ sort, indx ->
+			final String sortName = resolveTestOutcomeSortName(sort)
+			def primarySort = new SortParameters(sort: sortName, sortOrder: orderParams[indx])
+
+			sorts << primarySort
+
+			if (sortName == "testCase.fullName") {
+				def secondarySort = new SortParameters(sort: "testCase.parameters")
+				if (orderParam) {
+					secondarySort.sortOrder = primarySort.sortOrder
+				}
+				sorts << secondarySort
+			}
+		}
+		return sorts as List<SortParameters>
+
 	}
 
 
@@ -443,6 +447,8 @@ class TestOutcomeService {
 			qSort = "testOutput"
 		} else if (name =="datecreated") {
 			qSort = "dateCreated"
+		} else if (name == "finishedat") {
+			qSort = "finishedAt"
 		} else {
 			qSort = "testCase.fullName"
 		}

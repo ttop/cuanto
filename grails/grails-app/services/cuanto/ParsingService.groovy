@@ -145,8 +145,13 @@ class ParsingService {
 		if (!jsonObj.isNull("id")) {
 			testRun.id = jsonObj.getLong("id")
 		}
-		testRun.note = jsonObj.getString("note")
-		testRun.valid = jsonObj.getBoolean("valid")
+
+		if (!jsonObj.isNull("note")) {
+			testRun.note = jsonObj.getString("note")
+		}
+		if (!jsonObj.isNull("valid")) {
+			testRun.valid = jsonObj.getBoolean("valid")
+		}
 		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
 
 		jsonObj.getJSONObject("links").each {key, value ->
