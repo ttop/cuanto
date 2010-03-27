@@ -125,7 +125,7 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 	private List<File> getFilesToSubmit() {
 		List<File> files = new ArrayList<File>();
 
-		if (filesets != null) {
+		if (filesets.size() > 0) {
 			for (FileSet theFileSet : filesets) {
 				DirectoryScanner ds = theFileSet.getDirectoryScanner(getProject());
 				File basedir = ds.getBasedir();
