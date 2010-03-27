@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import com.thoughtworks.xstream.XStream
-import cuanto.testapi.TestOutcome as TestOutcomeApi
 import org.codehaus.groovy.grails.web.json.JSONObject
 import java.text.SimpleDateFormat
+import cuanto.parsers.ParsableTestOutcome
 
 class ParsingService {
 	static transactional = false
@@ -55,9 +55,9 @@ class ParsingService {
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
-		for (TestOutcomeApi testOutcomeApi in outcomes) {
+		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
-			def testOutcome = processParsableOutcome(testOutcomeApi, testRun, project)
+			def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
 			testOutcomesToSave.add(testOutcome)
 		}
 
@@ -190,12 +190,12 @@ class ParsingService {
 	}
 
 
-	private TestOutcome processParsableOutcome(TestOutcomeApi testOutcomeApi, TestRun testRun, Project project = null) {
+	private TestOutcome processParsableOutcome(ParsableTestOutcome parsableTestOutcome, TestRun testRun, Project project = null) {
 		if (!project) {
 			project = testRun?.project
 		}
 
-		TestCase testCase = parseTestCase(testOutcomeApi, project)
+		TestCase testCase = parseTestCase(parsableTestOutcome, project)
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
 		
 		if (matchingTestCase) {
@@ -204,18 +204,18 @@ class ParsingService {
 			dataService.addTestCases(project, [testCase])
 		}
 
-		setTestCaseDescription(testOutcomeApi.testCase.description, testCase)
+		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
 
-		testOutcome.testResult = dataService.result(testOutcomeApi.testResult.toLowerCase())
-		testOutcome.duration = testOutcomeApi.duration
+		testOutcome.testResult = dataService.result(parsableTestOutcome.testResult.toLowerCase())
+		testOutcome.duration = parsableTestOutcome.duration
 		testOutcome.testCase = testCase
-		testOutcome.testOutput = processTestOutput(testOutcomeApi.testOutput)
-		testOutcome.owner = testOutcomeApi.owner
-		testOutcome.note = testOutcomeApi.note
+		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
+		testOutcome.owner = parsableTestOutcome.owner
+		testOutcome.note = parsableTestOutcome.note
 		testOutcome.testRun = testRun
-		testOutcome.startedAt = testOutcomeApi.startedAt
-		testOutcome.finishedAt = testOutcomeApi.finishedAt
+		testOutcome.startedAt = parsableTestOutcome.startedAt
+		testOutcome.finishedAt = parsableTestOutcome.finishedAt
 		processTestFailure(testOutcome, project)
 		return testOutcome
 	}
@@ -243,11 +243,11 @@ class ParsingService {
 	}
 
 
-	private TestCase parseTestCase(TestOutcomeApi testOutcomeApi, Project project) {
+	private TestCase parseTestCase(ParsableTestOutcome parsableTestOutcome, Project project) {
 		TestCase testCase = new TestCase(
-			testName: testOutcomeApi.testCase.testName,
-			packageName: testOutcomeApi.testCase.packageName,
-			parameters: testOutcomeApi.testCase.parameters,
+			testName: parsableTestOutcome.testCase.testName,
+			packageName: parsableTestOutcome.testCase.packageName,
+			parameters: parsableTestOutcome.testCase.parameters,
 			'project': project
 		)
 

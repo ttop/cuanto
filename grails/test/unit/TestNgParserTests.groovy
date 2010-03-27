@@ -1,13 +1,7 @@
-import cuanto.testapi.TestCase as ParsableTestCase
-import cuanto.testapi.TestOutcome as ParsableTestOutcome
 import cuanto.parsers.TestNgParser
+import cuanto.parsers.ParsableTestOutcome
+import cuanto.parsers.ParsableTestCase
 
-/**
- * User: Todd Wells
- * Date: Oct 24, 2008
- * Time: 2:03:45 PM
- * 
- */
 class TestNgParserTests extends GroovyTestCase {
 
 	void testBasicTestNgParsing() {
@@ -144,12 +138,10 @@ class TestNgParserTests extends GroovyTestCase {
 	}
 
 	void assertTestOutcomeEquals(ParsableTestOutcome a, ParsableTestOutcome b) {
-		assertEquals "Wrong bug", a.bug, b.bug
 		assertEquals "Wrong note", a.note, b.note
 		assertEquals "Wrong owner", a.owner, b.owner
 		assertEquals "Wrong result", a.testResult, b.testResult
 		assertEquals "Wrong duration", a.duration, b.duration
-		//assertEquals "Wrong test case", a.testCase, b.testCase
 		assertTrue "Test cases are unequal", a.testCase.equals(b.testCase)
 	}
 }

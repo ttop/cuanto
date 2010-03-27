@@ -20,18 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.parsers
 
-import cuanto.testapi.TestOutcome as ParsableTestOutcome
-import cuanto.testapi.TestCase as ParsableTestCase
 import cuanto.ParsingException
-import java.util.regex.Pattern
-import java.util.regex.Matcher
 
-/**
- * User: Todd Wells
- * Date: Sep 24, 2008
- * Time: 4:31:52 PM
- *
- */
 class JunitReportParser implements CuantoTestParser {
 
 	public JunitReportParser() {}

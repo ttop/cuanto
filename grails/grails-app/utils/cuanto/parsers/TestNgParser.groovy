@@ -20,16 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.parsers
 
-import cuanto.testapi.TestOutcome as ParsableTestOutcome
-import cuanto.testapi.TestCase as ParsableTestCase
 import java.text.SimpleDateFormat
 
-/**
- * User: Todd Wells
- * Date: Oct 24, 2008
- * Time: 2:05:32 PM
- * 
- */
 class TestNgParser implements CuantoTestParser{
 
 	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")

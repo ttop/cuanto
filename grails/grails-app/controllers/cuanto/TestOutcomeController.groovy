@@ -26,7 +26,6 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import com.thoughtworks.xstream.XStream
-import cuanto.testapi.TestOutcome as TestOutcomeApi
 
 class TestOutcomeController {
 	def parsingService
@@ -57,41 +56,6 @@ class TestOutcomeController {
 		render myJson as JSON
 	}
 
-
-	def findForTestRun = {
-		TestCase testCase = TestCase.get(params.testCase)
-		if (!testCase) {
-			response.status = response.SC_NOT_FOUND
-			render "Test case ${params.testCase} not found"
-		}
-
-		TestRun testRun = TestRun.get(params.testRun)
-		if (!testRun) {
-			response.status = response.SC_NOT_FOUND
-			render "Test run ${params.testRun} not found"
-		}
-
-		List<TestOutcome> out = dataService.getTestOutcomes(testCase, testRun)
-		if (!out) {
-			response.status = response.SC_NOT_FOUND
-			render "Test outcome not found for test case ${params.testCase} and test run ${params.testRun}"
-		} else {
-			def outsToReturn = out.collect { it.toTestOutcomeApi() }
-			render xstream.toXML(outsToReturn)
-		}
-	}
-
-
-	def getXml = {
-		TestOutcome outcome = TestOutcome.get(params.id)
-		def outString = ""
-		if (outcome) {
-			outString = xstream.toXML(outcome.toTestOutcomeApi())
-		} else {
-		    response.status = response.SC_NOT_FOUND
-		}
-		render outString
-	}
 
 	def outcome = {   //todo: is this and the corresponding GSP used anymore? investigate
 		['testOutcome': TestOutcome.get(params.id)]
@@ -168,18 +132,6 @@ class TestOutcomeController {
 				def myJson = ['testOutputs': outputJson]
 				render myJson as JSON
 			}
-		}
-	}
-
-
-	def update = {
-		def testOutcome = (TestOutcomeApi) xstream.fromXML(request.inputStream)
-		try {
-			testOutcomeService.updateTestOutcome(testOutcome)
-			render ""
-		} catch (CuantoException e) {
-			response.status = response.SC_INTERNAL_SERVER_ERROR
-			render e.message
 		}
 	}
 

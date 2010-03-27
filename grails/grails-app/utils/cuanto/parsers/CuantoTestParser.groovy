@@ -20,15 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.parsers
 
-import cuanto.testapi.TestOutcome as ParsableTestOutcome
-import cuanto.testapi.TestCase as ParsableTestCase
-
-/**
- * User: Todd Wells
- * Date: Sep 24, 2008
- * Time: 4:38:31 PM
- * 
- */
 interface CuantoTestParser {
 	public List<ParsableTestOutcome> parseFile(File file)
 	public String getTestType()

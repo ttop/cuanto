@@ -28,7 +28,6 @@ import cuanto.ProjectGroup
 import cuanto.TestRun
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import cuanto.testapi.Project as ParsableProject
 import com.thoughtworks.xstream.XStream
 
 class ProjectController {
@@ -51,21 +50,6 @@ class ProjectController {
 		def project = Project.get(params.id)
 		projectService.deleteProject(project)
 		render "OK"
-	}
-
-
-	def create = {
-		XStream xstream = new XStream()
-		def project = (ParsableProject) xstream.fromXML(request.inputStream)
-		def responseText
-		try {
-			def parsedProject = projectService.createProject(project)
-			responseText = parsedProject?.id?.toString()
-		} catch (CuantoException e) {
-			response.status = response.SC_INTERNAL_SERVER_ERROR
-			responseText = e.message
-		}
-		render responseText
 	}
 
 
