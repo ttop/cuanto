@@ -22,7 +22,6 @@ package cuanto
 
 import cuanto.ProjectGroup
 import cuanto.TestType
-import cuanto.testapi.Project as ProjectApi
 
 class Project implements Comparable {
 
@@ -149,13 +148,4 @@ class Project implements Comparable {
 	}
 
 
-	ProjectApi toProjectApi() {
-		def apiObj = new ProjectApi()
-		apiObj.name = this.name
-		apiObj.projectGroup = this.projectGroup?.name
-		apiObj.projectKey = this.projectKey
-		apiObj.bugUrlPattern = this.bugUrlPattern
-		apiObj.testType = this.testType?.name
-		return apiObj
-	}
 }

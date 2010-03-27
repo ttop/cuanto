@@ -19,7 +19,6 @@
 
 package cuanto
 
-import cuanto.testapi.TestProperty as TestPropertyApi
 
 public class TestProperty implements Comparable {
 
@@ -56,12 +55,6 @@ public class TestProperty implements Comparable {
 		return this.name == otherProp.name && this.value == otherProp.value
 	}
 
-
-	public TestPropertyApi toTestPropertyApi() {
-		def api = new TestPropertyApi(this.name, this.value)
-		api.id = this.id
-		return api
-	}
 
 	public String toString() {
 		return this.name + ": " + this.value;

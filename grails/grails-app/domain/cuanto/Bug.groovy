@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.testapi.Bug as BugApi
 
 class Bug {
 	String title
@@ -37,7 +36,4 @@ class Bug {
 		} else return this.url == bug.url
 	}
 
-	BugApi toBugApi() {
-		return new BugApi('title': this.title, 'url': this.url)
-	}
 }

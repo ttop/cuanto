@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.testapi.AnalysisState as AnalysisStateApi
-
 class AnalysisState {
 
 	String name
@@ -39,13 +37,4 @@ class AnalysisState {
 		name
 	}
 
-
-	AnalysisStateApi toAnalysisStateApi() {
-		def state = new AnalysisStateApi()
-		state.name = this.name
-		state.isAnalyzed = this.isAnalyzed
-		state.isDefault = this.isDefault
-		state.isBug = this.isBug
-		return state
-	}
 }

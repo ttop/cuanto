@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.testapi.TestOutcome as TestOutcomeApi
-
 import java.text.SimpleDateFormat
 
 class TestOutcome {
@@ -59,25 +57,6 @@ class TestOutcome {
 	Date finishedAt // when the test finished
 	Date dateCreated  // this is the timestamp for when the database record was created
 	Date lastUpdated // timestamp for when the database record was last updated
-
-
-	TestOutcomeApi toTestOutcomeApi() {
-		TestOutcomeApi out = new TestOutcomeApi()
-		out.testCase = this.testCase?.toTestCaseApi()
-		out.testResult = this.testResult?.toString()
-		out.testOutput = this.testOutput
-		out.duration = this.duration
-		out.owner = this.owner
-		out.bug = this.bug?.toBugApi()
-		out.note = this.note
-		out.id = this.id
-		out.analysisState = this.analysisState?.toAnalysisStateApi()
-		out.startedAt = this.startedAt
-		out.finishedAt = this.finishedAt
-		out.dateCreated = this.dateCreated
-		out.lastUpdated = this.lastUpdated
-		return out
-	}
 
 
 	Map toJSONmap(Boolean includeTestOutput = false) {

@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import cuanto.Project
-import cuanto.testapi.TestCase as TestCaseApi
 
 class TestCase implements Comparable{
 
@@ -53,17 +52,6 @@ class TestCase implements Comparable{
 		}
 	}
 
-	TestCaseApi toTestCaseApi() {
-		TestCaseApi tc = new TestCaseApi()
-		tc.testName = this.testName
-		tc.packageName = this.packageName
-		tc.parameters = this.parameters
-		tc.project = this.project.toString()
-		tc.description = this.description
-		tc.fullName = this.fullName
-		tc.id = this.id
-		return tc
-	}
 
 	Map toJSONmap() {
 		return [

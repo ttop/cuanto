@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.testapi.TestRunStats as TestRunStatsApi
 
 class TestRunStats {  
 
@@ -65,21 +64,4 @@ class TestRunStats {
 		return json
 	}
 
-	TestRunStatsApi toTestRunStatsApi() {
-		def trsApi = new TestRunStatsApi()
-		trsApi.tests = this.tests
-		trsApi.passed = this.passed
-		trsApi.failed = this.failed
-		trsApi.analyzed = this.analyzed
-		trsApi.totalDuration = this.totalDuration
-		trsApi.averageDuration = this.averageDuration
-		trsApi.successRate = this.successRate
-		trsApi.lastUpdated = this.lastUpdated
-
-		trsApi.analysisStatistics = []
-		this.analysisStatistics?.each {
-			trsApi.analysisStatistics << it.toAnalysisStatisticApi()
-		}
-		return trsApi
-	}
 }
