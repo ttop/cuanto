@@ -1,4 +1,3 @@
-
 /*
 Copyright (c) 2010 Todd Wells
 
@@ -22,6 +21,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto.user
 
 
-public class AntTaskTests {
+public class AntTaskTests extends GroovyTestCase {
+
+	CuantoConnector client
+
+
+	void setUp() {
+		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
+	}
+
+
+	void testSubmitSingleSuite() {
+		TestRun testRun = new TestRun(new Date())
+		client.addTestRun(testRun)
+		File fileToSubmit = getFile("junitReport_single_suite.xml")
+		client.addFileToTestRun(fileToSubmit, testRun)
+	}
+
+
+	void testSubmitMultipleSuite() {
+		TestRun testRun = new TestRun(new Date())
+		client.addTestRun(testRun)
+		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
+		client.addFileToTestRun(fileToSubmit, testRun)
+	}
+
+
+	void testSubmitMultipleFiles() {
+		TestRun testRun = new TestRun(new Date())
+		def filesToSubmit = []
+		filesToSubmit << getFile("junitReport_single_suite.xml")
+		filesToSubmit << getFile("junitReport_single_suite_2.xml")
+		client.addFilesToTestRun(filesToSubmit, testRun)
+	}
+
+
+	File getFile(String filename) {
+		def path = "grails/test/resources"
+		File myFile = new File("${path}/${filename}")
+		assertTrue "file not found: ${myFile.absoluteFile}", myFile.exists()
+		return myFile
+	}
 
 }
