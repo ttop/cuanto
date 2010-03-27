@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<span id="trhTestProps">
 				<g:if test="${testRun?.testProperties}">
 					<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
-						<span class="heading">${testProp.name}:</span><span class="text">${testProp.value}</span>
+						<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
 						<g:if test="${idx < testRun.testProperties.size() - 1}">${bullet}</g:if>
 					</g:each>
 				</g:if>
