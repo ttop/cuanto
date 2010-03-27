@@ -22,7 +22,6 @@ package cuanto
 
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import com.thoughtworks.xstream.XStream
 
 class TestRunController {
 	def parsingService
@@ -31,8 +30,6 @@ class TestRunController {
 	def testRunService
 	def testCaseFormatterRegistry
 	def statisticService
-
-	XStream xstream = new XStream()
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',

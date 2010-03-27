@@ -28,7 +28,6 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import com.thoughtworks.xstream.XStream
 
 class TestCaseController {
 
@@ -109,7 +108,6 @@ class TestCaseController {
 			def candidateTestCase = new TestCase('packageName': packageName, 'testName': testName,
 				'parameters': parameters)
 			testCase = dataService.findMatchingTestCaseForProject(proj, candidateTestCase)
-			XStream xstream = new XStream()
 			if (!testCase) {
 				response.status = response.SC_NOT_FOUND
 				render "Test case not found"

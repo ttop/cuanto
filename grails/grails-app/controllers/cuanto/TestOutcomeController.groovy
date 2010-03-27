@@ -25,14 +25,11 @@ package cuanto
 import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
-import com.thoughtworks.xstream.XStream
 
 class TestOutcomeController {
 	def parsingService
 	def dataService
 	def testOutcomeService
-
-	XStream xstream = new XStream()
 
 	// the delete, save and update actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', applyAnalysis: 'POST']

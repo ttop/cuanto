@@ -28,15 +28,12 @@ import cuanto.ProjectGroup
 import cuanto.TestRun
 import grails.converters.JSON
 import java.text.SimpleDateFormat
-import com.thoughtworks.xstream.XStream
 
 class ProjectController {
 	def projectService
 	def testRunService
 	def testCaseFormatterRegistry
 	def dataService
-
-	XStream xstream = new XStream()
 
 	// the delete, save and update actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']

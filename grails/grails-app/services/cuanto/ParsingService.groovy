@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import com.thoughtworks.xstream.XStream
 import org.codehaus.groovy.grails.web.json.JSONObject
 import java.text.SimpleDateFormat
 import cuanto.parsers.ParsableTestOutcome
@@ -34,7 +33,6 @@ class ParsingService {
 	def testParserRegistry
 	def statisticService
 	def projectService
-	private XStream xstream = new XStream()
 
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
