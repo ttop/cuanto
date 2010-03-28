@@ -31,9 +31,6 @@ import java.util.HashMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import cuanto.api.AnalysisState;
-import cuanto.api.Bug;
-import cuanto.api.CuantoConnector;
 
 /**
  * A class that represents the TestOutcome of a particular TestCase. A TestOutcome is the outcome of executing a

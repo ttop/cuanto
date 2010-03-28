@@ -28,7 +28,6 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-import cuanto.api.CuantoConnector;
 
 /**
  * Represents a group of related tests that were executed together.
