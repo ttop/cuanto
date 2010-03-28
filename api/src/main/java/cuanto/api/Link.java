@@ -19,7 +19,7 @@
 
 */
 
-package cuanto.user;
+package cuanto.api;
 
 public class Link {
 	String description;

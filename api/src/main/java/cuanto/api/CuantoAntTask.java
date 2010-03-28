@@ -19,7 +19,7 @@
 
  */
 
-package cuanto.user;
+package cuanto.api;
 
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.taskdefs.Property;

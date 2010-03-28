@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package cuanto.user
+package cuanto.api
 
 
 public class TestOutcomeTests extends GroovyTestCase {

@@ -19,7 +19,7 @@
 
 */
 
-package cuanto.user;
+package cuanto.api;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONNull;

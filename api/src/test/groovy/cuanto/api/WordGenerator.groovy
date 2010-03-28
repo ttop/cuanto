@@ -1,4 +1,4 @@
-package cuanto.user
+package cuanto.api
 
 /**
  * Created by IntelliJ IDEA.

@@ -19,7 +19,7 @@
 
 */
 
-package cuanto.user;
+package cuanto.api;
 
 /**
  * Represents a Bug associated with a TestOutcome.

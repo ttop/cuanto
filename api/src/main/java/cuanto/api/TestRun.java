@@ -18,7 +18,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-package cuanto.user;
+package cuanto.api;
 
 
 import net.sf.json.JSONObject;
@@ -27,6 +27,8 @@ import net.sf.json.JSONArray;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+
+import cuanto.api.CuantoConnector;
 
 /**
  * Represents a group of related tests that were executed together.

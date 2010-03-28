@@ -19,7 +19,7 @@
 
 */
 
-package cuanto.user;
+package cuanto.api;
 
 import java.util.List;
 import java.util.Arrays;
