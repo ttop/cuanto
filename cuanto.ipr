@@ -93,9 +93,7 @@
       <option name="myName" value="Cuanto-Todd" />
       <option name="myLocal" value="true" />
     </copyright>
-    <module2copyright>
-      <element module="Production" copyright="Cuanto-Todd" />
-    </module2copyright>
+    <module2copyright />
     <LanguageOptions name="JAVA">
       <option name="fileTypeOverride" value="3" />
       <option name="relativeBefore" value="true" />
@@ -915,7 +913,6 @@
       <module fileurl="file://$PROJECT_DIR$/api/cuanto-api.iml" filepath="$PROJECT_DIR$/api/cuanto-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/dist/dist.iml" filepath="$PROJECT_DIR$/dist/dist.iml" />
       <module fileurl="file://$PROJECT_DIR$/doc/doc.iml" filepath="$PROJECT_DIR$/doc/doc.iml" />
-      <module fileurl="file://$PROJECT_DIR$/testapi/testapi.iml" filepath="$PROJECT_DIR$/testapi/testapi.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
