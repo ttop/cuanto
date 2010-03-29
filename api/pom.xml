@@ -6,9 +6,10 @@
 	<version>2.4.0</version>
 	<packaging>jar</packaging>
 
-	<name>Cuanto API</name>
+	<name>Cuanto Connector</name>
+	<description>The Java API for submitting results to Cuanto</description>
 	<url>http://cuanto.codehaus.org/</url>
-	<description>The API for submitting results to Cuanto</description>
+	<inceptionYear>2008</inceptionYear>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,7 +31,6 @@
 			</notifier>
 		</notifiers>
 	</ciManagement>
-	<inceptionYear>2009</inceptionYear>
 
 	<mailingLists>
 		<mailingList>
@@ -52,12 +52,6 @@
 			<archive>http://archive.codehaus.org/lists/haus.codehaus.cuanto.user</archive>
 		</mailingList>
 	</mailingLists>
-
-
-	<organization>
-		<name>Codehaus</name>
-		<url>http://codehaus.org</url>
-	</organization>
 
 	<repositories>
 		<repository>
@@ -223,5 +217,17 @@
 			</extension>
 		</extensions>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<doctitle>Cuanto Connector ${version}</doctitle>
+				</configuration>
+			</plugin>
+		</plugins>
 
+	</reporting>
 </project>
