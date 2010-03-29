@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Date: May 22, 2008
   Time: 11:15:14 PM
 --%>
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
@@ -66,12 +67,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<img id="feedImg" src="${resource(dir: 'images/feedicons-standard', file: 'feed-icon-14x14.png')}"
 						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
 			</span>
+			<span class="heading">Project Key: </span><span class="text">${project?.projectKey}</span>
+
 			<br/>
-			<span class="smaller">( <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> ${bullet}
+			<span class="smaller"> <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> ${bullet}
 			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
 			<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-			</g:if>)</span>
+			</g:if></span>
 			<p/><br/>
 			Select a test run to view the detailed results and analysis:
 			<div id="testRunList">
