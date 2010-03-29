@@ -46,15 +46,15 @@
 
 		<h2>Requirements</h2>
 		<p>In order to run Cuanto, you need an application server and a SQL database server. Cuanto has been tested using
-		Jetty and MySQL, but any compliant application server and SQL database should work. You'll need
-		to have a JDBC driver for your SQL database.</p>
+		Jetty and MySQL, but any compliant application server and SQL database should work. MySQL with InnoDB is the
+		recommended database configuration because the database upgrade scripts that Cuanto provides for version upgrades
+		are usually MySQL-specific.</p>
 
 
 		<h2>Creating the database</h2>
 		Create a database on your SQL server named "cuanto". Typically this is done with a command like
 		"<span class="mono">create database cuanto;</span>" when logged onto your SQL server, although you may want
 		to specify additional details depending on any additional database restrictions or options you want to enable.
-
 
 
 		<h2>Running Locally</h2>
@@ -70,10 +70,13 @@
 			the URL to reach Cuanto will be displayed,
 		usually <span class="mono">http://localhost:8080/cuanto</span>.</p>
 
-		<h2>Building the WAR and client jar</h2>
-		<p>With Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
+		<h2>Building the WAR and client jar from scratch</h2>
+		<p>You are probably fine just using the downloaded distributable and WAR file, but if you wish to build from scratch,
+		here are the instructions:</p>
+
+		<p>With Grails 1.1, Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
 			<span class="mono">cuanto/grails</span> directory and
-		type "<span class="mono">ant buildCuanto</span>". This will create a
+		type "<span class="mono">grails build-cuanto</span>". This will create a
 			<span class="mono">cuanto-&lt;version&gt;.zip</span>
 		file in the <span class="mono">dist/release</span> directory. Inside the ZIP will be a WAR, the client API Jar,
 		and a <span class="mono">cuanto-db.groovy</span> file.</p>
@@ -112,14 +115,15 @@
 		<p>The jar will be built and placed in the <span class="mono">target</span> directory, with a name like
 		<span class="mono">cuanto-api-&lt;VERSION&gt;.jar</span>.</p>
 		<p>The ant task is in the client jar, so if it is in your classpath you can use it from an ant build file like this:</p>
-		<pre class="code">&lt;taskdef name="cuanto" classname="cuanto.CuantoAntTask"/&gt;</pre>
+		<pre class="code">&lt;taskdef name="cuanto" classname="cuanto.api.CuantoAntTask"/&gt;</pre>
 		And then submit your results to Cuanto like this:
-				  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="Sample/CuantoProd" milestone="1.0"
-   build="30343" targetEnv="test lab"&gt;
+				  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="Sample/CuantoProd""&gt;
 	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
+					  &lt;property name="milestone" value="1.0"/>
+					  &lt;property name="build" value="3423"/>
 &lt;/cuanto&gt;</pre>
 		
-		<p>Where the <span class="mono">testProject</span> property is the fully-qualified group/project of an existing
+		<p>Where the <span class="mono">testProject</span> property is the project key of an existing
 			Cuanto project.</p>
 		  <br/>
 	</body>
