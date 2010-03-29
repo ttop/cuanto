@@ -49,7 +49,7 @@ target(cuantoapi: "Build the Cuanto test API") {
 
 	// Update the Cuanto Java Client version to match the grails application version.
 	String userAgent = "final static String HTTP_USER_AGENT = \"Java CuantoConnector ${cuantoVersion.toString()}; Jakarta Commons-HttpClient/3.1\";"
-	ant.replaceregexp(file: "${apiDir}/src/main/java/cuanto/user/CuantoConnector.java",
+	ant.replaceregexp(file: "${apiDir}/src/main/java/cuanto/api/CuantoConnector.java",
 		match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
 
 	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()

@@ -283,7 +283,7 @@ public class CuantoConnector {
 
 
 	/**
-	 * Adds results file to a TestRun on the Cuanto server. This adds a test result files to the specified TestRun. A
+	 * Adds result files to a TestRun on the Cuanto server. This adds test result files to the specified TestRun. A
 	 * test result file is not an arbitrary file, but rather it needs to be a file that is in the correct result file
 	 * format for the Cuanto project type. For instance, if the Cuanto project is a JUnit project, then it needs to be
 	 * a JUnit result file.
