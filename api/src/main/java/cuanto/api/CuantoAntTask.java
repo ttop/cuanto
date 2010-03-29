@@ -35,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 
-public class CuantoAntTask  extends org.apache.tools.ant.Task {
+public class CuantoAntTask extends org.apache.tools.ant.Task {
 	URL url;
 	String proxyHost;
 	String proxyPort;
@@ -53,8 +53,9 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 
 	List<FileSet> filesets = new ArrayList<FileSet>();
 	//Map<String, String> links = new HashMap<String, String>();
-	List <Link> links = new ArrayList<Link>();
+	List<Link> links = new ArrayList<Link>();
 	List<Property> properties = new ArrayList<Property>();
+
 
 	public void execute() {
 		if (testProject == null) {
@@ -63,7 +64,7 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 
 		action = action.toLowerCase().trim();
 
-		if ( action.equals("submit")) {
+		if (action.equals("submit")) {
 			try {
 				submit();
 			} catch (FileNotFoundException e) {
@@ -71,6 +72,7 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 			}
 		}
 	}
+
 
 	private void submit() throws FileNotFoundException {
 		CuantoConnector cuantoClient = getCuantoClient();
@@ -151,9 +153,10 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 		} else {
 			cuantoConnector = CuantoConnector.newInstance(url.toString(), testProject);
 		}
-	    return cuantoConnector;
+		return cuantoConnector;
 		//todo: deal with DateFormat
 	}
+
 
 	private void processDeprecatedAttributes(TestRun testRun) {
 		if (build != null) {
@@ -170,8 +173,10 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 		}
 	}
 
+
 	private void logDeprecatedUsage(String propName) {
-		log("Cuanto task attribute " + propName + " is deprecated, use a nested property node instead", Project.MSG_WARN);
+		log("Cuanto task attribute " + propName + " is deprecated, use a nested property node instead",
+			Project.MSG_WARN);
 	}
 
 
@@ -189,7 +194,7 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 	}
 
 
-	public Property createProperty(){
+	public Property createProperty() {
 		Property prop = new Property();
 		properties.add(prop);
 		return prop;
@@ -313,5 +318,31 @@ public class CuantoAntTask  extends org.apache.tools.ant.Task {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+
+	public class Link {
+		String description;
+		String url;
+
+
+		public String getDescription() {
+			return description;
+		}
+
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+
+		public String getUrl() {
+			return url;
+		}
+
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
 	}
 }
