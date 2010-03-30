@@ -2,7 +2,8 @@ Requirements
 ============
 
 Cuanto requires an application server running Java 1.5 or greater and a SQL database with a JDBC driver. Development
-and testing have been done against a Jetty/MySQL combination.
+and testing have been done against a Jetty/MySQL combination. MySQL with InnoDB is recommended, as the database upgrade
+scripts provided are for MySQL.
 
 Customizing cuanto-db.groovy
 
