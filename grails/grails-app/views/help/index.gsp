@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	  <div id="helpRegion">
 
 		  <img src="${resource(dir: 'images/logos', file:'cuanto-logo-48.png')}" alt="Cuanto logo"/>
-		  <br/>This is Cuanto version <g:meta name="app.version"/>.
+		  This is Cuanto version <g:meta name="app.version"/>.
 		  
 		  <h1>Help</h1>
 
@@ -77,7 +77,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  it's own page listing the projects associated with the group.</p>
 
 		  <h2>Project key</h2>
-		  <p>The project key is used to customize URLs for the project.</p>
+		  <p>The project key is used to customize URLs for the project. It's also used when submitting test results
+		  to Cuanto via the Cuanto Ant Task or the CuantoConnector API.</p>
 
 		  <h2>Bug URL pattern</h2>
 		  <p>The bug URL pattern is used for referencing an external bug tracking system. Use this field to describe the
@@ -106,8 +107,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 		  <h2>Defining the task in an ant file</h2>
-		  <p>With the Cuanto client jar and it's dependencies (both found in the distribution's api directory) in your classpath, define the task in your ant file like this:</p>
-		  <pre class="code">&lt;taskdef name="cuanto" classname="cuanto.CuantoAntTask"/&gt;</pre>
+		  <p>With the Cuanto client jar and it's dependencies (both found in the distribution's api directory) in your
+		  classpath, define the task in your ant file like this:</p>
+		  <pre class="code">&lt;taskdef name="cuanto" classname="cuanto.api.CuantoAntTask"/&gt;</pre>
 
 
 		  <h2>Submitting test results with the ant task</h2>
@@ -218,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		  <h1><a name="license">Copyright and License</a></h1>
 
-		  <p>Cuanto is Copyright (C) 2009 thePlatform, Inc.</p>
+		  <p>Cuanto is Copyright (C) 2009-2010 by thePlatform, Inc. and Todd Wells.</p>
 
 		  <p>Cuanto is made available under the terms of the GNU Lesser General Public License, version 3, also known
 		  as <a href="http://www.gnu.org/licenses/lgpl.html">LGPLv3</a>.</p>
@@ -226,12 +228,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <img src="images/lgplv3-147x51.png" alt="LGPLv3"/>
 
 		  <h1>Additional licenses used</h1>
-		  <p><a href="licenses/xpp3_license.txt">XPP3 License</a> - This product includes software developed by the Indiana University
-			  Extreme! Lab (http://www.extreme.indiana.edu/).</p>
-		  <p><a href="licenses/xstream_license.txt">XStream License</a></p>
 		  <p><a href="js/yui/2.6.0/LICENSE">YUI License</a></p>
 
-		  <p>You may find additional license information in the source distribution.</p>
+		  <p>Additional license information can be found in the <a href="http://github.com/ttop/cuanto">source 
+		  distribution.</a></p>
 
 	  </div>
   </body>
