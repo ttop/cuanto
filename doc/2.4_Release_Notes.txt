@@ -1,3 +1,4 @@
+* Your Cuanto ant task will need to be updated in order to submit results to this new version of Cuanto.
 * You can now associate arbitrary properties and hyperlinks with a TestRun:
 		<cuanto url="${cuanto.url}" testProject="CuantoProd">
 			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
