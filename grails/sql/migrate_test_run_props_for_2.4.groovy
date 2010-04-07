@@ -31,40 +31,31 @@ id bigint(20) NOT NULL AUTO_INCREMENT,
 version bigint(20) NOT NULL,
 name varchar(255) NOT NULL,
 value varchar(255) NOT NULL,
+test_run_id bigint(20) NOT NULL,
+test_properties_idx int(11) DEFAULT NULL,
 PRIMARY KEY (id))""")
-
-sql.execute("""CREATE TABLE test_run_test_property (
-  test_run_test_properties_id bigint(20) DEFAULT NULL,
-  test_property_id bigint(20) DEFAULT NULL,
-  test_properties_idx int(11) DEFAULT NULL);""")
-
 
 sql.eachRow("select id, milestone, build, target_env from test_run") {
 
 	def index = 0
 	// Build
 	if (it.build) {
-		sql.execute("insert into test_property (name, value, version) values ('Build', ${it.build}, 0)")
-		def buildId = sql.firstRow("select LAST_INSERT_ID()")[0]
-		sql.execute("insert into test_run_test_property (test_run_test_properties_id, test_property_id, test_properties_idx) values (${it.id}, ${buildId}, ${index++})")
+		sql.execute("insert into test_property (name, value, version, test_run_id, test_properties_idx) values ('Build', ${it.build}, 0, ${it.id}, ${index++})")
 	}
 
 	// Milestone
 	if (it.milestone) {
-		sql.execute("insert into test_property (name, value, version) values ('Milestone', ${it.milestone}, 0)")
-		def milestoneId = sql.firstRow("select LAST_INSERT_ID()")[0]
-		sql.execute("insert into test_run_test_property (test_run_test_properties_id, test_property_id, test_properties_idx) values (${it.id}, ${milestoneId}, ${index++})")
+		sql.execute("insert into test_property (name, value, version, test_run_id, test_properties_idx) values ('Milestone', ${it.milestone}, 0, ${it.id}, ${index++})")
 	}
 
 	// TargetEnv
 	if (it.target_env) {
-		sql.execute("insert into test_property (name, value, version) values ('Target Environment', ${it.target_env}, 0)")
-		def targId = sql.firstRow("select LAST_INSERT_ID()")[0]
-		sql.execute("insert into test_run_test_property (test_run_test_properties_id, test_property_id, test_properties_idx) values (${it.id}, ${targId}, ${index++})")
+		sql.execute("insert into test_property (name, value, version, test_run_id, test_properties_idx) values ('Target Environment', ${it.target_env}, 0, ${it.id}, ${index++})")
 	}
 }
 
 sql.execute("alter table test_run drop column build")
 sql.execute("alter table test_run drop column milestone")
 sql.execute("alter table test_run drop column target_env")
+
 

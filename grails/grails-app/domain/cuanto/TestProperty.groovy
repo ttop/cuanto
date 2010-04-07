@@ -22,9 +22,10 @@ package cuanto
 
 public class TestProperty implements Comparable {
 
+	static belongsTo = [testRun: TestRun]
+
 	String name
 	String value
-
 
 	TestProperty(){}
 

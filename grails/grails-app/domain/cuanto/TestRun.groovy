@@ -46,8 +46,8 @@ class TestRun {
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-	SortedSet<Link> links
-	SortedSet<TestProperty> testProperties
+	List<Link> links
+	List<TestProperty> testProperties
 	private final static SimpleDateFormat defaultDateFormatter = new SimpleDateFormat(Defaults.dateFormat)
 
 	def beforeInsert = {
