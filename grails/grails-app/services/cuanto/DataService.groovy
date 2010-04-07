@@ -110,8 +110,19 @@ class DataService {
 
 
 	def getTestRunsByProject(proj, final Map queryParams) {
-		TestRun.executeQuery("from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}",
-			[proj], [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
+		if (queryParams.sort?.startsWith("prop|")) {
+			def propName = queryParams.sort.substring(queryParams.sort.indexOf("|") + 1)
+			def result = TestRun.executeQuery(
+				"from cuanto.TestRun t left outer join t.testProperties as prop with prop.name = ? where t.project = ? order by prop.value ${queryParams.order}",
+				[propName, proj], [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
+
+			def realResult = result.collect { it[0] }
+			return realResult
+		} else {
+			def result = TestRun.executeQuery("from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}",
+				[proj], [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
+			return result
+		}
 	}
 
 
