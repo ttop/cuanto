@@ -24,4 +24,6 @@ WHERE tt.name LIKE 'JUnit';
 
 ALTER TABLE test_run_stats MODIFY total_duration bigint(20);
 ALTER TABLE test_run_stats MODIFY average_duration bigint(20);
+ALTER TABLE test_case MODIFY parameters varchar(1024);
+UPDATE test_result SET include_in_calculations=true, is_failure=true WHERE name like 'Skip';
 

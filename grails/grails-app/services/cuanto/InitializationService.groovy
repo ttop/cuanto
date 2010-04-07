@@ -46,7 +46,7 @@ class InitializationService {
 			TestResult ignore = new TestResult(name: "Ignore", includeInCalculations: false, isFailure: false)
 			resultList += ignore
 
-			TestResult skip = new TestResult(name: "Skip", includeInCalculations: false, isFailure: false)
+			TestResult skip = new TestResult(name: "Skip", includeInCalculations: true, isFailure: true)
 			resultList += skip
 
 			TestResult unexecuted = new TestResult(name: "Unexecuted", includeInCalculations: false, isFailure: false)
