@@ -30,7 +30,7 @@ class TestCase implements Comparable{
 		fullName(nullable:false, blank: false, index:"full_name_idx")
 		description(nullable: true, blank: true, maxSize: 2048)
 		packageName(nullable:true, maxSize: 1024)
-		parameters(nullable:true)
+		parameters(nullable:true, maxSize: 1024)
 	}
 	static mapping = {
 		cache true
