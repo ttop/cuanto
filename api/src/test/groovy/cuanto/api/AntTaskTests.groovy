@@ -36,7 +36,7 @@ public class AntTaskTests extends GroovyTestCase {
 		TestRun testRun = new TestRun(new Date())
 		client.addTestRun(testRun)
 		File fileToSubmit = getFile("junitReport_single_suite.xml")
-		client.addFileToTestRun(fileToSubmit, testRun)
+		client.importTestFile(fileToSubmit, testRun)
 	}
 
 
@@ -44,7 +44,7 @@ public class AntTaskTests extends GroovyTestCase {
 		TestRun testRun = new TestRun(new Date())
 		client.addTestRun(testRun)
 		File fileToSubmit = getFile("junitReport_multiple_suite.xml")
-		client.addFileToTestRun(fileToSubmit, testRun)
+		client.importTestFile(fileToSubmit, testRun)
 	}
 
 
@@ -53,7 +53,7 @@ public class AntTaskTests extends GroovyTestCase {
 		def filesToSubmit = []
 		filesToSubmit << getFile("junitReport_single_suite.xml")
 		filesToSubmit << getFile("junitReport_single_suite_2.xml")
-		client.addFilesToTestRun(filesToSubmit, testRun)
+		client.importTestFiles(filesToSubmit, testRun)
 	}
 
 

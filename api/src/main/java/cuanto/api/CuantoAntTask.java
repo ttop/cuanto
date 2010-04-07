@@ -117,7 +117,7 @@ public class CuantoAntTask extends org.apache.tools.ant.Task {
 		log("Submitting results to " + url);
 
 		Date startTime = new Date();
-		cuantoClient.addFilesToTestRun(getFilesToSubmit(), testRun);
+		cuantoClient.importTestFiles(getFilesToSubmit(), testRun);
 		Date endTime = new Date();
 		Long duration = (endTime.getTime() - startTime.getTime()) / 1000;
 		log("Submitting results took " + duration + " second(s)");

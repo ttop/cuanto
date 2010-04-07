@@ -275,10 +275,10 @@ public class CuantoConnector {
 	 * @param testRun The TestRun for adding results.
 	 * @throws FileNotFoundException If the file is not found.
 	 */
-	public void addFileToTestRun(File file, TestRun testRun) throws FileNotFoundException {
+	public void importTestFile(File file, TestRun testRun) throws FileNotFoundException {
 		List<File> files = new ArrayList<File>();
 		files.add(file);
-		addFilesToTestRun(files, testRun);
+		importTestFiles(files, testRun);
 	}
 
 
@@ -291,7 +291,7 @@ public class CuantoConnector {
 	 * @param testRun The TestRun for adding results.
 	 * @throws FileNotFoundException If any of the files are not found.
 	 */
-	public void addFilesToTestRun(List<File> files, TestRun testRun) throws FileNotFoundException {
+	public void importTestFiles(List<File> files, TestRun testRun) throws FileNotFoundException {
 		String fullUri = cuantoUrl + "/testRun/submitFile";
 		PostMethod post = (PostMethod)getHttpMethod(HTTP_POST, fullUri);
 
