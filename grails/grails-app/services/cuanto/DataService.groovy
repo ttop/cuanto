@@ -584,16 +584,20 @@ class DataService {
 				if (run.links) {
 					def linksToRemove = new ArrayList(run.links)
 					linksToRemove.each {link ->
-						run.removeFromLinks(link)
-						link.delete()
+						if (link) {
+							run.removeFromLinks(link)
+							link.delete()
+						}
 					}
 				}
 
 				if (run.testProperties) {
 					def propsToRemove = new ArrayList(run.testProperties)
 					propsToRemove.each {prop ->
-						run.removeFromTestProperties(prop)
-						prop.delete()
+						if (prop) {
+							run.removeFromTestProperties(prop)
+							prop.delete()
+						}
 					}
 				}
 				run.delete()

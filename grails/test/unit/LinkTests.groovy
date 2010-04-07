@@ -1,14 +1,15 @@
 import grails.test.*
-import cuanto.Link
+import cuanto.TestRunLink
+import cuanto.TestRunLink
 
 
 class LinkTests extends GrailsUnitTestCase {
 
-	Link linkOne = new Link(description: "a b", url: "http://ab")
-	Link linkTwo = new Link(description: "c d", url: "http://cd")
-	Link linkThree = new Link(description: "a b", url: "http://cd")
-	Link linkFour = new Link(description: "a b", url: "http://aa" )
-	Link linkFive = new Link(description: "a b", url: "http://ab")
+	TestRunLink linkOne = new TestRunLink(description: "a b", url: "http://ab")
+	TestRunLink linkTwo = new TestRunLink(description: "c d", url: "http://cd")
+	TestRunLink linkThree = new TestRunLink(description: "a b", url: "http://cd")
+	TestRunLink linkFour = new TestRunLink(description: "a b", url: "http://aa" )
+	TestRunLink linkFive = new TestRunLink(description: "a b", url: "http://ab")
 
     void testCompareTo() {
 	    assertEquals 0, linkOne.compareTo(linkFive)
@@ -27,7 +28,7 @@ class LinkTests extends GrailsUnitTestCase {
 		assertEquals linkOne, linkFive
 		assertEquals linkFive, linkOne
 
-		[linkTwo, linkThree, linkFour].each { Link it ->
+		[linkTwo, linkThree, linkFour].each { TestRunLink it ->
 			assertFalse linkOne.equals(it)
 			assertFalse it.equals(linkOne)
 		}

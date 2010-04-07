@@ -68,7 +68,7 @@ class TestRunController {
 
 
 	def deleteLink = {
-		def linkToDelete = Link.get(params.id)
+		def linkToDelete = TestRunLink.get(params.id)
 		def testRun = TestRun.get(params.testRun)
 
 		if (linkToDelete && testRun) {

@@ -19,25 +19,29 @@
 
 package cuanto
 
-class Link implements Comparable {
+class TestRunLink implements Comparable {
 
     static constraints = {
 
     }
 
+	static belongsTo = [testRun: TestRun]
+
 	String description
 	String url
 
-	public Link(){}
+	public TestRunLink(){}
 	
-	public Link(String description, String url) {
+	public TestRunLink(String description, String url) {
 		this.description = description
 		this.url = url
 	}
 
 
+
+
 	public int compareTo(Object t) {
-		Link other = (Link) t
+		TestRunLink other = (TestRunLink) t
 		int descriptionCompare = this.description.compareTo(other.description)
 		if (descriptionCompare == 0) {
 			return this.url.compareTo(other.url)
@@ -48,7 +52,7 @@ class Link implements Comparable {
 
 
 	public boolean equals(Object t) {
-		Link other = (Link) t
+		TestRunLink other = (TestRunLink) t
 		return this.description == other.description && this.url == other.url
 	}
 

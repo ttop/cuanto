@@ -290,7 +290,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		params.note = to.wordGen.getSentence(5)
 
 		def links = ["http://gurdy||hurdy", "http://easy||squeezy", "malformed"]
-		assertEquals 0, Link.list().size()
+		assertEquals 0, TestRunLink.list().size()
 		params.link = links
 
 		def props = ["CustomProp1||Custom Value 1", "CustomProp2||Custom Value 2"]
@@ -299,7 +299,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 		TestRun createdTr = testRunService.createTestRun(params)
 
-		assertEquals 2, Link.list().size()
+		assertEquals 2, TestRunLink.list().size()
 		assertEquals 2, TestProperty.list().size()
 
 		TestRun fetchedTr = TestRun.get(createdTr.id)
@@ -325,7 +325,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 		dataService.deleteTestRun(fetchedTr)
 		assertNull TestRun.get(fetchedTr.id)
-		assertEquals 0, Link.list().size()
+		assertEquals 0, TestRunLink.list().size()
 	}
 
 
@@ -340,30 +340,34 @@ class TestRunServiceTests extends GroovyTestCase {
 		}
 		assertEquals 3, testRuns.size()
 
-		def props = []
-		1.upto(5) {
-			props << to.testProperty
-		}
 
-		testRuns[0].addToTestProperties(props[0])
-		testRuns[0].addToTestProperties(props[1])
-		testRuns[0].addToTestProperties(props[2])
-		testRuns[1].addToTestProperties(props[0])
-		testRuns[1].addToTestProperties(props[1])
-		testRuns[1].addToTestProperties(props[3])
-		testRuns[2].addToTestProperties(props[1])
+				def props = []
+				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+
+				testRuns[0].addToTestProperties(new TestProperty(props[0].name, props[0].value))
+				testRuns[0].addToTestProperties(new TestProperty(props[1].name, props[1].value))
+				testRuns[0].addToTestProperties(new TestProperty(props[2].name, props[2].value))
+				testRuns[1].addToTestProperties(new TestProperty(props[0].name, props[0].value))
+				testRuns[1].addToTestProperties(new TestProperty(props[1].name, props[1].value))
+				testRuns[1].addToTestProperties(new TestProperty(props[3].name, props[2].value))
+				testRuns[2].addToTestProperties(new TestProperty(props[1]))
 
 		testRuns.each {
 			dataService.saveTestRun(it)
 		}
 
-		assertEquals "Wrong number of test runs", 0, testRunService.getTestRunsWithProperties(proj, [props[4]])?.size()
+		assertEquals "Wrong number of test runs", 0, testRunService.getTestRunsWithProperties(proj,
+			[new TestProperty(props[4].name, props[4].value)])?.size()
 
-		def fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..2])
+		def fetchedRuns = testRunService.getTestRunsWithProperties(proj, testRuns[0].testProperties)
 		assertEquals "Wrong number of test runs", 1, fetchedRuns?.size()
 		assertEquals "Wrong test run retrieved", testRuns[0].id, fetchedRuns[0].id
 
-		fetchedRuns = testRunService.getTestRunsWithProperties(proj, props[0..1])
+		fetchedRuns = testRunService.getTestRunsWithProperties(proj, testRuns[0].testProperties[0..1])
 		assertEquals "Wrong number of test runs", 2, fetchedRuns.size()
 		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[0].id }
 		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[1].id }

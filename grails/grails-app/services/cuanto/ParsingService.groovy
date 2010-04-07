@@ -147,7 +147,7 @@ class ParsingService {
 		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
 
 		jsonObj.getJSONObject("links").each {key, value ->
-			testRun.addToLinks(new Link(value, key))
+			testRun.addToLinks(new TestRunLink(value, key))
 		}
 
 		jsonObj.getJSONObject("testProperties").each {key, value ->

@@ -303,7 +303,7 @@ class TestRunService {
 
 	void updateLinksOfTestRun(TestRun origTestRun, testRun) {
 		testRun.links?.each { link ->
-			Link origLink = origTestRun.links?.find { it.description == link.description }
+			TestRunLink origLink = origTestRun.links?.find { it.description == link.description }
 			if (origLink) {
 				if (origLink.url != link.url) {
 					origLink.url = link.url
@@ -311,12 +311,12 @@ class TestRunService {
 				}
 			} else {
 				// link not found in original, so add it
-				origTestRun.addToLinks(new Link(link.description, link.url))
+				origTestRun.addToLinks(new TestRunLink(link.description, link.url))
 			}
 		}
 
 		def linksToRemove = []
-		origTestRun.links?.each { Link origLink ->
+		origTestRun.links?.each { TestRunLink origLink ->
 			if (!testRun.links?.find {it.description == origLink.description}) {
 				linksToRemove << origLink
 			}
@@ -336,7 +336,7 @@ class TestRunService {
 				def linkIndex = existingLinkMatcher[0][1] as Integer
 				def linkId = params["linkId[${linkIndex}]"] as Integer
 				if (linkId) {
-					Link existingLink = Link.get(linkId)
+					TestRunLink existingLink = TestRunLink.get(linkId)
 					def descr = params["linkDescr[${linkIndex}]"] as String
 					def url = params["linkUrl[${linkIndex}]"] as String
 					if (existingLink.description != descr || existingLink.url != url) {
@@ -357,7 +357,7 @@ class TestRunService {
 						if (!descr) {
 							descr = linkUrl
 						}
-						def link = new Link(descr, linkUrl)
+						def link = new TestRunLink(descr, linkUrl)
 						testRun.addToLinks(link)
 					}
 				}
@@ -505,7 +505,7 @@ class TestRunService {
 			def links = [params.link].flatten()
 			links.each {String linkParam ->
 				try {
-					Link link = new Link()
+					TestRunLink link = new TestRunLink()
 					def linkSplit = linkParam.split('\\|\\|', 3)
 					link.url = getUrlFromString(linkSplit[0])
 
@@ -616,7 +616,8 @@ class TestRunService {
 			qryArgs << props[idx].value
 		}
 
-		def results = TestRun.executeQuery(qryFromClause + qryWhereClause + " order by tr.dateExecuted desc", qryArgs)
+		final String fullQuery = qryFromClause + qryWhereClause + " order by tr.dateExecuted desc"
+		def results = TestRun.executeQuery(fullQuery, qryArgs)
 		if (results == null || results?.size() == 0) {
 			return []
 		} else {

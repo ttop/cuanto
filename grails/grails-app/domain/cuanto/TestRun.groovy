@@ -31,7 +31,7 @@ class TestRun {
 		testRunStatistics(nullable:true)
 	}
 
-	static hasMany = [links:Link, testProperties:TestProperty]
+	static hasMany = [links:TestRunLink, testProperties:TestProperty]
 
 	static mapping = {
 		cache true
@@ -46,7 +46,7 @@ class TestRun {
 	Date lastUpdated  // for calculations
 	TestRunStats testRunStatistics
 	Project project
-	List<Link> links
+	List<TestRunLink> links
 	List<TestProperty> testProperties
 	private final static SimpleDateFormat defaultDateFormatter = new SimpleDateFormat(Defaults.dateFormat)
 

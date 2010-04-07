@@ -27,8 +27,8 @@ public class TestRunTests extends GroovyTestCase {
 		TestRun tr = to.getTestRun(proj)
 
 		def links = [
-			new Link(description: "a b c", url: "http://linkOne"),
-			new Link(description: "d e f", url: "http://linkTwo"),
+			new TestRunLink(description: "a b c", url: "http://linkOne"),
+			new TestRunLink(description: "d e f", url: "http://linkTwo"),
 		]
 
 		links.each {
@@ -39,7 +39,7 @@ public class TestRunTests extends GroovyTestCase {
 		def fetchedRun = TestRun.get(tr.id)
 		assertEquals "Wrong number of links", 2, fetchedRun.links.size()
 		
-		fetchedRun.links.eachWithIndex { Link item, index ->
+		fetchedRun.links.eachWithIndex { TestRunLink item, index ->
 			assertEquals item.description, links[index].description
 			assertEquals item.url, links[index].url
 		}

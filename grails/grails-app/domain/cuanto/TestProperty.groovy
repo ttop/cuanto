@@ -52,8 +52,12 @@ public class TestProperty implements Comparable {
 
 
 	public boolean equals(Object t) {
-		TestProperty otherProp = (TestProperty) t
-		return this.name == otherProp.name && this.value == otherProp.value
+		if (t) {
+			TestProperty otherProp = (TestProperty) t
+			return this.name == otherProp.name && this.value == otherProp.value
+		} else {
+			return false
+		}
 	}
 
 
