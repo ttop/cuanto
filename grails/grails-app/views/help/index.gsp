@@ -125,7 +125,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <br/>
 		  <p>Use the project key as the testProject value. &lt;property&gt; nodes can be used to specify arbitrary properties
 		  for a Test Run. &lt;link&gt; nodes can be used to associate arbitrary URLs with a test run.</p>
-		  
+		  <p>You can also specify a nested propertyset to the Cuanto ant task to refer to existing properties instead of
+		  or along with individual nested properties:</p>
+	  <pre class="code">&lt;propertyset id="mypropset"&gt;
+	&lt;propertyref name="milestone"/&gt;
+	&lt;propertyref name="build"/&gt;
+&lt;/propertyset&gt;
+
+ &lt;cuanto url="http://cuantourl" testProject="CUANTO"&gt;
+	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
+	&lt;propertyset refid='mypropset'/&gt;
+	&lt;property name="environment" value="test lab"/&gt;
+	&lt;link description="Test artifacts" url="http://my/url/link"/&gt;
+&lt;/cuanto&gt;</pre>
+
 		  <h1><a name="test_run_history">Test Run History</a></h1>
 		  <p>The Test Run History page shows the history of test runs for a project. The feed icon links to an RSS feed
 		     of the Test Run History so that you can subscribe to new results. Clicking on a Test Run row will take you

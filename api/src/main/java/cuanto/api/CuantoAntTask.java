@@ -22,6 +22,7 @@
 package cuanto.api;
 
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -198,6 +199,21 @@ public class CuantoAntTask extends org.apache.tools.ant.Task {
 		Property prop = new Property();
 		properties.add(prop);
 		return prop;
+	}
+
+
+	public void addConfiguredPropertySet(PropertySet propSet) {
+		log("Processing " + propSet.size() + " properties from propertyset", Project.MSG_VERBOSE);
+		Properties props = propSet.getProperties();
+		for (Object propkeyObj : props.keySet()) {
+			String propKey = (String) propkeyObj;
+			String propVal = props.getProperty(propKey);
+			log("Adding property " + propKey + " with value " + propVal, Project.MSG_VERBOSE);
+			Property prop = new Property();
+			prop.setName(propKey);
+			prop.setValue(propVal);
+			properties.add(prop);
+		}
 	}
 
 

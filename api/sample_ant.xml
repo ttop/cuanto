@@ -37,6 +37,23 @@
 			<link description="Test Link 2" url="http://testlink2"/>
 		</cuanto>
 
+
+		<property name="milestone" value="1.0"/>
+		<property name="build" value="239999"/>
+		<property name="targetEnv" value="prop set"/>
+		<propertyset id="pset">
+			<propertyref name="milestone"/>
+			<propertyref name="build"/>
+			<propertyref name="targetEnv"/>
+		</propertyset>
+
+		<cuanto url="${cuanto.url}" testProject="Sample/CuantoProd">
+			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
+			<link description="Test Link 1" url="http://testlink1"/>
+			<link description="Test Link 2" url="http://testlink2"/>
+			<propertyset refid="pset"/>
+		</cuanto>
+
 	</target>
 
 	<target name="submitTestNG" depends="init">
