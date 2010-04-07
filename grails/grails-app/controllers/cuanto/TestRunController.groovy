@@ -58,14 +58,14 @@ class TestRunController {
 		def testRun = TestRun.get(params.testRun)
 
 		if (propToDelete && testRun) {
-			testRun.removeFromTestProperties(propToDelete)
-			dataService.saveDomainObject testRun 
+			dataService.deleteTestRunProperty(propToDelete)
 			render "OK"
 		} else {
 			response.setStatus(response.SC_NOT_FOUND)
 			render "TestProperty ID ${params?.id} or Test Run ID ${params?.testRun} not found"
 		}
 	}
+
 
 	def deleteLink = {
 		def linkToDelete = Link.get(params.id)

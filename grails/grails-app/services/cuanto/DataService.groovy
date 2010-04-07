@@ -77,6 +77,17 @@ class DataService {
 	}
 
 	
+	def deleteTestRunProperty(TestProperty propToDelete) throws CuantoException{
+		if (propToDelete) {
+			TestRun.withTransaction {
+				TestRun testRun = propToDelete.testRun
+				testRun.removeFromTestProperties(propToDelete)
+				saveDomainObject testRun
+			}
+		}
+	}
+
+
 	def deleteOutcomesForTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
 	}
