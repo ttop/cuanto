@@ -495,4 +495,24 @@ class ProjectTests extends GroovyTestCase {
 		assertNull "Shouldn't have group", fetched.projectGroup
 		assertEquals "Wrong number of project groups", 0, ProjectGroup.list().size()
 	}
+
+	
+	void testCreateProjectViaParams() {
+		def params = [group: "Sample", bugUrlPattern: "http://bug{BUG}", name: fakes.wordGen.getCamelWords(3),
+			projectKey: fakes.wordGen.getCamelWords(2), testType: "JUnit"]
+
+		Project paramProj = projectService.createProject(params)
+
+		try {
+			Project fetched = projectService.getProject(params.projectKey)
+			assertNotNull "Project not found", fetched
+			assertEquals "Wrong project group", params.group, fetched.projectGroup?.name
+			assertEquals "Wrong bug pattern", params.bugUrlPattern, fetched.bugUrlPattern
+			assertEquals "Wrong name", params.name, fetched.name
+			assertEquals "Wrong project key", params.projectKey, fetched.projectKey
+			assertEquals "Wrong TestType", TestType.findByName("JUnit"), fetched.testType
+		} finally {
+			projectService.deleteProject(paramProj)
+		}
+	}
 }
