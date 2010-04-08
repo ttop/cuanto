@@ -197,10 +197,24 @@ class ApiController {
 	}
 
 
-	def getAllTestOutcomes = {
-		Map results
+	def getTestOutcomes = {
+		if (!params.max) {
+			response.status = response.SC_BAD_REQUEST
+			render "max parameter is required"
+		} else {
+			try {
+				def maxVal = Integer.valueOf(params.max)
+				if (maxVal > 100) {
+					response.status = response.SC_BAD_REQUEST
+					render "max parameter value must be <= 100"
+				}
+			} catch (Exception e) {
+				response.status = response.SC_INTERNAL_SERVER_ERROR
+				render e.message
+			}
+		}
 		try {
-			results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
+			Map results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
 			def jsonArray = []
 			results?.testOutcomes?.each {
 				jsonArray << it.toJSONmap()

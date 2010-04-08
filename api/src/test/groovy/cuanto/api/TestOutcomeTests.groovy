@@ -25,7 +25,7 @@ package cuanto.api
 public class TestOutcomeTests extends GroovyTestCase {
 
 	CuantoConnector client
-
+	WordGenerator wordGen = new WordGenerator()
 
 	void setUp() {
 		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
@@ -244,7 +244,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 	}
 
 
-	void testGetAllTestOutcomesForTestRun() {
+	void testGetTestOutcomesForTestRun() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
 			TestResult.valueOf("Fail"))
 		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
@@ -273,15 +273,140 @@ public class TestOutcomeTests extends GroovyTestCase {
 			client.addTestOutcome(outcome, run)
 			sleep 1000
 			client.addTestOutcome(outcomeTwo, run)
-			List<TestOutcome> outcomes = client.getAllTestOutcomesForTestRun(run)
+			List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
 			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
 			assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
 			assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
 		} finally {
 			client.deleteTestRun run
 		}
+	}
+
+	void testGetTestOutcomesForTestRunMany() {
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		try {
+			1.upto(202) {
+				TestOutcome outcome = createTestOutcome(TestResult.Pass)
+				client.addTestOutcome(outcome, run)
+				sleep 10
+			}
+			List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
+			assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
+			outcomes = client.getTestOutcomesForTestRun(run, 100, 100, TestOutcome.Sort.FULL_NAME, "asc")
+			assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
+			outcomes = client.getTestOutcomesForTestRun(run, 200, 100, TestOutcome.Sort.FULL_NAME, "asc")
+			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+		} finally {
+			client.deleteTestRun run
+		}
+	}
+	
+	void testGetTestOutcomesForTestRunSorts() {
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+
+		def outcomes = new ArrayList<TestOutcome>()
+		
+		outcomes << TestOutcome.newInstance("org.codehaus.cuanto", "testA", "aa", TestResult.Error)
+		outcomes[0].startedAt = new Date()
+		outcomes[0].finishedAt = new Date() + 1
+		outcomes[0].duration = 10
+		outcomes[0].owner = "aa"
+		outcomes[0].note = "abc"
+		outcomes[0].testOutput = "abc"
+		outcomes[0].analysisState = AnalysisState.Bug
+		
+		outcomes << TestOutcome.newInstance("org.codehaus.cuanto", "testA", "ab", TestResult.Fail)
+		outcomes[1].startedAt = new Date() + 1
+		outcomes[1].finishedAt = new Date() + 2
+		outcomes[1].duration = 20
+		outcomes[1].owner = "bb"
+		outcomes[1].note = "def"
+		outcomes[1].testOutput = "def"
+		outcomes[1].analysisState = AnalysisState.Harness
+
+		outcomes << TestOutcome.newInstance("org.codehaus.cuanto", "testB", "aa", TestResult.Pass)
+		outcomes[2].startedAt = new Date() + 2
+		outcomes[2].finishedAt = new Date() + 3
+		outcomes[2].duration = 30
+		outcomes[2].owner = "cc"
+		outcomes[2].note = "ghi"
+		outcomes[2].testOutput = "ghi"
+		outcomes[2].analysisState = AnalysisState.TestBug
+
+		outcomes.each {
+			client.addTestOutcome(it, run)
+			sleep 1000
+		}
+
+		def sortOptions = [TestOutcome.Sort.FULL_NAME, TestOutcome.Sort.STARTED_AT, TestOutcome.Sort.FINISHED_AT,
+			TestOutcome.Sort.DURATION, TestOutcome.Sort.OWNER, TestOutcome.Sort.NOTE, TestOutcome.Sort.TEST_OUTPUT,
+			TestOutcome.Sort.TEST_RESULT, TestOutcome.Sort.ANALYSIS_STATE, TestOutcome.Sort.DATE_CREATED,
+			TestOutcome.Sort.ID]
+
+		sortOptions.each { TestOutcome.Sort sort ->
+			List<TestOutcome> fetched = client.getTestOutcomesForTestRun(run, 0, 100, sort, "asc")
+			assertEquals "Wrong number of outcomes returned for ${sort.toString()}", 3, fetched.size()
+			[0, 1, 2].eachWithIndex {it, idx ->
+				assertEquals "Wrong outcome for ${sort.toString()}", outcomes[it].id, fetched[idx].id
+			}
+
+			fetched = client.getTestOutcomesForTestRun(run, 0, 100, sort, "desc")
+			[2, 1, 0].eachWithIndex {it, idx ->
+				assertEquals "Wrong outcome for ${sort.toString()}", outcomes[it].id, fetched[idx].id
+			}
+		}
+
+		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "desc")
+		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
+		//[2, 1 ,0].eachWithIndex { it, idx ->
+		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
+		//}
+		//
+		//// started at
+		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.STARTED_AT, "asc")
+		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
+		//[0, 1, 2].eachWithIndex { it, idx ->
+		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
+		//}
+		//
+		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.STARTED_AT, "desc")
+		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
+		//[2, 1 ,0].eachWithIndex { it, idx ->
+		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
+		//}
+		//
+		//// finished at
+		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FINISHED_AT, "asc")
+		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
+		//[0, 1, 2].eachWithIndex { it, idx ->
+		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
+		//}
+		//
+		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FINISHED_AT, "desc")
+		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
+		//[2, 1 ,0].eachWithIndex { it, idx ->
+		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
+		//}
 
 	}
+
+
+	TestOutcome createTestOutcome(TestResult result) {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "test${wordGen.getCamelWords(3)}",
+			wordGen.getSentence(2),	result)
+		//outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+		//outcome.analysisState = AnalysisState.Bug
+		outcome.startedAt = new Date()
+		outcome.finishedAt = new Date() + 1
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = wordGen.getSentence(2)
+		outcome.note = wordGen.getSentence(3)
+		outcome.testOutput = wordGen.getSentence(10)
+		return outcome
+	}
+
 
 
 	void assertEquals(String message, Date expected, Date actual) {

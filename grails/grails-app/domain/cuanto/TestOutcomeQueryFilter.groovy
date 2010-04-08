@@ -224,7 +224,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		nameMap.testcase = "testCase.fullName"
 		nameMap.fullname = "testCase.fullName"
 		nameMap.result = "testResult"
-		nameMap.testresult = "testResult"
+		nameMap.testresult = "testResult.name"
 		nameMap.state = "analysisState.name"
 		nameMap.analysisstate = "analysisState.name"
 		nameMap.duration = "duration"

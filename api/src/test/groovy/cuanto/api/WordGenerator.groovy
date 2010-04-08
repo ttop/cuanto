@@ -43,6 +43,25 @@ class WordGenerator {
 		return sentence
 	}
 
+	String camelizeWord(final String myWord){
+		def word = new String(myWord)
+		if (word) {
+			word = word.toLowerCase()
+			String firstLetter = word.substring(0, 1)
+			word = word.replaceFirst(firstLetter, firstLetter.toUpperCase())
+		}
+
+		return word
+	}
+
+	String getCamelWords(numWords) {
+		StringBuffer camel = new StringBuffer()
+		for (x in 1..numWords) {
+			camel.append(camelizeWord(getWord()))
+		}
+		return camel.toString()
+	}
+
 	static words ='''
 Still looking for the perfect dish to serve at that upcoming Mother's Day brunch? How about Blueberry Cream Cheese Braid? I made this last weekend, and it was awesome. I'm not really in the habit of making extravagant breads such as this, but I might just need to start. Although it looks complicated, this bread is actually pretty easy to put together, and much of the work can be done the night before. The dough is much easier to work with than a regular bread dough because it contains butter which keeps it from being too sticky during the kneading process. The end result is a soft, rich, slightly sweet bread. The blueberry and cream cheese filling is wonderful, although nearly any filling would be good here. Poppyseed with rum-soaked raisins or lemon curd with sweetened ricotta cheese sound like excellent alternatives to me. Or, like the recipe suggests, you could even do a savory version with mushrooms and cheese. Yum!
 

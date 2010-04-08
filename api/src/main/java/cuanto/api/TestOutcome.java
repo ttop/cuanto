@@ -505,4 +505,20 @@ public class TestOutcome {
 		}
 	}
 
+
+	public enum Sort {
+		ANALYSIS_STATE,
+		BUG,
+		DATE_CREATED,
+		DURATION,
+		FINISHED_AT,
+		FULL_NAME,
+		ID,
+		LAST_UPDATED,
+		NOTE,
+		OWNER,
+		STARTED_AT,
+		TEST_OUTPUT,
+		TEST_RESULT
+	}
 }

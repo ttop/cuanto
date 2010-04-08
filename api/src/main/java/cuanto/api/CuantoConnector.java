@@ -429,23 +429,46 @@ public class CuantoConnector {
 
 
 	/**
-	 * Gets all TestOutcomes for the specified TestRun.
+	 * Gets TestOutcomes for the specified TestRun.
 	 *
 	 * @param testRun The TestRun for which to retrieve TestOutcomes.
+	 * @param offset Zero-based index of the first record to return
+	 * @param max The maximum number of records to return. You may request a maximum of 100 at a time.
+	 * @param sort The TestOutcome field on which to sort. Secondary sort will always be on the TestOutcome's fullName
+	 *        (asc) or if the fullName is the primary sort, secondary sort will be by dateCreated (asc).  
+	 * @param order The order in which to sort -- legal values are "asc" or "desc".
 	 * @return The TestOutcomes for the specified TestRun, in the order they were added to the server.
+	 * @throws IllegalArgumentException - if the max is > 100, order is an unknown value, or TestRun has no id.
 	 */
-	public List<TestOutcome> getAllTestOutcomesForTestRun(TestRun testRun) {
+	public List<TestOutcome> getTestOutcomesForTestRun(TestRun testRun, Integer offset, Integer max,
+		TestOutcome.Sort sort, String order) throws IllegalArgumentException {
 		if (testRun.id == null) {
 			throw new IllegalArgumentException(
 				"The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
 		}
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllTestOutcomes");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutcomes");
+		TestOutcome.Sort secondarySort = sort == TestOutcome.Sort.FULL_NAME ?
+			TestOutcome.Sort.DATE_CREATED : TestOutcome.Sort.FULL_NAME;
+
+		final String realOrder = order.toLowerCase().trim();
+		if (!realOrder.equals("asc") && !realOrder.equals("desc")) {
+			throw new IllegalArgumentException("Unknown order: " + order);
+		}
+
+		if (max == null) {
+			throw new NullPointerException("Null is not a valid value for max");
+		} else if (max > 100) {
+			throw new IllegalArgumentException("max must not exceed 100");
+		}
+
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("id", testRun.id.toString()),
-			new NameValuePair("sort", "dateCreated"),
-			new NameValuePair("sort", "finishedAt"),
+			new NameValuePair("sort", sort.toString()),
+			new NameValuePair("sort", secondarySort.toString()),
+			new NameValuePair("order", realOrder),
 			new NameValuePair("order", "asc"),
-			new NameValuePair("order", "asc")
+			new NameValuePair("max", max.toString()),
+			new NameValuePair("offset", offset.toString())
 		});
 		try {
 			int httpStatus = getHttpClient().executeMethod(get);
