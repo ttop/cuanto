@@ -181,15 +181,8 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
 	/* TODO:
-
      Filters for:
-	  TestCase (which would return history)
-	  DateRange - start and end dates, operator (lt, gt, <=, >=)
-	  duration
-	  note
-	  testoutput
-	  count -- this makes the clause select count(t)
-
+	  duration ?
 	*/
 
 
@@ -220,5 +213,36 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		} else if (field == "owner") {
 			this.owner = searchTerm
 		}
+	}
+
+
+	static String getSortNameForFriendlyName(String friendlyName) {
+		def name = friendlyName?.toLowerCase()?.replaceAll("_", "")
+
+		def nameMap = [:]
+		nameMap.name = "testCase.fullName"
+		nameMap.testcase = "testCase.fullName"
+		nameMap.fullname = "testCase.fullName"
+		nameMap.result = "testResult"
+		nameMap.testresult = "testResult"
+		nameMap.state = "analysisState.name"
+		nameMap.analysisstate = "analysisState.name"
+		nameMap.duration = "duration"
+		nameMap.bug = "bug.title"
+		nameMap.owner = "owner"
+		nameMap.note = "note"
+		nameMap.output = "testOutput"
+		nameMap.testoutput = "testOutput"
+		nameMap.datecreated = "dateCreated"
+		nameMap.finishedat = "finishedAt"
+		nameMap.id = "id"
+		nameMap.lastupdated = "lastUpdated"
+		nameMap.startedat = "startedAt"
+
+		def resolvedValue = nameMap[name]
+		if (!resolvedValue) {
+			resolvedValue = "testCase.fullName"
+		}
+		return resolvedValue as String
 	}
 }

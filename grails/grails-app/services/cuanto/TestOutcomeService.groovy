@@ -405,7 +405,7 @@ class TestOutcomeService {
 		}
 
 		sortParams.eachWithIndex{ sort, indx ->
-			final String sortName = resolveTestOutcomeSortName(sort)
+			final String sortName = TestOutcomeQueryFilter.getSortNameForFriendlyName(sort)
 			def primarySort = new SortParameters(sort: sortName, sortOrder: orderParams[indx])
 
 			sorts << primarySort
@@ -422,37 +422,6 @@ class TestOutcomeService {
 
 	}
 
-
-	//todo: migrate to TestOutcomeQueryFilter? 
-	String resolveTestOutcomeSortName(String friendlyName) {
-		def qSort
-		def name = friendlyName?.toLowerCase()
-		if (name == "name" || name == "testcase") {
-			qSort = "testCase.fullName"
-		} else if (name == "result") {
-			qSort = "testResult"
-		} else if (name == "state") {
-			qSort = "analysisState.name"
-		} else if (name == "duration") {
-			qSort = "duration"
-		} else if (name == "bug") {
-			qSort = "bug.title"
-		} else if (name == "owner") {
-			qSort = "owner"
-		} else if (name == "note") {
-			qSort = "note"
-		} else if (name == "output") {
-			qSort = "testOutput"
-		} else if (name =="datecreated") {
-			qSort = "dateCreated"
-		} else if (name == "finishedat") {
-			qSort = "finishedAt"
-		} else {
-			qSort = "testCase.fullName"
-		}
-		return qSort
-
-	}
 
 	String getDelimitedTextForTestOutcomes(List<TestOutcome> outcomes, String delimiter) {
 		StringBuffer buff = new StringBuffer()
