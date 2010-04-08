@@ -62,7 +62,7 @@ class ApiController {
 		JSONObject jsonTestProperties = incomingJson.getJSONObject("testProperties")
 		def testProperties = []
 		jsonTestProperties.each { key, value ->
-			testProperties << new TestProperty(key, value)
+			testProperties << new TestRunProperty(key, value)
 		}
 		def testRuns = testRunService.getTestRunsWithProperties(project, testProperties)
 

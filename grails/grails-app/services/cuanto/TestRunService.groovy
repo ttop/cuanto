@@ -276,7 +276,7 @@ class TestRunService {
 
 	void updatePropertiesOfTestRun(TestRun origTestRun, testRun) {
 		testRun.testProperties?.each { tp ->
-			TestProperty origProp = origTestRun.testProperties?.find{ it.name == tp.name }
+			TestRunProperty origProp = origTestRun.testProperties?.find{ it.name == tp.name }
 			if (origProp) {
 				if (tp.value != origProp.value) {
 					origProp.value = tp.value
@@ -284,7 +284,7 @@ class TestRunService {
 				}
 			} else {
 				// property not found in original, so add it
-				origTestRun.addToTestProperties(new TestProperty(tp.name, tp.value))
+				origTestRun.addToTestProperties(new TestRunProperty(tp.name, tp.value))
 			}
 		}
 
@@ -374,7 +374,7 @@ class TestRunService {
 				def propIndex = existingPropertyMatcher[0][1] as Integer
 				def propId = params["propId[${propIndex}]"] as Integer
 				if (propId) {
-					TestProperty existingProp = TestProperty.get(propId)
+					TestRunProperty existingProp = TestRunProperty.get(propId)
 					if (existingProp.value != paramValue) {
 						existingProp.value = paramValue
 						dataService.saveDomainObject existingProp
@@ -387,7 +387,7 @@ class TestRunService {
 					def propIndex = newPropertyMatcher[0][1] as Integer
 					def propValue = params["newPropValue[${propIndex}]"] as String
 					if (propValue) {
-						def testProperty = new TestProperty(paramValue.trim(), propValue.trim())
+						def testProperty = new TestRunProperty(paramValue.trim(), propValue.trim())
 						testRun.addToTestProperties(testProperty)
 					}
 				}
@@ -533,7 +533,7 @@ class TestRunService {
 			props.each { String propParam ->
 				def propSplit = propParam.split('\\|\\|')
 				if (propSplit.length > 1) {
-					propsToAdd << new TestProperty(propSplit[0], propSplit[1])
+					propsToAdd << new TestRunProperty(propSplit[0], propSplit[1])
 				}
 			}
 		}
@@ -601,7 +601,7 @@ class TestRunService {
 	}
 
 
-	List<TestRun> getTestRunsWithProperties(Project proj, List<TestProperty> props) {
+	List<TestRun> getTestRunsWithProperties(Project proj, List<TestRunProperty> props) {
 		if (!props) {
 			throw new CuantoException("No properties were specified")
 		}

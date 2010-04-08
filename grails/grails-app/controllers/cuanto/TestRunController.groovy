@@ -54,7 +54,7 @@ class TestRunController {
 
 
 	def deleteProperty = {
-		def propToDelete = TestProperty.get(params.id)
+		def propToDelete = TestRunProperty.get(params.id)
 		def testRun = TestRun.get(params.testRun)
 
 		if (propToDelete && testRun) {

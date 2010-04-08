@@ -20,24 +20,26 @@
 package cuanto
 
 
-public class TestProperty implements Comparable {
+public class TestRunProperty implements Comparable {
 
 	static belongsTo = [testRun: TestRun]
 
 	String name
 	String value
 
-	TestProperty(){}
+	TestRunProperty(){}
 
 
-	TestProperty(String name, String value) {
+	TestRunProperty(String name, String value) {
 		this.name = name
 		this.value = value
 	}
 
 
+
+
 	public int compareTo(Object t) {
-		TestProperty otherProp = (TestProperty) t
+		TestRunProperty otherProp = (TestRunProperty) t
 
 		def nameComp = this.name.compareToIgnoreCase(otherProp.name)
 		if (nameComp == 0) {
@@ -53,7 +55,7 @@ public class TestProperty implements Comparable {
 
 	public boolean equals(Object t) {
 		if (t) {
-			TestProperty otherProp = (TestProperty) t
+			TestRunProperty otherProp = (TestRunProperty) t
 			return this.name == otherProp.name && this.value == otherProp.value
 		} else {
 			return false

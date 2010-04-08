@@ -97,7 +97,7 @@ class TestObjects {
 	}
 
 	
-	TestProperty getTestProperty() {
-		return new TestProperty(wordGen.getCamelWords(3), wordGen.getSentence(3))
+	TestRunProperty getTestProperty() {
+		return new TestRunProperty(wordGen.getCamelWords(3), wordGen.getSentence(3))
 	}
 }

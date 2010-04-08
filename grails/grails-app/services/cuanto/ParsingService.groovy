@@ -151,7 +151,7 @@ class ParsingService {
 		}
 
 		jsonObj.getJSONObject("testProperties").each {key, value ->
-			testRun.addToTestProperties(new TestProperty(key, value))
+			testRun.addToTestProperties(new TestRunProperty(key, value))
 		}
 
 		testRun.testRunStatistics = new TestRunStats()

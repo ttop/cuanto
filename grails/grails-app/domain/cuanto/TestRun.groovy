@@ -31,7 +31,7 @@ class TestRun {
 		testRunStatistics(nullable:true)
 	}
 
-	static hasMany = [links:TestRunLink, testProperties:TestProperty]
+	static hasMany = [links:TestRunLink, testProperties:TestRunProperty]
 
 	static mapping = {
 		cache true
@@ -47,7 +47,7 @@ class TestRun {
 	TestRunStats testRunStatistics
 	Project project
 	List<TestRunLink> links
-	List<TestProperty> testProperties
+	List<TestRunProperty> testProperties
 	private final static SimpleDateFormat defaultDateFormatter = new SimpleDateFormat(Defaults.dateFormat)
 
 	def beforeInsert = {
