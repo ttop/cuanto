@@ -437,7 +437,8 @@ public class CuantoConnector {
 	 * @param sort The TestOutcome field on which to sort. Secondary sort will always be on the TestOutcome's fullName
 	 *        (asc) or if the fullName is the primary sort, secondary sort will be by dateCreated (asc).  
 	 * @param order The order in which to sort -- legal values are "asc" or "desc".
-	 * @return The TestOutcomes for the specified TestRun, in the order they were added to the server.
+	 * @return The TestOutcomes for the specified TestRun, in the order they were added to the server. If less than
+	 * <i>max</i> TestOutcomes are returned, the List will be the size of the number returned.
 	 * @throws IllegalArgumentException - if the max is > 100, order is an unknown value, or TestRun has no id.
 	 */
 	public List<TestOutcome> getTestOutcomesForTestRun(TestRun testRun, Integer offset, Integer max,
@@ -493,6 +494,36 @@ public class CuantoConnector {
 		}
 	}
 
+
+	/**
+	 * Counts how many total TestOutcomes are in TestRun.
+	 * @param testRun The TestRun.
+	 * @return The number of TestOutomes.
+	 */
+	public Integer countTestOutcomesForTestRun(TestRun testRun) {
+		if (testRun.id == null) {
+			throw new IllegalArgumentException(
+				"The TestRun has no id. Query for the TestRun before getting it's TestOutcomes.");
+		}
+
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/countTestOutcomes");
+		get.setQueryString(new NameValuePair[]{
+			new NameValuePair("id", testRun.id.toString()),
+		});
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				JSONObject jsonResponse = JSONObject.fromObject(getResponseBodyAsString(get));
+				return jsonResponse.getInt("count");
+			} else {
+				throw new RuntimeException(
+					"Counting the TestOutcomes failed with HTTP status code " + httpStatus + ":\n" +
+						getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * Gets all TestOutcomes for the specified TestCase - returned in descending ordered by dateCreated.

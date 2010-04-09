@@ -228,6 +228,18 @@ class ApiController {
 	}
 
 
+	def countTestOutcomes = {
+		try {
+			Integer count = testOutcomeService.getTestOutcomeCountForParams(params)
+			def jsonMap = ['count': count]
+			render jsonMap as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
+	}
+
+
 	def getTestCase = {
 		Project project = projectService.getProject(params.projectKey)
 		if (!project) {

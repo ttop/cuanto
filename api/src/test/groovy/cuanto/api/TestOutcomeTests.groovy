@@ -301,6 +301,30 @@ public class TestOutcomeTests extends GroovyTestCase {
 			client.deleteTestRun run
 		}
 	}
+
+
+	void testCountTestOutcomesForTestRun() {
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		def count = client.countTestOutcomesForTestRun(run)
+		assertEquals "Wrong count", 0, count
+		try {
+			client.addTestOutcome(createTestOutcome(TestResult.Pass), run)
+			count = client.countTestOutcomesForTestRun(run)
+			assertEquals "Wrong count", 1, count
+
+			1.upto(201) {
+				TestOutcome outcome = createTestOutcome(TestResult.Pass)
+				client.addTestOutcome(outcome, run)
+			}
+
+			count = client.countTestOutcomesForTestRun(run)
+			assertEquals "Wrong count", 202, count
+		} finally {
+			client.deleteTestRun run
+		}
+	}
+
 	
 	void testGetTestOutcomesForTestRunSorts() {
 		TestRun run = new TestRun(new Date())

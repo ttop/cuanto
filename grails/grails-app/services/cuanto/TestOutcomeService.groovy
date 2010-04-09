@@ -268,6 +268,12 @@ class TestOutcomeService {
 	}
 	
 
+	Integer getTestOutcomeCountForParams(Map params) throws CuantoException {
+		TestOutcomeQueryFilter testOutcomeFilter = getTestOutcomeQueryFilterForParams(params)
+		return dataService.countTestOutcomes(testOutcomeFilter)
+	}
+
+
 	/**
 	* Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
 	*/
