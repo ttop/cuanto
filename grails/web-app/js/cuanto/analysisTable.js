@@ -786,13 +786,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function chooseColumns(e) {
 		YAHOO.util.Event.preventDefault(e);
+		var columnDialog = getColumnDialog();
+		columnDialog.show();
+	}
+
+	function getColumnDialog() {
 		if (!columnDialog)
 		{
 			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["parameters", "result", "analysisState", "startedAt", "finishedAt", "duration", "bug", "owner", "note", "output"]);
+				["parameters", "result", "analysisState", "startedAt", "finishedAt", "duration", "bug", "owner", "note", "output"],
+				prefHiddenColumns);
 		}
-		columnDialog.show();
-
+		return columnDialog;
 	}
 
 	function deleteTestRun(e) {
@@ -847,22 +852,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	}
 
 	function getHiddenColumns() {
-		var cols = {};
-		var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, prefHiddenColumns);
-		if (cookie) {
-			var pairs = cookie.split(",");
-			pairs.each(function(pair) {
-				var items = pair.split(":");
-				cols[items[0]] = (/^true$/i).test(items[1]);
-			});
-		}
-		else {
+		var dialog = getColumnDialog();
+		var hiddenCols = dialog.getHiddenColumns();
+		if (hiddenCols) {
+			return hiddenCols;
+		} else {
+			var cols = {};
 			["startedAt", "finishedAt", "output", "parameters"].each(function(item)
 			{
 				cols[item] = true;
 			});
+			return cols;
 		}
-		return cols;
 	}
 
 	function formatDuration(elCell, oRecord, oColumn, oData) {

@@ -20,11 +20,10 @@
 
 YAHOO.namespace('cuanto');
 
-YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
+YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys, subCookieName) {
 	var panel;
 	var pub = {}; // public methods
 	var analysisCookieName = "cuantoAnalysis";
-	var prefHiddenColumns = "hiddenColumns";
 	var newCols = true;
 
 	function getColumnPanel() {
@@ -64,7 +63,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 			}
 		});
 		var colStr = colHidden.join(",");
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefHiddenColumns, colStr, {path: "/", expires: expDate});
+		YAHOO.util.Cookie.setSub(analysisCookieName, subCookieName, colStr, {path: "/", expires: expDate});
 	}
 
 
@@ -122,6 +121,23 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys) {
 			}
 			newCols = false;
 		}
+
+		pub.getHiddenColumns = function() {
+			var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, subCookieName);
+			if (cookie) {
+				var cols = {};
+				var pairs = cookie.split(",");
+				pairs.each(function(pair) {
+					var items = pair.split(":");
+					cols[items[0]] = (/^true$/i).test(items[1]);
+				});
+				return cols;
+			}
+			else {
+				return null;
+			}
+		};
+
 	};
 	return pub;
 };
