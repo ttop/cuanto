@@ -154,7 +154,7 @@ YAHOO.cuanto.projectHistory = function() {
 			var columns = testRunTable.getColumnSet().keys.collect(function(item) {
 				return item.key;
 			});
-			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, columns, "ph-" + $('projectId').getValue());
+			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, "ph-" + $('projectId').getValue());
 		}
 		return columnDialog;
 	}

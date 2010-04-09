@@ -793,9 +793,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
-			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr,
-				["parameters", "result", "analysisState", "startedAt", "finishedAt", "duration", "bug", "owner", "note", "output"],
-				prefHiddenColumns);
+			columnDialog = new YAHOO.cuanto.ColumnDialog(dataTable, ovrlyMgr, prefHiddenColumns);
 		}
 		return columnDialog;
 	}

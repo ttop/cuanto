@@ -20,11 +20,16 @@
 
 YAHOO.namespace('cuanto');
 
-YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys, subCookieName) {
+YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) {
 	var panel;
 	var pub = {}; // public methods
 	var analysisCookieName = "cuantoAnalysis";
 	var newCols = true;
+
+	var columnKeys = datatable.getColumnSet().keys.collect(function(item) {
+		return item.key;
+	});
+
 
 	function getColumnPanel() {
 		if (!panel) {
