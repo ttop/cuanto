@@ -341,20 +341,20 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals 3, testRuns.size()
 
 
-				def props = []
-				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
-				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
-				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
-				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
-				props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		def props = []
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
 
-				testRuns[0].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
-				testRuns[0].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
-				testRuns[0].addToTestProperties(new TestRunProperty(props[2].name, props[2].value))
-				testRuns[1].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
-				testRuns[1].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
-				testRuns[1].addToTestProperties(new TestRunProperty(props[3].name, props[2].value))
-				testRuns[2].addToTestProperties(new TestRunProperty(props[1]))
+		testRuns[0].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
+		testRuns[0].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
+		testRuns[0].addToTestProperties(new TestRunProperty(props[2].name, props[2].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[3].name, props[2].value))
+		testRuns[2].addToTestProperties(new TestRunProperty(props[1]))
 
 		testRuns.each {
 			dataService.saveTestRun(it)
@@ -371,6 +371,46 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals "Wrong number of test runs", 2, fetchedRuns.size()
 		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[0].id }
 		assertNotNull "Couldn't find test run", fetchedRuns.find { it.id == testRuns[1].id }
+	}
+
+
+	void testGetTestRunPropertiesByProject() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		def testRuns = []
+
+		1.upto(3) {
+			testRuns << to.getTestRun(proj)
+		}
+		assertEquals 3, testRuns.size()
+
+
+		def props = []
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+
+		testRuns[0].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
+		testRuns[0].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
+		testRuns[0].addToTestProperties(new TestRunProperty(props[2].name, props[2].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
+		testRuns[1].addToTestProperties(new TestRunProperty(props[3].name, props[2].value))
+		testRuns[2].addToTestProperties(new TestRunProperty(props[1]))
+
+		testRuns.each {
+			dataService.saveTestRun(it)
+		}
+
+		List results = testRunService.getTestRunPropertiesByProject(proj)
+		assertEquals "Wrong number of results returned", 4, results.size()
+		assertTrue "Couldn't find property", results.contains(props[0].name)
+		assertTrue "Couldn't find property", results.contains(props[1].name)
+		assertTrue "Couldn't find property", results.contains(props[2].name)
+		assertTrue "Couldn't find property", results.contains(props[3].name)
 	}
 
 }

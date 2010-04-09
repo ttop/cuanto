@@ -58,8 +58,8 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 
-	function getTestRunTableColumnDefs() {
-		return [
+	function getTestRunTableColumnDefs(propertyNames) {
+		var columns = [
 			{key:"dateExecuted", label:"Test Run", sortable:true, width: 125},
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
@@ -68,8 +68,14 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
 			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAverageDuration},
-			{key:"testProperties", label: "Properties", sortable:false, formatter: propertyFormatter}
 		];
+
+		for (var i=0; i < propertyNames.length; i++) {
+			columns.push({key: "prop|" + propertyNames[i], label: propertyNames[i], sortable: true, isProp: true,
+				formatter: newPropFormatter});
+		}
+
+		return columns;
 	}
 
 
@@ -113,15 +119,15 @@ YAHOO.cuanto.projectHistory = function() {
 		elCell.innerHTML = oData + " %";
 	}
 
-
-	function propertyFormatter(elCell, oRecord, oColumn, oData) {
+	function newPropFormatter(elCell, oRecord, oColumn, oData) {
 		var out = "";
-		oData.each(function(item, indx) {
-			out += item["name"] + ": " + item["value"];
-			if (indx < oData.length - 1) {
-				out += ", ";
-			}
+		var propName = oColumn.label;
+		var prop = oRecord.getData("testProperties").find(function(pr) {
+			return pr.name == propName;
 		});
+		if (prop) {
+			out = prop["value"];
+		}
 		elCell.innerHTML = out;
 	}
 
@@ -132,10 +138,10 @@ YAHOO.cuanto.projectHistory = function() {
 	function formatAverageDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
 	}
-
+	
 	return {
-		initHistoryTable: function() {
-			var columnDefs = getTestRunTableColumnDefs();
+		initHistoryTable: function(testRunProps) {
+			var columnDefs = getTestRunTableColumnDefs(testRunProps);
 			var dataSource = getTestRunDataSource();
 			var tableConfig = getTestRunTableConfig();
 

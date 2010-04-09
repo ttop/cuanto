@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="/testRun/urls"/>
-			YAHOO.cuanto.projectHistory.initHistoryTable();
+			YAHOO.cuanto.projectHistory.initHistoryTable(<%=propNames%>);
 		});
 
 		</script>

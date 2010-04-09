@@ -625,4 +625,7 @@ class TestRunService {
 		}
 	}
 
+	List<String> getTestRunPropertiesByProject(Project project) {
+		TestRunProperty.executeQuery("select name from cuanto.TestRunProperty trp where trp.testRun.project = ? group by name order by name", [project])
+	}
 }

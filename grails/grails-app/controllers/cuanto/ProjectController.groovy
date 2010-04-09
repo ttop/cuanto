@@ -102,7 +102,17 @@ class ProjectController {
 						redirect(controller: 'project', view: 'list')
 					} else {
 						def chartUrl = testRunService.getGoogleChartUrlForProject(proj)
-						render(view: "history", model: [project: proj, 'chartUrl': chartUrl])
+						def propNames = testRunService.getTestRunPropertiesByProject(proj)
+						def propString = "["
+						propNames.eachWithIndex { name, idx ->
+							propString += "\"${name}\""
+							if (idx < propNames.size() - 1) {
+								propString += ","
+							}
+						}
+						propString += "]"
+
+						render(view: "history", model: [project: proj, 'chartUrl': chartUrl, 'propNames': propString])
 					}
 				}
 				json {
