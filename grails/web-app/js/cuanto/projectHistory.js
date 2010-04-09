@@ -23,7 +23,10 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.projectHistory = function() {
 
+	var testRunTable;
+	var columnDialog;
 	var timeParser = new YAHOO.cuanto.TimeParser();
+	YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
@@ -72,7 +75,7 @@ YAHOO.cuanto.projectHistory = function() {
 
 		for (var i=0; i < propertyNames.length; i++) {
 			columns.push({key: "prop|" + propertyNames[i], label: propertyNames[i], sortable: true, isProp: true,
-				formatter: newPropFormatter});
+				formatter: propertyFormatter});
 		}
 
 		return columns;
@@ -93,6 +96,12 @@ YAHOO.cuanto.projectHistory = function() {
 		});
 	}
 
+	function chooseColumns(e) {
+		YAHOO.util.Event.preventDefault(e);
+		var columnDialog = getColumnDialog();
+		columnDialog.show();
+	}
+	
 
 	function buildTestRunTableQueryString(state, self) {
 		if (!state) {
@@ -119,7 +128,7 @@ YAHOO.cuanto.projectHistory = function() {
 		elCell.innerHTML = oData + " %";
 	}
 
-	function newPropFormatter(elCell, oRecord, oColumn, oData) {
+	function propertyFormatter(elCell, oRecord, oColumn, oData) {
 		var out = "";
 		var propName = oColumn.label;
 		var prop = oRecord.getData("testProperties").find(function(pr) {
@@ -138,15 +147,44 @@ YAHOO.cuanto.projectHistory = function() {
 	function formatAverageDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
 	}
-	
+
+	function getColumnDialog() {
+		if (!columnDialog)
+		{
+			var columns = testRunTable.getColumnSet().keys.collect(function(item) {
+				return item.key;
+			});
+			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, columns, "ph-" + $('projectId').getValue());
+		}
+		return columnDialog;
+	}
+
+	function getHiddenColumns() {
+		var dialog = getColumnDialog();
+		var hiddenCols = dialog.getHiddenColumns();
+		if (hiddenCols) {
+			return hiddenCols;
+		} else {
+			return {};
+		}
+	}
+
 	return {
 		initHistoryTable: function(testRunProps) {
 			var columnDefs = getTestRunTableColumnDefs(testRunProps);
 			var dataSource = getTestRunDataSource();
 			var tableConfig = getTestRunTableConfig();
 
-			var testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
+			testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
 				dataSource, tableConfig);
+
+			var hiddenCols = getHiddenColumns();
+			testRunTable.getColumnSet().flat.each(function(column) {
+				if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
+					testRunTable.hideColumn(column.key);
+				}
+			});
+
 
 			testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
 				if (!oPayload) {

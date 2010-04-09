@@ -29,7 +29,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys, sub
 	function getColumnPanel() {
 		if (!panel) {
 			panel = new YAHOO.widget.Panel("columnPanel", {dragOnly: true, x: 150,
-				width: "270px", visible: true, iframe: false, underlay: "none"});
+				width: "330px", visible: true, iframe: false, underlay: "none"});
 			panel.render();
 			if (overlayManager)
 			{
@@ -121,23 +121,23 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, columnKeys, sub
 			}
 			newCols = false;
 		}
-
-		pub.getHiddenColumns = function() {
-			var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, subCookieName);
-			if (cookie) {
-				var cols = {};
-				var pairs = cookie.split(",");
-				pairs.each(function(pair) {
-					var items = pair.split(":");
-					cols[items[0]] = (/^true$/i).test(items[1]);
-				});
-				return cols;
-			}
-			else {
-				return null;
-			}
-		};
-
 	};
+	
+	pub.getHiddenColumns = function() {
+		var cookie = YAHOO.util.Cookie.getSub(analysisCookieName, subCookieName);
+		if (cookie) {
+			var cols = {};
+			var pairs = cookie.split(",");
+			pairs.each(function(pair) {
+				var items = pair.split(":");
+				cols[items[0]] = (/^true$/i).test(items[1]);
+			});
+			return cols;
+		}
+		else {
+			return null;
+		}
+	};
+
 	return pub;
 };

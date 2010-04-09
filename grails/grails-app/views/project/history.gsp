@@ -35,13 +35,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<title>Cuanto: Test Run History for ${project?.name?.encodeAsHTML()} (id ${project?.id})</title>
 		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
 		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
+		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<p:css name='columnDialog'/>
 
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
 		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
 
 		<g:javascript src="cuanto/url.js"/>
 		<g:javascript src="cuanto/timeParser.js"/>
+		<g:javascript src="cuanto/columnDialog.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 
 		<script type="text/javascript">
@@ -70,13 +75,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<span class="heading">Project Key: </span><span class="text">${project?.projectKey}</span>
 
 			<br/>
+			<a id="chooseColumns" class="selectCmd smaller" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
 			<span class="smaller"> <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> ${bullet}
 			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
 			<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
 			</g:if></span>
-			<p/><br/>
-			Select a test run to view the detailed results and analysis:
+			<br/>
+			<input type="hidden" name="projectId" id="projectId" value="${project?.id}"/>
+			<div id="columnPanel" style="visibility:hidden">
+				<div class="hd">Columns</div>
+				<div id="columnPanel-picker" class="bd">
+				</div>
+			</div>
+
+			Select a test run to view the detailed results and analysis:<br/>
 			<div id="testRunList">
 				<div id="testRunTableDiv"></div>
 				<div id="trTablePaging"></div>

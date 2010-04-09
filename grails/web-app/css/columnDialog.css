@@ -1,0 +1,25 @@
+#columnPanel {
+	visibility: hidden;
+	border: 1px solid #808080;
+	background-color: #E3E3E3;
+	margin: 0 auto;
+}
+
+#columnPanel .bd {
+	overflow: auto;
+	background-color: white;
+}
+
+#columnPanel .columnPanel-pickercol {
+	clear: both;
+	padding: .5em 1em 3em;
+	border-bottom: 1px solid gray;
+}
+
+#columnPanel .columnPanel-pickerkey {
+	float: left;
+}
+
+#columnPanel .columnPanel-pickerbtns {
+	float: right;
+}

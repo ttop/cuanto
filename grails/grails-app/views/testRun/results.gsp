@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
 
 		<p:css name='analysis'/>
+		<p:css name='columnDialog'/>
 		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
 		<p:css name='../js/yui/2.6.0/tabview/assets/skins/sam/tabview'/>
 		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
@@ -95,9 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</div>
 		<div id="columnPanel" style="visibility:hidden">
 			<div class="hd">Columns</div>
-			<div id="columnPanel-picker" class="bd">
-			</div>
-
+			<div id="columnPanel-picker" class="bd"></div>
 		</div>
 		<div id="failContainer"></div>
 		<iframe id="yui-history-iframe" src="${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}"></iframe>

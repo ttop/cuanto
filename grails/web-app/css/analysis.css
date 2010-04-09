@@ -109,39 +109,6 @@
 	width:250px;
 }
 
-#columnPanel {
-
-
-	visibility: hidden;
-	border: 1px solid #808080;
-	background-color: #E3E3E3;
-	margin: 0 auto;
-}
-
-/*#columnPanel .hd {font-weight:bold;padding:1em;background:none;background-color:#E3E3E3;border-bottom:0;}*/
-/*#columnPanel .ft {text-align:right;padding:.5em;background-color:#E3E3E3;}*/
-#columnPanel .bd {
-	/*height: 10em;*/
-	/*margin: 0 1em;*/
-	overflow: auto;
-	/*border: 1px solid black;*/
-	background-color: white;
-}
-
-#columnPanel .columnPanel-pickercol {
-	clear: both;
-	padding: .5em 1em 3em;
-	border-bottom: 1px solid gray;
-}
-
-#columnPanel .columnPanel-pickerkey {
-	float: left;
-}
-
-#columnPanel .columnPanel-pickerbtns {
-	float: right;
-}
-
 /* Container workarounds for Mac Gecko scrollbar issues */
 .yui-panel-container.hide-scrollbars #dt-dlg .bd {
 /* Hide scrollbars by default for Gecko on OS X */
