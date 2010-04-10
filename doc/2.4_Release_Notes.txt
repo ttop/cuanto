@@ -1,4 +1,4 @@
-* Your Cuanto ant task will need to be updated in order to submit results to this new version of Cuanto.
+* Introduces the CuantoConnector java API for interacting with the Cuanto server from client code.
 * You can now associate arbitrary properties and hyperlinks with a TestRun:
 		<cuanto url="${cuanto.url}" testProject="CuantoProd">
 			<fileset dir="../grails/test/resources" includes="**/junitReport*.xml"/>
@@ -17,6 +17,7 @@ migrated to the new property style with corresponding names.
 * Normalize all time units to milliseconds, pretty-print time formats as HH:MM:ss.zzz
 * Clicking on the output panel icon when that outcome's output is already being displayed will now hide the output panel
 * Fix CUANTO-34, Searching with the Unanalyzed Failures filter returns non-failures.
+* Your Cuanto ant task will need to be updated in order to submit results to this new version of Cuanto.
 * Sorting by test output now works
 * Other minor bug fixes
 * If you are upgrading, please see the INSTALL file in the root directory of the distribution for important upgrade steps.
