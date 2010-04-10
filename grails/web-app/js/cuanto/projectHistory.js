@@ -132,7 +132,7 @@ YAHOO.cuanto.projectHistory = function() {
 		var out = "";
 		var propName = oColumn.label;
 		var prop = oRecord.getData("testProperties").find(function(pr) {
-			return pr.name == propName;
+			return pr.name.toLowerCase() == propName.toLowerCase();
 		});
 		if (prop) {
 			out = prop["value"];
