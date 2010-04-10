@@ -53,7 +53,7 @@
 		cuanto.addTestOutcome(outcome, testRun);
 
 		// fetch all TestOutcomes associated with this TestRun
-		List&lt;TestOutcome> testOutcomes = cuanto.getAllTestOutcomesForTestRun(testRun);
+		List&lt;TestOutcome> testOutcomes = cuanto.getTestOutcomesForTestRun(testRun, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
 
 
 	</pre>
