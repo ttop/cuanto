@@ -3,6 +3,7 @@
 *~
 *.iws
 api/target
+db
 grails/.classpath
 grails/.project
 grails/cuanto-test.launch
