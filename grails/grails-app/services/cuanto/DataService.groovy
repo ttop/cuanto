@@ -58,21 +58,6 @@ class DataService {
 	 */
 	def deleteTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
-		if (run.links) {
-			def linksToRemove = new ArrayList(run.links)
-			linksToRemove.each { link ->
-				run.removeFromLinks(link)
-				link.delete()
-			}
-		}
-
-		if (run.testProperties) {
-			def propsToRemove = new ArrayList(run.testProperties)
-			propsToRemove.each { prop ->
-				run.removeFromTestProperties(prop)
-				prop.delete()
-			}
-		}
 		run.delete()
 	}
 
@@ -83,6 +68,7 @@ class DataService {
 				TestRun testRun = propToDelete.testRun
 				testRun.removeFromTestProperties(propToDelete)
 				saveDomainObject testRun
+				propToDelete.delete()
 			}
 		}
 	}
@@ -581,25 +567,6 @@ class DataService {
 			log.info "found ${runs.size()} empty test runs to delete"
 
 			runs.each {run ->
-				if (run.links) {
-					def linksToRemove = new ArrayList(run.links)
-					linksToRemove.each {link ->
-						if (link) {
-							run.removeFromLinks(link)
-							link.delete()
-						}
-					}
-				}
-
-				if (run.testProperties) {
-					def propsToRemove = new ArrayList(run.testProperties)
-					propsToRemove.each {prop ->
-						if (prop) {
-							run.removeFromTestProperties(prop)
-							prop.delete()
-						}
-					}
-				}
 				run.delete()
 			}
 		}

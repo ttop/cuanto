@@ -21,10 +21,6 @@ package cuanto
 
 class TestRunLink implements Comparable {
 
-    static constraints = {
-
-    }
-
 	static belongsTo = [testRun: TestRun]
 
 	String description
@@ -36,8 +32,6 @@ class TestRunLink implements Comparable {
 		this.description = description
 		this.url = url
 	}
-
-
 
 
 	public int compareTo(Object t) {

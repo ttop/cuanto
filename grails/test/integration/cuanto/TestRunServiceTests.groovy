@@ -413,5 +413,76 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertTrue "Couldn't find property", results.contains(props[3].name)
 	}
 
+
+	void testUpdatePropertiesOfTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+		TestRun origTestRun = to.getTestRun(proj)
+
+		def props = []
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+		props << [name: to.wordGen.getCamelWords(4), value: to.wordGen.getSentence(3)]
+
+		origTestRun.addToTestProperties(new TestRunProperty(props[0].name, props[0].value))
+		origTestRun.addToTestProperties(new TestRunProperty(props[1].name, props[1].value))
+		origTestRun.addToTestProperties(new TestRunProperty(props[2].name, props[2].value))
+
+		dataService.saveTestRun(origTestRun)
+
+		TestRun updateTestRun = new TestRun(id: origTestRun.id)
+		updateTestRun.addToTestProperties(new TestRunProperty(props[0].name, "updated!"))
+		updateTestRun.addToTestProperties(new TestRunProperty(props[3].name, "added!"))
+
+		testRunService.updatePropertiesOfTestRun origTestRun, updateTestRun
+
+		TestRun fetchedTestRun = TestRun.get(origTestRun.id)
+		assertEquals "Wrong number of test run properties", 2, fetchedTestRun.testProperties.size()
+
+		def fetchedProps = TestRunProperty.findAllByTestRun(origTestRun)
+		assertEquals "Wrong number of fetched properties", 2, fetchedProps.size() 
+	}
+
+
+	void testUpdateSinglePropertyOfTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+		TestRun origTestRun = to.getTestRun(proj)
+		origTestRun.addToTestProperties(new TestRunProperty("one", "orig value"))
+		dataService.saveTestRun(origTestRun)
+
+		TestRun updateTestRun = new TestRun(id: origTestRun.id)
+		updateTestRun.addToTestProperties(new TestRunProperty("one", "updated"))
+
+		testRunService.updatePropertiesOfTestRun origTestRun, updateTestRun
+		TestRun fetchedTestRun = TestRun.get(origTestRun.id)
+		assertEquals "Wrong number of test run properties", 1, fetchedTestRun.testProperties.size()
+
+		def fetchedProps = TestRunProperty.findAllByTestRun(origTestRun)
+		assertEquals "Wrong number of fetched properties", 1, fetchedProps.size()
+
+		assertEquals "Wrong property value", "updated", fetchedTestRun.testProperties[0].value
+		assertEquals "Wrong property value", "updated", fetchedProps[0].value
+	}
+
+	
+	void testRemoveSinglePropertyOfTestRun() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+		TestRun origTestRun = to.getTestRun(proj)
+		origTestRun.addToTestProperties(new TestRunProperty("one", "orig value"))
+		dataService.saveTestRun(origTestRun)
+
+		TestRun updateTestRun = new TestRun(id: origTestRun.id)
+
+		testRunService.updatePropertiesOfTestRun origTestRun, updateTestRun
+		TestRun fetchedTestRun = TestRun.get(origTestRun.id)
+		assertEquals "Wrong number of test run properties", 0, fetchedTestRun.testProperties.size()
+
+		def fetchedProps = TestRunProperty.findAllByTestRun(origTestRun)
+		assertEquals "Wrong number of fetched properties", 0, fetchedProps.size()
+	}
 }
 

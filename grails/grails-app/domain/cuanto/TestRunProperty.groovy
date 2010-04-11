@@ -36,8 +36,6 @@ public class TestRunProperty implements Comparable {
 	}
 
 
-
-
 	public int compareTo(Object t) {
 		TestRunProperty otherProp = (TestRunProperty) t
 

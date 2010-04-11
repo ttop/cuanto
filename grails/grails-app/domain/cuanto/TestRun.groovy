@@ -35,8 +35,8 @@ class TestRun {
 
 	static mapping = {
 		cache true
-		link fetch: "join"
-		testProperty fetch: "join"
+		testRunLink fetch: "join"
+		testRunProperty fetch: "join"
 	}
 	
 	Date dateCreated // date the record was added to the database

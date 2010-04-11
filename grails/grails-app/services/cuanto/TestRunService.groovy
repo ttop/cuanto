@@ -285,6 +285,7 @@ class TestRunService {
 			} else {
 				// property not found in original, so add it
 				origTestRun.addToTestProperties(new TestRunProperty(tp.name, tp.value))
+				dataService.saveDomainObject origTestRun 
 			}
 		}
 
@@ -297,6 +298,8 @@ class TestRunService {
 
 		propsToRemove.each {
 			origTestRun.removeFromTestProperties it
+			dataService.saveDomainObject origTestRun
+			it.delete()
 		}
 	}
 
@@ -324,12 +327,14 @@ class TestRunService {
 
 		linksToRemove.each {
 			origTestRun.removeFromLinks it
+			dataService.saveDomainObject origTestRun
+			it.delete()
 		}
 	}
 
 
-	Map processLinksFromParameters(Map params, TestRun testRun) {
-		return params.each {String paramName, String paramValue ->
+	void processLinksFromParameters(Map params, TestRun testRun) {
+		params.each {String paramName, String paramValue ->
 			// is this parameter an existing Link?
 			def existingLinkMatcher = (paramName =~ /^linkId\[(\d+)]/)
 			if (existingLinkMatcher.matches()) {
@@ -366,8 +371,8 @@ class TestRunService {
 	}
 
 
-	Map processTestPropertiesFromParameters(Map params, TestRun testRun) {
-		return params.each {String paramName, String paramValue ->
+	void processTestPropertiesFromParameters(Map params, TestRun testRun) {
+		params.each {String paramName, String paramValue ->
 			// is this parameter an existing TestProperty?
 			def existingPropertyMatcher = (paramName =~ /^prop\[(\d+)]/)
 			if (existingPropertyMatcher.matches()) {

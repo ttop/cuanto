@@ -536,7 +536,7 @@ public class CuantoConnector {
 			throw new IllegalArgumentException(
 				"The TestCase has no id. Query for the TestCase before getting it's TestOutcomes.");
 		}
-		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllTestOutcomes");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getTestOutcomes");
 		get.setQueryString(new NameValuePair[]{
 			new NameValuePair("testCase", testCase.id.toString()),
 			new NameValuePair("sort", "dateCreated"),
