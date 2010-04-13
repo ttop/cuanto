@@ -23,6 +23,7 @@ package cuanto.api;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 
 import java.util.*;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ public class TestRun {
 	Boolean valid = true;
 	Map<String, String> links = new HashMap<String, String>();
 	Map<String, String> testProperties = new HashMap<String, String>();
+	List<String> tags = new ArrayList<String>();
 	Long id;
 
 
@@ -92,6 +94,11 @@ public class TestRun {
 		for (Object propObj : props) {
 			JSONObject prop = (JSONObject) propObj;
 			testRun.addTestProperty(prop.getString("name"), prop.getString("value"));
+		}
+
+		if ((jsonTestRun.get("tags") != null) && !(jsonTestRun.get("tags") instanceof JSONNull)) {
+			JSONArray tagArray = jsonTestRun.getJSONArray("tags");
+			testRun.addTags(tagArray);
 		}
 
 		return testRun;
@@ -174,6 +181,25 @@ public class TestRun {
 		return this;
 	}
 
+
+	/**
+	 * Get the tags associated with this test run.
+	 * @return An unmodifiable List of the tags.  
+	 */
+	public List<String> getTags() {
+		return Collections.unmodifiableList(tags);
+	}
+
+
+	void addTags(List<String> tags) {
+		this.tags.addAll(tags);
+	}
+
+
+	void addTag(String tag) {
+		tags.add(tag);
+	}
+	
 
 	/**
 	 * Deletes a Link from this TestRun object. This change is not reflected on the Cuanto server until you create or update

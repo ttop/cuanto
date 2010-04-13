@@ -23,6 +23,7 @@ package cuanto
 import org.codehaus.groovy.grails.web.json.JSONObject
 import java.text.SimpleDateFormat
 import cuanto.parsers.ParsableTestOutcome
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class ParsingService {
 	static transactional = false
@@ -125,6 +126,13 @@ class ParsingService {
 		if (!jsonTestOutcome.isNull("analysisState")) {
 			testOutcome.analysisState = dataService.getAnalysisStateByName(jsonTestOutcome.getString("analysisState"))
 		}
+
+        if (!jsonTestOutcome.isNull("tags")) {
+            JSONArray jsonTags = jsonTestOutcome.getJSONArray("tags")
+            jsonTags.each {
+                testOutcome.addToTags(procureTag(it))
+            }
+        }
 
 		return testOutcome;
 	}

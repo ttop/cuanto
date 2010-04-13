@@ -97,12 +97,17 @@ class ApiController {
 			render "Project was not found for projectKey ${params.projectKey}"
 		}
 	}
+    
 
 	def addTestOutcome = {
 		TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
 		dataService.saveTestOutcomes([testOutcome])
 
 		if (testOutcome.testRun) {
+            testOutcome.tags?.each {
+                testOutcome.testRun.addToTags(it)
+            }
+            dataService.saveTestRun testOutcome.testRun
 			statisticService.queueTestRunStats(testOutcome.testRun)
 		}
 

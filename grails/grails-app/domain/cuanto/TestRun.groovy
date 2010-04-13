@@ -95,6 +95,9 @@ class TestRun {
 		jsonMap.links = jsonLinks
 		jsonMap.testProperties = jsonTestProperties()
 
+        if (tags) {
+            jsonMap.tags = tags.collect{ it.name }
+        }
 		return jsonMap
 	}
 

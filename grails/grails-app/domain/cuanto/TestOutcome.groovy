@@ -89,6 +89,11 @@ class TestOutcome {
 		myJson.bug = outcome.bug == null ? null : [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id]
 		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
+
+        if (tags) {
+            myJson.tags = tags.collect {it.name}
+        }
+        
 		return myJson
 	}
 }

@@ -24,10 +24,9 @@ package cuanto.api;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONNull;
+import net.sf.json.JSONArray;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -52,6 +51,7 @@ public class TestOutcome {
 	Date dateCreated;
 	Date lastUpdated;
 	String projectKey;
+	List<String> tags = new ArrayList<String>();
 
 
 	TestOutcome() {
@@ -438,6 +438,11 @@ public class TestOutcome {
 		if (!jsonOutcome.getJSONObject("testRun").isNullObject()) {
 			testOutcome.setTestRun(TestRun.fromJSON(jsonOutcome.getJSONObject("testRun").toString()));
 		}
+
+		if ((jsonOutcome.get("tags") != null) && !(jsonOutcome.get("tags") instanceof JSONNull)) {
+			JSONArray tagArray = jsonOutcome.getJSONArray("tags");
+			testOutcome.addTags(tagArray);
+		}
 		return testOutcome;
 	}
 
@@ -483,8 +488,40 @@ public class TestOutcome {
 		if (this.testRun != null) {
 			jsonMap.put("testRun", this.testRun.toJsonMap());
 		}
+
+		if (tags.size() > 0) {
+			jsonMap.put("tags", tags);
+		}
+
 		JSONObject jsonTestOutcome = JSONObject.fromObject(jsonMap);
 		return jsonTestOutcome.toString();
+	}
+
+
+	/**
+	 * Get all the Tags for this TestOutcome.
+	 * @return an unmodifiable list of all the Tags.
+	 */
+	public List<String> getTags() {
+		return Collections.unmodifiableList(tags);
+	}
+
+
+	/**
+	 * Add a tag to this TestOutcome.
+	 * @param tag The tag to add.
+	 */
+	public void addTag(String tag) {
+		tags.add(tag);
+	}
+
+
+	/**
+	 * Add tags to this TestOutcome.
+	 * @param tags The tags to add.
+	*/
+	public void addTags(List<String> tags) {
+		this.tags.addAll(tags);
 	}
 
 

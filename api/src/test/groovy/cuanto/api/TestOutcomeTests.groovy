@@ -65,8 +65,6 @@ public class TestOutcomeTests extends GroovyTestCase {
 		} finally {
 			client.deleteTestRun run
 		}
-
-
 	}
 
 
@@ -381,47 +379,59 @@ public class TestOutcomeTests extends GroovyTestCase {
 				assertEquals "Wrong outcome for ${sort.toString()}", outcomes[it].id, fetched[idx].id
 			}
 		}
-
-		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "desc")
-		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
-		//[2, 1 ,0].eachWithIndex { it, idx ->
-		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
-		//}
-		//
-		//// started at
-		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.STARTED_AT, "asc")
-		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
-		//[0, 1, 2].eachWithIndex { it, idx ->
-		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
-		//}
-		//
-		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.STARTED_AT, "desc")
-		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
-		//[2, 1 ,0].eachWithIndex { it, idx ->
-		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
-		//}
-		//
-		//// finished at
-		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FINISHED_AT, "asc")
-		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
-		//[0, 1, 2].eachWithIndex { it, idx ->
-		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
-		//}
-		//
-		//fetched = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FINISHED_AT, "desc")
-		//assertEquals "Wrong number of outcomes returned", 3, fetched.size()
-		//[2, 1 ,0].eachWithIndex { it, idx ->
-		//	assertEquals "Wrong outcome", outcomes[it].id, fetched[idx].id
-		//}
-
 	}
+
+
+    void testAddTestOutcomeForTestRunWithTags() {
+        TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+            TestResult.valueOf("Fail"))
+        outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+        outcome.analysisState = AnalysisState.Bug
+        outcome.startedAt = new Date()
+        outcome.finishedAt = new Date() + 1
+        outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+        outcome.owner = "Cuanto"
+        outcome.note = "Cuanto note"
+        outcome.testOutput = "Fantastic test output"
+        outcome.addTag(wordGen.getWord())
+        outcome.addTag(wordGen.getWord())
+        assertEquals "tags", 2, outcome.tags?.size()
+
+        TestRun run = new TestRun(new Date())
+        client.addTestRun(run)
+        try {
+            Long outcomeId = client.addTestOutcome(outcome, run)
+            TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+            assertNotNull "No outcome fetched", fetchedOutcome
+            assertEquals outcome.testCase, fetchedOutcome.testCase
+            assertNotNull "Bug", fetchedOutcome.bug
+            assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+            assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+            assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+            assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+            assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+            assertEquals "duration", outcome.duration, fetchedOutcome.duration
+            assertEquals "owner", outcome.owner, fetchedOutcome.owner
+            assertEquals "note", outcome.note, fetchedOutcome.note
+            assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+            assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+
+            assertEquals "tags", outcome.tags.size(), fetchedOutcome.tags?.size()
+
+            TestRun fetchedRun = client.getTestRun(run.id)
+            outcome.tags.each { tag ->
+                assertNotNull "Couldn't find tag ${tag} on TestOutcome", fetchedOutcome.tags.find { it == tag }
+                assertNotNull "Couldn't find tag ${tag} on TestRun", fetchedRun.tags.find { it == tag }
+            }
+        } finally {
+            client.deleteTestRun run
+        }
+    }
 
 
 	TestOutcome createTestOutcome(TestResult result) {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "test${wordGen.getCamelWords(3)}",
 			wordGen.getSentence(2),	result)
-		//outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-		//outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
