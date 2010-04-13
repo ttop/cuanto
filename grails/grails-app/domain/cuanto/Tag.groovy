@@ -22,5 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 public class Tag {
+    static mapping = {
+        cache true
+    }
+
     String name
 }
