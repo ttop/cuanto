@@ -133,6 +133,16 @@ class ParsingServiceTests extends GroovyTestCase {
         assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
         assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
 
+        assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
+        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
+        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
+
+        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
+        assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
+        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
+        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
+        assertEquals "Wrong number of total tags", 2, Tag.count()
+
         TestRun testRunTwo = fakes.getTestRun(proj)
         dataService.saveDomainObject testRunTwo
 

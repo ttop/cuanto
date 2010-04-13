@@ -29,6 +29,7 @@ class TestRun {
 		note(nullable: true, blank: true)
 		valid(nullable: true)
 		testRunStatistics(nullable:true)
+        tags(nullable:true)
 	}
 
 	static hasMany = [links:TestRunLink, testProperties:TestRunProperty, tags: Tag]

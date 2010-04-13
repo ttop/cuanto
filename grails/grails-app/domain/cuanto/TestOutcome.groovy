@@ -38,7 +38,9 @@ class TestOutcome {
 		finishedAt(nullable: true)
 		dateCreated(nullable: true)
 		lastUpdated(nullable: true)
+        tags(nullable:true)
 	}
+
 	static mapping = {
 		cache true
 		analysisState lazy: false

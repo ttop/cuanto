@@ -63,6 +63,13 @@ class ParsingService {
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
 		if (testRun) {
 			statisticService.queueTestRunStats(testRun)
+
+            testOutcomesToSave.each { outcome ->
+                outcome.tags?.each { tag ->
+                    testRun.addToTags(tag)
+                }
+            }
+            dataService.saveTestRun(testRun)
 		}
 		return testRun
 	}
