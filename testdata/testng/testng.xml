@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Suite1" verbose="1" >
+  <test name="TestNG sample one">
+	  <groups>
+		  <run>
+			  <include name="quirks"/>
+			  <include name="places"/>
+			  <exclude name="weirdos"/>
+		  </run>
+	  </groups>
+	  <packages>
+		  <package name="cuanto.sample.*"/>
+	  </packages>
+  </test>
+</suite>

@@ -1,0 +1,95 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Suite1">
+    <groups>
+      <group name="places">
+        <method signature="cuanto.sample.TwinPeaks.blackLodge()" name="blackLodge" class="cuanto.sample.TwinPeaks"/>
+        <method signature="cuanto.sample.TwinPeaks.greatNorthern()" name="greatNorthern" class="cuanto.sample.TwinPeaks"/>
+      </group>
+      <group name="quirks">
+        <method signature="cuanto.sample.TwinPeaks.blackLodge()" name="blackLodge" class="cuanto.sample.TwinPeaks"/>
+        <method signature="cuanto.sample.TwinPeaks.giantVisions()" name="giantVisions" class="cuanto.sample.TwinPeaks"/>
+        <method signature="cuanto.sample.TwinPeaks.tibetanMethod()" name="tibetanMethod" class="cuanto.sample.TwinPeaks"/>
+      </group>
+    </groups>
+    <test name="TestNG sample one">
+      <class name="cuanto.sample.TwinPeaks">
+        <test-method status="FAIL" signature="blackLodge()" name="blackLodge" duration-ms="4" started-at="2010-04-12T14:51:49Z" finished-at="2010-04-12T14:51:49Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[Let's rock!]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: Let's rock!
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.TwinPeaks.blackLodge(TwinPeaks.java:49)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="giantVisions()" name="giantVisions" duration-ms="0" started-at="2010-04-12T14:51:49Z" finished-at="2010-04-12T14:51:49Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[It is happening again]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: It is happening again
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.TwinPeaks.giantVisions(TwinPeaks.java:38)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="tibetanMethod()" name="tibetanMethod" duration-ms="1" started-at="2010-04-12T14:51:49Z" finished-at="2010-04-12T14:51:49Z">
+        </test-method>
+        <test-method status="PASS" signature="greatNorthern()" name="greatNorthern" duration-ms="0" started-at="2010-04-12T14:51:49Z" finished-at="2010-04-12T14:51:49Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

@@ -38,6 +38,7 @@ class ParsableTestOutcome {
 	Date finishedAt
 	Date dateCreated
 	Date lastUpdated
+    List tags
 
 
 	boolean equals(o) {

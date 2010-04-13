@@ -215,6 +215,10 @@ class ParsingService {
 		testOutcome.startedAt = parsableTestOutcome.startedAt
 		testOutcome.finishedAt = parsableTestOutcome.finishedAt
 		processTestFailure(testOutcome, project)
+        List tags = processTags(parsableTestOutcome)
+        tags.each {
+            testOutcome.addToTags(it)
+        }
 		return testOutcome
 	}
 
@@ -319,7 +323,34 @@ class ParsingService {
 	}
 
 
-	def parseUrls(strInput) {
+    List<Tag> processTags(ParsableTestOutcome testOutcome) {
+        List tags = []
+        testOutcome.tags.each { tagName ->
+            def tag = procureTag(tagName)
+            tags << tag
+        }
+        return tags
+    }
+
+
+    /**
+     * Find an existing tag or create a new tag
+     * @param tagName - the tag name
+     * @return The tag
+     */
+    Tag procureTag(String tagName) {
+        def existingTag = Tag.findByNameIlike(tagName)
+        if (existingTag) {
+            return existingTag
+        } else {
+            Tag newTag = new Tag(name: tagName)
+            dataService.saveDomainObject newTag
+            return newTag
+        }
+    }
+
+
+    def parseUrls(strInput) {
 		// return a list of all URLs found in strInput
 		def urls = []
 		def urlRegEx = '([A-Za-z][A-Za-z0-9+.-]{1,120}:[A-Za-z0-9/](([A-Za-z0-9$_.+!*,;/?:@&~=-])|%[A-Fa-f0-9]{2}){1,333}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*,;/?:@&~=%-]{0,1000}))?)'

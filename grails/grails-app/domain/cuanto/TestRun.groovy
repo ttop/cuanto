@@ -31,12 +31,13 @@ class TestRun {
 		testRunStatistics(nullable:true)
 	}
 
-	static hasMany = [links:TestRunLink, testProperties:TestRunProperty]
+	static hasMany = [links:TestRunLink, testProperties:TestRunProperty, tags: Tag]
 
 	static mapping = {
 		cache true
 		testRunLink fetch: "join"
 		testRunProperty fetch: "join"
+        tag fetch: "join"
 	}
 	
 	Date dateCreated // date the record was added to the database

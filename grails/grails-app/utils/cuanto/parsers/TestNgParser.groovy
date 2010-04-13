@@ -41,6 +41,8 @@ class TestNgParser implements CuantoTestParser{
 
 		def xml = new XmlParser().parse(stream)
 
+        Map groupMap = getGroupMap(xml)
+        
 		xml.suite.each { suite->
 			suite.test.each { test->
 
@@ -81,6 +83,7 @@ class TestNgParser implements CuantoTestParser{
 								out.testCase.parameters = params.join(", ")
 							}
 
+                            out.tags = groupMap[out.testCase.fullName + "()"]
 							parsableOutcomes << out
                         }
 				    }
@@ -90,4 +93,17 @@ class TestNgParser implements CuantoTestParser{
 		return parsableOutcomes
 	}
 
+    Map getGroupMap(Node xml) {
+        Map methodMap = [:]
+        xml.suite.groups.group.each { group ->
+            group.method.each { method ->
+                def methodSig = method.'@signature'
+                if (!methodMap.containsKey(methodSig)) {
+                    methodMap[methodSig] = []
+                }
+                methodMap[methodSig] << group.'@name'
+            }
+        }
+        return methodMap
+    }
 }

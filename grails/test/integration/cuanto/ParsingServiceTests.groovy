@@ -8,7 +8,7 @@ import cuanto.test.TestObjects
 import cuanto.ParsingException
 
 class ParsingServiceTests extends GroovyTestCase {
-	def parsingService
+	ParsingService parsingService
 	DataService dataService
 	def initializationService
 	def testOutcomeService
@@ -95,5 +95,49 @@ class ParsingServiceTests extends GroovyTestCase {
 		assertTrue("Couldn't find file: ${file.toString()}", file.exists())
 		return file
 	}
-	
+
+
+    void testParsingTags() {
+        Project proj = fakes.getProject()
+        proj.testType = TestType.findByName("TestNG")
+        dataService.saveDomainObject proj
+
+        TestRun testRun = fakes.getTestRun(proj)
+        dataService.saveDomainObject testRun
+
+        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
+        assertEquals "Wrong number of total tags", 2, Tag.count()
+
+        def results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.tibetanMethod'")
+        assertEquals 1, results.size()
+        TestOutcome outcome = results[0]
+        assertEquals "Wrong number of tags", 1, outcome.tags.size()
+        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+
+        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.giantVisions'")
+        assertEquals 1, results.size()
+        outcome = results[0]
+        assertEquals "Wrong number of tags", 1, outcome.tags.size()
+        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+
+        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.greatNorthern'")
+        assertEquals 1, results.size()
+        outcome = results[0]
+        assertEquals "Wrong number of tags", 1, outcome.tags.size()
+        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
+
+        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.blackLodge'")
+        assertEquals 1, results.size()
+        outcome = results[0]
+        assertEquals "Wrong number of tags", 2, outcome.tags.size()
+        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
+        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+
+        TestRun testRunTwo = fakes.getTestRun(proj)
+        dataService.saveDomainObject testRunTwo
+
+        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRunTwo.id)
+        assertEquals "Wrong number of total tags", 2, Tag.count()
+    }
+
 }

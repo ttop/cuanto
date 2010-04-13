@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Groovy" name="Groovy">
+      <configuration />
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="Maven: org.testng:testng:jdk15:5.11" level="project" />
+    <orderEntry type="library" exported="" name="Maven: junit:junit:3.8.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.codehaus.groovy:groovy-all:1.6.2" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.apache.ant:ant:1.7.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.apache.ant:ant-launcher:1.7.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: jline:jline:0.9.94" level="project" />
+    <orderEntry type="library" exported="" name="Maven: commons-logging:commons-logging:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven:gmaven-mojo:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-api:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.feature:gmaven-feature-api:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-1.5:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.6" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.feature:gmaven-feature-support:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-support:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven:gmaven-common:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.thoughtworks.qdox:qdox:1.8" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all-minimal:1.5.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-project:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-settings:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-model:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1" level="project" />
+    <orderEntry type="library" name="Maven: classworlds:classworlds:1.1-alpha-2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-profile:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-artifact-manager:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-repository-metadata:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-artifact:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven.wagon:wagon-provider-api:1.0-beta-2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-plugin-registry:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-plugin-api:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-1.6:1.0" level="project" />
+  </component>
+</module>
+

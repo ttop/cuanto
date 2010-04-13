@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="testng example" default="test" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+
+	<target name="test" depends="getDependencies">
+		<testng>
+			<xmlfileset dir="${basedir}" includes="testng.xml"/>
+			<classpath>
+				<path location="target/classes"/>
+			</classpath>
+			<reporter classname="org.testng.reporters.XMLReporter">
+				<property name="generateGroupsAttribute" value="true"/>
+			</reporter>
+		</testng>
+	</target>
+
+
+	<target name="getDependencies">
+		<echo>Getting TestNG dependencies...</echo>
+		<artifact:dependencies pathId="testng.deps.classpath">
+			<dependency groupId="org.testng" artifactId="testng" version="5.11" classifier="jdk15"/>
+		</artifact:dependencies>
+
+		<taskdef resource="testngtasks">
+			<classpath refid="testng.deps.classpath"/>
+		</taskdef>
+
+	</target>
+
+
+</project>

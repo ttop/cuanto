@@ -128,6 +128,26 @@ class TestNgParserTests extends GroovyTestCase {
 	}
 
 
+    void testParsingGroupsFromTopOfXmlFile() {
+        def parser = new TestNgParser()
+        List<ParsableTestOutcome> outcomes = parser.parseFile(getFile("testng-results-groups-top.xml"))
+        assertEquals "Wrong number of outcomes", 4, outcomes.size()
+
+        assertEquals "Wrong number of tags", 2, outcomes[0].tags?.size()
+        assertEquals "places", outcomes[0].tags[0]
+        assertEquals "quirks", outcomes[0].tags[1]
+
+        assertEquals "Wrong number of tags", 1, outcomes[1].tags?.size()
+        assertEquals "quirks", outcomes[1].tags[0]
+
+        assertEquals "Wrong number of tags", 1, outcomes[2].tags?.size()
+        assertEquals "quirks", outcomes[2].tags[0]
+
+        assertEquals "Wrong number of tags", 1, outcomes[3].tags?.size()
+        assertEquals "places", outcomes[3].tags[0]
+    }
+
+
 	File getFile(fileName) {
 		File testFile = new File("test/resources/${fileName}")
 		if (!testFile.exists()) {

@@ -42,7 +42,10 @@ class TestOutcome {
 	static mapping = {
 		cache true
 		analysisState lazy: false
+        tags lazy: false
 	}
+
+    static hasMany = [tags: Tag]
 
 	TestCase testCase
 	TestRun testRun
