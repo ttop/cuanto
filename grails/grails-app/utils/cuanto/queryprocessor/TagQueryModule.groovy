@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2010 Todd Wells
+Copyright (c) 2010 thePlatform, Inc.
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -22,18 +22,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto.queryprocessor
 
 import cuanto.QueryFilter
-
-public interface QueryModule {
-
-	/**
-	 * Return a map of [from: "HQL from fragment", where: "HQL where fragment",
-     * params: [list of positional params required by the HQL where fragment]
-	 */
-	Map getQueryParts(QueryFilter queryFilter)
+import cuanto.TestOutcome
 
 
-	/**
-	 * A list of the object classes for which this query module is applicable. 
-	 */
-	List<Class> getObjectTypes()
+public class TagQueryModule implements QueryModule {
+
+    public Map getQueryParts(QueryFilter queryFilter) {
+       if (queryFilter.tags != null) {
+           def whereClauses = []
+           def params = []
+           queryFilter.tags.each { tagName->
+               whereClauses << "upper(tag_0.name) like ?"
+               params << tagName.toUpperCase()
+           }
+           def whereText = "(" + whereClauses.join(" or ") + ")"
+           return [from: "inner join t.tags tag_0", where: whereText,
+                   'params': params ]
+       } else {
+           return [:]
+       }
+    }
+
+
+    public List<Class> getObjectTypes() {
+        [TestOutcome.class]
+    }
 }

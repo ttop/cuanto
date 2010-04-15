@@ -179,20 +179,29 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	Long queryMax
 
 
+    /**
+     * If not null, only TestOutcomes that contain at least one of these tag names will be returned.
+     * @param tags A list of tag names.
+     */
+    List tags
 
-	/* TODO:
-     Filters for:
-	  duration ?
-	*/
 
+    String selectClause() {
+        def select = "select distinct t"
+        if (sorts) {
+            def newList = sorts.collect{"t." + it.sort}
+            select += ", " + newList.join(", ")
+        }
+        return select
+    }
 
 	String fromClause() {
-		return "from cuanto.TestOutcome t where "
+		"from cuanto.TestOutcome t"
 	}
 
 
 	String countClause() {
-		return "select count(*) from cuanto.TestOutcome t where "
+        "select count(distinct t) "
 	}
 
 
@@ -237,12 +246,21 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		nameMap.finishedat = "finishedAt"
 		nameMap.id = "id"
 		nameMap.lastupdated = "lastUpdated"
-		nameMap.startedat = "startedAt"
-
+		nameMap.startdate = "startedAt"
+        nameMap.dateexecuted = "testRun.dateExecuted"
 		def resolvedValue = nameMap[name]
 		if (!resolvedValue) {
 			resolvedValue = "testCase.fullName"
 		}
 		return resolvedValue as String
 	}
+
+
+    public List resultTransform(List results) {
+        if (sorts) {
+            return results.collect{it[0]}
+        } else {
+            return results
+        }
+    }
 }

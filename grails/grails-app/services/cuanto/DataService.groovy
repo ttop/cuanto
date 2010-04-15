@@ -361,11 +361,14 @@ class DataService {
 
 	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) throws CuantoException {
 		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
+        def results
 		if (cuantoQuery.paginateParameters) {
-			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
 		} else {
-			TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
 		}
+        def transformed = queryFilter.resultTransform(results)
+        return transformed
 	}
 
 

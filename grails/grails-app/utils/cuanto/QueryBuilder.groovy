@@ -28,15 +28,51 @@ public class QueryBuilder {
 	List<QueryModule> queryModules
 	private Map <Class, List<QueryModule>> moduleProcessors
 
+
 	CuantoQuery buildCount(QueryFilter queryFilter) {
-		String query = " ${queryFilter.countClause()} "
-		Map base = buildQueryForBaseQuery(query, queryFilter)
-		return new CuantoQuery(hql: base.hql as String, positionalParameters: base.params as List)
-	}
+        Map<Object,Object> result
+        List fromClauses = []
+        List whereClauses = []
+        List params = []
+        List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
+        processors.each {QueryModule queryProcessor ->
+            def details = queryProcessor.getQueryParts(queryFilter)
+
+            if (details.from?.trim()) {
+                fromClauses << details.from.trim()
+            }
+
+            if (details.where?.trim()) {
+                whereClauses << " ${details.where} "
+                params += details.params
+            }
+        }
+        String fromClause = queryFilter.fromClause()
+        fromClauses.each {
+            fromClause += " ${it} "
+        }
+        if (whereClauses.size() == 0) {
+            throw new CuantoException("No filter options were specified for query")
+        }
+        String whereClause = ""
+        whereClauses.eachWithIndex {clause, idx ->
+            whereClause += " ${clause}"
+            if (idx < whereClauses.size() - 1) {
+                whereClause += " and "
+            } else {
+                whereClause += " "
+            }
+        }
+        String selectClause = queryFilter.countClause()
+        String query = selectClause + " " +  fromClause + " where " + whereClause
+        result = [hql: query.toString(), 'params': params.flatten()]
+        return new CuantoQuery(hql: result.hql as String, positionalParameters: result.params as List)
+    }
 
 
 	CuantoQuery buildQuery(QueryFilter queryFilter) throws CuantoException {
-		Map base = buildQueryForBaseQuery(" ${queryFilter.fromClause()} ", queryFilter)
+
+		Map base = buildQueryForBaseQuery(queryFilter)
 		String query = base.hql as String
 
 		if (queryFilter.sorts) {
@@ -71,15 +107,19 @@ public class QueryBuilder {
 	}
 
 
-	def buildQueryForBaseQuery(String fromClause, QueryFilter queryFilter) {
-		List params = []
+	def buildQueryForBaseQuery(QueryFilter queryFilter) {
+        List fromClauses = []
 		List whereClauses = []
+		List params = []
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
-		String query = fromClause;
-		
+
 		processors.each {QueryModule queryProcessor ->
 			def details = queryProcessor.getQueryParts(queryFilter)
+
+            if (details.from?.trim()) {
+                fromClauses << details.from.trim()
+            }
 
 			if (details.where?.trim()) {
 				whereClauses << " ${details.where} "
@@ -87,19 +127,28 @@ public class QueryBuilder {
 			}
 		}
 
+        String selectClause = queryFilter.selectClause()
+
+        String fromClause = queryFilter.fromClause()
+        fromClauses.each {
+            fromClause += " ${it} "
+        }
+
 		if (whereClauses.size() == 0) {
 			throw new CuantoException("No filter options were specified for query")
 		}
 
+        String whereClause = ""
 		whereClauses.eachWithIndex {clause, idx ->
-			query += " ${clause}"
+			whereClause += " ${clause}"
 			if (idx < whereClauses.size() - 1) {
-				query += " and "
+				whereClause += " and "
 			} else {
-				query += " "
+				whereClause += " "
 			}
 		}
 
+        String query = selectClause + " " +  fromClause + " where " + whereClause
 		return [hql: query.toString(), 'params': params.flatten()]
 	}
 

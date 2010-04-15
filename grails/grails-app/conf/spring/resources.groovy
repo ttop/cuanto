@@ -43,6 +43,7 @@ import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
 import cuanto.queryprocessor.TestRunDateExecutedQueryModule
+import cuanto.queryprocessor.TagQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -80,7 +81,8 @@ beans = {
 			new TestCaseQueryModule(),
 			new NoteQueryModule(),
 			new TestOutputQueryModule(),
-			new TestRunDateExecutedQueryModule()
+			new TestRunDateExecutedQueryModule(),
+            new TagQueryModule()
 		]
 	}
 }

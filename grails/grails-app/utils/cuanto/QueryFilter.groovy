@@ -23,6 +23,12 @@ package cuanto
 
 public interface QueryFilter {
 
+
+    /**
+     *@return the HQL 'select' clauses that is the base select clause for the query this filter will use
+     */
+    String selectClause()
+
 	/**
 	 * @return the HQL 'from' clause that is the basis of queries that this QueryFilter will use.  
 	 */
@@ -36,4 +42,12 @@ public interface QueryFilter {
 
 	
 	Class appliesToClass()
+
+
+
+
+    /**
+    * A transform on the results if needed
+    */
+    List resultTransform(List results)
 }
