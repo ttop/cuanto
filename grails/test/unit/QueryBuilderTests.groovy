@@ -26,7 +26,8 @@ import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
 import cuanto.queryprocessor.TestRunDateExecutedQueryModule
 import cuanto.DateCriteria
-import cuanto.queryprocessor.TagQueryModule
+import cuanto.queryprocessor.TagNameQueryModule
+import cuanto.queryprocessor.HasTagsQueryModule
 
 /**
  * User: Todd Wells
@@ -47,7 +48,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
 		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
 		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule(),
-			new TestRunDateExecutedQueryModule(), new TagQueryModule()]
+			new TestRunDateExecutedQueryModule(), new TagNameQueryModule(), new HasTagsQueryModule()]
 	}
 
 	void testTestRun() {
@@ -443,7 +444,40 @@ public class QueryBuilderTests extends GroovyTestCase {
 
         CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
         assertEquals "Tag", expectedQuery, actualQuery
+    }
 
+
+    void testHasTagsTrueQuery() {
+        def qf = new TestOutcomeQueryFilter()
+        qf.testRun = new TestRun(note: "foo")
+        qf.hasTags = true
+        qf.sorts = []
+        qf.sorts << new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")
+
+        CuantoQuery expectedQuery = new CuantoQuery()
+        expectedQuery.hql = "select distinct t, t.testRun.dateExecuted from cuanto.TestOutcome t where t.testRun = ? and t.tags is not empty order by t.testRun.dateExecuted desc"
+        expectedQuery.positionalParameters = [qf.testRun]
+        expectedQuery.paginateParameters = [:]
+
+        CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+        assertEquals "Tag", expectedQuery, actualQuery
+    }
+    
+
+    void testHasTagsFalseQuery() {
+        def qf = new TestOutcomeQueryFilter()
+        qf.testRun = new TestRun(note: "foo")
+        qf.hasTags = false
+        qf.sorts = []
+        qf.sorts << new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")
+
+        CuantoQuery expectedQuery = new CuantoQuery()
+        expectedQuery.hql = "select distinct t, t.testRun.dateExecuted from cuanto.TestOutcome t where t.testRun = ? and t.tags is empty order by t.testRun.dateExecuted desc"
+        expectedQuery.positionalParameters = [qf.testRun]
+        expectedQuery.paginateParameters = [:]
+
+        CuantoQuery actualQuery = queryBuilder.buildQuery(qf)
+        assertEquals "Tag", expectedQuery, actualQuery
     }
 
 

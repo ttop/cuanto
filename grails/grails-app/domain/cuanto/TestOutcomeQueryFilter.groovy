@@ -186,6 +186,13 @@ public class TestOutcomeQueryFilter implements QueryFilter {
     List tags
 
 
+    /**
+    * If not null, only TestOutcomes that either have tags or don't have tags will be returned, depending on the
+    * boolean value.
+    */
+    Boolean hasTags
+
+
     String selectClause() {
         def select = "select distinct t"
         if (sorts) {

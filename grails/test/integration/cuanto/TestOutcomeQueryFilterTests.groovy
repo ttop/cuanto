@@ -154,6 +154,17 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
             assertNotNull "Couldnt find a matching tag", outcome.tags.find {it.name == tags[0].name} || outcome.tags.find {it.name == tags[1].name}
         }
 
+        // now search for TestOutcomes without any tags
+        TestOutcomeQueryFilter queryFilterC = new TestOutcomeQueryFilter()
+        queryFilterC.testRun = testRun
+        queryFilterC.hasTags = false
+        fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
+        assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+
+        queryFilterC.hasTags = true
+        fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
+        assertEquals "Wrong number of TestOutcomes returned", 7, fetchedOutcomes.size()
+
     }
 
 }

@@ -44,7 +44,9 @@ public class QueryBuilder {
 
             if (details.where?.trim()) {
                 whereClauses << " ${details.where} "
-                params += details.params
+                if (details.params) {
+                    params += details.params
+                }
             }
         }
         String fromClause = queryFilter.fromClause()
@@ -123,7 +125,9 @@ public class QueryBuilder {
 
 			if (details.where?.trim()) {
 				whereClauses << " ${details.where} "
-				params += details.params
+                if (details.params) {
+                    params += details.params
+                }
 			}
 		}
 

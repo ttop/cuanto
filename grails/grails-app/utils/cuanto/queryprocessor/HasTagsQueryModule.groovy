@@ -24,27 +24,24 @@ package cuanto.queryprocessor
 import cuanto.QueryFilter
 import cuanto.TestOutcome
 
+public class HasTagsQueryModule implements QueryModule {
 
-public class TagQueryModule implements QueryModule {
 
     public Map getQueryParts(QueryFilter queryFilter) {
-       if (queryFilter.tags != null) {
-           def whereClauses = []
-           def params = []
-           queryFilter.tags.each { tagName->
-               whereClauses << "upper(tag_0.name) like ?"
-               params << tagName.toUpperCase()
-           }
-           def whereText = "(" + whereClauses.join(" or ") + ")"
-           return [from: "inner join t.tags tag_0", where: whereText,
-                   'params': params ]
-       } else {
-           return [:]
-       }
+        if (queryFilter.hasTags != null) {
+            if (queryFilter.hasTags) {
+                return [where: "t.tags is not empty"]
+            } else {
+                return [where: "t.tags is empty"]
+            }
+        } else {
+            return [:]
+        }
     }
 
 
     public List<Class> getObjectTypes() {
-        [TestOutcome.class]
+         [TestOutcome.class]
     }
+
 }
