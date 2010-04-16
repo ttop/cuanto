@@ -173,7 +173,7 @@ class TestRunController {
 					}
 
                     if (outcome.tags) {
-                        currentOutcome.tags = outcome.tags.collect {it.name}
+                        currentOutcome.tags = outcome.tags.collect{it.name}.sort()
                     }
 
 					currentOutcome.testCase = currentTestCase

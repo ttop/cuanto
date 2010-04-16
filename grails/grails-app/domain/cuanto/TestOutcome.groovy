@@ -91,7 +91,7 @@ class TestOutcome {
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
 
         if (tags) {
-            myJson.tags = tags.collect {it.name}
+            myJson.tags = tags.collect{it.name}.sort()
         }
         
 		return myJson

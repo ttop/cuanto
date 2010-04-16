@@ -153,7 +153,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt", "tags"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -356,6 +356,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
 				formatter: formatTestCase, sortable:true},
 			{key:"parameters", label:"Parameters", resizeable:true, formatter:formatParameters, sortable: false},
+            {key:"tags", label:"Tags", resizeable:true, formatter: formatTags, sortable: false, hidden: ($$('.tagspan').length == 0)},
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
@@ -402,7 +403,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		var rid = oRecord.getData("id");
 		var boxid = "chk" + rid;
 		var div = document.createElement('div');
-		var chkbox = new Element('input', {'type': 'checkbox', 'value': rid, 'className': 'batch', 'id':boxid})
+		var chkbox = new Element('input', {'type': 'checkbox', 'value': rid, 'className': 'batch', 'id':boxid});
 		elCell.appendChild(div).appendChild(chkbox);
 
 		if (targetOutcomes.indexOf(boxid) > -1) {
@@ -457,6 +458,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			setImgTitleAndAlt(anlzImg, 'Batch Analysis');
 		}, 2000);
 	}
+
+    function formatTags(elCell, oRecord, oColumn, oData) {
+        if (oData.length > 0) {
+            elCell.innerHTML = oData.join(", ");
+        }
+    }
 
 	function setImgTitleAndAlt(imgElem, title) {
 		imgElem.setAttribute('title', title);
