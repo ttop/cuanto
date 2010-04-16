@@ -43,7 +43,7 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
 			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed",
-				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties"],
+				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties", "tags"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
 		return testRunDataSource;
@@ -71,6 +71,7 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
 			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAverageDuration},
+			{key:"tags", label: "Tags", sortable:false, formatter: formatTags},
 		];
 
 		for (var i=0; i < propertyNames.length; i++) {
@@ -148,6 +149,12 @@ YAHOO.cuanto.projectHistory = function() {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
 	}
 
+    function formatTags(elCell, oRecord, oColumn, oData) {
+        if (oData.length > 0) {
+            elCell.innerHTML = oData.join(", ");
+        }
+    }
+    
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
