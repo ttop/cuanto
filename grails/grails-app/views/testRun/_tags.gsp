@@ -22,12 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <g:if test="${testRun.tags}">
   <div id="tagDiv">
     <div id="tagLabel" class="inlineb">Tags:</div>
-    
+
     <div id="tagButtons" class="inlineb">
 
       <span id="tagspan-0" class="tagspan yui-button yui-checkbox-button">
         <span class="first-child">
-          <button type="button" name="tagbtn-0">All Tags</button>
+          <button type="button" name="tagbtn-0">Tagged</button>
         </span>
       </span>
 
@@ -38,15 +38,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </span>
 
       <g:each var="tag" in="${testRun.tags.collect{it.name}.sort()}" status="tIdx">
-
         <span id="tagspan-${tIdx + 2}" class="tagspan yui-button yui-checkbox-button">
           <span class="first-child">
             <button type="button" name="tagbtn-${tIdx + 2}">${tag}</button>
           </span>
         </span>
-        
+        <g:if test="${(tIdx + 2) % 9 == 0}">
+          <br/>
+        </g:if>
       </g:each>
-
     </div>
   </div>
   <br/>
