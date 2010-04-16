@@ -172,6 +172,10 @@ class TestRunController {
 						currentTestCase.parameters = outcome.testCase.parameters
 					}
 
+                    if (outcome.tags) {
+                        currentOutcome.tags = outcome.tags.collect {it.name}
+                    }
+
 					currentOutcome.testCase = currentTestCase
 					jsonOutcomes << currentOutcome
 				}

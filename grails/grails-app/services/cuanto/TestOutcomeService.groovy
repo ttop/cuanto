@@ -397,6 +397,14 @@ class TestOutcomeService {
 			filter.isAnalyzed = false
 		}
 
+        if (params.tag) {
+            filter.tags = [params.tag].flatten()
+        }
+
+        if (params.hasTags != null) {
+            filter.hasTags = Boolean.valueOf(params.hasTags)
+        }
+
 		return filter
 	}
 

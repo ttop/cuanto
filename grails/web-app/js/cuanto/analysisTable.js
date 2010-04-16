@@ -40,6 +40,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
 	var anlzImgUrl = YAHOO.cuanto.urls.get('analysisImg');
 	var columnDialog;
+    var tagButtons = [];
+
 	var dataTableEventOverrides = {
 		"cellClickEvent": [
 			{
@@ -119,6 +121,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			this.cancelCellEditor();
 		});
 		analysisDialog = new YAHOO.cuanto.analysisDialog(ovrlyMgr, outputProxy);
+
+        initTagButtons();
 
 		YAHOO.util.Event.addListener("showSelectCol", "click", showSelectColumn);
 		$('showSelectOptions').hide();
@@ -230,6 +234,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function generateNewRequest() {
+        //todo: can this logic be combined with buildOutcomeQueryString?
 		var order;
 		if (dataTable.get("sortedBy").dir == YAHOO.widget.DataTable.CLASS_DESC) {
 			order = "desc";
@@ -244,7 +249,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		                 "&sort=" + dataTable.get("sortedBy").key +
 		                 "&tcFormat=" + getCurrentTcFormat() +
 		                 getSearchQuery() +
-		                 "&rand=" + new Date().getTime();
+                         getTagsQuery() +
+                         "&rand=" + new Date().getTime();
+
 		return newRequest;
 	}
 
@@ -260,6 +267,26 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	function searchQueryIsSpecified() {
 		return $F("searchQry").search(/\S/) != -1;
 	}
+
+
+    function getTagsQuery() {
+        var query = "";
+        if (tagButtons.length > 0) {
+            if (tagButtons[0].get("checked")) {
+                query += "&hasTags=true";
+            } else if (tagButtons[1].get("checked")){
+                query+= "&hasTags=false";
+            } else {
+                for (var i = 2; i < tagButtons.length; i++) {
+                    var btn = tagButtons[i];
+                    if (btn.get("checked")) {
+                        query += "&tag=" + btn.get("label");
+                    }
+                }
+            }
+        }
+        return query;
+    }
 
 	function getEventTargetTagname(e) {
 		if (Prototype.Browser.IE) {
@@ -288,6 +315,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function buildOutcomeQueryString(state) {
+        //todo: can this logic be combined with generateNewRequest?
 		var qry = "format=json" +
 		          "&filter=" + getCurrentFilter() +
 		          "&offset=" + state.pagination.recordOffset +
@@ -296,6 +324,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		          "&sort=" + state.sortedBy.key +
 		          "&tcFormat=" + getCurrentTcFormat() +
 		          getSearchQuery() +
+                  getTagsQuery() +
 		          "&rand=" + new Date().getTime();
 		showCurrentSearchSpan();
 		return qry;
@@ -867,5 +896,47 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	function formatDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
 	}
+
+    function initTagButtons() {
+        
+        $$('.tagspan').each(function(tagspan) {
+            tagButtons.push(new YAHOO.widget.Button(tagspan.id, {type: "checkbox", checked: false, onclick: { fn: onTagClick } }));
+        });
+    }
+
+    function onTagClick(e) {
+        if (this == tagButtons[0]) {
+            // if All Tags, select all tag buttons except Untagged
+            var numOn = 0;
+            tagButtons[1].set("checked", false);
+            for (var i = 2; i < tagButtons.length; i++) {
+                if (tagButtons[i].get("checked")) {
+                    numOn++;
+                }
+            }
+            for (var j = 2; j < tagButtons.length; j++) {
+                var chkstate = (numOn != tagButtons.length - 2);
+                tagButtons[j].set("checked", chkstate);
+            }
+        } else if (this == tagButtons[1]) {
+            // if Untagged, deselect all buttons except Untagged
+            tagButtons[0].set("checked", false);
+            for (var k = 2; k < tagButtons.length; k++) {
+                tagButtons[k].set("checked", false);
+            }
+
+        } else {
+            var numOn = 0;
+            for (var i = 2; i < tagButtons.length; i++) {
+                if (tagButtons[i].get("checked")) {
+                    numOn++;
+                }
+            }
+            tagButtons[0].set("checked", numOn == tagButtons.length - 2);
+            tagButtons[1].set("checked", false);
+        }
+
+        onFilterChange(e);
+    }
 };
 

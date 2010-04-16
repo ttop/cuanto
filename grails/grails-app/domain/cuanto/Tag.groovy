@@ -27,4 +27,8 @@ public class Tag {
     }
 
     String name
+
+    String toString() {
+        name
+    }
 }

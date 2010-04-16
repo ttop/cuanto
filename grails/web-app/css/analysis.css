@@ -147,3 +147,22 @@
 #trLinks {
 	margin-top: 5px;
 }
+
+#tagDiv {
+	vertical-align:middle;
+}
+
+#tagLabel {
+	vertical-align:middle;
+}
+#tagButtons {
+	vertical-align:middle;
+}
+
+
+.inlineb {
+	display:-moz-inline-stack;
+	display:inline-block;
+	zoom:1;
+	*display:inline;
+}

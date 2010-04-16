@@ -23,9 +23,6 @@ package cuanto.sample;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
-/**
- * Created by IntelliJ IDEA. User: todd.wells Date: Apr 12, 2010 Time: 12:43:31 PM
- */
 public class TwinPeaks {
 
 	@Test(groups = {"quirks"})

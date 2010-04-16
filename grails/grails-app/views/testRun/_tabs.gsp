@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</span>
 					<br/><span id="currentSearchSpan">Current Search: <span id="currentSearch" class="highlighted"></span></span>
 					<br/>
+                    <g:render template="tags"/>
 					<a id="showSelectCol" class="selectCmd" alt="Show Select Column" href="#showSelect">Select</a>
 				    <span id="showSelectOptions" class="selectCmd">
 					    <a id="hideSelectCol" alt="Hide Select Column" href="#hideSelect">Hide Select</a> ${bullet}
