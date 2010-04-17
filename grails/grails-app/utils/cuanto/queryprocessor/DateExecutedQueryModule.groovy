@@ -25,7 +25,7 @@ import cuanto.QueryFilter
 import cuanto.TestOutcome
 
 
-public class TestRunDateExecutedQueryModule implements QueryModule {
+public class DateExecutedQueryModule implements QueryModule {
 
 
 	public Map getQueryParts(QueryFilter queryFilter) {

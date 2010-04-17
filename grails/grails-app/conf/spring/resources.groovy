@@ -42,7 +42,7 @@ import cuanto.queryprocessor.OwnerQueryModule
 import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
-import cuanto.queryprocessor.TestRunDateExecutedQueryModule
+import cuanto.queryprocessor.DateExecutedQueryModule
 import cuanto.parsers.NUnitParser
 
 beans = {
@@ -82,7 +82,7 @@ beans = {
 			new TestCaseQueryModule(),
 			new NoteQueryModule(),
 			new TestOutputQueryModule(),
-			new TestRunDateExecutedQueryModule()
+			new DateExecutedQueryModule()
 		]
 	}
 }
