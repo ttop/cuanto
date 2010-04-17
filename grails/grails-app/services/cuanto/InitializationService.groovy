@@ -59,6 +59,14 @@ class InitializationService {
 					}
 				}
 			}
+		} else {
+			TestResult skip = TestResult.findByName("Skip")
+			if (!(skip.includeInCalculations && skip.isFailure)) {
+				log.info "Updating TestResult 'Skip' to be included in calculations and considered a failure"
+				skip.includeInCalculations = true
+				skip.isFailure = true
+				dataService.saveDomainObject skip
+			}
 		}
 	}
 
@@ -91,8 +99,9 @@ class InitializationService {
 		if (TestType.list().size() <= 0) {
 			def typeList = []
 
-			typeList += new TestType(name: "JUnit", timeUnits: "sec")
-			typeList += new TestType(name: "TestNG", timeUnits: "ms")
+			typeList += new TestType(name: "JUnit")
+			typeList += new TestType(name: "TestNG")
+			typeList += new TestType(name: "NUnit")
 			typeList += new TestType(name: "Manual")
 
 			typeList.each {tp ->
@@ -102,6 +111,10 @@ class InitializationService {
 					}
 				}
 			}
+		}
+
+		if (!TestType.findByNameIlike("NUnit")) {
+			dataService.saveDomainObject(new TestType("NUnit")) 
 		}
 	}
 

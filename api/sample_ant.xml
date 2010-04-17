@@ -63,4 +63,10 @@
 	<target name="submitTestNGConfigParams" depends="init">
 		<cuanto url="${cuanto.url}" testProject="CNG" resultfile="../grails/test/resources/testng-results-params-config.xml"/>
 	</target>
+
+	<target name="submitNUnit" depends="init">
+		<cuanto url="${cuanto.url}" testProject="NUnitSample" resultfile="../grails/test/resources/NUnit-Mock-Test-Result.xml"/>
+	</target>
+
+
 </project>

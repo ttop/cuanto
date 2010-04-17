@@ -43,13 +43,15 @@ import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
 import cuanto.queryprocessor.TestRunDateExecutedQueryModule
+import cuanto.parsers.NUnitParser
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
 	    parsers = [
 		    new JunitReportParser(),
 		    new CuantoManualParser(),
-		    new TestNgParser()
+		    new TestNgParser(),
+		    new NUnitParser()
 	    ]
     }
 
