@@ -327,6 +327,27 @@ class DataService {
 	}
 
 
+	TestOutcome getPreviousOutcome(TestOutcome outcome) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.testCase = outcome.testCase
+
+		if (outcome.finishedAt) {
+			filter.dateCriteria = [new DateCriteria(field:"finishedAt", date: outcome.finishedAt, operator: "<")]
+		} else if (outcome.startedAt) {
+			filter.dateCriteria = [new DateCriteria(field:"startedAt", date: outcome.finishedAt, operator: "<")]
+		} else if (outcome.testRun?.dateExecuted){
+			filter.dateCriteria = [new DateCriteria(field:"testRun", date: outcome.testRun?.dateExecuted, operator: "<")]
+		} else {
+			throw new CuantoException("Couldn't determine TestOutcome execution date")
+		}
+
+		filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
+		filter.queryOffset = 0
+		filter.queryMax = 1
+		return getTestOutcomes(filter)[0] as TestOutcome
+	}
+
+
 	void saveDomainObject(domObj, flushDb = false) throws CuantoException {
 		if (!domObj.save(flush: flushDb)) {
 			reportSaveError domObj
@@ -607,7 +628,7 @@ class DataService {
 		TestOutcomeQueryFilter outFilter = new TestOutcomeQueryFilter()
 
 		def qOrder = getSortOrder(params.order)
-		def qSort = getFieldByFriendlyName(params.sort)
+		def qSort = getFieldByFriendlyName(params.sort) //todo: use TestOutcomeQueryFilter.getSortNameForFriendlyName()?
 		outFilter.sorts = [new SortParameters(sort: qSort, sortOrder: qOrder)]
 
 		outFilter.testRun = testRun
