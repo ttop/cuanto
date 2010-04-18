@@ -24,19 +24,10 @@ package cuanto.queryprocessor
 import cuanto.QueryFilter
 import cuanto.TestOutcome
 import cuanto.CuantoException
+import cuanto.DateCriteria
 
 
 public class DateExecutedQueryModule implements QueryModule {
-
-	String field = "testRun"
-
-
-	public DateExecutedQueryModule() {}
-
-
-	public DateExecutedQueryModule(String field) {
-		this.field = field
-	}
 
 
 	public Map getQueryParts(QueryFilter queryFilter) {
@@ -45,7 +36,7 @@ public class DateExecutedQueryModule implements QueryModule {
 			def whereClause = ""
 			def params = []
 			queryFilter.dateCriteria.eachWithIndex {dateRange, index ->
-				whereClause += " ${getDateField()} ${dateRange.operator} ? "
+				whereClause += " ${getDateField(dateRange)} ${dateRange.operator} ? "
 				if (index < queryFilter.dateCriteria.size() - 1) {
 					whereClause += " and "
 				}
@@ -58,16 +49,16 @@ public class DateExecutedQueryModule implements QueryModule {
 	}
 
 
-	String getDateField() {
+	String getDateField(DateCriteria dateCriteria) {
 		def dateField
-		if (field.equalsIgnoreCase("testRun")) {
+		if (dateCriteria.field.equalsIgnoreCase("testRun")) {
 			dateField = "t.testRun.dateExecuted"
-		} else if (field.equalsIgnoreCase("finishedAt")) {
+		} else if (dateCriteria.field.equalsIgnoreCase("finishedAt")) {
 			dateField = "t.finishedAt"
-		} else if (field.equalsIgnoreCase("startedAt")) {
+		} else if (dateCriteria.field.equalsIgnoreCase("startedAt")) {
 			dateField = "t.startedAt"
 		} else {
-			throw new CuantoException("Unable to determine Date field")
+			dateField = "t.dateCreated"
 		}
 		return dateField
 	}

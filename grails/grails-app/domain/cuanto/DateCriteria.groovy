@@ -27,6 +27,7 @@ public class DateCriteria {
 	static constraints = {
 		date(nullable: false)
 		operator(nullable: false)
+		field(nullable: false)
 	}
 
 	Date date
@@ -36,5 +37,11 @@ public class DateCriteria {
 	 * Valid operators: < <= = > >=
 	 */
 	String operator
+
+
+	/**
+	 * Valid fields: "testRun", "finishedAt", "startedAt", "dateCreated"
+	 */
+	String field = "testRun"
 
 }

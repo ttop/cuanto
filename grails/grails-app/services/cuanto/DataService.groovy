@@ -333,18 +333,23 @@ class DataService {
 
 		if (outcome.finishedAt) {
 			filter.dateCriteria = [new DateCriteria(field:"finishedAt", date: outcome.finishedAt, operator: "<")]
+			filter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: "desc")]
 		} else if (outcome.startedAt) {
-			filter.dateCriteria = [new DateCriteria(field:"startedAt", date: outcome.finishedAt, operator: "<")]
+			filter.dateCriteria = [new DateCriteria(field:"startedAt", date: outcome.startedAt, operator: "<")]
+			filter.sorts = [new SortParameters(sort: "startedAt", sortOrder: "desc")]
 		} else if (outcome.testRun?.dateExecuted){
 			filter.dateCriteria = [new DateCriteria(field:"testRun", date: outcome.testRun?.dateExecuted, operator: "<")]
+			filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
 		} else {
-			throw new CuantoException("Couldn't determine TestOutcome execution date")
+			filter.dateCriteria = [new DateCriteria(field:"dateCreated", date: outcome.dateCreated, operator: "<")]
+			filter.sorts = [new SortParameters(sort: "dateCreated", sortOrder: "desc")]
 		}
 
-		filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
 		filter.queryOffset = 0
 		filter.queryMax = 1
-		return getTestOutcomes(filter)[0] as TestOutcome
+		List outcomes = getTestOutcomes(filter)
+		TestOutcome outcome1 = outcomes[0] as TestOutcome
+		return outcome1
 	}
 
 
