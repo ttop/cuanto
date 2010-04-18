@@ -87,3 +87,5 @@ uiperformance.determineVersion = { -> appVersion }
 statSleep = 1000
 
 bullet = "&bull;"
+
+grails.json.legacy.builder=true

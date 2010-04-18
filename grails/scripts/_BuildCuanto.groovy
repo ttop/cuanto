@@ -85,7 +85,7 @@ target(cuantowar: "Build the Cuanto WAR") {
 
 	ant.copy(file:"cuanto-db.groovy", todir: zipDir)
 	depends(war)
-	ant.copy(file:"cuanto-${cuantoVersion}.war", todir: zipDir)
+	ant.copy(file:"target/cuanto-${cuantoVersion}.war", todir: zipDir)
 }
 
 target(cuantosql: "Copy the Cuanto SQL files") {
