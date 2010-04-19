@@ -68,6 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<p/><br/>
 			<g:render template="pieChart"/>
 			<g:render template="bugSummary"/>
+            <g:render template="tagSummary"/>
 		</div>
 	</div>
 </div>

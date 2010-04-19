@@ -160,6 +160,27 @@
 	vertical-align:middle;
 }
 
+.borderedTable {
+	border: 1px solid lightgray;
+}
+
+.borderedTable th {
+	padding:5px;
+}
+.borderedTable thead {
+	background-color:lightgray;
+}
+
+.borderedTable td {
+	border-bottom: 1px solid lightgray;
+	padding: 5px;
+}
+
+.brd {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
 .inlineb {
 	display:-moz-inline-stack;
 	display:inline-block;

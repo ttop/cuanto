@@ -85,7 +85,7 @@ class StatisticService {
 	QueuedTestRunStat getFirstTestRunIdInQueue() {
 		def latest = QueuedTestRunStat.listOrderByDateCreated(max: 1)
 		if (latest.size() == 0) {
-			return null
+			return null                                           
 		} else {
 			return latest[0]
 		}
@@ -117,7 +117,12 @@ t.testRun = ? and t.testResult.isFailure = true and t.testResult.includeInCalcul
 
 				testRun.testRunStatistics = calculatedStats
 				testRun.testRunStatistics = calculateAnalysisStats(testRun)
-				dataService.saveDomainObject(testRun, true)
+
+                def tagStats = getTagStatistics(testRun)
+                tagStats.each {
+                    testRun.testRunStatistics.addToTagStatistics(it)
+                }
+                dataService.saveDomainObject(testRun, true)
 			}
 		}
 	}
@@ -142,6 +147,34 @@ t.testRun = ? and t.testResult.isFailure = true and t.testResult.includeInCalcul
 			return calculatedStats
 		}
 	}
+
+
+    List getTagStatistics(TestRun testRun) {
+        // todo: if testrun has tags
+        def tagStats = []
+        testRun.tags.each {tag ->
+            def rawStats = TestOutcome.executeQuery("select tag_0.name, t.testResult, count(*) from cuanto.TestOutcome t inner join t.tags tag_0 where t.testRun = ? and tag_0 = ? group by t.testResult", [testRun, tag])
+            def tagStat =  new TagStatistic()
+            tagStat.tag = tag
+
+            def passed = rawStats.findAll{!it[1].isFailure && it[1].includeInCalculations}.collect{it[2]}.sum()
+            tagStat.passed = passed ? passed : 0;
+            log.debug "${passed} passed for ${tag.name}"
+
+            def failed = rawStats.findAll{it[1].isFailure && it[1].includeInCalculations && it[1].name != "Skip"}.collect{it[2]}.sum()
+            tagStat.failed = failed ? failed : 0;
+            log.debug "${failed} failed for ${tag.name}"
+
+            def skipped = rawStats.findAll{it[1].isFailure && it[1].includeInCalculations && it[1].name == "Skip"}.collect{it[2]}.sum()
+            tagStat.skipped = skipped ? skipped : 0;
+            log.debug "${skipped} skipped for ${tag.name}"
+
+            def total = rawStats.collect{it[2]}.sum()
+            tagStat.total = total ? total : 0; 
+            tagStats << tagStat
+        }
+        return tagStats
+    }
 
 
 	def updateTestRunsWithoutAnalysisStats() {

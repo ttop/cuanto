@@ -49,8 +49,9 @@ class TestRunStats {
 	BigDecimal successRate
 	Date lastUpdated
 	List analysisStatistics
+    List tagStatistics
 
-	static hasMany = [analysisStatistics: AnalysisStatistic]
+	static hasMany = [analysisStatistics: AnalysisStatistic, tagStatistics:TagStatistic]
 
 	Map toJsonMap() {
 		def json = [:]
