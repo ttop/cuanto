@@ -24,7 +24,7 @@ import cuanto.TestCase
 import cuanto.queryprocessor.TestCaseQueryModule
 import cuanto.queryprocessor.NoteQueryModule
 import cuanto.queryprocessor.TestOutputQueryModule
-import cuanto.queryprocessor.TestRunDateExecutedQueryModule
+import cuanto.queryprocessor.DateExecutedQueryModule
 import cuanto.DateCriteria
 import cuanto.queryprocessor.TagNameQueryModule
 import cuanto.queryprocessor.HasTagsQueryModule
@@ -48,7 +48,7 @@ public class QueryBuilderTests extends GroovyTestCase {
 		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
 		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
 		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule(),
-			new TestRunDateExecutedQueryModule(), new TagNameQueryModule(), new HasTagsQueryModule()]
+		new DateExecutedQueryModule(), new TagNameQueryModule(), new HasTagsQueryModule()]
 	}
 
 	void testTestRun() {

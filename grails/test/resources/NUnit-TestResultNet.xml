@@ -1,0 +1,1143 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\mamba\Tests\APIAutomation\NETTests\NETTests.dll" total="123" errors="5" failures="0" not-run="41" inconclusive="0" ignored="41" skipped="0" invalid="0" date="2010-03-06" time="08:13:26">
+  <environment nunit-version="2.5.3.9345" clr-version="2.0.50727.4927" os-version="Microsoft Windows NT 6.1.7600.0" platform="Win32NT" cwd="C:\Mamba\results\bld344" machine-name="NYLONVM-R2011" user="Administrator" user-domain="NYLONVM-R2011" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite name="C:\mamba\Tests\APIAutomation\NETTests\NETTests.dll" executed="True" success="False" time="536.469" asserts="0">
+    <results>
+      <test-suite name="NETTests" executed="True" success="False" time="536.469" asserts="0">
+        <results>
+          <test-suite name="Tests" executed="True" success="False" time="536.281" asserts="0">
+            <results>
+              <test-suite name="Attachmate" executed="True" success="False" time="383.047" asserts="0">
+                <results>
+                  <test-suite name="Reflection" executed="True" success="False" time="383.047" asserts="0">
+                    <results>
+                      <test-suite name="Emulation" executed="True" success="True" time="140.703" asserts="0">
+                        <results>
+                          <test-suite name="IbmHosts" executed="True" success="True" time="104.531" asserts="0">
+                            <results>
+                              <test-suite name="ControlKeys" executed="True" success="True" time="28.891" asserts="0">
+                                <results>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.Clear" executed="True" success="True" time="8.844" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F1" executed="True" success="True" time="0.656" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F10" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F11" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F12" executed="True" success="True" time="0.703" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F13" executed="True" success="True" time="1.016" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F14" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F15" executed="True" success="True" time="0.578" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F16" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F17" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F18" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F19" executed="True" success="True" time="0.563" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F2" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F20" executed="True" success="True" time="0.781" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F21" executed="True" success="True" time="1.047" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F22" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F23" executed="True" success="True" time="2.172" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F24" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F3" executed="True" success="True" time="0.672" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F4" executed="True" success="True" time="0.578" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F5" executed="True" success="True" time="0.656" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F6" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F7" executed="True" success="True" time="0.922" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F8" executed="True" success="True" time="0.984" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.F9" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.PA1" executed="True" success="True" time="1.500" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.PA2" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.ControlKeys.PA3" executed="True" success="True" time="0.656" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                              <test-suite name="HostFieldTests" executed="True" success="True" time="53.266" asserts="0">
+                                <results>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.Attributes" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ContainsCharacterSpecificAttributes_False" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313288 is broken in this build. (Build 344 of R2008Trunk.)
+EV313288: .NET API property HostField.ContainsCharacterSpecificAttributes always returns true.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ContainsCharacterSpecificAttributes_True" executed="True" success="True" time="0.953" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.EndColumn" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.EndPosition" executed="True" success="True" time="0.547" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.EndRow" executed="True" success="True" time="0.609" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Black" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Blue" executed="True" success="True" time="0.594" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_DeepBlue" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Default" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Green" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Grey" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_NeutralBlack" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_NeutralWhite" executed="True" success="True" time="0.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Orange" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_PaleGreen" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_PaleTurquoise" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Pink" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Purple" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Red" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Turquoise" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_White" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_Yellow" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313322 is broken in this build. (Build 344 of R2008Trunk.)
+EV313322: HostField.ForegroundColor always returns ScreenColor.Blue, no matter what color the field really is.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.IsAlphaOnlyField" executed="True" success="True" time="0.797" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.IsAttributeSpace" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV313335 is broken in this build. (Build 344 of R2008Trunk.)
+EV313335: HostField.IsAttributeSpace always returns false (should return true)]]></message>
+                                    </reason>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                              <test-suite name="IbmScreenTests" executed="True" success="True" time="22.375" asserts="0">
+                                <results>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWait" executed="True" success="True" time="2.078" asserts="3">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForControlKey_Success" executed="True" success="True" time="1.547" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForControlKey_Timeout" executed="True" success="True" time="2.250" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForCursor_Success" executed="True" success="True" time="1.250" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForCursor_Timeout" executed="True" success="True" time="1.641" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForHostSettle_Success" executed="True" success="True" time="6.156" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForHostSettle_Timeout" executed="True" success="True" time="2.563" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForText_Success" executed="True" success="True" time="2.625" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.IbmScreenTests.TestWaitForText_Timeout" executed="True" success="True" time="2.266" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite name="OpenSystems" executed="True" success="True" time="36.172" asserts="0">
+                            <results>
+                              <test-suite name="ScreenTests" executed="True" success="True" time="36.172" asserts="0">
+                                <results>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWait" executed="True" success="True" time="3.734" asserts="3">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForControlKey_Success" executed="True" success="True" time="2.500" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForControlKey_Timeout" executed="True" success="True" time="2.438" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForHostSettle_Success" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV314987 is broken in this build. (Build 344 of R2008Trunk.)
+EV314987: ITerminal.WaitForHostSettle() and IIbmTerminal.WaitForHostSettle() often return success prematurely.]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForHostSettle_Timeout" executed="True" success="True" time="4.516" asserts="2">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForIncomingData_Success" executed="True" success="True" time="1.109" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForIncomingData_Timeout" executed="True" success="True" time="4.891" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForString_Success" executed="True" success="True" time="2.359" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForString_Timeout" executed="True" success="True" time="1.750" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForStrings_Success" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV315926 is broken in this build. (Build 344 of R2008Trunk.)
+EV315926: IScreen.WaitForStrings() throws exception "Invalid time argument".]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitForStrings_Timeout" executed="False">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                    <reason>
+                                      <message><![CDATA[EV315926 is broken in this build. (Build 344 of R2008Trunk.)
+EV315926: IScreen.WaitForStrings() throws exception "Invalid time argument".]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NETTests.Tests.Attachmate.Reflection.Emulation.OpenSystems.ScreenTests.TestWaitUntil_Success" executed="True" success="True" time="2.969" asserts="1">
+                                    <categories>
+                                      <category name="ABAT" />
+                                    </categories>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite name="Framework" executed="True" success="False" time="179.969" asserts="0">
+                        <results>
+                          <test-suite name="ApplicationTests" executed="True" success="True" time="62.703" asserts="0">
+                            <results>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.ApplicationClosed" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318898 is broken in this build. (Build 344 of R2008Trunk.)
+EV318898: .NET API event Application.ApplicationClosed does not fire in simplest use case.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.ApplicationClosing" executed="True" success="True" time="4.563" asserts="2">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.Close" executed="True" success="True" time="5.172" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.Close3270" executed="True" success="True" time="10.672" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CloseVT" executed="True" success="True" time="7.938" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.ControlCount" executed="True" success="True" time="8.219" asserts="7">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_3270File" executed="True" success="True" time="3.672" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_3270Guid" executed="True" success="True" time="1.313" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_5250File" executed="True" success="True" time="1.438" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_5250Guid" executed="True" success="True" time="1.422" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_RegisFile" executed="True" success="True" time="2.625" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_RegisGuid" executed="True" success="True" time="1.859" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_VTFile" executed="True" success="True" time="2.125" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.CreateControl_VTGuid" executed="True" success="True" time="2.172" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.GetControlByInstanceId" executed="True" success="True" time="0.109" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.GetControlsByFilePath" executed="True" success="True" time="2.406" asserts="4">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.GetControlsByName" executed="True" success="True" time="1.203" asserts="3">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.GetObject" executed="True" success="True" time="0.109" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.ReleaseResource" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[It's not clear to me what this does/is for.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.ApplicationTests.Wait" executed="True" success="True" time="3.063" asserts="2">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                            </results>
+                          </test-suite>
+                          <test-suite name="MyReflectionTests" executed="True" success="False" time="117.266" asserts="0">
+                            <results>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[Covered by the test for MyReflection.Start()]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_ChannelName" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[Covered by the test for MyReflection.Start_ChannelName()]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Disabled" executed="True" success="True" time="7.016" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Ipc" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318919 is broken in this build. (Build 344 of R2008Trunk.)
+EV318919: Throw an exception when a MyReflection.Start() overload is used that is not supported with the current Reflection Workspace API Settings]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Tcpip" executed="True" success="False" time="3.656" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <failure>
+                                  <message><![CDATA[System.Exception : 
+  ----> System.Exception : Not Found]]></message>
+                                  <stack-trace><![CDATA[at TestEnvironment.TestTimeLimiter.Start(TestDelegate method, TimeSpan timelimit, String message) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 77
+at TestEnvironment.TestTimeLimiter.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 38
+at TestEnvironment.TestRunner.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestRunner.cs:line 38
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Tcpip() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 657
+--Exception
+at TestEnvironment.R2xxxViaNET.GetAppPort(TestAppInfo ai) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 155
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Test() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 687
+at TestEnvironment.TestTimeLimiter.<>c__DisplayClass1.<Start>b__0() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 48
+]]></stack-trace>
+                                </failure>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_Port_Disabled" executed="True" success="True" time="6.781" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_Port_Ipc" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318919 is broken in this build. (Build 344 of R2008Trunk.)
+EV318919: Throw an exception when a MyReflection.Start() overload is used that is not supported with the current Reflection Workspace API Settings]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_Port_Tcpip" executed="True" success="False" time="3.625" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <failure>
+                                  <message><![CDATA[System.Exception : 
+  ----> System.Exception : Not Found]]></message>
+                                  <stack-trace><![CDATA[at TestEnvironment.TestTimeLimiter.Start(TestDelegate method, TimeSpan timelimit, String message) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 77
+at TestEnvironment.TestTimeLimiter.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 38
+at TestEnvironment.TestRunner.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestRunner.cs:line 38
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_Port_Tcpip() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 601
+--Exception
+at TestEnvironment.R2xxxViaNET.GetAppPort(TestAppInfo ai) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 155
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_Port_Test() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 629
+at TestEnvironment.TestTimeLimiter.<>c__DisplayClass1.<Start>b__0() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 48
+]]></stack-trace>
+                                </failure>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_Port" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[Covered by the test for MyReflection.Start_Port()]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_Disabled" executed="True" success="True" time="2.734" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_Ipc" executed="True" success="True" time="2.953" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_IpcDefaultName" executed="True" success="True" time="2.906" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_Tcpip" executed="True" success="False" time="3.516" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <failure>
+                                  <message><![CDATA[System.Exception : 
+  ----> System.Exception : Not Found]]></message>
+                                  <stack-trace><![CDATA[at TestEnvironment.TestTimeLimiter.Start(TestDelegate method, TimeSpan timelimit, String message) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 77
+at TestEnvironment.TestTimeLimiter.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 38
+at TestEnvironment.TestRunner.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestRunner.cs:line 38
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_Tcpip() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 517
+--Exception
+at TestEnvironment.R2xxxViaNET.InstanceID(TestAppInfo ai) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 165
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.ForceStop_Test() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 543
+at TestEnvironment.TestTimeLimiter.<>c__DisplayClass1.<Start>b__0() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 48
+]]></stack-trace>
+                                </failure>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_DefaultIPCName_Disabled" executed="True" success="True" time="2.672" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_DefaultIPCName_Ipc" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV314822 is broken in this build. (Build 344 of R2008Trunk.)
+EV314822: Regression: Default channel name(s) for IPC are unknown for second frame, third frame, etc.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_DefaultIPCName_TcpIp" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318919 is broken in this build. (Build 344 of R2008Trunk.)
+EV318919: Throw an exception when a MyReflection.Start() overload is used that is not supported with the current Reflection Workspace API Settings]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Disabled" executed="True" success="True" time="2.609" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Ipc" executed="True" success="True" time="2.609" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_IPC_Disabled" executed="True" success="True" time="2.703" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_IPC_Ipc" executed="True" success="True" time="2.609" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_IPC_Tcpip" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318919 is broken in this build. (Build 344 of R2008Trunk.)
+EV318919: Throw an exception when a MyReflection.Start() overload is used that is not supported with the current Reflection Workspace API Settings]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_IpcDefaultName" executed="True" success="True" time="2.719" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_IPCDefaultName_Ipc" executed="True" success="True" time="2.641" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_NotVisible_Disabled" executed="True" success="True" time="2.656" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_NotVisible_Ipc" executed="True" success="True" time="2.797" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_NotVisible_IpcDefaultName" executed="True" success="True" time="3.719" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_NotVisible_Tcpip" executed="True" success="True" time="3.766" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Port_Disabled" executed="True" success="True" time="6.531" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Port_Ipc" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318919 is broken in this build. (Build 344 of R2008Trunk.)
+EV318919: Throw an exception when a MyReflection.Start() overload is used that is not supported with the current Reflection Workspace API Settings]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Port_Tcpip" executed="True" success="True" time="3.719" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Tcpip" executed="True" success="True" time="4.000" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Visible_Disabled" executed="True" success="True" time="2.750" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Visible_Ipc" executed="True" success="True" time="2.844" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Visible_IpcDefaultName" executed="True" success="True" time="2.844" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Start_Visible_Tcpip" executed="True" success="True" time="3.828" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_Disabled" executed="True" success="True" time="2.672" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_Ipc" executed="True" success="True" time="3.391" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_IpcDefaultName" executed="True" success="True" time="3.094" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_Tcpip" executed="True" success="False" time="3.547" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <failure>
+                                  <message><![CDATA[System.Exception : 
+  ----> System.Exception : Not Found]]></message>
+                                  <stack-trace><![CDATA[at TestEnvironment.TestTimeLimiter.Start(TestDelegate method, TimeSpan timelimit, String message) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 77
+at TestEnvironment.TestTimeLimiter.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 38
+at TestEnvironment.TestRunner.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestRunner.cs:line 38
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_Tcpip() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 441
+--Exception
+at TestEnvironment.R2xxxViaNET.InstanceID(TestAppInfo ai) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 165
+at NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.Stop_Test() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.Framework\MyReflectionTests.cs:line 467
+at TestEnvironment.TestTimeLimiter.<>c__DisplayClass1.<Start>b__0() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 48
+]]></stack-trace>
+                                </failure>
+                              </test-case>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite name="UserInterface" executed="True" success="False" time="62.359" asserts="0">
+                        <results>
+                          <test-suite name="FrameTests" executed="True" success="False" time="62.359" asserts="0">
+                            <results>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.Activate" executed="True" success="False" time="30.078" asserts="0">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <failure>
+                                  <message><![CDATA[System.Exception : 
+  ----> System.Threading.ThreadAbortException : Thread was being aborted.]]></message>
+                                  <stack-trace><![CDATA[at TestEnvironment.TestTimeLimiter.Start(TestDelegate method, TimeSpan timelimit, String message) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 77
+at TestEnvironment.TestTimeLimiter.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 38
+at TestEnvironment.TestRunner.Start(TestDelegate method) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestRunner.cs:line 38
+at NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.Activate() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.UserInterface\FrameTests.cs:line 327
+--ThreadAbortException
+at System.Threading.Thread.SleepInternal(Int32 millisecondsTimeout)
+at Attachmate.Reflection.Framework.MyReflection.WaitForApplicationReady(Int32 randomNumber, IntPtr& hwnd) in D:\alloy\trunk\dev\Programmer Interfaces\Attachmate.Reflection.Framework\MyReflection.cs:line 1107
+at Attachmate.Reflection.Framework.MyReflection.StartProgram(String arguments, Int32 randomNumber, Guid appId) in D:\alloy\trunk\dev\Programmer Interfaces\Attachmate.Reflection.Framework\MyReflection.cs:line 1282
+at Attachmate.Reflection.Framework.MyReflection.StartProgramIpc(String channelName, Boolean visible) in D:\alloy\trunk\dev\Programmer Interfaces\Attachmate.Reflection.Framework\MyReflection.cs:line 1253
+at Attachmate.Reflection.Framework.MyReflection.Start() in D:\alloy\trunk\dev\Programmer Interfaces\Attachmate.Reflection.Framework\MyReflection.cs:line 197
+at TestEnvironment.TestApp.StartDefault() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\ITestApp.cs:line 64
+at TestEnvironment.TestApp..ctor(TestAppInfo info) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\ITestApp.cs:line 52
+at TestEnvironment.R2xxxViaNET.StartTestApp(TestAppInfo fi) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 195
+at TestEnvironment.R2xxxViaNET.CreateApp(TestAppInfo fi) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 204
+at TestEnvironment.R2xxxViaNET.GetApp(TestAppInfo fi) in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TestEnvironment.cs:line 213
+at NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.Activate_Test() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\NETTests\Tests\Attachmate.Reflection.UserInterface\FrameTests.cs:line 334
+at TestEnvironment.TestTimeLimiter.<>c__DisplayClass1.<Start>b__0() in d:\alloy\test\Legacy\trunk\test\APIAutomation\NETTests\TestEnvironment\TimeLimiter.cs:line 48
+]]></stack-trace>
+                                </failure>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.AllViews" executed="True" success="True" time="10.453" asserts="8">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.CreateView" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[IFrame.CreateView() is tested everywhere a session is shown]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.FullScreen" executed="True" success="True" time="2.984" asserts="2">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.GetViewByInstanceID" executed="True" success="True" time="6.266" asserts="4">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.GetViewByTitleText" executed="True" success="True" time="0.219" asserts="4">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.GetViewsByFilePath" executed="True" success="True" time="9.797" asserts="10">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.GetViewsByName" executed="True" success="True" time="0.219" asserts="7">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.Name" executed="True" success="True" time="0.219" asserts="1">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                              </test-case>
+                              <test-case name="NETTests.Tests.Attachmate.Reflection.UserInterface.FrameTests.WindowMode" executed="False">
+                                <categories>
+                                  <category name="ABAT" />
+                                </categories>
+                                <reason>
+                                  <message><![CDATA[EV318845 is broken in this build. (Build 344 of R2008Trunk.)
+EV318845: Creating multiple sessions from the .NET API breaks the R2xxx UI if it is in classic mode.]]></message>
+                                </reason>
+                              </test-case>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+              <test-suite name="EventOrderTests" executed="True" success="True" time="153.234" asserts="0">
+                <results>
+                  <test-suite name="ApplicationEventOrderTests" executed="True" success="False" time="2.063" asserts="0">
+                    <results>
+                      <test-case name="NETTests.Tests.EventOrderTests.ApplicationEventOrderTests.App_Close" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318898 is broken in this build. (Build 344 of R2008Trunk.)
+EV318898: .NET API event Application.ApplicationClosed does not fire in simplest use case.]]></message>
+                        </reason>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="IbmEventOrderTests" executed="True" success="True" time="95.094" asserts="0">
+                    <results>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.App_Close3270" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318898 is broken in this build. (Build 344 of R2008Trunk.)
+EV318898: .NET API event Application.ApplicationClosed does not fire in simplest use case.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.App_Close5250" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318898 is broken in this build. (Build 344 of R2008Trunk.)
+EV318898: .NET API event Application.ApplicationClosed does not fire in simplest use case.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Close3270" executed="True" success="True" time="11.516" asserts="9">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Close5250" executed="True" success="True" time="11.328" asserts="9">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Connect3270" executed="True" success="True" time="11.219" asserts="4">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Connect5250" executed="True" success="True" time="11.141" asserts="4">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Disconnect3270" executed="True" success="True" time="11.328" asserts="6">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.Terminal_Disconnect5250" executed="True" success="True" time="11.281" asserts="6">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.View_Close3270" executed="True" success="True" time="11.453" asserts="9">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.IbmEventOrderTests.View_Close5250" executed="True" success="True" time="11.453" asserts="9">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="VT" executed="True" success="True" time="56.047" asserts="0">
+                    <results>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.App_CloseRegis" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV314959 is broken in this build. (Build 344 of R2008Trunk.)
+EV314959: Closing an app that has a connected VT session throws an exception.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.App_CloseVT" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV314959 is broken in this build. (Build 344 of R2008Trunk.)
+EV314959: Closing an app that has a connected VT session throws an exception.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_CloseRegis" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318695 is broken in this build. (Build 344 of R2008Trunk.)
+EV318695: VT session events fire in the wrong order.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_CloseVT" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318695 is broken in this build. (Build 344 of R2008Trunk.)
+EV318695: VT session events fire in the wrong order.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_ConnectRegis" executed="True" success="True" time="6.078" asserts="4">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_ConnectVT" executed="True" success="True" time="6.141" asserts="4">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_DisconnectRegis" executed="True" success="True" time="6.781" asserts="6">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.Terminal_DisconnectVT" executed="True" success="True" time="7.313" asserts="6">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.View_CloseRegis" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318695 is broken in this build. (Build 344 of R2008Trunk.)
+EV318695: VT session events fire in the wrong order.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NETTests.Tests.EventOrderTests.VT.View_CloseVT" executed="False">
+                        <categories>
+                          <category name="ABAT" />
+                        </categories>
+                        <reason>
+                          <message><![CDATA[EV318695 is broken in this build. (Build 344 of R2008Trunk.)
+EV318695: VT session events fire in the wrong order.]]></message>
+                        </reason>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

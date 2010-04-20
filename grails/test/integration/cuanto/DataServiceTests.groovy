@@ -879,7 +879,105 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(testCase, testRuns[1].dateExecuted)
 	}
 
+	void testGetPreviousOutcome2() {
+		def project = to.project
+		dataService.saveDomainObject project
 
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		def testRuns = []
+		1.upto(4){
+			def testRun = to.getTestRun(project)
+			dataService.saveDomainObject testRun
+			testRuns << testRun
+			def testOutcome = to.getTestOutcome(testCase, testRun)
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getPreviousOutcome(outcomes[3])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getPreviousOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
+	}
+
+
+	void testGetPreviousOutcomeFinishedAt() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		1.upto(4){
+			def testOutcome = to.getTestOutcome(testCase, null)
+
+			testOutcome.finishedAt = new Date()
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getPreviousOutcome(outcomes[3])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getPreviousOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
+	}
+
+
+	void testGetPreviousOutcomeStartedAt() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		1.upto(4){
+			def testOutcome = to.getTestOutcome(testCase, null)
+			testOutcome.startedAt = new Date()
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getPreviousOutcome(outcomes[3])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getPreviousOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
+	}
+
+
+	void testGetPreviousOutcomeDateCreated() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		1.upto(4){
+			def testOutcome = to.getTestOutcome(testCase, null)
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getPreviousOutcome(outcomes[3])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getPreviousOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
+	}
+
+	
 	void testGetNewFailures() {
 		def project = to.project
 		dataService.saveDomainObject project

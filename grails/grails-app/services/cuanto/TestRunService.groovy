@@ -202,7 +202,12 @@ class TestRunService {
 			def labels = new StringBuffer()
 			def data = new StringBuffer()
 			analysisStats.eachWithIndex {cause, idx ->
-				def pct = (cause.qty / testRun.testRunStatistics.failed * 100).intValue().toString()
+				def pct
+				if (testRun.testRunStatistics?.failed == 0) {
+					pct = 0
+				} else {
+					pct = (cause.qty / testRun.testRunStatistics.failed * 100).intValue().toString()
+				}
 				labels.append("$pct% ").append(cause.state.name)
 				data.append cause.qty
 				if (idx < analysisStats.size() - 1) {
