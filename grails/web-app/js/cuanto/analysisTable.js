@@ -460,7 +460,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
-        if (oData.length > 0) {
+        if (oData && oData.length > 0) {
             elCell.innerHTML = oData.join(", ");
         }
     }
