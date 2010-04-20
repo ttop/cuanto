@@ -63,4 +63,8 @@
 	<target name="submitTestNGConfigParams" depends="init">
 		<cuanto url="${cuanto.url}" testProject="CNG" resultfile="../grails/test/resources/testng-results-params-config.xml"/>
 	</target>
+
+	<target name="submitTestNGGroups" depends="init">
+		<cuanto url="${cuanto.url}" testProject="CNG" resultfile="../grails/test/resources/testng-results-groups-top.xml"/>
+	</target>
 </project>
