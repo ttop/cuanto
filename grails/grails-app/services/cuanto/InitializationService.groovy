@@ -114,7 +114,7 @@ class InitializationService {
 		}
 
 		if (!TestType.findByNameIlike("NUnit")) {
-			dataService.saveDomainObject(new TestType("NUnit")) 
+			dataService.saveDomainObject(new TestType(name: "NUnit")) 
 		}
 	}
 
