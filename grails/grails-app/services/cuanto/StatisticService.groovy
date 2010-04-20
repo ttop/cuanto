@@ -150,28 +150,31 @@ t.testRun = ? and t.testResult.isFailure = true and t.testResult.includeInCalcul
 
 
     List getTagStatistics(TestRun testRun) {
-        // todo: if testrun has tags
         def tagStats = []
-        testRun.tags.each {tag ->
-            def rawStats = TestOutcome.executeQuery("select tag_0.name, t.testResult, count(*) from cuanto.TestOutcome t inner join t.tags tag_0 where t.testRun = ? and tag_0 = ? group by t.testResult", [testRun, tag])
-            def tagStat =  new TagStatistic()
-            tagStat.tag = tag
+        if (Environment.current != Environment.TEST) {
+            // The HSQL database doesn't like the following query, so we won't do it in testing.
+            testRun.tags.each {tag ->
+                def rawStats = TestOutcome.executeQuery("select t.testResult, count(*) from cuanto.TestOutcome t " +
+                        "inner join t.tags tag_0 where t.testRun = ? and tag_0 = ? group by t.testResult", [testRun, tag])
+                def tagStat = new TagStatistic()
+                tagStat.tag = tag
 
-            def passed = rawStats.findAll{!it[1].isFailure && it[1].includeInCalculations}.collect{it[2]}.sum()
-            tagStat.passed = passed ? passed : 0;
-            log.debug "${passed} passed for ${tag.name}"
+                def passed = rawStats.findAll {!it[0].isFailure && it[0].includeInCalculations}.collect {it[1]}.sum()
+                tagStat.passed = passed ? passed : 0;
+                log.debug "${passed} passed for ${tag.name}"
 
-            def failed = rawStats.findAll{it[1].isFailure && it[1].includeInCalculations && it[1].name != "Skip"}.collect{it[2]}.sum()
-            tagStat.failed = failed ? failed : 0;
-            log.debug "${failed} failed for ${tag.name}"
+                def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name != "Skip"}.collect {it[1]}.sum()
+                tagStat.failed = failed ? failed : 0;
+                log.debug "${failed} failed for ${tag.name}"
 
-            def skipped = rawStats.findAll{it[1].isFailure && it[1].includeInCalculations && it[1].name == "Skip"}.collect{it[2]}.sum()
-            tagStat.skipped = skipped ? skipped : 0;
-            log.debug "${skipped} skipped for ${tag.name}"
+                def skipped = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name == "Skip"}.collect {it[1]}.sum()
+                tagStat.skipped = skipped ? skipped : 0;
+                log.debug "${skipped} skipped for ${tag.name}"
 
-            def total = rawStats.collect{it[2]}.sum()
-            tagStat.total = total ? total : 0; 
-            tagStats << tagStat
+                def total = rawStats.collect {it[1]}.sum()
+                tagStat.total = total ? total : 0;
+                tagStats << tagStat
+            }
         }
         return tagStats
     }
