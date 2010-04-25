@@ -196,11 +196,8 @@ class TestOutcomeService {
 
 		def totalCount
 
-		if (params.filter?.equalsIgnoreCase("allFailures")) {
-			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
-		} else if (params.filter?.equalsIgnoreCase("newFailures")){
-			def queryFilter = getTestOutcomeQueryFilterForParams(params)
-			totalCount = getNewFailures(queryFilter).size()
+		if (params.filter) {
+			totalCount = dataService.countTestOutcomes(getTestOutcomeQueryFilterForParams(params))
 		} else if (params.outcome) {
 			/* todo: why is this parameter here? it smells bad */
 			totalCount = params.totalCount
@@ -313,31 +310,6 @@ class TestOutcomeService {
 	}
 
 
-	List<TestOutcome> getNewFailures(TestOutcomeQueryFilter testOutcomeFilter) {
-		if (!testOutcomeFilter.testRun) {
-			throw new RuntimeException("No TestRun specified for new failures")
-		}
-		TestOutcomeQueryFilter modifiedFilter = new TestOutcomeQueryFilter(testOutcomeFilter)
-		modifiedFilter.queryMax = null
-		modifiedFilter.queryOffset = null
-		def currentFailedOutcomes = dataService.getTestOutcomes(modifiedFilter)
-		def newFailedOutcomes = dataService.getNewFailures(currentFailedOutcomes, testOutcomeFilter.testRun?.dateExecuted)
-		def startRange = testOutcomeFilter.queryOffset ? testOutcomeFilter.queryOffset : 0
-		def endRange = testOutcomeFilter.queryMax ? testOutcomeFilter.queryMax + startRange - 1 : newFailedOutcomes.size() - 1
-		if (endRange > newFailedOutcomes.size() - 1) {
-			endRange = newFailedOutcomes.size() - 1
-		}
-		if (endRange < 0) {
-			endRange = 0
-		}
-		if (newFailedOutcomes.size() == 0) {
-			return []
-		} else {
-			return newFailedOutcomes[startRange..endRange]
-		}
-	}
-
-
 	Map parseQueryFromString(String rawQuery) {
 		// returns a map with 'searchField' and 'searchTerms'
 		String query
@@ -390,8 +362,14 @@ class TestOutcomeService {
 			filter.setForSearchTerm(searchDetails.searchField, searchDetails.searchTerms)
 		}
 
-		if (params.filter?.equalsIgnoreCase("allFailures") || params.filter?.equalsIgnoreCase("newFailures")) {
+		if (params.filter?.equalsIgnoreCase("allFailures")) {
 			filter.isFailure = true
+		} else if (params.filter?.equalsIgnoreCase("newFailures")) {
+			filter.isFailure = true
+			filter.isFailureStatusChanged = true
+		} else if (params.filter?.equalsIgnoreCase("newPasses")) {
+			filter.isFailure = false
+			filter.isFailureStatusChanged = true
 		} else if (params.filter?.equalsIgnoreCase("unanalyzedFailures")) {
 			filter.isFailure = true
 			filter.isAnalyzed = false

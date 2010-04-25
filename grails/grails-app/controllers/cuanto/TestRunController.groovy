@@ -176,6 +176,9 @@ class TestRunController {
                         currentOutcome.tags = outcome.tags.collect{it.name}.sort()
                     }
 
+					if (outcome.isFailureStatusChanged != null)
+						currentOutcome.isFailureStatusChanged = outcome.isFailureStatusChanged
+
 					currentOutcome.testCase = currentTestCase
 					jsonOutcomes << currentOutcome
 				}

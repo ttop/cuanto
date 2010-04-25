@@ -297,36 +297,6 @@ class DataService {
 	}
 
 
-	List getNewFailures(testOutcomes, priorToDate) {
-		// return a list of the outcomes where the test case outcome's result immediately prior to priorToDate was a
-		// pass
-		def newFails = testOutcomes.findAll { currentOutcome ->
-			if (!currentOutcome.testResult.isFailure){
-				return false
-			} else {
-				def previousOutcome = getPreviousOutcome(currentOutcome.testCase, priorToDate)
-				if (previousOutcome) {
-					return !previousOutcome?.testResult?.isFailure
-				} else {
-					return true
-				}
-			}
-		}
-		return newFails
-	}
-
-
-	TestOutcome getPreviousOutcome(TestCase testCase, Date priorToDate) {
-		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
-		filter.testCase = testCase
-		filter.dateCriteria = [new DateCriteria(date: priorToDate, operator: "<")]
-		filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
-		filter.queryOffset = 0
-		filter.queryMax = 1
-		return getTestOutcomes(filter)[0] as TestOutcome
-	}
-
-
 	TestOutcome getPreviousOutcome(TestOutcome outcome) {
 		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
 		filter.testCase = outcome.testCase

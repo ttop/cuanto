@@ -39,6 +39,7 @@ class TestOutcome {
 		dateCreated(nullable: true)
 		lastUpdated(nullable: true)
         tags(nullable:true)
+		isFailureStatusChanged(nullable:true)
 	}
 
 	static mapping = {
@@ -62,6 +63,7 @@ class TestOutcome {
 	Date finishedAt // when the test finished
 	Date dateCreated  // this is the timestamp for when the database record was created
 	Date lastUpdated // timestamp for when the database record was last updated
+	Boolean isFailureStatusChanged
 
 
 	Map toJSONmap(Boolean includeTestOutput = false) {
@@ -80,7 +82,8 @@ class TestOutcome {
 			duration: outcome.duration,
 			testRun: outcome.testRun?.toJSONMap(),
 			dateCreated: dateFormatter.format(dateCreated),
-			lastUpdated: dateFormatter.format(lastUpdated)
+			lastUpdated: dateFormatter.format(lastUpdated),
+			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
 
 		if (includeTestOutput) {

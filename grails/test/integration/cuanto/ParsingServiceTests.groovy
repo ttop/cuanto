@@ -37,7 +37,7 @@ class ParsingServiceTests extends GroovyTestCase {
 
 		tCase.project = project
 		dataService.saveDomainObject tCase
-		
+
 		TestCase t2 = new TestCase()
 		t2.packageName = "foo"
 		t2.testName = "Bar"
@@ -50,7 +50,7 @@ class ParsingServiceTests extends GroovyTestCase {
 		t3.fullName = t3.packageName + "." + t3.testName
 		t3.parameters = fakes.wordGen.getSentence(3)
 		t3.project = project
-		dataService.saveDomainObject t3 
+		dataService.saveDomainObject t3
 
 		TestCase myCase = dataService.findMatchingTestCaseForProject(project, tCase)
 		assertEquals("wrong fullName", tCase.fullName, myCase.fullName)
@@ -62,10 +62,10 @@ class ParsingServiceTests extends GroovyTestCase {
 		assertEquals("wrong parameters", t3.parameters, myCase.parameters)
 	}
 
-	
+
 	void testParsingRegistryInjection() {
 		assertTrue "No parsers found", parsingService.testParserRegistry?.parsers?.size() > 0
-	}	
+	}
 
 	void testParseFileFromStream()
 	{
@@ -102,52 +102,117 @@ class ParsingServiceTests extends GroovyTestCase {
         proj.testType = TestType.findByName("TestNG")
         dataService.saveDomainObject proj
 
-        TestRun testRun = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRun
+		TestRun testRun = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRun
 
-        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
-        assertEquals "Wrong number of total tags", 2, Tag.count()
+		parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
+		assertEquals "Wrong number of total tags", 2, Tag.count()
 
-        def results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.tibetanMethod'")
-        assertEquals 1, results.size()
-        TestOutcome outcome = results[0]
-        assertEquals "Wrong number of tags", 1, outcome.tags.size()
-        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+		def results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.tibetanMethod'")
+		assertEquals 1, results.size()
+		TestOutcome outcome = results[0]
+		assertEquals "Wrong number of tags", 1, outcome.tags.size()
+		assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
 
-        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.giantVisions'")
-        assertEquals 1, results.size()
-        outcome = results[0]
-        assertEquals "Wrong number of tags", 1, outcome.tags.size()
-        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+		results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.giantVisions'")
+		assertEquals 1, results.size()
+		outcome = results[0]
+		assertEquals "Wrong number of tags", 1, outcome.tags.size()
+		assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
 
-        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.greatNorthern'")
-        assertEquals 1, results.size()
-        outcome = results[0]
-        assertEquals "Wrong number of tags", 1, outcome.tags.size()
-        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
+		results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.greatNorthern'")
+		assertEquals 1, results.size()
+		outcome = results[0]
+		assertEquals "Wrong number of tags", 1, outcome.tags.size()
+		assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
 
-        results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.blackLodge'")
-        assertEquals 1, results.size()
-        outcome = results[0]
-        assertEquals "Wrong number of tags", 2, outcome.tags.size()
-        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
-        assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
+		results = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.sample.TwinPeaks.blackLodge'")
+		assertEquals 1, results.size()
+		outcome = results[0]
+		assertEquals "Wrong number of tags", 2, outcome.tags.size()
+		assertNotNull "Unable to find tag", outcome.tags.find {it.name == "places"}
+		assertNotNull "Unable to find tag", outcome.tags.find {it.name == "quirks"}
 
-        assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
-        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
-        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
+		assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
+		assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
+		assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
 
-        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
-        assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
-        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
-        assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
-        assertEquals "Wrong number of total tags", 2, Tag.count()
+		parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRun.id)
+		assertEquals "Wrong number of tags on TestRun", 2, testRun.tags?.size()
+		assertNotNull "Unable to find tag", testRun.tags.find {it.name == "places"}
+		assertNotNull "Unable to find tag", testRun.tags.find {it.name == "quirks"}
+		assertEquals "Wrong number of total tags", 2, Tag.count()
 
-        TestRun testRunTwo = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRunTwo
+		TestRun testRunTwo = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRunTwo
 
-        parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRunTwo.id)
-        assertEquals "Wrong number of total tags", 2, Tag.count()
-    }
+		parsingService.parseFileWithTestRun(getFile("testng-results-groups-top.xml"), testRunTwo.id)
+		assertEquals "Wrong number of total tags", 2, Tag.count()
+	}
 
+	void testParsingWithNewFailures() {
+		Project proj = fakes.getProject()
+		proj.testType = TestType.findByName("TestNG")
+		dataService.saveDomainObject proj
+
+		TestRun testRun1 = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRun1
+		parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun1.id)
+
+		// run 1: passed
+		def results1 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'")
+		assertEquals 1, results1.size()
+		def testMethod1OutcomeForFirstTime = results1[0]
+		assertFalse "First success should not result in failure status change.",
+			testMethod1OutcomeForFirstTime.isFailureStatusChanged
+
+		// run 1: failed
+		def results2 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod2'")
+		assertEquals 1, results2.size()
+		def testMethod2OutcomeForFirstTime = results2[0]
+		assertTrue "First failure should result in failure status change.",
+			testMethod2OutcomeForFirstTime.isFailureStatusChanged
+
+		TestRun testRun2 = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRun2
+		parsingService.parseFileWithTestRun(getFile("testng-results-run2.xml"), testRun2.id)
+
+		// run 2: passed -> passed
+		def results3 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1' order by dateCreated desc")
+		assertEquals 2, results3.size()
+		assertEquals results3[1].id, testMethod1OutcomeForFirstTime.id
+		def testMethod1OutcomeForSecondTime = results3[0]
+		assertFalse "A failure after previous failure should not result in failure status change.",
+			testMethod1OutcomeForSecondTime.isFailureStatusChanged
+		
+		// run 2: failed -> failed
+		def results4 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod2' order by dateCreated desc")
+		assertEquals 2, results4.size()
+		assertEquals results4[1].id, testMethod2OutcomeForFirstTime.id
+		def testMethod2OutcomeForSecondTime = results4[0]
+		assertFalse "A failure after previous failure should not result in failure status change.",
+			testMethod2OutcomeForSecondTime.isFailureStatusChanged
+
+		TestRun testRun3 = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRun3
+		parsingService.parseFileWithTestRun(getFile("testng-results-run3.xml"), testRun3.id)
+
+		// run 3: passed -> passed -> failed
+		def results5 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1' order by dateCreated desc")
+		assertEquals 3, results5.size()
+		assertEquals results5[2].id, testMethod1OutcomeForFirstTime.id
+		assertEquals results5[1].id, testMethod1OutcomeForSecondTime.id
+		def testMethod1OutcomeForThirdTime = results5[0]
+		assertTrue "A failure after a success should result in failure status change.",
+			testMethod1OutcomeForThirdTime.isFailureStatusChanged
+
+		// run 3: failed -> failed -> passed
+		def results6 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod2' order by dateCreated desc")
+		assertEquals 3, results6.size()
+		assertEquals results6[2].id, testMethod2OutcomeForFirstTime.id
+		assertEquals results6[1].id, testMethod2OutcomeForSecondTime.id
+		def testMethod2OutcomeForThirdTime = results6[0]
+		assertTrue "A success after previous failure should result in failure status change.",
+			testMethod2OutcomeForThirdTime.isFailureStatusChanged
+	}
 }

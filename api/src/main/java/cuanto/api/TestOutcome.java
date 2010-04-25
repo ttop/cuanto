@@ -52,6 +52,7 @@ public class TestOutcome {
 	Date lastUpdated;
 	String projectKey;
 	List<String> tags = new ArrayList<String>();
+	Boolean isFailureStatusChanged;
 
 
 	TestOutcome() {
@@ -371,7 +372,13 @@ public class TestOutcome {
 		return projectKey;
 	}
 
+	public Boolean getFailureStatusChanged() {
+		return isFailureStatusChanged;
+	}
 
+	void setFailureStatusChanged(Boolean failureStatusChanged) {
+		isFailureStatusChanged = failureStatusChanged;
+	}
 
 	static TestOutcome fromJSON(String jsonString) throws ParseException {
 		JSONObject jsonOutcome = JSONObject.fromObject(jsonString);
@@ -443,6 +450,12 @@ public class TestOutcome {
 			JSONArray tagArray = jsonOutcome.getJSONArray("tags");
 			testOutcome.addTags(tagArray);
 		}
+
+		if (!(jsonOutcome.get("isFailureStatusChanged") instanceof JSONNull)) {
+			testOutcome.setFailureStatusChanged(
+				jsonOutcome.getBoolean("isFailureStatusChanged"));
+		}
+
 		return testOutcome;
 	}
 

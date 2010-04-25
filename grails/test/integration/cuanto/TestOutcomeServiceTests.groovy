@@ -97,6 +97,55 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertEquals textWithSanitizedScriptTags, persistedOutcome.bug.title
 	}
 
+
+	void testCreateFailedTestOutcome() {
+		// create a project
+		Project proj = to.getProject()
+		proj.save()
+
+		// create a couple of test cases
+		TestCase tc1 = to.getTestCase(proj)
+		TestCase tc2 = to.getTestCase(proj)
+		dataService.saveDomainObject tc1
+		dataService.saveDomainObject tc1
+
+		// create a test run with an outcome
+		TestRun testRun = to.getTestRun(proj)
+		testRun.save()
+
+		assertEquals "Wrong number of new failures.", 0, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 0, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		TestOutcome outcome1 = to.getTestOutcome(tc1, testRun)
+		outcome1.testResult = dataService.result("fail")
+		outcome1.save()
+
+		assertEquals "Wrong number of new failures.", 1, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 0, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		TestOutcome outcome2 = to.getTestOutcome(tc1, testRun)
+		outcome2.testResult = dataService.result("pass")
+		outcome2.save()
+
+		assertEquals "Wrong number of new failures.", 1, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		TestOutcome outcome3 = to.getTestOutcome(tc1, testRun)
+		outcome3.testResult = dataService.result("fail")
+		outcome3.save()
+
+		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		TestOutcome outcome4 = to.getTestOutcome(tc1, testRun)
+		outcome4.testResult = dataService.result("pass")
+		outcome4.save()
+
+		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 2, testOutcomeService.countOutcomes([filter: 'newPasses'])
+	}
+
+
 	void testApplyAnalysisStateToTestOutcome() {
 		// create a project
 		Project proj = to.getProject()
@@ -104,11 +153,11 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
-		dataService.saveDomainObject tc 
+		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
 		TestRun testRun = to.getTestRun(proj)
-		dataService.saveDomainObject testRun 
+		dataService.saveDomainObject testRun
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
 		dataService.saveDomainObject outcome
@@ -128,7 +177,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
 
 		outcome.refresh()
-		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [testResult:"Pass"])
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [testResult: "Pass"])
 		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
 
 		outcome.testResult = TestResult.findByName("Fail")
@@ -163,7 +212,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		def csv = testOutcomeService.getDelimitedTextForTestOutcomes(outcomes, ",")
 		def csvLines = csv.readLines()
-		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size() 
+		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size()
 
 		// do 0 results, 1 result, 3 results, 10 results
 
