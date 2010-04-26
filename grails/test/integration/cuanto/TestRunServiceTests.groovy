@@ -42,10 +42,14 @@ class TestRunServiceTests extends GroovyTestCase {
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 1
+			outcome.isFailureStatusChanged = false
+
 			if (x == 2) {
 				outcome.testResult = dataService.result("fail")
+				outcome.isFailureStatusChanged = true
 			} else if (x == 3) {
 				outcome.testResult = dataService.result("error")
+				outcome.isFailureStatusChanged = true
 			} else if (x == 4) {
 				outcome.testResult = dataService.result("ignore")
 			}

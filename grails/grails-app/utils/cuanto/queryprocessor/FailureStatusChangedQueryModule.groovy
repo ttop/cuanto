@@ -6,7 +6,9 @@ import cuanto.TestOutcome
 class FailureStatusChangedQueryModule implements QueryModule {
 
 	def Map getQueryParts(QueryFilter queryFilter) {
-		[where: " where t.isFailureStatusChanged = ? ", from: queryFilter]
+		(queryFilter.isFailureStatusChanged == null) ?
+			[:] :
+			[where: "t.isFailureStatusChanged = ?", params: [queryFilter.isFailureStatusChanged]]
 	}
 
 	def List<Class> getObjectTypes() {

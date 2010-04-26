@@ -107,42 +107,70 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		TestCase tc1 = to.getTestCase(proj)
 		TestCase tc2 = to.getTestCase(proj)
 		dataService.saveDomainObject tc1
-		dataService.saveDomainObject tc1
+		dataService.saveDomainObject tc2
 
 		// create a test run with an outcome
-		TestRun testRun = to.getTestRun(proj)
-		testRun.save()
+		TestRun firstTestRun = to.getTestRun(proj)
+		TestRun secondTestRun = to.getTestRun(proj)
+		TestRun thirdTestRun = to.getTestRun(proj)
+		firstTestRun.save()
+		secondTestRun.save()
+		thirdTestRun.save()
 
 		assertEquals "Wrong number of new failures.", 0, testOutcomeService.countOutcomes([filter: 'newFailures'])
 		assertEquals "Wrong number of new passes.", 0, testOutcomeService.countOutcomes([filter: 'newPasses'])
 
-		TestOutcome outcome1 = to.getTestOutcome(tc1, testRun)
+		/* For the first test run */
+
+		TestOutcome outcome1 = to.getTestOutcome(tc1, firstTestRun)
 		outcome1.testResult = dataService.result("fail")
+		outcome1.isFailureStatusChanged = true
 		outcome1.save()
 
 		assertEquals "Wrong number of new failures.", 1, testOutcomeService.countOutcomes([filter: 'newFailures'])
 		assertEquals "Wrong number of new passes.", 0, testOutcomeService.countOutcomes([filter: 'newPasses'])
 
-		TestOutcome outcome2 = to.getTestOutcome(tc1, testRun)
+		TestOutcome outcome2 = to.getTestOutcome(tc2, firstTestRun)
 		outcome2.testResult = dataService.result("pass")
 		outcome2.save()
 
 		assertEquals "Wrong number of new failures.", 1, testOutcomeService.countOutcomes([filter: 'newFailures'])
-		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
+		assertEquals "Wrong number of new passes.", 0, testOutcomeService.countOutcomes([filter: 'newPasses'])
 
-		TestOutcome outcome3 = to.getTestOutcome(tc1, testRun)
-		outcome3.testResult = dataService.result("fail")
+		/* For the second test run */
+		TestOutcome outcome3 = to.getTestOutcome(tc1, secondTestRun)
+		outcome3.testResult = dataService.result("pass")
+		outcome3.isFailureStatusChanged = true
 		outcome3.save()
 
-		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new failures.", 1, testOutcomeService.countOutcomes([filter: 'newFailures'])
 		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
 
-		TestOutcome outcome4 = to.getTestOutcome(tc1, testRun)
-		outcome4.testResult = dataService.result("pass")
+		TestOutcome outcome4 = to.getTestOutcome(tc2, secondTestRun)
+		outcome4.testResult = dataService.result("error")
+		outcome4.isFailureStatusChanged = true
 		outcome4.save()
 
 		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
-		assertEquals "Wrong number of new passes.", 2, testOutcomeService.countOutcomes([filter: 'newPasses'])
+		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		/* For the third test run */
+
+		TestOutcome outcome5 = to.getTestOutcome(tc1, secondTestRun)
+		outcome5.testResult = dataService.result("pass")
+		outcome5.isFailureStatusChanged = false
+		outcome5.save()
+
+		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
+
+		TestOutcome outcome6 = to.getTestOutcome(tc2, secondTestRun)
+		outcome6.testResult = dataService.result("error")
+		outcome6.isFailureStatusChanged = false
+		outcome6.save()
+
+		assertEquals "Wrong number of new failures.", 2, testOutcomeService.countOutcomes([filter: 'newFailures'])
+		assertEquals "Wrong number of new passes.", 1, testOutcomeService.countOutcomes([filter: 'newPasses'])
 	}
 
 
