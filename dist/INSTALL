@@ -40,7 +40,7 @@ Upgrading
 =========
 If you are upgrading, shut down Cuanto and back up your database first.
 
-If you are upgrading from an existing Cuanto installation, you'll want to execute the SQL scripts found in the sql
+If you are upgrading from an existing Cuanto installation that is earlier than 2.4, you'll want to execute the SQL scripts found in the sql
 directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may be needed if using a different
 database configuration.
 
@@ -69,5 +69,5 @@ Once these scripts are executed, copy the cuanto-db.groovy file from your existi
  in the cuanto directory (or whatever context you're using). Copy cuanto-db.groovy back to you new
  directory under WEB-INF/classes. Then you're ready to start up Cuanto again.
 
-The first time starting Cuanto with the new webapp, it may take a substantial amount of time to start up, as some
+The first time starting Cuanto with the new webapp (after an upgrade from pre-2.4), it may take a substantial amount of time to start up, as some
 additional database updates are done automatically. It took 43 minutes on a MacBook running Cuanto and MySql.

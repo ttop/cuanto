@@ -96,6 +96,14 @@ public class NUnitParser implements CuantoTestParser {
 			def time = new BigDecimal(timeNode.replaceAll(",", "")) * 1000
 			pto.duration = time.toLong()
 		}
+
+        if (tcNode.categories) {
+            def categories = []
+            tcNode.categories.category.each { category ->
+                categories << category.'@name'
+            }
+            pto.tags = categories
+        }
 		return pto
 	}
 }

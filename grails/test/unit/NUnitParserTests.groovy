@@ -38,6 +38,8 @@ public class NUnitParserTests extends GroovyTestCase {
 		assertEquals "result", "Pass", f8.testResult
 		assertEquals "duration", 984, f8.duration
 		assertNull "output", f8.testOutput
+        assertEquals "tag", 1, f8.tags?.size
+        assertEquals "tag name", "ABAT", f8.tags[0]
 
 		ParsableTestOutcome aFailure = outcomes.find {
 			it.testCase?.fullName == "NETTests.Tests.Attachmate.Reflection.Framework.MyReflectionTests.CreateApplication_IPAddress_DomainCredentials_Tcpip"
