@@ -80,10 +80,10 @@ YAHOO.cuanto.tables = function() {
 			body += "&bug=" + record.getData("bug");
 		} else {
 			if (bug.title) {
-				body += "&bugTitle=" + bug.title;
+				body += "&bugTitle=" + encodeURIComponent(bug.title);
 			}
 			if (bug.url) {
-				body += "&bugUrl=" + bug.url;
+				body += "&bugUrl=" + encodeURIComponent(bug.url);
 			}
 		}
 		var fields = [{key: 'result', param:'testResult'}, {key: 'analysisState', param: 'analysisStateName'},
