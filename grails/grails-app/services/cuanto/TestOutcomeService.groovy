@@ -293,9 +293,13 @@ class TestOutcomeService {
 		if (params.filter?.equalsIgnoreCase("newFailures")) {
 			TestRun testRun = TestRun.get(params.id)
 			if (!testRun) {
-				throw new RuntimeException("No TestRun specified for getNewFailures()")
+				throw new RuntimeException("TestRun must be specified to retrieve new ")
 			}
-			testOutcomes = getNewFailures(testOutcomeFilter)
+			def newFailureQueryFilter = new TestOutcomeQueryFilter(
+				testRun: testRun,
+				isFailure: true,
+				isFailureStatusChanged: true)
+			testOutcomes = dataService.getTestOutcomes(newFailureQueryFilter)
 			totalCount = testOutcomes.size()
 		} else if (params.outcome) { // todo: hmm, look at this
 			testOutcomes = [dataService.getTestOutcome(params.outcome)]
@@ -448,5 +452,26 @@ class TestOutcomeService {
 		return buff.toString()
 	}
 	
-	
+
+	 /**
+	  * Determines whether the failure status for a given TestOutcome has changed
+	  * from the last (if applicable) TestOutcome for the same TestCase.
+	  *
+	  * @param testOutcome to determine failure status change
+	  * @return true if the failure status changed or false otherwise
+	  */
+	def isFailureStatusChanged(TestOutcome testOutcome) {
+		def previousOutcome = dataService.getPreviousOutcome(testOutcome)
+
+		if (testOutcome.testResult?.isFailure) {
+			// if the previous test outcome does not exist or it was not a failure,
+			// the current failed test outcome is a change in failure status.
+			return !previousOutcome || !previousOutcome.testResult?.isFailure
+		} else {
+			// if the previous test outcome does not exist,
+			// this successful test outcome is not a change in failure status.
+			// but if it exists and was a failure, this successful test outcome is a change in failure status.
+			return previousOutcome && previousOutcome.testResult?.isFailure
+		}
+	}
 }

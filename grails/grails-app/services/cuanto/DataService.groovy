@@ -116,9 +116,18 @@ class DataService {
 			def realResult = result.collect { it[0] }
 			return realResult
 		} else {
-			def result = TestRun.executeQuery("from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}",
-				[proj], [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
-			return result
+			def paginateParams = [:]
+			if (queryParams.max != null)
+				paginateParams['max'] = Integer.valueOf(queryParams.max)
+			if (queryParams.offset != null)
+				paginateParams['offset'] = Integer.valueOf(queryParams.offset)
+			def q = "from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+
+			// use the paginate params if applicable; otherwise, don't paginate
+			if (paginateParams.size() > 0)
+				return TestRun.executeQuery(q, [proj], paginateParams)
+			else 
+				return TestRun.executeQuery(q, [proj])
 		}
 	}
 

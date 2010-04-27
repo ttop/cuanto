@@ -26,6 +26,8 @@ class InitializationService {
 
 	def grailsApplication
 	def dataService
+	def testOutcomeService
+	def testRunService
 	boolean transactional = true
 
 
@@ -135,8 +137,25 @@ class InitializationService {
 		}
 	}
 
-	void createLotsOfExtraProjects()
-	{
+	void initIsFailureStatusChanged() {
+		def projects = Project.findAll()
+		projects.each { Project project ->
+			def testRuns = testRunService.getTestRunsForProject(
+				[id: project.id, sort: 'dateExecuted', order: 'asc'])
+			testRuns.each { TestRun testRun ->
+				def testOutcomes = dataService.getTestOutcomesByTestRun(testRun, null, null, [offset: 0, max: 100])
+				for (int i = 0; testOutcomes.size() > 0; i += 100) {
+					testOutcomes.each { TestOutcome testOutcome ->
+						testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+					}
+					dataService.saveTestOutcomes(testOutcomes)
+					testOutcomes = dataService.getTestOutcomesByTestRun(testRun, null, null, [offset: i, max: 100])
+				}
+			}
+		}
+	}
+
+	void createLotsOfExtraProjects() {
 		def rnd = new Random()
 		30.times { grpIndex ->
 			def grp = new ProjectGroup(name: "Sample$grpIndex").save()
@@ -162,5 +181,6 @@ class InitializationService {
 		initAnalysisStates()
 		initTestTypes()
 		initProjects()
+		initIsFailureStatusChanged()
 	}
 }

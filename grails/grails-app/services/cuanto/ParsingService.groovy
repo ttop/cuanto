@@ -34,6 +34,7 @@ class ParsingService {
 	def testParserRegistry
 	def statisticService
 	def projectService
+	def testOutcomeService
 
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
@@ -113,7 +114,7 @@ class ParsingService {
 		testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
 		testOutcome.note = parseJsonForString(jsonTestOutcome, "note")
 		testOutcome.owner = parseJsonForString(jsonTestOutcome, "owner")
-		testOutcome.isFailureStatusChanged = isFailureStatusChanged(testOutcome)
+		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 
 		if (!jsonTestOutcome.isNull("bug")) {
 			def jsonBug = jsonTestOutcome.getJSONObject("bug")
@@ -229,7 +230,7 @@ class ParsingService {
 		testOutcome.testRun = testRun
 		testOutcome.startedAt = parsableTestOutcome.startedAt
 		testOutcome.finishedAt = parsableTestOutcome.finishedAt
-		testOutcome.isFailureStatusChanged = isFailureStatusChanged(testOutcome)
+		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 		processTestFailure(testOutcome, project)
 		List tags = processTags(parsableTestOutcome)
 		tags.each {
@@ -337,31 +338,6 @@ class ParsingService {
 			testOutcome.analysisState = AnalysisState.findByIsDefault(true)
 		}
 	}
-
-
-
-	 /**
-	  * Determines whether the failure status for a given TestOutcome has changed
-	  * from the last (if applicable) TestOutcome for the same TestCase.
-	  *
-	  * @param testOutcome to determine failure status change
-	  * @return true if the failure status changed or false otherwise
-	  */
-	def isFailureStatusChanged(TestOutcome testOutcome) {
-		def previousOutcome = dataService.getPreviousOutcome(testOutcome)
-
-		if (testOutcome.testResult?.isFailure) {
-			// if the previous test outcome does not exist or it was not a failure,
-			// the current failed test outcome is a change in failure status.
-			return !previousOutcome || !previousOutcome.testResult?.isFailure
-		} else {
-			// if the previous test outcome does not exist,
-			// this successful test outcome is not a change in failure status.
-			// but if it exists and was a failure, this successful test outcome is a change in failure status.
-			return previousOutcome && previousOutcome.testResult?.isFailure
-		}
-	}
-
 
 	List<Tag> processTags(ParsableTestOutcome testOutcome) {
 		List tags = []
