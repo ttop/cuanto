@@ -253,12 +253,12 @@ class InitializationServiceTests extends GroovyTestCase {
 
 	void testInitializeAnalysisStatusForTestOutcomesGreaterThanBatchSize()
 	{
-		verifyBoundaryConditionForAnalysisStatusInitialization(100)
+		verifyBoundaryConditionForAnalysisStatusInitialization(101)
 	}
 
 	void testInitializeAnalysisStatusForTestOutcomesWayGreaterThanBatchSize()
 	{
-		verifyBoundaryConditionForAnalysisStatusInitialization(369)
+		verifyBoundaryConditionForAnalysisStatusInitialization(2048)
 	}
 
 	private void verifyBoundaryConditionForAnalysisStatusInitialization(int numOutcomes)

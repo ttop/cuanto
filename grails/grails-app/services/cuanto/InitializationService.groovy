@@ -78,8 +78,8 @@ class InitializationService {
 			def analysisList = []
 
 			analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
-			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false,  isBug: true)
-			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false,  isBug: false)
+			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false, isBug: true)
+			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Harness", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "No Repro", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
@@ -125,12 +125,12 @@ class InitializationService {
 			if (!Project.findByName("CuantoProd")) {
 				def grp = new ProjectGroup(name: "Sample").save()
 				new Project(name: "CuantoProd", projectKey: "CUANTO", projectGroup: grp,
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
 			if (!Project.findByName("CuantoNG")) {
 				def grp = ProjectGroup.findByName("Sample")
 				new Project(name: "CuantoNG", projectKey: "CNG", projectGroup: grp,
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
 			}
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
@@ -138,18 +138,46 @@ class InitializationService {
 	}
 
 	void initIsFailureStatusChanged() {
-		def projects = Project.findAll()
-		projects.each { Project project ->
-			def testRuns = testRunService.getTestRunsForProject(
-				[id: project.id, sort: 'dateExecuted', order: 'asc'])
-			testRuns.each { TestRun testRun ->
-				def testOutcomes = dataService.getTestOutcomesByTestRun(testRun, null, null, [offset: 0, max: 100])
-				for (int i = 0; testOutcomes.size() > 0; i += 100) {
-					testOutcomes.each { TestOutcome testOutcome ->
-						testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
-					}
-					dataService.saveTestOutcomes(testOutcomes)
-					testOutcomes = dataService.getTestOutcomesByTestRun(testRun, null, null, [offset: i, max: 100])
+		def numInitialized = 0
+		TestOutcome.withTransaction {
+			def numTestOutcomesToInitialize = TestOutcome.countByIsFailureStatusChangedIsNull()
+			if (numTestOutcomesToInitialize > 0) {
+				log.info "Initializing TestOutcomes where isFailureStatusChanged = null... count = " +
+					numTestOutcomesToInitialize
+			}
+			def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+			while (testOutcomes.size() > 0) {
+				for (TestOutcome testOutcome: testOutcomes)
+					testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+
+				dataService.saveTestOutcomes(testOutcomes)
+				numInitialized += testOutcomes.size()
+				testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+
+				if (numInitialized % 1000 == 0)
+					log.info "Initialized ${numInitialized} TestOutcomes."
+			}
+		}
+		if (numInitialized > 0)
+			log.info "Finished initializing ${numInitialized} TestOutcomes."
+
+		// update TestRun.testRunStatistics, but how? the following query returns no results,
+		// even though removing the or clause returns results... what's going on?
+		def qTestRunToUpdate = "from TestRun where testRunStatistics = null or testRunStatistics.newFailures = null"
+		def qCountNewFailure = "count(*) from TestOutcome where isFailureStatusChanged = true and testResult.isFailure = true"
+		TestRun.withTransaction {
+			def testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
+			while (testRunsToUpdate.size() > 0) {
+				for (TestRun testRun: testRunsToUpdate) {
+					def newFailureCount = TestOutcome.executeQuery(qCountNewFailure).size()
+
+					if (testRun.testRunStatistics == null)
+						testRun.testRunStatistics = new TestRunStats(newFailures: newFailureCount)
+					else
+						testRun.testRunStatistics.newFailures = newFailureCount
+
+					testRun.save()
+					testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, null, [offset: 0, limit: 100])
 				}
 			}
 		}
@@ -162,7 +190,7 @@ class InitializationService {
 			(rnd.nextInt(9) + 1).times { prjIndex ->
 				if (!Project.findByName("CuantoProd$grpIndex-$prjIndex")) {
 					new Project(name: "CuantoProd$grpIndex-$prjIndex", projectKey: "CUANTO$grpIndex-$prjIndex", projectGroup: grp,
-					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+						bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 				}
 			}
 		}
@@ -171,7 +199,7 @@ class InitializationService {
 			// create ungrouped projects
 			if (!Project.findByName("Ungrouped-$it")) {
 				new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
 		}
 	}
