@@ -111,6 +111,8 @@ class ParsingService {
 		}
 
 		testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
+        setTestOutputSummary(testOutcome);
+
 		testOutcome.note = parseJsonForString(jsonTestOutcome, "note")
 		testOutcome.owner = parseJsonForString(jsonTestOutcome, "owner")
 
@@ -224,7 +226,10 @@ class ParsingService {
 		testOutcome.duration = parsableTestOutcome.duration
 		testOutcome.testCase = testCase
 		testOutcome.testOutput = processTestOutput(parsableTestOutcome.testOutput)
-		testOutcome.owner = parsableTestOutcome.owner
+
+        setTestOutputSummary(testOutcome)
+
+        testOutcome.owner = parsableTestOutcome.owner
 		testOutcome.note = parsableTestOutcome.note
 		testOutcome.testRun = testRun
 		testOutcome.startedAt = parsableTestOutcome.startedAt
@@ -238,7 +243,15 @@ class ParsingService {
 	}
 
 
-	private TestCase parseTestCase(JSONObject jsonTestCase, Project project) {
+    private void setTestOutputSummary(TestOutcome testOutcome) {
+        if (testOutcome.testOutput) {
+            def matcher = testOutcome.testOutput =~ /(?m).+$/
+            testOutcome.testOutputSummary = matcher[0] as String
+        }
+    }
+
+
+    private TestCase parseTestCase(JSONObject jsonTestCase, Project project) {
 		TestCase testCase = new TestCase(testName: jsonTestCase.getString("testName"), 'project': project)
 
 		if (!jsonTestCase.isNull("packageName")) {
