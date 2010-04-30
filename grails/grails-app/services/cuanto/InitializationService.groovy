@@ -139,24 +139,21 @@ class InitializationService {
 
 	void initIsFailureStatusChanged() {
 		def numInitialized = 0
-		TestOutcome.withTransaction {
-			def numTestOutcomesToInitialize = TestOutcome.countByIsFailureStatusChangedIsNull()
-			if (numTestOutcomesToInitialize > 0) {
-				log.info "Initializing TestOutcomes where isFailureStatusChanged = null... count = " +
-					numTestOutcomesToInitialize
-			}
-			def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
-			while (testOutcomes.size() > 0) {
-				for (TestOutcome testOutcome: testOutcomes)
-					testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+		def numToInit = TestOutcome.countByIsFailureStatusChangedIsNull()
+		if (numToInit > 0)
+			log.info "Initializing TestOutcomes where isFailureStatusChanged = null... count = $numToInit"
 
-				dataService.saveTestOutcomes(testOutcomes)
-				numInitialized += testOutcomes.size()
-				testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+		def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+		while (testOutcomes.size() > 0) {
+			for (TestOutcome testOutcome: testOutcomes)
+				testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 
-				if (numInitialized % 1000 == 0)
-					log.info "Initialized ${numInitialized} TestOutcomes."
-			}
+			dataService.saveTestOutcomes(testOutcomes)
+			numInitialized += testOutcomes.size()
+			testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+
+			if (numInitialized % 1000 == 0)
+				log.info "Initialized ${numInitialized} TestOutcomes."
 		}
 		if (numInitialized > 0)
 			log.info "Finished initializing ${numInitialized} TestOutcomes."
@@ -165,20 +162,19 @@ class InitializationService {
 		// even though removing the or clause returns results... what's going on?
 		def qTestRunToUpdate = "from TestRun where testRunStatistics = null or testRunStatistics.newFailures = null"
 		def qCountNewFailure = "count(*) from TestOutcome where isFailureStatusChanged = true and testResult.isFailure = true"
-		TestRun.withTransaction {
-			def testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
-			while (testRunsToUpdate.size() > 0) {
-				for (TestRun testRun: testRunsToUpdate) {
-					def newFailureCount = TestOutcome.executeQuery(qCountNewFailure).size()
 
-					if (testRun.testRunStatistics == null)
-						testRun.testRunStatistics = new TestRunStats(newFailures: newFailureCount)
-					else
-						testRun.testRunStatistics.newFailures = newFailureCount
+		def testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
+		while (testRunsToUpdate.size() > 0) {
+			for (TestRun testRun: testRunsToUpdate) {
+				def newFailureCount = TestOutcome.executeQuery(qCountNewFailure).size()
 
-					testRun.save()
-					testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, null, [offset: 0, limit: 100])
-				}
+				if (testRun.testRunStatistics == null)
+					testRun.testRunStatistics = new TestRunStats(newFailures: newFailureCount)
+				else
+					testRun.testRunStatistics.newFailures = newFailureCount
+
+				testRun.save()
+				testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, null, [offset: 0, limit: 100])
 			}
 		}
 	}
