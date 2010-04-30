@@ -71,7 +71,7 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
 			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAverageDuration},
-			{key:"tags", label: "Tags", sortable:false, formatter: formatTags},
+			{key:"tags", label: "Tags", sortable:false, formatter: formatTags}
 		];
 
 		for (var i=0; i < propertyNames.length; i++) {
