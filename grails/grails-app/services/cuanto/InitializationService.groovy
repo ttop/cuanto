@@ -157,25 +157,16 @@ class InitializationService {
 		}
 		if (numInitialized > 0)
 			log.info "Finished initializing ${numInitialized} TestOutcomes."
+	}
 
-		// update TestRun.testRunStatistics, but how? the following query returns no results,
-		// even though removing the or clause returns results... what's going on?
-		def qTestRunToUpdate = "from TestRun where testRunStatistics = null or testRunStatistics.newFailures = null"
-		def qCountNewFailure = "count(*) from TestOutcome where isFailureStatusChanged = true and testResult.isFailure = true"
-
-		def testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
+	void initTestRunStats() {
+		def testRunsToUpdate = getTestRunsWithNullNewFailures()
 		while (testRunsToUpdate.size() > 0) {
 			for (TestRun testRun: testRunsToUpdate) {
-				def newFailureCount = TestOutcome.executeQuery(qCountNewFailure).size()
-
-				if (testRun.testRunStatistics == null)
-					testRun.testRunStatistics = new TestRunStats(newFailures: newFailureCount)
-				else
-					testRun.testRunStatistics.newFailures = newFailureCount
-
-				testRun.save()
-				testRunsToUpdate = TestRun.findAll(qTestRunToUpdate, null, [offset: 0, limit: 100])
+				testRun.testRunStatistics.newFailures = getNewFailuresCount(testRun)
+				dataService.saveDomainObject testRun
 			}
+			testRunsToUpdate = getTestRunsWithNullNewFailures()
 		}
 	}
 
@@ -200,11 +191,40 @@ class InitializationService {
 		}
 	}
 
+	List<TestRun> getTestRunsWithNullNewFailures()
+	{
+ 		// this returns a TestRun with non-null testRunStatistics.newFailures! why?
+		return TestRun.createCriteria().list {
+			testRunStatistics {
+				isNull('newFailures')
+			}
+			maxResults(100)
+		}
+
+		// same result as above
+//		def qTestRunToUpdate = "from TestRun where testRunStatistics.newFailures is null"
+//		return TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
+	}
+
+	Integer getNewFailuresCount(TestRun testRun)
+	{
+		return TestOutcome.createCriteria().count {
+			and {
+				eq('testRun', testRun)
+				eq('isFailureStatusChanged', true)
+				testResult {
+					eq('isFailure', true)
+				}
+			}
+		}
+	}
+
 	void initializeAll() {
 		initTestResults()
 		initAnalysisStates()
 		initTestTypes()
 		initProjects()
 		initIsFailureStatusChanged()
+		initTestRunStats()
 	}
 }

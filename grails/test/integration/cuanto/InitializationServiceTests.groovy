@@ -1,6 +1,7 @@
 package cuanto
 
 import cuanto.test.TestObjects
+
 /**
  * User: Todd Wells
  * Date: Apr 22, 2009
@@ -277,6 +278,7 @@ class InitializationServiceTests extends GroovyTestCase {
 
 		// create a test run
 		TestRun testRun = to.getTestRun(proj)
+		testRun.testRunStatistics = new TestRunStats()
 		testRun.save()
 
 		// create test outcomes
