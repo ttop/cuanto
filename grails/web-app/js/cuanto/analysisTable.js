@@ -424,6 +424,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (isNewFailure)
 		{
 			var alertImg = new Element('img', {src: alertImgUrl});
+			setImgTitleAndAlt(alertImg, "New Failure");
 			elCell.appendChild(alertImg);
 			elCell.innerHTML += " ";
 		}
