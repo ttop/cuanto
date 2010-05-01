@@ -257,9 +257,9 @@ class InitializationServiceTests extends GroovyTestCase {
 		verifyBoundaryConditionForAnalysisStatusInitialization(101)
 	}
 
-	void testInitializeAnalysisStatusForTestOutcomesWayGreaterThanBatchSize()
+	void testInitializeAnalysisStatusForTestOutcomesGreaterThanMultiplesOfBatchSize()
 	{
-		verifyBoundaryConditionForAnalysisStatusInitialization(2048)
+		verifyBoundaryConditionForAnalysisStatusInitialization(201)
 	}
 
 	private void verifyBoundaryConditionForAnalysisStatusInitialization(int numOutcomes)
@@ -299,5 +299,7 @@ class InitializationServiceTests extends GroovyTestCase {
 		def initializedOutcomes = TestOutcome.getAll(outcomes*.id)
 		assertTrue "All test outcomes should have been initialized to isFailureStatusChanged = true",
 			initializedOutcomes.every { it.isFailureStatusChanged }
+		assertEquals "The TestRun's testRunStatistics.newFailures should have been initialized.",
+			testRun.testRunStatistics.newFailures, outcomes.size()
 	}
 }

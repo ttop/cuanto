@@ -225,6 +225,6 @@ class InitializationService {
 		initTestTypes()
 		initProjects()
 		initIsFailureStatusChanged()
-		initTestRunStats()
+//		initTestRunStats()
 	}
 }
