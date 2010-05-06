@@ -297,9 +297,10 @@ class InitializationServiceTests extends GroovyTestCase {
 		initializationService.initializeAll()
 
 		def initializedOutcomes = TestOutcome.getAll(outcomes*.id)
+		def initializedTestRun = TestRun.get(testRun.id)
 		assertTrue "All test outcomes should have been initialized to isFailureStatusChanged = true",
 			initializedOutcomes.every { it.isFailureStatusChanged }
 		assertEquals "The TestRun's testRunStatistics.newFailures should have been initialized.",
-			testRun.testRunStatistics.newFailures, outcomes.size()
+			initializedTestRun.testRunStatistics.newFailures, outcomes.size()
 	}
 }

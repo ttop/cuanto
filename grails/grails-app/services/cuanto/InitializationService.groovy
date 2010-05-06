@@ -30,8 +30,6 @@ class InitializationService {
 	def testRunService
 	boolean transactional = true
 
-
-
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {
 			// set up the base TestResult types
@@ -163,8 +161,13 @@ class InitializationService {
 		def testRunsToUpdate = getTestRunsWithNullNewFailures()
 		while (testRunsToUpdate.size() > 0) {
 			for (TestRun testRun: testRunsToUpdate) {
+				// without setting testRun.testRunStatistics.newFailures, a subsequent query for the TestRun
+				// returns the TestRun with testRunStatistics.newFailures = null!
+				// hibernate cache issue? but i'm not even calling save on testRun, here.
 				testRun.testRunStatistics.newFailures = getNewFailuresCount(testRun)
-				dataService.saveDomainObject testRun
+				TestRunStats.executeUpdate("update TestRunStats stats set stats.newFailures = ? where stats.id = ?",
+					[testRun.testRunStatistics.newFailures, testRun.testRunStatistics.id])
+				log.info "Initialized TestRun #${testRun.id} for Project [${testRun.project.name}]."
 			}
 			testRunsToUpdate = getTestRunsWithNullNewFailures()
 		}
@@ -191,23 +194,16 @@ class InitializationService {
 		}
 	}
 
-	List<TestRun> getTestRunsWithNullNewFailures()
-	{
- 		// this returns a TestRun with non-null testRunStatistics.newFailures! why?
+	List<TestRun> getTestRunsWithNullNewFailures() {
 		return TestRun.createCriteria().list {
 			testRunStatistics {
 				isNull('newFailures')
 			}
 			maxResults(100)
 		}
-
-		// same result as above
-//		def qTestRunToUpdate = "from TestRun where testRunStatistics.newFailures is null"
-//		return TestRun.findAll(qTestRunToUpdate, [:], [offset: 0, limit: 100])
 	}
 
-	Integer getNewFailuresCount(TestRun testRun)
-	{
+	Integer getNewFailuresCount(TestRun testRun) {
 		return TestOutcome.createCriteria().count {
 			and {
 				eq('testRun', testRun)
@@ -225,6 +221,6 @@ class InitializationService {
 		initTestTypes()
 		initProjects()
 		initIsFailureStatusChanged()
-//		initTestRunStats()
+		initTestRunStats()
 	}
 }

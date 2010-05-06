@@ -434,6 +434,7 @@ class DataServiceTests extends GroovyTestCase {
 
 		def outcomes = []
 		def testRun = to.getTestRun(proj)
+		testRun.testRunStatistics = null // make sure testRunStatistics is null at first
 		if (!testRun.save()) {
 			reportError testRun
 		}
