@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import grails.util.GrailsUtil
+import org.hibernate.SessionFactory
 
 class InitializationService {
 
@@ -28,7 +29,8 @@ class InitializationService {
 	def dataService
 	def testOutcomeService
 	def testRunService
-	boolean transactional = true
+	boolean transactional = false
+	SessionFactory sessionFactory
 
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {
@@ -150,8 +152,10 @@ class InitializationService {
 			numInitialized += testOutcomes.size()
 			testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
 
-			if (numInitialized % 1000 == 0)
+			if (numInitialized % 1000 == 0) {
 				log.info "Initialized ${numInitialized} TestOutcomes."
+				sessionFactory.currentSession.flush()
+			}
 		}
 		if (numInitialized > 0)
 			log.info "Finished initializing ${numInitialized} TestOutcomes."
