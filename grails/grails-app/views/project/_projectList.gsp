@@ -57,6 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</table>
 				</div>
 			</div>
+          <div class="clear"></div>
 		</g:each>
 	</div>
 </div>
