@@ -469,6 +469,18 @@ class TestOutcomeService {
 
 		return buff.toString()
 	}
-	
-	
+
+
+	List getGroupedOutputSummaries(TestRun testRun, Integer offset, Integer max) {
+        // returns a List where each item is a List with index 0 the count and index 1 the output summary text
+        TestOutcome.executeQuery("select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true group by to.testOutputSummary order by count(*) desc, to.testOutputSummary asc",
+                [testRun], ['max': max, 'offset': offset])
+    }
+
+
+    Long countGroupedOutputSummaries(TestRun testRun) {
+        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true",
+                [testRun])
+        return result[0]
+    }
 }

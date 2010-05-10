@@ -26,7 +26,8 @@ class InitializationService {
 
 	def grailsApplication
 	def dataService
-	boolean transactional = true
+    def parsingService
+	boolean transactional = false
 
 
 
@@ -135,8 +136,7 @@ class InitializationService {
 		}
 	}
 
-	void createLotsOfExtraProjects()
-	{
+	void createLotsOfExtraProjects() {
 		def rnd = new Random()
 		30.times { grpIndex ->
 			def grp = new ProjectGroup(name: "Sample$grpIndex").save()

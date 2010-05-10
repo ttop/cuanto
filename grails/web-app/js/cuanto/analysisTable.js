@@ -167,7 +167,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		var tableWidth;
 		var minWidth = 1024;
 		if (document.viewport.getWidth() > minWidth) {
-			tableWidth = document.viewport.getWidth();
+			tableWidth = document.viewport.getWidth() * .95;
 		} else {
 			tableWidth = minWidth;
 		}

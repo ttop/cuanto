@@ -243,10 +243,16 @@ class ParsingService {
 	}
 
 
-    private void setTestOutputSummary(TestOutcome testOutcome) {
+    void setTestOutputSummary(TestOutcome testOutcome) {
         if (testOutcome.testOutput) {
             def matcher = testOutcome.testOutput =~ /(?m).+$/
-            testOutcome.testOutputSummary = matcher[0] as String
+            String outsummary = matcher[0] as String
+            int MAX_LENGTH = 1024
+            if (outsummary?.length() > MAX_LENGTH) {
+                testOutcome.testOutputSummary = outsummary.substring(0, MAX_LENGTH - 2)
+            } else {
+                testOutcome.testOutputSummary = outsummary
+            }
         }
     }
 

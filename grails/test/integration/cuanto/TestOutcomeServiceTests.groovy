@@ -166,8 +166,50 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size() 
 
 		// do 0 results, 1 result, 3 results, 10 results
-
 	}
+
+
+    void testGetGroupedOutputSummaries() {
+        Project proj = to.project
+        proj.testType = TestType.findByName("NUnit")
+        dataService.saveDomainObject proj
+
+        TestRun testRun = to.getTestRun(proj)
+        dataService.saveDomainObject testRun
+        parsingService.parseFileWithTestRun(getFile("NUnit-TestResultNet.xml"), testRun.id)
+
+        def offset = 0
+        def max = 5
+        def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, 0, 100)
+        outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
+        assertNotNull outputGroups
+        assertEquals "Wrong number of groups returned", 5, outputGroups.size()
+
+        assertEquals "Wrong first group size", 14, outputGroups[0][0]
+        assertEquals "Wrong first group output", "EV313322 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[0][1]
+
+        assertEquals "Wrong last group size", 4, outputGroups[4][0]
+        assertEquals "Wrong last group output", "EV318898 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[4][1]
+
+        offset += 5
+        outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
+        assertEquals "Wrong number of groups returned", 5, outputGroups.size()
+
+        assertEquals "Wrong first group size", 2, outputGroups[0][0]
+        assertEquals "Wrong first group output", "EV314959 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[0][1]
+
+        assertEquals "Wrong last group size", 1, outputGroups[4][0]
+        assertEquals "Wrong last group output", "Covered by the test for MyReflection.Start_Port()", outputGroups[4][1]
+
+    }
+
+
+    private File getFile(filename) {
+        File file = new File("test/resources/${filename}")
+        assertTrue("Couldn't find file: ${file.toString()}", file.exists())
+        return file
+    }
+    
 
 	def textWithoutScriptTags = '''
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.
