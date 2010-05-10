@@ -23,7 +23,6 @@ YAHOO.namespace('cuanto');
 
 
 YAHOO.cuanto.SummaryTab = function() {
-	var tabView = new YAHOO.widget.TabView("tabContainer");
 
 	tabView.getTab(2).addListener('click',
 		function() {

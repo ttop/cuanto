@@ -30,6 +30,7 @@ YAHOO.cuanto.events = function() {
 		analysisAppliedEvent: new YAHOO.util.CustomEvent("analysisApplied"),
 		testRunChangedEvent: new YAHOO.util.CustomEvent("testRunChanged"),
 		projectChangeEvent: new YAHOO.util.CustomEvent("projectChange"),
-		recordsUpdatedEvent: new YAHOO.util.CustomEvent("recordsUpdated")
-	}
+		recordsUpdatedEvent: new YAHOO.util.CustomEvent("recordsUpdated"),
+        outcomeFilterChangeEvent: new YAHOO.util.CustomEvent("outcomeFilterChange")
+	};
 }();

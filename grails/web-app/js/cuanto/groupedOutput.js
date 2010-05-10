@@ -50,11 +50,11 @@ YAHOO.cuanto.GroupedOutput = function() {
         dataSource.maxCacheEntries = 0;
         dataSource.responseSchema = {
             resultsList: 'groupedOutput',
-            fields: ["failures", "output"]
-          /*  metaFields: {
+            fields: ["failures", "output"],
+            metaFields: {
                 offset: "offset",
                 totalCount: "totalCount"
-            }*/
+            }
         };
         return dataSource;
 
@@ -82,6 +82,9 @@ YAHOO.cuanto.GroupedOutput = function() {
 
     function handleRowClick(e) {
         this.onEventSelectRow(e);
-        
+        var record = this.getRecord(e.target);
+        var output = record.getData("output");
+        tabView.set('activeIndex', 0);
+        YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({search: "Output", qry: output, results: "allfailures"});
     }
 };
