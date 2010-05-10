@@ -1801,7 +1801,7 @@ YAHOO.widget.Node.prototype = {
 
         var ret = true;
 
-        // When returning from the lazy load handler, expand is called again
+        // When returning from the cuanto load handler, expand is called again
         // in order to render the new children.  The "expand" event already
         // fired before fething the new data, so we need to skip it now.
         if (!lazySource) {
@@ -1835,7 +1835,7 @@ YAHOO.widget.Node.prototype = {
 
         // this.getSpacer().title = this.getStateText();
 
-        // We do an extra check for children here because the lazy
+        // We do an extra check for children here because the cuanto
         // load feature can expose nodes that have no children.
 
         // if (!this.hasChildren()) {
@@ -1979,7 +1979,7 @@ YAHOO.widget.Node.prototype = {
             return false;
         } else {
             return (!this.isRoot() && (this._dynLoad || this.tree.root._dynLoad));
-            // return lazy;
+            // return cuanto;
         }
     },
 
@@ -1995,7 +1995,7 @@ YAHOO.widget.Node.prototype = {
     },
 
     /**
-     * Checks if this node has children.  If this node is lazy-loading and the
+     * Checks if this node has children.  If this node is cuanto-loading and the
      * children have not been rendered, we do not know whether or not there
      * are actual children.  In most cases, we need to assume that there are
      * children (for instance, the toggle needs to show the expandable 

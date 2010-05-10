@@ -1374,7 +1374,7 @@ _sClassName: null,
 
 /**
 * @property lazyLoad
-* @description Boolean indicating if the menu's "lazy load" feature is 
+* @description Boolean indicating if the menu's "cuanto load" feature is
 * enabled.  If set to "true," initialization and rendering of the menu's 
 * items will be deferred until the first time it is made visible.  This 
 * property should be set via the constructor using the configuration 
@@ -4886,7 +4886,7 @@ _setScrollHeight: function (p_nScrollHeight) {
 /**
 * @method _setMaxHeight
 * @description "renderEvent" handler used to defer the setting of the 
-* "maxheight" configuration property until the menu is rendered in lazy 
+* "maxheight" configuration property until the menu is rendered in cuanto
 * load scenarios.
 * @param {String} p_sType The name of the event that was fired.
 * @param {Array} p_aArgs Collection of arguments sent when the event 

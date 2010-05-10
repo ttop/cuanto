@@ -493,7 +493,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 	void testAddNewlyFailedTestOutcome() {
 		String testName = "test${wordGen.getCamelWords(3)}"
 
-		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		TestOutcome outcome1 = createTestOutcome(TestResult.Pass, testName)
 		TestOutcome outcome2 = createTestOutcome(TestResult.Fail, testName)
 		outcome2.testCase = outcome1.testCase
 
@@ -504,9 +504,9 @@ public class TestOutcomeTests extends GroovyTestCase {
 		testRunsToCleanUp << run1
 		testRunsToCleanUp << run2
 
-		Long firstOutcomeId = client.addTestOutcome(outcome1, run)
-		Long outcomeId = client.addTestOutcome(outcome2, run)
-		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		Long secondOutcomeId = client.addTestOutcome(outcome2, run2)
+		TestOutcome fetchedOutcome = client.getTestOutcome(secondOutcomeId)
 		assertTrue "For the newly failed test outcome, the failure status is considered changed.",
 			fetchedOutcome.isFailureStatusChanged
 	}

@@ -242,7 +242,7 @@ YUI Library - Event - Release Notes
      window load event or for up to 10 seconds after the onAvailable method 
      was executed.
 
-   * The lazy listener attachment process now will poll beyond the window load
+   * The cuanto listener attachment process now will poll beyond the window load
      event in order to better handle the case when a listener is defined
      late in the page but before the element is in the dom.
 
