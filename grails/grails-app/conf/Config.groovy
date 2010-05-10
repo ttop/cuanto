@@ -72,7 +72,7 @@ log4j = {
 	       'org.hibernate'
 
 	warn 'org.hibernate.SQL'
-    warn   'org.mortbay.log'
+    warn 'org.mortbay.log'
 }
 
 // UI Performance configurations
@@ -85,6 +85,9 @@ uiperformance.determineVersion = { -> appVersion }
 
 // statSleep is the time to sleep between calculating test run stats
 statSleep = 1000
+
+// newFailuresSleep is the time to sleep between calculating new failures
+newFailuresSleep = 1000
 
 bullet = "&bull;"
 

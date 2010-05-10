@@ -137,46 +137,6 @@ class InitializationService {
 		}
 	}
 
-	void initIsFailureStatusChanged() {
-		def numInitialized = 0
-		def numToInit = TestOutcome.countByIsFailureStatusChangedIsNull()
-		if (numToInit > 0)
-			log.info "Initializing TestOutcomes where isFailureStatusChanged = null... count = $numToInit"
-
-		def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
-		while (testOutcomes.size() > 0) {
-			for (TestOutcome testOutcome: testOutcomes)
-				testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
-
-			dataService.saveTestOutcomes(testOutcomes)
-			numInitialized += testOutcomes.size()
-			testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
-
-			if (numInitialized % 1000 == 0) {
-				log.info "Initialized ${numInitialized} TestOutcomes."
-				sessionFactory.currentSession.flush()
-			}
-		}
-		if (numInitialized > 0)
-			log.info "Finished initializing ${numInitialized} TestOutcomes."
-	}
-
-	void initTestRunStats() {
-		def testRunsToUpdate = getTestRunsWithNullNewFailures()
-		while (testRunsToUpdate.size() > 0) {
-			for (TestRun testRun: testRunsToUpdate) {
-				// without setting testRun.testRunStatistics.newFailures, a subsequent query for the TestRun
-				// returns the TestRun with testRunStatistics.newFailures = null!
-				// hibernate cache issue? but i'm not even calling save on testRun, here.
-				testRun.testRunStatistics.newFailures = getNewFailuresCount(testRun)
-				TestRunStats.executeUpdate("update TestRunStats stats set stats.newFailures = ? where stats.id = ?",
-					[testRun.testRunStatistics.newFailures, testRun.testRunStatistics.id])
-				log.info "Initialized TestRun #${testRun.id} for Project [${testRun.project.name}]."
-			}
-			testRunsToUpdate = getTestRunsWithNullNewFailures()
-		}
-	}
-
 	void createLotsOfExtraProjects() {
 		def rnd = new Random()
 		30.times { grpIndex ->
@@ -198,33 +158,10 @@ class InitializationService {
 		}
 	}
 
-	List<TestRun> getTestRunsWithNullNewFailures() {
-		return TestRun.createCriteria().list {
-			testRunStatistics {
-				isNull('newFailures')
-			}
-			maxResults(100)
-		}
-	}
-
-	Integer getNewFailuresCount(TestRun testRun) {
-		return TestOutcome.createCriteria().count {
-			and {
-				eq('testRun', testRun)
-				eq('isFailureStatusChanged', true)
-				testResult {
-					eq('isFailure', true)
-				}
-			}
-		}
-	}
-
 	void initializeAll() {
 		initTestResults()
 		initAnalysisStates()
 		initTestTypes()
 		initProjects()
-		initIsFailureStatusChanged()
-		initTestRunStats()
 	}
 }
