@@ -28,6 +28,7 @@ YAHOO.cuanto.GroupedOutput = function() {
     
     function main() {
         goTable = new YAHOO.widget.DataTable("trOutputTable", getColumnDefs(), getDataSource(), getTableConfig());
+        goTable.handleDataReturnPayload = processPayload;
         goTable.set("selectionMode", "single");
         goTable.subscribe("rowClickEvent", handleRowClick);
         goTable.subscribe("rowMouseoverEvent", goTable.onEventHighlightRow);
@@ -38,8 +39,8 @@ YAHOO.cuanto.GroupedOutput = function() {
 
     function getColumnDefs() {
         return [
-            {key:"failures", label: "Failures", resizeable:false, width: 40},
-            {key:"output", label: "Output Summary", resizeable: true, minWidth: 350}    
+            {key:"failures", label: "Failures", resizeable:false, width: 55, sortable: true},
+            {key:"output", label: "Output Summary", resizeable: true, minWidth: 350, sortable: true}    
         ];
     }
     
@@ -57,27 +58,32 @@ YAHOO.cuanto.GroupedOutput = function() {
             }
         };
         return dataSource;
-
     }
 
     function getTableConfig() {
-        var tableWidth;
-        var minWidth = 1024;
-        if (document.viewport.getWidth() > minWidth) {
-            tableWidth = document.viewport.getWidth();
-        } else {
-            tableWidth = minWidth;
-        }
-
         return {
-            initialRequest: "offset=0&max=10",
-            //width: tableWidth + "px",
+            initialRequest: "offset=0&max=10&sort=failures&order=desc&cb=" + new Date().getTime(),
             renderLoopSize:10,
-            //generateRequest: buildOutcomeQueryString,
-            //paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, 10),
-            //sortedBy: {key:"testCase", dir:YAHOO.widget.DataTable.CLASS_ASC},
+            generateRequest: buildGroupedOutputQuery,
+            paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, 10),
+            sortedBy: {key:"failures", dir:YAHOO.widget.DataTable.CLASS_DESC},
             dynamicData: true
         };
+    }
+
+    function buildGroupedOutputQuery(state){
+        var order = state.sortedBy.dir == YAHOO.widget.DataTable.CLASS_ASC ? "asc" : "desc";
+        var qry = "offset=" + state.pagination.recordOffset +
+                  "&max=" + state.pagination.rowsPerPage +
+                  "&sort=" + state.sortedBy.key +
+                  "&order=" + order +
+                  "&cb=" + new Date().getTime(); // cache buster
+        return qry;
+    }
+
+    function processPayload(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalCount;
+        return oPayload;
     }
 
     function handleRowClick(e) {
@@ -86,5 +92,20 @@ YAHOO.cuanto.GroupedOutput = function() {
         var output = record.getData("output");
         tabView.set('activeIndex', 0);
         YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({search: "Output", qry: output, results: "allfailures"});
+    }
+
+
+    function getDataTablePaginator(page, totalRecs, offset, rows) {
+        var config = {
+            containers         : ['trOutputPaging'],
+            pageLinks          : 25,
+            rowsPerPage        : rows,
+            rowsPerPageOptions : [5,10,15,20,30,50,100],
+            template       : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}<br/>Show {RowsPerPageDropdown} per page"
+        };
+        config.initialPage = page;
+        config.totalRecords = totalRecs;
+        config.offset = offset;
+        return new YAHOO.widget.Paginator(config);
     }
 };

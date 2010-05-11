@@ -215,13 +215,23 @@ class TestRunController {
                 def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
                 def offset = 0
                 def max = 20
+                def sort = "failures"
+                def order = "desc"
+
                 if (params.offset) {
                     offset = Integer.valueOf(params.offset)
                 }
                 if (params.max) {
                     max = Integer.valueOf(params.max)
                 }
-                def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
+                if (params.sort) {
+                    sort = params.sort
+                }
+                if (params.order) {
+                    order = params.order
+                }
+
+                def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
 
                 def jsonArray = results.collect{
                     return [failures: it[0], output: it[1].encodeAsHTML()]

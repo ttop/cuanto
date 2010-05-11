@@ -260,8 +260,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
     function onFilterChangeEvent(e, arg) {
         var filter = arg[0];
 
-        var resultsFilter = resultFilterNode.length - 1;;
         var resultFilterNode = $('trDetailsFilter');
+        var resultsFilter = resultFilterNode.length - 1;;
         if (filter.results) {
             var targResult = filter.results.toUpperCase();
             for (var i = 0; i < resultFilterNode.options.length; i++) {
@@ -286,7 +286,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
                     break;
                 }
             }
-            if (!searchIndex == undefined) {
+            if (!(searchIndex == undefined)) {
                 searchTermNode.selectedIndex = searchIndex;
             }
         }

@@ -247,7 +247,7 @@ class ParsingService {
         if (testOutcome.testOutput) {
             def matcher = testOutcome.testOutput =~ /(?m).+$/
             String outsummary = matcher[0] as String
-            int MAX_LENGTH = 1024
+            int MAX_LENGTH = 255
             if (outsummary?.length() > MAX_LENGTH) {
                 testOutcome.testOutputSummary = outsummary.substring(0, MAX_LENGTH - 2)
             } else {
