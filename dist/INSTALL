@@ -2,8 +2,8 @@ Requirements
 ============
 
 Cuanto requires an application server running Java 1.5 or greater and a SQL database with a JDBC driver. Development
-and testing have been done against a Jetty/MySQL combination. MySQL with InnoDB is recommended, as the database upgrade
-scripts provided are for MySQL.
+and testing have been done against a Jetty/MySQL combination. MySQL with InnoDB is strongly recommended, as the database
+upgrade scripts provided are for MySQL.
 
 Customizing cuanto-db.groovy
 
@@ -40,9 +40,11 @@ Upgrading
 =========
 If you are upgrading, shut down Cuanto and back up your database first.
 
-If you are upgrading from an existing Cuanto installation that is earlier than 2.4, you'll want to execute the SQL scripts found in the sql
-directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may be needed if using a different
-database configuration.
+If you are upgrading from 2.5, you'll want to execute the init_test_outcome_summary.sql script found in the sql directory.
+
+If you are upgrading from an existing Cuanto installation that is earlier than 2.4, you'll want to execute the SQL scripts
+found in the sql directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may be needed if using
+a different database configuration.
 
 If you are upgrading from 2.2.5 or earlier, execute the upgrade_to_2.3.1.sql script followed by upgrade_to_2.4.sql.
 
