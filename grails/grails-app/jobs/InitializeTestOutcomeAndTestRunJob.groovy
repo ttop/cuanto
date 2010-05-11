@@ -2,6 +2,8 @@ import cuanto.TestOutcome
 
 import cuanto.TestRunStats
 import cuanto.TestRun
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Semaphore
 
 /**
  * Self-terminating Job that initializes TestOutcome.isFailureStatusChanged.
@@ -19,13 +21,26 @@ class InitializeTestOutcomeAndTestRunJob {
 	static final String JOB_GROUP = 'GRAILS_JOBS'
 
 	static triggers = {
-		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 30000
+		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 10000
 	}
 
-	static initializedTestOutcomeCount = 0
-	static initializedTestRunCount = 0
+	static int initializedTestOutcomeCount = 0
+	static int initializedTestRunCount = 0
+	static Semaphore lock = new Semaphore(1)
 
 	def execute() {
+		// don't execute the job if another worker is processing the job
+		synchronized(lock)
+		{
+			if (!lock.tryAcquire())
+				return
+		}
+
+		if (grailsApplication.config.isFailureStatusChangedSleep)
+			sleep(grailsApplication.config.isFailureStatusChangedSleep)
+
+		// main logic: initialize TestOutcomes at batches of 100,
+		// and if all TestOutcomes are initialized, initialize TestRuns
 		def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
 		if (testOutcomes) {
 			TestOutcome.withTransaction {
@@ -41,6 +56,11 @@ class InitializeTestOutcomeAndTestRunJob {
 			log.info "Unscheduling job [$JOB_NAME] ..."
 			quartzScheduler.unscheduleJob(JOB_NAME, JOB_GROUP)
 			initTestRunStats()
+		}
+
+		// release the lock, so other workers are able to pick up the job
+		synchronized(lock) {
+			lock.release()
 		}
 	}
 
