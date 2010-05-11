@@ -41,17 +41,23 @@ class InitializeTestOutcomeAndTestRunJob {
 
 		// main logic: initialize TestOutcomes at batches of 100,
 		// and if all TestOutcomes are initialized, initialize TestRuns
-		def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
-		if (testOutcomes) {
-			TestOutcome.withTransaction {
+		def allTestOutcomesInitialized = false
+		TestOutcome.withTransaction {
+			def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
+			if (testOutcomes) {
 				for (TestOutcome testOutcome: testOutcomes)
 					testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 				dataService.saveTestOutcomes(testOutcomes)
+				initializedTestOutcomeCount += testOutcomes.size()
+			} else {
+				allTestOutcomesInitialized = true
 			}
-			initializedTestOutcomeCount += testOutcomes.size()
-			if (initializedTestOutcomeCount % 1000 == 0)
-				log.info "Initialized $initializedTestOutcomeCount TestOutcomes."
-		} else {
+		}
+
+		if (initializedTestOutcomeCount % 1000 == 0)
+			log.info "Initialized $initializedTestOutcomeCount TestOutcomes."
+
+		if (allTestOutcomesInitialized) {
 			log.info "Finished initializing ${initializedTestOutcomeCount} TestOutcomes."
 			log.info "Unscheduling job [$JOB_NAME] ..."
 			quartzScheduler.unscheduleJob(JOB_NAME, JOB_GROUP)
