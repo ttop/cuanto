@@ -6,9 +6,9 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Semaphore
 
 /**
- * Self-terminating Job that initializes TestOutcome.isFailureStatusChanged.
- * Upon terminus, the job unschedules itself, after which it initializes TestRuns
- * whose testRunStatistics.newFailures is null.
+ * Self-terminating Job that initializes TestOutcome.isFailureStatusChanged,
+ * after which it initializes TestRuns whose testRunStatistics.newFailures is null.
+ * Upon terminus, the job unschedules itself so that the job is no longer executed.
  */
 class InitializeTestOutcomeAndTestRunJob {
 	def dataService
