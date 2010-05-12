@@ -488,14 +488,14 @@ class TestOutcomeService {
             secondarySort = "to.testOutputSummary asc"
         }
 
-        def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+        def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
         // returns a List where each item is a List with index 0 the count and index 1 the output summary text
         TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
     }
 
 
     Long countGroupedOutputSummaries(TestRun testRun) {
-        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true",
+        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
                 [testRun])
         return result[0]
     }
