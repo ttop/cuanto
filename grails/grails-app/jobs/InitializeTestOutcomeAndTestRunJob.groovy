@@ -16,9 +16,11 @@ class InitializeTestOutcomeAndTestRunJob {
 	def initializationService
 	def quartzScheduler
 	def grailsApplication
+	def concurrent = false
 
 	static final String JOB_NAME = 'InitializeIsFailureStatusChanged'
 	static final String JOB_GROUP = 'GRAILS_JOBS'
+	static final String TEST_RUN_UPDATE_QUERY = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
 
 	static triggers = {
 		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 10000
@@ -26,68 +28,63 @@ class InitializeTestOutcomeAndTestRunJob {
 
 	static int initializedTestOutcomeCount = 0
 	static int initializedTestRunCount = 0
-	static Semaphore lock = new Semaphore(1)
+	static boolean allTestOutcomesInitialized = false
+	static boolean allTestRunsInitialized = false
 
 	def execute() {
-		// don't execute the job if another worker is processing the job
-		synchronized(lock)
-		{
-			if (!lock.tryAcquire())
-				return
+		if (grailsApplication.config.testOutcomeAndTestRunInitSleep)
+			sleep(grailsApplication.config.testOutcomeAndTestRunInitSleep)
+
+		if (allTestOutcomesInitialized && allTestRunsInitialized) {
+			// since all test outcomes and test runs have been initialized, unschedule the job
+			quartzScheduler.unscheduleJob(JOB_NAME, JOB_GROUP)
+		} else if (!allTestOutcomesInitialized) {
+			// if not all test outcomes have been initialized, there are some more work to do, here.
+			initializeTestOutcomes()
+			if (initializedTestOutcomeCount % 1000 == 0)
+				log.info "Initialized $initializedTestOutcomeCount TestOutcomes."
+		} else {
+			// if not all test runs have been initialized, there are some more work to do, here.
+			initializeTestRuns()
+			if (initializedTestOutcomeCount % 100 == 0)
+				log.info "Initialized $initializedTestRunCount TestOutcomes."
 		}
+	}
 
-		if (grailsApplication.config.isFailureStatusChangedSleep)
-			sleep(grailsApplication.config.isFailureStatusChangedSleep)
-
-		// main logic: initialize TestOutcomes at batches of 100,
-		// and if all TestOutcomes are initialized, initialize TestRuns
-		def allTestOutcomesInitialized = false
+	def initializeTestOutcomes() {
 		TestOutcome.withTransaction {
 			def testOutcomes = TestOutcome.findAllByIsFailureStatusChangedIsNull([offset: 0, max: 100])
 			if (testOutcomes) {
+				// there are test outcomes to update--so calculate isFailureStatusChanged and set it
 				for (TestOutcome testOutcome: testOutcomes)
 					testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 				dataService.saveTestOutcomes(testOutcomes)
 				initializedTestOutcomeCount += testOutcomes.size()
 			} else {
+				// there are no test runs to update--this means all test outcomes have been initialized
 				allTestOutcomesInitialized = true
+				log.info "Finished initializing ${initializedTestOutcomeCount} TestOutcomes."
 			}
-		}
-
-		if (initializedTestOutcomeCount % 1000 == 0)
-			log.info "Initialized $initializedTestOutcomeCount TestOutcomes."
-
-		if (allTestOutcomesInitialized) {
-			log.info "Finished initializing ${initializedTestOutcomeCount} TestOutcomes."
-			log.info "Unscheduling job [$JOB_NAME] ..."
-			quartzScheduler.unscheduleJob(JOB_NAME, JOB_GROUP)
-			initTestRunStats()
-		}
-
-		// release the lock, so other workers are able to pick up the job
-		synchronized(lock) {
-			lock.release()
 		}
 	}
 
-	void initTestRunStats() {
-		def testRunsToUpdate = getTestRunsWithNullNewFailures()
-		def updateQuery = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
-		while (testRunsToUpdate.size() > 0) {
-			TestRun.withTransaction {
+	def initializeTestRuns() {
+		TestRun.withTransaction {
+			def testRunsToUpdate = getTestRunsWithNullNewFailures()
+			if (testRunsToUpdate) {
+				// there are test runs to update--so calculate newFailures and set it
 				for (TestRun testRun: testRunsToUpdate) {
 					testRun.testRunStatistics.newFailures = getNewFailuresCount(testRun)
-					initializedTestRunCount += TestRunStats.executeUpdate(updateQuery,
+					initializedTestRunCount += TestRunStats.executeUpdate(TEST_RUN_UPDATE_QUERY,
 						[testRun.testRunStatistics.newFailures, testRun.testRunStatistics.id])
 				}
+				log.info "Initialized ${testRunsToUpdate.size()} TestRuns: ${testRunsToUpdate*.id}."
+			} else {
+				// there are no test runs to update--this means all test runs have been initialized
+				allTestRunsInitialized = true
+				log.info "Finished initializing ${initializedTestRunCount} TestRuns."
 			}
-			log.info "Initialized ${testRunsToUpdate.size()} TestRuns: ${testRunsToUpdate*.id}."
-			if (grailsApplication.config.newFailuresSleep) {
-				sleep(grailsApplication.config.newFailuresSleep)
-			}
-			testRunsToUpdate = getTestRunsWithNullNewFailures()
 		}
-		log.info "Finished initializing ${initializedTestRunCount} TestRuns."
 	}
 
 	List<TestRun> getTestRunsWithNullNewFailures() {
