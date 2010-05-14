@@ -23,7 +23,7 @@ class InitializeTestOutcomeAndTestRunJob {
 	static final String TEST_RUN_UPDATE_QUERY = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
 
 	static triggers = {
-		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 10000
+		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 1000
 	}
 
 	static int initializedTestOutcomeCount = 0
@@ -46,7 +46,7 @@ class InitializeTestOutcomeAndTestRunJob {
 		} else {
 			// if not all test runs have been initialized, there are some more work to do, here.
 			initializeTestRuns()
-			if (initializedTestOutcomeCount % 100 == 0)
+			if (initializedTestRunCount % 100 == 0)
 				log.info "Initialized $initializedTestRunCount TestOutcomes."
 		}
 	}
