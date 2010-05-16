@@ -41,6 +41,14 @@ Upgrading
 If you are upgrading, shut down Cuanto and back up your database first.
 
 If you are upgrading from 2.5, you'll want to execute the init_test_outcome_summary.sql script found in the sql directory.
+Please note, if you are using a default MySQL installation, this script may not run successfully unless you increase the size
+of the MySQL innodb_buffer_pool_size variable beyond the default 8MB (100MB+ is good). You can do this directly in MySQL's
+admin tool or permanently by setting the value in my.cnf:
+
+[mysqld]
+innodb_buffer_pool_size = 100M
+
+Restart the MySQL server for the change to take effect.
 
 If you are upgrading from an existing Cuanto installation that is earlier than 2.4, you'll want to execute the SQL scripts
 found in the sql directory. These scripts have been tested on MySQL with the InnoDB engine, tweaks may be needed if using
@@ -51,7 +59,7 @@ If you are upgrading from 2.2.5 or earlier, execute the upgrade_to_2.3.1.sql scr
 If you are upgrading from 2.3.0 or 2.3.1, execute the upgrade_to_2.4.sql script.
 
 All upgrades require executing the groovy script migrate_test_run_props_for_2.4.groovy. You need to have a recent
-version of groovy installed (1.6 or greater recommended) and have your mySql driver in your class path. Open the script
+version of groovy installed (1.6 or greater recommended) and have your mySQL driver in your class path. Open the script
 with your favorite editor and customize the username, password, driverClassName and JDBC url for your installation.
 Then execute the script.
 

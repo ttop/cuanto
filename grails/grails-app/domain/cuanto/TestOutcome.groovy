@@ -46,6 +46,7 @@ class TestOutcome {
 		cache true
 		analysisState lazy: false
         tags lazy: false
+		testOutputSummary index:'test_output_summary_idx'
 	}
 
     static hasMany = [tags: Tag]
