@@ -71,7 +71,7 @@ log4j = {
 	       'org.springframework',
 	       'org.hibernate'
 
-	warn 'org.hibernate.SQL'
+	debug 'org.hibernate.SQL'
     warn 'org.mortbay.log'
 }
 

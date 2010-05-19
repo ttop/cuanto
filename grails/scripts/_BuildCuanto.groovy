@@ -52,29 +52,42 @@ target(cuantoapi: "Build the Cuanto test API") {
 	ant.replaceregexp(file: "${apiDir}/src/main/java/cuanto/api/CuantoConnector.java",
 		match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
 
+	println "beginning packaging"
 	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()
 	packageProcess.waitFor()
+	println "clean package done"
 	if (packageProcess.exitValue() != 0) {
 		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
 	}
 	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
+	println "creating javadocs"
 	def javadocProcess = "mvn -f ${apiDir}/pom.xml javadoc:javadoc".execute()
-	javadocProcess.waitFor()
+	println "waiting for javadocs"
+	javadocProcess.waitForOrKill(20000) //used to be just waitFor(), but it's started never returning 
+
 	if (javadocProcess.exitValue() != 0) {
-		ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
+		def text
+		try {
+			ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
+		} catch (IOException e) {
+			println "Creating JavaDocs failed due to an unknown reason, had to kill the process. Continuing the build"
+		}
 	}
 
+	println "done with javadocs"
+	println "deleting lib"
 	ant.delete(verbose: "true", failonerror: "true") {
 		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
 	}
-	
+
+	println "copying files"
 	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
 	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
 	ant.copy(todir: targetApiDir, verbose: "true") {
 		fileset(dir:"${apiDir}/target/dependency", includes: "*.jar")
 	}
-
+	println "done copying"
 	grailsSettings.compileDependencies << new File(distClientJar)
 }
 
