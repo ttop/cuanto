@@ -47,7 +47,7 @@ class TestOutcome {
 		cache true
 		analysisState lazy: false
         tags lazy: false
-		isFailureStatusChanged lazy: false, index: 'idx_is_failure_status_changed'
+		isFailureStatusChanged lazy: false, index: 'is_failure_status_changed_idx'
 		testOutputSummary index:'test_output_summary_idx'
 	}
 
