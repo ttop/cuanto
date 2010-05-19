@@ -171,36 +171,31 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
     void testGetGroupedOutputSummaries() {
         Project proj = to.project
-        proj.testType = TestType.findByName("NUnit")
+        proj.testType = TestType.findByName("TestNG")
         dataService.saveDomainObject proj
 
         TestRun testRun = to.getTestRun(proj)
         dataService.saveDomainObject testRun
-        parsingService.parseFileWithTestRun(getFile("NUnit-TestResultNet.xml"), testRun.id)
+        parsingService.parseFileWithTestRun(getFile("grouped-output-testng-results.xml"), testRun.id)
 
         def offset = 0
         def max = 5
         def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, 0, 100)
         outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
         assertNotNull outputGroups
-        assertEquals "Wrong number of groups returned", 5, outputGroups.size()
+        assertEquals "Wrong number of groups returned", 4, outputGroups.size()
 
-        assertEquals "Wrong first group size", 14, outputGroups[0][0]
-        assertEquals "Wrong first group output", "EV313322 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[0][1]
+        assertEquals "Wrong first group size", 4, outputGroups[0][0]
+        assertEquals "Wrong first group output", "java.lang.AssertionError: This has failed four times", outputGroups[0][1]
 
-        assertEquals "Wrong last group size", 4, outputGroups[4][0]
-        assertEquals "Wrong last group output", "EV318898 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[4][1]
+        assertEquals "Wrong second group size", 3, outputGroups[1][0]
+        assertEquals "Wrong second group output", "java.lang.AssertionError: This has failed three times", outputGroups[1][1]
 
-        offset += 5
-        outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
-        assertEquals "Wrong number of groups returned", 5, outputGroups.size()
+        assertEquals "Wrong third group size", 2, outputGroups[2][0]
+        assertEquals "Wrong third group output", "java.lang.AssertionError: This has failed twice", outputGroups[2][1]
 
-        assertEquals "Wrong first group size", 2, outputGroups[0][0]
-        assertEquals "Wrong first group output", "EV314959 is broken in this build. (Build 344 of R2008Trunk.)", outputGroups[0][1]
-
-        assertEquals "Wrong last group size", 1, outputGroups[4][0]
-        assertEquals "Wrong last group output", "Covered by the test for MyReflection.Start_Port()", outputGroups[4][1]
-
+        assertEquals "Wrong fourth group size", 1, outputGroups[3][0]
+        assertEquals "Wrong fourth group output", "java.lang.AssertionError: This has failed once", outputGroups[3][1]
     }
 
 

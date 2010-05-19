@@ -13,4 +13,9 @@
 		  <package name="cuanto.sample.*"/>
 	  </packages>
   </test>
+  <test name="Grouped output test">
+	  <classes>
+		  <class name="cuanto.sample.GroupedSample"/>
+	  </classes>
+  </test>
 </suite>

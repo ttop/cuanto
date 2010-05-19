@@ -1,0 +1,372 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Suite1">
+    <groups>
+    </groups>
+    <test name="Grouped output test">
+      <class name="cuanto.sample.GroupedSample">
+        <test-method status="FAIL" signature="testFourA()" name="testFourA" duration-ms="4" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed four times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed four times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failFour(GroupedSample.java:104)
+	at cuanto.sample.GroupedSample.testFourA(GroupedSample.java:81)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testFourB()" name="testFourB" duration-ms="1" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed four times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed four times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failFour(GroupedSample.java:104)
+	at cuanto.sample.GroupedSample.testFourB(GroupedSample.java:87)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testFourC()" name="testFourC" duration-ms="1" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed four times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed four times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failFour(GroupedSample.java:104)
+	at cuanto.sample.GroupedSample.testFourC(GroupedSample.java:93)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testFourD()" name="testFourD" duration-ms="1" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed four times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed four times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failFour(GroupedSample.java:104)
+	at cuanto.sample.GroupedSample.testFourD(GroupedSample.java:99)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testOne()" name="testOne" duration-ms="0" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed once]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed once
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failOne(GroupedSample.java:35)
+	at cuanto.sample.GroupedSample.testOne(GroupedSample.java:30)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testThreeA()" name="testThreeA" duration-ms="0" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed three times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed three times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failThree(GroupedSample.java:75)
+	at cuanto.sample.GroupedSample.testThreeA(GroupedSample.java:58)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testThreeB()" name="testThreeB" duration-ms="0" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed three times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed three times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failThree(GroupedSample.java:75)
+	at cuanto.sample.GroupedSample.testThreeB(GroupedSample.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testThreeC()" name="testThreeC" duration-ms="0" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed three times]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed three times
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failThree(GroupedSample.java:75)
+	at cuanto.sample.GroupedSample.testThreeC(GroupedSample.java:70)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testTwoA()" name="testTwoA" duration-ms="1" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed twice]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed twice
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failTwo(GroupedSample.java:52)
+	at cuanto.sample.GroupedSample.testTwoA(GroupedSample.java:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="testTwoB()" name="testTwoB" duration-ms="0" started-at="2010-05-18T20:38:05Z" finished-at="2010-05-18T20:38:05Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[This has failed twice]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: This has failed twice
+	at org.testng.Assert.fail(Assert.java:87)
+	at cuanto.sample.GroupedSample.failTwo(GroupedSample.java:52)
+	at cuanto.sample.GroupedSample.testTwoB(GroupedSample.java:47)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:644)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:546)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:700)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1002)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:137)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:121)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:909)
+	at org.testng.TestRunner.privateRun(TestRunner.java:618)
+	at org.testng.TestRunner.run(TestRunner.java:499)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:915)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:879)
+	at org.testng.TestNG.run(TestNG.java:787)
+	at org.testng.TestNG.privateMain(TestNG.java:952)
+	at org.testng.TestNG.main(TestNG.java:925)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>
