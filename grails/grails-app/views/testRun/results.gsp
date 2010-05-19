@@ -64,13 +64,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
 		<g:javascript src="cuanto/columnDialog.js"/>
+		<g:javascript src="cuanto/groupedOutput.js"/>
 
 		<script type="text/javascript">
 
 		YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="urls"/>
+            var newWidth = document.viewport.getWidth() * .95;
+            $('tabContainer').setStyle({width: newWidth + "px"});
+            tabView = new YAHOO.widget.TabView("tabContainer");
+            
 			new YAHOO.cuanto.SummaryTab();
 			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
+            new YAHOO.cuanto.GroupedOutput();
 		});
 		</script>
 	</head>

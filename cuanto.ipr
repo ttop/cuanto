@@ -79,6 +79,7 @@
       <file url="file://$PROJECT_DIR$/grails/plugins/quartz-0.4.1-SNAPSHOT/src/java/org/codehaus/groovy/grails/plugins/quartz/listeners/ExceptionPrinterJobListener.java" />
       <file url="file://$PROJECT_DIR$/../../.grails/1.1/projects/grails/plugins/quartz-0.4.1/src/java/org/codehaus/groovy/grails/plugins/quartz/GrailsJobFactory.java" />
       <file url="file://$PROJECT_DIR$/doc/api/src/sample/Sample.java" />
+      <file url="file:///Users/todd.wells/.grails/1.1/projects/grails/plugins/quartz-0.4.1/src/java/org/codehaus/groovy/grails/plugins/quartz/CustomTriggerFactoryBean.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

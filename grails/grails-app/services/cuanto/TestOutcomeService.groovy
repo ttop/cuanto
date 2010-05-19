@@ -293,7 +293,7 @@ class TestOutcomeService {
 		if (params.filter?.equalsIgnoreCase("newFailures")) {
 			TestRun testRun = TestRun.get(params.id)
 			if (!testRun) {
-				throw new RuntimeException("TestRun must be specified to retrieve new ")
+				throw new RuntimeException("No TestRun specified for getNewFailures()")
 			}
 			def newFailureQueryFilter = new TestOutcomeQueryFilter(
 				testRun: testRun,
@@ -451,15 +451,14 @@ class TestOutcomeService {
 
 		return buff.toString()
 	}
-	
 
-	 /**
-	  * Determines whether the failure status for a given TestOutcome has changed
-	  * from the last (if applicable) TestOutcome for the same TestCase.
-	  *
-	  * @param testOutcome to determine failure status change
-	  * @return true if the failure status changed or false otherwise
-	  */
+	/**
+	 * Determines whether the failure status for a given TestOutcome has changed
+	 * from the last (if applicable) TestOutcome for the same TestCase.
+	 *
+	 * @param testOutcome to determine failure status change
+	 * @return true if the failure status changed or false otherwise
+	 */
 	def isFailureStatusChanged(TestOutcome testOutcome) {
 		def previousOutcome = dataService.getPreviousOutcome(testOutcome)
 
@@ -474,4 +473,32 @@ class TestOutcomeService {
 			return previousOutcome && previousOutcome.testResult?.isFailure
 		}
 	}
+
+	List getGroupedOutputSummaries(TestRun testRun, Integer offset, Integer max, sort = "failures", order = "desc") {
+
+        if (order != "asc" && order != "desc") {
+            throw new IllegalArgumentException("Unknown order for grouped output summary sort")
+        }
+
+        def primarySort
+        def secondarySort
+
+        if (sort.equalsIgnoreCase("output")) {
+            primarySort = "to.testOutputSummary ${order}"
+            secondarySort = "count(*) desc"
+        } else if (sort.equalsIgnoreCase("failures")) {
+            primarySort = "count(*) ${order}"
+            secondarySort = "to.testOutputSummary asc"
+        }
+
+        def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+        // returns a List where each item is a List with index 0 the count and index 1 the output summary text
+        TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
+    }
+
+    Long countGroupedOutputSummaries(TestRun testRun) {
+        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
+                [testRun])
+        return result[0]
+    }
 }

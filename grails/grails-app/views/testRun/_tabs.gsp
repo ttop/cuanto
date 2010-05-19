@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <div id="tabContainer" class="yui-skin-sam yui-navset">
 	<ul class="yui-nav">
 		<li><a href="${createLink(action: 'results', 'id': testRun.id)}"><em>Analysis</em></a></li>
+		<li><a href="#groupedOutput"><em>Grouped Output</em></a></li>
 		<li><a href="${createLink(action: 'summary', 'id': testRun.id)}"><em>Summary</em></a></li>
 	</ul>
 	<div class="yui-content">
@@ -63,6 +64,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 
 		</div>
+
+        <div id="outputTab">
+            <div id='trOutputTable'>Loading...</div>
+            <div id='trOutputPaging'></div>
+        </div>
+
 		<div id="summaryTab">
 			<g:render template="summaryTable"/>
 			<p/><br/>

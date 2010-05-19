@@ -67,6 +67,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	YAHOO.cuanto.events.recordsUpdatedEvent.subscribe(updateTable);
 	YAHOO.cuanto.events.bulkAnalysisEvent.subscribe(applyAnalysis);
 	YAHOO.cuanto.events.testRunChangedEvent.subscribe(onTestRunChanged);
+    YAHOO.cuanto.events.outcomeFilterChangeEvent.subscribe(onFilterChangeEvent);
 
 	hideCurrentSearchSpan();
 	$("searchQry").clear();
@@ -168,7 +169,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		var tableWidth;
 		var minWidth = 1024;
 		if (document.viewport.getWidth() > minWidth) {
-			tableWidth = document.viewport.getWidth();
+			tableWidth = document.viewport.getWidth() * .95;
 		} else {
 			tableWidth = minWidth;
 		}
@@ -255,6 +256,48 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		return newRequest;
 	}
+
+
+    function onFilterChangeEvent(e, arg) {
+        var filter = arg[0];
+
+        var resultFilterNode = $('trDetailsFilter');
+        var resultsFilter = resultFilterNode.length - 1;;
+        if (filter.results) {
+            var targResult = filter.results.toUpperCase();
+            for (var i = 0; i < resultFilterNode.options.length; i++) {
+                var item = resultFilterNode.options[i];
+                if (item.text.toUpperCase() == targResult || item.readAttribute("value").toUpperCase() == targResult) {
+                    resultsFilter = i;
+                    break;
+                }
+            }
+        }
+
+        resultFilterNode.selectedIndex = resultsFilter;
+
+        if (filter.search) {
+            var searchIndex;
+            var searchTermNode = $('searchTerm');
+            var targSearch = filter.search.toUpperCase();
+            for (var s = 0; s < searchTermNode.options.length; s++) {
+                var st = searchTermNode.options[s];
+                if (st.text.toUpperCase() == targSearch || item.readAttribute("value").toUpperCase() == targSearch) {
+                    searchIndex = s;
+                    break;
+                }
+            }
+            if (!(searchIndex == undefined)) {
+                searchTermNode.selectedIndex = searchIndex;
+            }
+        }
+
+        if (filter.qry) {
+            $('searchQry').value = filter.qry;
+        }
+        onFilterChange(null);
+        showCurrentSearchSpan();
+    }
 
 
 	function getSearchQuery() {

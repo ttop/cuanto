@@ -34,6 +34,7 @@ class TestOutcome {
 		note(blank: true, nullable: true)
 		owner(blank: true, nullable: true)
 		testOutput(nullable: true, blank: true, maxSize: 10000)
+        testOutputSummary(nullable: true, blank: true, maxSize: 255)
 		startedAt(nullable: true)
 		finishedAt(nullable: true)
 		dateCreated(nullable: true)
@@ -56,6 +57,7 @@ class TestOutcome {
 	TestResult testResult
 	AnalysisState analysisState
 	String testOutput
+    String testOutputSummary
 	Long duration
 	String owner
 	Bug bug

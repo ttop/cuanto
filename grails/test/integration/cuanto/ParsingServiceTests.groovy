@@ -17,13 +17,11 @@ class ParsingServiceTests extends GroovyTestCase {
 
 	TestObjects fakes = new TestObjects()
 
-
 	@Override
 	void setUp() {
 		initializationService.initializeAll()
 		fakes.dataService = dataService
 	}
-
 
 	void testFindCases() {
 		Project project = new Project(name: "ParsingServiceTestProject", projectKey: fakes.getProjectKey())
@@ -62,13 +60,11 @@ class ParsingServiceTests extends GroovyTestCase {
 		assertEquals("wrong parameters", t3.parameters, myCase.parameters)
 	}
 
-
 	void testParsingRegistryInjection() {
 		assertTrue "No parsers found", parsingService.testParserRegistry?.parsers?.size() > 0
 	}
 
-	void testParseFileFromStream()
-	{
+	void testParseFileFromStream() {
 		Project proj = fakes.getProject()
 		proj.testType = TestType.findByName("JUnit")
 		proj.save()
@@ -83,7 +79,6 @@ class ParsingServiceTests extends GroovyTestCase {
 		}
 	}
 
-
 	void testGetParser() {
 		shouldFail(ParsingException) {
 			parsingService.getParser(new TestType(name: "foobar"))
@@ -96,11 +91,10 @@ class ParsingServiceTests extends GroovyTestCase {
 		return file
 	}
 
-
-    void testParsingTags() {
-        Project proj = fakes.getProject()
-        proj.testType = TestType.findByName("TestNG")
-        dataService.saveDomainObject proj
+	void testParsingTags() {
+		Project proj = fakes.getProject()
+		proj.testType = TestType.findByName("TestNG")
+		dataService.saveDomainObject proj
 
 		TestRun testRun = fakes.getTestRun(proj)
 		dataService.saveDomainObject testRun
@@ -184,7 +178,7 @@ class ParsingServiceTests extends GroovyTestCase {
 		def testMethod1OutcomeForSecondTime = results3[0]
 		assertFalse "A failure after previous failure should not result in failure status change.",
 			testMethod1OutcomeForSecondTime.isFailureStatusChanged
-		
+
 		// run 2: failed -> failed
 		def results4 = TestOutcome.executeQuery("from TestOutcome to where to.testCase.fullName like 'cuanto.test.testNgOne.testMethod2' order by dateCreated desc")
 		assertEquals 2, results4.size()
@@ -214,5 +208,28 @@ class ParsingServiceTests extends GroovyTestCase {
 		def testMethod2OutcomeForThirdTime = results6[0]
 		assertTrue "A success after previous failure should result in failure status change.",
 			testMethod2OutcomeForThirdTime.isFailureStatusChanged
+	}
+
+	void testOutputSummary() {
+		Project proj = fakes.getProject()
+		proj.testType = TestType.findByName("NUnit")
+		dataService.saveDomainObject proj
+
+		TestRun testRun = fakes.getTestRun(proj)
+		dataService.saveDomainObject testRun
+		parsingService.parseFileWithTestRun(getFile("NUnit-TestResultNet.xml"), testRun.id)
+
+		def outcomes = TestOutcome.executeQuery("from TestOutcome to where to.testResult.isFailure = true")
+		assertEquals "Wrong number of failures", 46, outcomes.size()
+		outcomes.each {
+			assertNotNull "testOutputSummary is null", it.testOutputSummary
+			assertTrue "testOutputSummary is blank", it.testOutputSummary?.size() > 0
+		}
+
+		TestOutcome targetOutcome = outcomes.find {
+			it.testCase.fullName == "NETTests.Tests.Attachmate.Reflection.Emulation.IbmHosts.HostFieldTests.ForegroundColor_DeepBlue"
+		}
+		assertNotNull "didn't find target outcome", targetOutcome
+		assertEquals "Wrong testOutputSummary", "EV313322 is broken in this build. (Build 344 of R2008Trunk.)", targetOutcome.testOutputSummary
 	}
 }

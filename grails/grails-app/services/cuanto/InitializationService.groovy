@@ -21,16 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import grails.util.GrailsUtil
-import org.hibernate.SessionFactory
 
 class InitializationService {
 
 	def grailsApplication
 	def dataService
-	def testOutcomeService
-	def testRunService
 	boolean transactional = false
-	SessionFactory sessionFactory
 
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {

@@ -21,26 +21,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --}%
 
 <div id="tagSummaryDiv">
-  <table class="borderedTable">
-    <thead>
-    <tr>
-      <th>Tag</th>
-      <th>Passed</th>
-      <th>Failed</th>
-      <th>Skipped</th>
-      <th>Total</th>
-    </tr>
-    </thead>
-    <tbody>
-    <g:each var="tagstat" in="${testRun?.testRunStatistics?.tagStatistics}">
-      <tr class="brd">
-        <td align="center">${tagstat.tag.name}</td>
-        <td align="center">${tagstat.passed}</td>
-        <td align="center">${tagstat.failed}</td>
-        <td align="center">${tagstat.skipped}</td>
-        <td align="center">${tagstat.total}</td>
-      </tr>
-    </g:each>
-    </tbody>
-  </table>
+    <p></p>
+    <g:if test="${testRun?.testRunStatistics?.tagStatistics}">
+
+        <h1>Tag Summary</h1>
+
+        <table class="borderedTable">
+            <thead>
+            <tr>
+                <th>Tag</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Skipped</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each var="tagstat" in="${testRun?.testRunStatistics?.tagStatistics}">
+                <tr class="brd">
+                    <td align="center">${tagstat.tag.name}</td>
+                    <td align="center">${tagstat.passed}</td>
+                    <td align="center">${tagstat.failed}</td>
+                    <td align="center">${tagstat.skipped}</td>
+                    <td align="center">${tagstat.total}</td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </g:if>
 </div>

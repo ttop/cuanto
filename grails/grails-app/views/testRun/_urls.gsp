@@ -57,5 +57,6 @@ YAHOO.cuanto.urls.set('projectList', "${createLink(controller: 'project', action
 YAHOO.cuanto.urls.set('projectInfo', "${createLink(controller: 'project', action:'get')}/");
 YAHOO.cuanto.urls.set('propertyDelete', "${createLink(controller: 'testRun', action:'deleteProperty')}/");
 YAHOO.cuanto.urls.set('linkDelete', "${createLink(controller: 'testRun', action:'deleteLink')}/");
+YAHOO.cuanto.urls.set('groupedOutput', "${createLink(controller: 'testRun', action:'groupedOutput')}/${testRun?.id}?");
 
 

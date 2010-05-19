@@ -202,9 +202,53 @@ class TestRunController {
 			}
 		}
 	}
-	
 
-	def csv = {
+
+    def groupedOutput = {
+        if (!params.id) {
+            response.status = response.SC_BAD_REQUEST
+            render "No id parameter was found"
+        } else {
+            def testRun = TestRun.get(params.id)
+            if (!testRun) {
+                response.status = response.SC_NOT_FOUND
+                render "TestRun ${params.id} was not found"
+            } else {
+
+                def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
+                def offset = 0
+                def max = 20
+                def sort = "failures"
+                def order = "desc"
+
+                if (params.offset) {
+                    offset = Integer.valueOf(params.offset)
+                }
+                if (params.max) {
+                    max = Integer.valueOf(params.max)
+                }
+                if (params.sort) {
+                    sort = params.sort
+                }
+                if (params.order) {
+                    order = params.order
+                }
+
+                def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
+
+                def jsonArray = results.collect{
+                    return [failures: it[0], output: it[1].encodeAsHTML()]
+                }
+
+
+                def jsonMap = [groupedOutput: jsonArray, totalCount: totalCount, offset: offset]
+                render jsonMap as JSON
+            }
+        }
+    }
+
+
+    def csv = {
 		def testRunId = getTestRunIdFromFilename(params.id)
 		if (testRunId) {
 			params.format = 'csv'
