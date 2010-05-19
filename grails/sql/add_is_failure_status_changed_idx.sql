@@ -1,1 +1,1 @@
-create index test_output_summary_idx on test_outcome(test_output_summary);
+create index is_failure_status_changed_idx on test_outcome(is_failure_status_changed);
