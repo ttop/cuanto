@@ -427,6 +427,37 @@ public class TestOutcomeTests extends GroovyTestCase {
             client.deleteTestRun run
         }
     }
+    
+
+    void testTagsAndManyOutcomes() {
+        def tags = []
+        tags << wordGen.getCamelWords(2)
+        tags << wordGen.getCamelWords(2)
+
+        def outcomes = []
+        1.upto(2000) {
+            TestOutcome outcome = createTestOutcome(TestResult.Pass)
+            outcome.addTags(tags)
+            outcomes << outcome
+        }
+
+        TestRun run = new TestRun(new Date())
+        client.addTestRun(run)
+        try {
+            outcomes.each {
+                client.addTestOutcome(it, run)
+            }
+            println "finished adding tests"
+        } finally {
+            println "deleting test run"
+            def start = new Date()
+            client.deleteTestRun run
+            println "finished deleting"
+            def totalTime = (new Date().time - start.time) / 1000
+            println "took ${totalTime} seconds"
+        }
+    }
+
 
 
 	TestOutcome createTestOutcome(TestResult result) {

@@ -240,7 +240,7 @@ public class CuantoConnector {
 				testOutcome.setId(fetchedOutcome.getId());
 				return fetchedOutcome.getId();
 			} else {
-				throw new RuntimeException("Adding the TestRun failed with HTTP status code " + httpStatus + ": \n" +
+				throw new RuntimeException("Adding the TestOutcome failed with HTTP status code " + httpStatus + ": \n" +
 					getResponseBodyAsString(post));
 			}
 		} catch (UnsupportedEncodingException e) {

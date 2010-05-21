@@ -100,31 +100,22 @@ class ApiController {
     
 
 	def addTestOutcome = {
-		TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
-		dataService.saveTestOutcomes([testOutcome])
-
-		if (testOutcome.testRun) {
-            testOutcome.tags?.each {
-                testOutcome.testRun.addToTags(it)
-            }
-            dataService.saveTestRun testOutcome.testRun
-			statisticService.queueTestRunStats(testOutcome.testRun)
+        try {
+            TestOutcome testOutcome = testOutcomeService.addTestOutcome(request)
+            response.status = response.SC_CREATED
+            render testOutcome.toJSONmap() as JSON
+        } catch (Exception e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unknown error: ${e.getMessage()}"
 		}
-
-		response.status = response.SC_CREATED
-		render testOutcome.toJSONmap() as JSON
 	}
 
 
 	def updateTestOutcome = {
 		try {
-			TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
+			TestOutcome testOutcome = testOutcomeService.apiUpdateTestOutcome(request)
 			if (testOutcome) {
-				testOutcomeService.updateTestOutcome(testOutcome)
 				response.status = response.SC_CREATED
-				if (testOutcome.testRun) {
-					statisticService.queueTestRunStats(testOutcome.testRun)
-				}
 				render "TestOutcome updated"
 			} else {
 				response.status = response.SC_INTERNAL_SERVER_ERROR

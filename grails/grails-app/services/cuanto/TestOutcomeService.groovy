@@ -31,6 +31,7 @@ class TestOutcomeService {
 	def bugService
 	def statisticService
 	def testCaseFormatterRegistry
+    def parsingService
 
 	def updateTestOutcome(Map params) {
 		def outcome = dataService.getTestOutcome(params.id)
@@ -498,5 +499,38 @@ class TestOutcomeService {
         def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
                 [testRun])
         return result[0]
+    }
+
+
+    TestOutcome addTestOutcome(request) {
+        TestOutcome testOutcome
+        TestOutcome.withTransaction {
+            testOutcome = parsingService.parseTestOutcome(request.JSON)
+            dataService.saveTestOutcomes([testOutcome])
+
+            if (testOutcome.testRun) {
+                testOutcome.tags?.each {
+                    testOutcome.testRun.addToTags(it)
+                }
+                dataService.saveTestRun testOutcome.testRun
+                statisticService.queueTestRunStats(testOutcome.testRun)
+            }
+        }
+        return testOutcome
+    }
+
+
+    TestOutcome apiUpdateTestOutcome(request) {
+        TestOutcome testOutcome
+        TestOutcome.withTransaction {
+            testOutcome = parsingService.parseTestOutcome(request.JSON)
+            if (testOutcome) {
+                updateTestOutcome(testOutcome)
+                if (testOutcome.testRun) {
+                    statisticService.queueTestRunStats(testOutcome.testRun)
+                }
+            }
+        }
+        return testOutcome
     }
 }

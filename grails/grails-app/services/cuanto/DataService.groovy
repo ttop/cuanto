@@ -57,7 +57,25 @@ class DataService {
 	 Delete all outcomes for a testrun, then delete the testrun
 	 */
 	def deleteTestRun(TestRun run) {
-		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
+        run.refresh()
+        if (run.tags) {
+            def testRunTagsToRemove = new ArrayList(run.tags)
+            testRunTagsToRemove.each { tag->
+                run.removeFromTags(tag)
+            }
+
+            def outcomes = TestOutcome.findAllByTestRun(run)
+
+            outcomes.each {outcome ->
+                def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+                testOutcomeTagsToRemove.each { tag ->
+                    outcome.removeFromTags(tag)
+                }
+                outcome.delete()
+            }
+        } else {
+            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
+        }
 		run.delete()
 	}
 
