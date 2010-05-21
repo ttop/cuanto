@@ -56,31 +56,33 @@ class DataService {
 	/**
 	 Delete all outcomes for a testrun, then delete the testrun
 	 */
-	def deleteTestRun(TestRun run) {
-        run.refresh()
-        if (run.tags) {
-            def testRunTagsToRemove = new ArrayList(run.tags)
-            testRunTagsToRemove.each { tag->
-                run.removeFromTags(tag)
+
+    def deleteTestRun(TestRun run) {
+        TestRun testRun = TestRun.get(run.id)
+
+        if (testRun.tags) {
+            def testRunTagsToRemove = new ArrayList(testRun.tags)
+            testRunTagsToRemove.each {tag ->
+                testRun.removeFromTags(tag)
             }
 
-            def outcomes = TestOutcome.findAllByTestRun(run)
+            def outcomes = TestOutcome.findAllByTestRun(testRun)
 
             outcomes.each {outcome ->
                 def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
-                testOutcomeTagsToRemove.each { tag ->
+                testOutcomeTagsToRemove.each {tag ->
                     outcome.removeFromTags(tag)
                 }
                 outcome.delete()
             }
         } else {
-            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
+            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
         }
-		run.delete()
-	}
+        testRun.delete()
+    }
 
-	
-	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException{
+
+    def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException{
 		if (propToDelete) {
 			TestRun.withTransaction {
 				TestRun testRun = propToDelete.testRun
