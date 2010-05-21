@@ -1431,8 +1431,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15.jar!/" />
       </CLASSES>
       <JAVADOC>
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
@@ -1443,12 +1441,8 @@
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/net/sf/json-lib/json-lib/2.3/json-lib-2.3-jdk15-sources.jar!/" />
@@ -1476,12 +1470,8 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-javadoc.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-javadoc.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-javadoc.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-javadoc.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-javadoc.jar!/" />
@@ -1492,8 +1482,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-sources.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-sources.jar!/" />
         <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-sources.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-sources.jar!/" />
-        <root url="jar://$MAVEN_REPOSITORY$/org/testng/testng/5.11/testng-5.11-jdk15-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: junit:junit:3.8.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
