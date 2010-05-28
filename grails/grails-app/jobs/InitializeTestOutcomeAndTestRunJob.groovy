@@ -2,8 +2,6 @@ import cuanto.TestOutcome
 
 import cuanto.TestRunStats
 import cuanto.TestRun
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Semaphore
 
 /**
  * Self-terminating Job that initializes TestOutcome.isFailureStatusChanged,
@@ -18,7 +16,7 @@ class InitializeTestOutcomeAndTestRunJob {
 	def grailsApplication
 	def concurrent = false
 
-	static final String JOB_NAME = 'InitializeIsFailureStatusChanged'
+	static final String JOB_NAME = this.class.simpleName.replace("Job", "")
 	static final String JOB_GROUP = 'GRAILS_JOBS'
 	static final String TEST_RUN_UPDATE_QUERY = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
 
