@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-
 class DataService {
 
 	boolean transactional = true
@@ -52,17 +51,23 @@ class DataService {
 		return queryResults[0]
 	}
 
-
 	/**
-	 Delete all outcomes for a testrun, then delete the testrun
+	 * Delete all TestOutcomes for a TestRun, then delete the TestRun,
+	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
+	 * for all TestOutcomes in the next TestRun.
 	 */
 	def deleteTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
 		run.delete()
+		def nextTestRun = getNextTestRun(run)
+		def testOutcomesToReInitialize = getTestOutcomesForTestRun(nextTestRun)
+		testOutcomesToReInitialize.each { outcome ->
+			saveDomainObject(new FailureStatusUpdateTask(outcome.id))
+		}
 	}
 
-	
-	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException{
+
+	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {
 		if (propToDelete) {
 			TestRun.withTransaction {
 				TestRun testRun = propToDelete.testRun
@@ -87,7 +92,7 @@ class DataService {
 		}
 	}
 
-	
+
 	def getProject(id) {
 		Project.get(id)
 	}
@@ -126,7 +131,7 @@ class DataService {
 			// use the paginate params if applicable; otherwise, don't paginate
 			if (paginateParams.size() > 0)
 				return TestRun.executeQuery(q, [proj], paginateParams)
-			else 
+			else
 				return TestRun.executeQuery(q, [proj])
 		}
 	}
@@ -139,7 +144,23 @@ class DataService {
 
 	def countTestRunsByProject(proj) {
 		TestRun.countByProjectAndTestRunStatisticsIsNotNull(proj)
+	}
 
+	def getNextTestRun(testRun) {
+		TestRun.createCriteria().get {
+			and {
+				eq("project.id", testRun.project.id)
+				gt("dateExecuted", testRun.dateExecuted)
+			}
+			order("dateExecuted", "asc")
+			maxResults(1)
+		}
+	}
+
+	def getTestOutcomesForTestRun(testRun) {
+		if (!testRun)
+			return []
+		TestOutcome.findAll("from cuanto.TestOutcome where testRun.id = ?", [testRun.id])
 	}
 
 
@@ -153,7 +174,7 @@ class DataService {
 			order("id")
 		}
 		def runs = trStats.collect { it.testRun }
-		return runs 
+		return runs
 	}
 
 
@@ -168,7 +189,7 @@ class DataService {
 				return TestCase.find(query, [project, testcase.fullName])
 			} else {
 				query += "and tc.parameters=?"
-				return TestCase.find(query,	[project, testcase.fullName, testcase.parameters])
+				return TestCase.find(query, [project, testcase.fullName, testcase.parameters])
 			}
 		} else {
 			throw new CuantoException("No test case specified")
@@ -244,9 +265,9 @@ class DataService {
 		throw new CuantoException("Failed saving: ${errMsg}")
 	}
 
-
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
+
 	List getTestOutcomesByTestRun(TestRun run, String sort, String order, Map paging) {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
 		filter.testRun = run
@@ -276,6 +297,7 @@ class DataService {
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
+
 	List getTestOutcomeFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
 		filter.testRun = run
@@ -297,6 +319,7 @@ class DataService {
 
 	// paging is an optional Map containing values for "max" or "offset" -- pass null or an empty map to ignore
 	// sort is the field name to sort by, order is asc or desc
+
 	List getTestOutcomeUnanalyzedFailuresByTestRun(TestRun run, String sort, String order, Map paging) {
 		TestOutcomeQueryFilter filter = getTestOutcomeQueryFilterWithOptions(sort, order, paging)
 		filter.testRun = run
@@ -311,16 +334,16 @@ class DataService {
 		filter.testCase = outcome.testCase
 
 		if (outcome.finishedAt) {
-			filter.dateCriteria = [new DateCriteria(field:"finishedAt", date: outcome.finishedAt, operator: "<")]
+			filter.dateCriteria = [new DateCriteria(field: "finishedAt", date: outcome.finishedAt, operator: "<")]
 			filter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: "desc")]
 		} else if (outcome.startedAt) {
-			filter.dateCriteria = [new DateCriteria(field:"startedAt", date: outcome.startedAt, operator: "<")]
+			filter.dateCriteria = [new DateCriteria(field: "startedAt", date: outcome.startedAt, operator: "<")]
 			filter.sorts = [new SortParameters(sort: "startedAt", sortOrder: "desc")]
-		} else if (outcome.testRun?.dateExecuted){
-			filter.dateCriteria = [new DateCriteria(field:"testRun", date: outcome.testRun?.dateExecuted, operator: "<")]
+		} else if (outcome.testRun?.dateExecuted) {
+			filter.dateCriteria = [new DateCriteria(field: "testRun", date: outcome.testRun?.dateExecuted, operator: "<")]
 			filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
 		} else {
-			filter.dateCriteria = [new DateCriteria(field:"dateCreated", date: outcome.dateCreated, operator: "<")]
+			filter.dateCriteria = [new DateCriteria(field: "dateCreated", date: outcome.dateCreated, operator: "<")]
 			filter.sorts = [new SortParameters(sort: "dateCreated", sortOrder: "desc")]
 		}
 
@@ -353,8 +376,8 @@ class DataService {
 		TestOutcomeQueryFilter queryFilter = new TestOutcomeQueryFilter()
 		queryFilter.testCase = testCase
 		queryFilter.testRun = testRun
-		queryFilter.sorts = [new SortParameters(sort:"finishedAt", sortOrder: "desc"),
-			new SortParameters(sort:"dateCreated", sortOrder: "desc")]
+		queryFilter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: "desc"),
+			new SortParameters(sort: "dateCreated", sortOrder: "desc")]
 		getTestOutcomes(queryFilter)
 	}
 
@@ -366,14 +389,14 @@ class DataService {
 
 	List<TestOutcome> getTestOutcomes(TestOutcomeQueryFilter queryFilter) throws CuantoException {
 		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
-        def results
+		def results
 		if (cuantoQuery.paginateParameters) {
 			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
 		} else {
 			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
 		}
-        def transformed = queryFilter.resultTransform(results)
-        return transformed
+		def transformed = queryFilter.resultTransform(results)
+		return transformed
 	}
 
 
@@ -472,7 +495,7 @@ class DataService {
 	}
 
 
-	List getAnalysisStatistics(TestRun testRun) {       
+	List getAnalysisStatistics(TestRun testRun) {
 		def anStates = [:]
 		AnalysisState.list().each { anStates[it.id] = it }
 		def total = TestOutcome.executeQuery("""select t.analysisState.id, count(t.analysisState) from
@@ -485,7 +508,7 @@ class DataService {
 		return stats
 	}
 
-	
+
 	def clearAnalysisStatistics(TestRun testRun) {
 		def statsToDelete = testRun?.testRunStatistics?.analysisStatistics?.collect {it}
 		statsToDelete?.each { stat ->
@@ -593,11 +616,11 @@ class DataService {
 		cases.each { TestCase tc ->
 			def outcomes = TestOutcome.findAllByTestCase(tc)
 			outcomes.each { outcome ->
-				outcome.delete(flush:true)
+				outcome.delete(flush: true)
 			}
 		}
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
-		
+
 	}
 
 
@@ -680,8 +703,6 @@ class DataService {
 	def findOutcomeForTestCase(testCase, testRun) {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
-
-
 }
 
 

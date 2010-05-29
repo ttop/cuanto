@@ -24,21 +24,17 @@ class FailureStatusCalcJob {
 					testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 					updatedTestOutcomes << testOutcome
 				}
-				else {
-					updateTask.delete()
-				}
+				updateTask.delete()
 			}
 
 			if (updatedTestOutcomes) {
 				dataService.saveTestOutcomes(updatedTestOutcomes)
-				log.debug "Re-initialized isFailureStatusChanged for ${updatedTestOutcomes.size()} TestOutcomes."
+				log.info "Re-initialized isFailureStatusChanged for ${updatedTestOutcomes.size()} TestOutcomes."
 			}
 		}
 	}
 
 	List<FailureStatusUpdateTask> getFailureStatusUpdateTasks(int numToGet) {
-		return FailureStatusUpdateTask.createCriteria().list {
-			maxResults(numToGet)
-		}
+		return FailureStatusUpdateTask.list(max: numToGet)
 	}
 }
