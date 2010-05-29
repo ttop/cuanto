@@ -33,13 +33,13 @@ class TestRunController {
 
 	// the delete, save, update and submit actions only accept POST requests
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
-		submitFile: 'POST', createXml:'POST', deleteProperty: 'POST', deleteLink: 'POST']
+		submitFile: 'POST', createXml: 'POST', deleteProperty: 'POST', deleteLink: 'POST']
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
 	def index = { redirect(action: 'list', controller: 'project', params: params) }
 
-	
+
 	def delete = {
 		def testRun = TestRun.get(params.id)
 		def myJson = [:]
@@ -81,7 +81,7 @@ class TestRunController {
 		}
 	}
 
-	
+
 	def edit = {
 		def testRun = TestRun.get(params.id)
 
@@ -105,7 +105,7 @@ class TestRunController {
 			redirect(controller: "testRun", action: edit, id: testRun?.id)
 		} else {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
-			render "Unable to process update" 
+			render "Unable to process update"
 		}
 	}
 
@@ -116,7 +116,7 @@ class TestRunController {
 		if (!params.keySet().contains("note")) {
 			myJson.error = "The note field was missing"
 		} else if (testRun) {
-			testRunService.updateNote(testRun, params.note) 
+			testRunService.updateNote(testRun, params.note)
 		} else {
 			myJson.error = "The test run id field was missing or invalid."
 		}
@@ -157,6 +157,7 @@ class TestRunController {
 						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
 						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
 						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
+						isFailureStatusChanged: outcome.isFailureStatusChanged
 					]
 
 					if (outcome.testOutput) {
@@ -166,15 +167,15 @@ class TestRunController {
 						currentOutcome.output = null
 					}
 
-					def currentTestCase = [name:formatter.getTestName(outcome.testCase), id:outcome.testCase.id]
+					def currentTestCase = [name: formatter.getTestName(outcome.testCase), id: outcome.testCase.id]
 
 					if (outcome.testCase.parameters) {
 						currentTestCase.parameters = outcome.testCase.parameters
 					}
 
-                    if (outcome.tags) {
-                        currentOutcome.tags = outcome.tags.collect{it.name}.sort()
-                    }
+					if (outcome.tags) {
+						currentOutcome.tags = outcome.tags.collect {it.name}.sort()
+					}
 
 					if (outcome.isFailureStatusChanged != null)
 						currentOutcome.isFailureStatusChanged = outcome.isFailureStatusChanged
@@ -188,9 +189,9 @@ class TestRunController {
 				render myJson as JSON
 			}
 			xml {
-				def outcomesToRender = results?.testOutcomes.collect{it.toTestOutcomeApi()}
+				def outcomesToRender = results?.testOutcomes.collect {it.toTestOutcomeApi()}
 				response.contentType = "text/xml"
-			    render xstream.toXML(outcomesToRender)
+				render xstream.toXML(outcomesToRender)
 			}
 			csv {
 				response.contentType = "text/csv"
@@ -204,51 +205,51 @@ class TestRunController {
 	}
 
 
-    def groupedOutput = {
-        if (!params.id) {
-            response.status = response.SC_BAD_REQUEST
-            render "No id parameter was found"
-        } else {
-            def testRun = TestRun.get(params.id)
-            if (!testRun) {
-                response.status = response.SC_NOT_FOUND
-                render "TestRun ${params.id} was not found"
-            } else {
+	def groupedOutput = {
+		if (!params.id) {
+			response.status = response.SC_BAD_REQUEST
+			render "No id parameter was found"
+		} else {
+			def testRun = TestRun.get(params.id)
+			if (!testRun) {
+				response.status = response.SC_NOT_FOUND
+				render "TestRun ${params.id} was not found"
+			} else {
 
-                def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
-                def offset = 0
-                def max = 20
-                def sort = "failures"
-                def order = "desc"
+				def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
+				def offset = 0
+				def max = 20
+				def sort = "failures"
+				def order = "desc"
 
-                if (params.offset) {
-                    offset = Integer.valueOf(params.offset)
-                }
-                if (params.max) {
-                    max = Integer.valueOf(params.max)
-                }
-                if (params.sort) {
-                    sort = params.sort
-                }
-                if (params.order) {
-                    order = params.order
-                }
+				if (params.offset) {
+					offset = Integer.valueOf(params.offset)
+				}
+				if (params.max) {
+					max = Integer.valueOf(params.max)
+				}
+				if (params.sort) {
+					sort = params.sort
+				}
+				if (params.order) {
+					order = params.order
+				}
 
-                def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
+				def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
 
-                def jsonArray = results.collect{
-                    return [failures: it[0], output: it[1].encodeAsHTML()]
-                }
-
-
-                def jsonMap = [groupedOutput: jsonArray, totalCount: totalCount, offset: offset]
-                render jsonMap as JSON
-            }
-        }
-    }
+				def jsonArray = results.collect {
+					return [failures: it[0], output: it[1].encodeAsHTML()]
+				}
 
 
-    def csv = {
+				def jsonMap = [groupedOutput: jsonArray, totalCount: totalCount, offset: offset]
+				render jsonMap as JSON
+			}
+		}
+	}
+
+
+	def csv = {
 		def testRunId = getTestRunIdFromFilename(params.id)
 		if (testRunId) {
 			params.format = 'csv'
@@ -285,7 +286,7 @@ class TestRunController {
 			render "Couldn't parse TestRun ID for XML"
 		}
 	}
-	
+
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)
@@ -352,7 +353,7 @@ class TestRunController {
 		}
 	}
 
-	
+
 	def results = {
 		def testRun = null
 		if (params.id) {

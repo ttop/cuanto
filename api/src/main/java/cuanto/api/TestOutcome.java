@@ -22,13 +22,13 @@
 package cuanto.api;
 
 
-import net.sf.json.JSONObject;
-import net.sf.json.JSONNull;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
-import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -171,6 +171,7 @@ public class TestOutcome {
 
 	/**
 	 * Gets the note associated with this TestOutcome or null if there isn't one.
+	 *
 	 * @return The note associated with this TestOutcome or null if there isn't one.
 	 */
 	public String getNote() {
@@ -181,6 +182,7 @@ public class TestOutcome {
 	/**
 	 * Gets the server-assigned ID for this TestOutcome. This will only be populated if the TestOutcome was fetched from
 	 * the Cuanto server.
+	 *
 	 * @return The server-assigned ID for this TestOutcome, or null if there isn't one.
 	 */
 	public Long getId() {
@@ -321,6 +323,7 @@ public class TestOutcome {
 
 	/**
 	 * Sets the time this TestOutcome's execution started.
+	 *
 	 * @param startedAt The time this TestOutcome's execution started.
 	 */
 	public void setStartedAt(Date startedAt) {
@@ -462,6 +465,7 @@ public class TestOutcome {
 
 	/**
 	 * Creates a JSON representation of this TestOutcome.
+	 *
 	 * @return a JSON string that represents this TestOutcome.
 	 */
 	public String toJSON() {
@@ -497,6 +501,7 @@ public class TestOutcome {
 		jsonMap.put("duration", this.duration);
 		jsonMap.put("startedAt", toJsonDate(startedAt));
 		jsonMap.put("finishedAt", toJsonDate(finishedAt));
+		jsonMap.put("isFailureStatusChanged", isFailureStatusChanged);
 
 		if (this.testRun != null) {
 			jsonMap.put("testRun", this.testRun.toJsonMap());
@@ -513,6 +518,7 @@ public class TestOutcome {
 
 	/**
 	 * Get all the Tags for this TestOutcome.
+	 *
 	 * @return an unmodifiable list of all the Tags.
 	 */
 	public List<String> getTags() {
@@ -522,6 +528,7 @@ public class TestOutcome {
 
 	/**
 	 * Add a tag to this TestOutcome.
+	 *
 	 * @param tag The tag to add.
 	 */
 	public void addTag(String tag) {
@@ -531,8 +538,9 @@ public class TestOutcome {
 
 	/**
 	 * Add tags to this TestOutcome.
+	 *
 	 * @param tags The tags to add.
-	*/
+	 */
 	public void addTags(List<String> tags) {
 		this.tags.addAll(tags);
 	}
