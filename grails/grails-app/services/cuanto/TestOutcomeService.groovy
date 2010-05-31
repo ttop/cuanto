@@ -30,6 +30,7 @@ class TestOutcomeService {
 	def testRunService
 	def bugService
 	def statisticService
+	def failureStatusService
 	def testCaseFormatterRegistry
 
 	def updateTestOutcome(Map params) {
@@ -38,26 +39,15 @@ class TestOutcomeService {
 			applyTestResultToTestOutcome(outcome, dataService.result(params.testResult))
 			applyBugParametersToTestOutcome(outcome, params)
 			applyAnalysisStateToTestOutcome(outcome, params)
-
-			SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-			["startedAt", "finishedAt"].each {
-				if (params.it) {
-					Date candidate = formatter.parse(params.it)
-					if (candidate != null &&
-						(outcome.getProperty(it) == null) ||
-						Math.abs(candidate.time - outcome.getProperty(it)) > 1000) {
-						outcome.setProperty(it, candidate)
-					}
-				}
-			}
+			applyTimeParametersToTestOutcome(outcome, params)
 
 			outcome.note = Sanitizer.escapeHtmlScriptTags(params.note)
 			outcome.owner = Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
 			dataService.deleteBugIfUnused(outcome.bug)
+			failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
 		}
 	}
-
 
 	def updateTestOutcome(pOutcome) {
 		if (pOutcome) {
@@ -90,6 +80,7 @@ class TestOutcomeService {
 
 				dataService.saveDomainObject outcome
 				dataService.deleteBugIfUnused origBug
+				failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
 
 				if (origOutcome.testResult != outcome.testResult && outcome.testRun != null) {
 					statisticService.queueTestRunStats outcome.testRun.id
@@ -155,6 +146,20 @@ class TestOutcomeService {
 		if (analysisState != outcome.analysisState) {
 			outcome.analysisState = analysisState
 			statisticService.calculateAnalysisStats(outcome.testRun)
+		}
+	}
+
+	def applyTimeParametersToTestOutcome(outcome, Map params) {
+		SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
+		["startedAt", "finishedAt"].each {
+			if (params.it) {
+				Date candidate = formatter.parse(params.it)
+				if (candidate != null &&
+					(outcome.getProperty(it) == null) ||
+					Math.abs(candidate.time - outcome.getProperty(it)) > 1000) {
+					outcome.setProperty(it, candidate)
+				}
+			}
 		}
 	}
 

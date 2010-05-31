@@ -44,7 +44,7 @@ class TestRunController {
 		def testRun = TestRun.get(params.id)
 		def myJson = [:]
 		if (testRun) {
-			dataService.deleteTestRun(testRun)
+			testRunService.deleteTestRun(testRun)
 		} else {
 			response.status = response.SC_NOT_FOUND
 			myJson.error = "Test Run ${params.id} was not found"
@@ -58,7 +58,7 @@ class TestRunController {
 		def testRun = TestRun.get(params.testRun)
 
 		if (propToDelete && testRun) {
-			dataService.deleteTestRunProperty(propToDelete)
+			testRunService.deleteTestRunProperty(propToDelete)
 			render "OK"
 		} else {
 			response.setStatus(response.SC_NOT_FOUND)

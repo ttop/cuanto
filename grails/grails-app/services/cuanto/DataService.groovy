@@ -51,33 +51,6 @@ class DataService {
 		return queryResults[0]
 	}
 
-	/**
-	 * Delete all TestOutcomes for a TestRun, then delete the TestRun,
-	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
-	 * for all TestOutcomes in the next TestRun.
-	 */
-	def deleteTestRun(TestRun run) {
-		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
-		run.delete()
-		def nextTestRun = getNextTestRun(run)
-		def testOutcomesToReInitialize = getTestOutcomesForTestRun(nextTestRun)
-		testOutcomesToReInitialize.each { outcome ->
-			saveDomainObject(new FailureStatusUpdateTask(outcome.id))
-		}
-	}
-
-
-	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {
-		if (propToDelete) {
-			TestRun.withTransaction {
-				TestRun testRun = propToDelete.testRun
-				testRun.removeFromTestProperties(propToDelete)
-				saveDomainObject testRun
-				propToDelete.delete()
-			}
-		}
-	}
-
 
 	def deleteOutcomesForTestRun(TestRun run) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
@@ -157,10 +130,10 @@ class DataService {
 		}
 	}
 
-	def getTestOutcomesForTestRun(testRun) {
-		if (!testRun)
+	def getTestOutcomesForTestRun(Long testRunId, Long limit, Long offset) {
+		if (!testRunId)
 			return []
-		TestOutcome.findAll("from cuanto.TestOutcome where testRun.id = ?", [testRun.id])
+		TestOutcome.findAll("from cuanto.TestOutcome where testRun.id = ?", [testRunId], [max: limit, offset: offset])
 	}
 
 
@@ -330,27 +303,40 @@ class DataService {
 
 
 	TestOutcome getPreviousOutcome(TestOutcome outcome) {
+
+		return getAdjacentOutcome(outcome, true)
+	}
+
+	TestOutcome getNextOutcome(TestOutcome outcome) {
+
+		return getAdjacentOutcome(outcome, false)
+	}
+
+	private TestOutcome getAdjacentOutcome(TestOutcome outcome, boolean previous) {
 		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
 		filter.testCase = outcome.testCase
+		def operator = previous ? '<' : '>'
+		def sortOrder = previous ? 'desc' : 'asc'
 
 		if (outcome.finishedAt) {
-			filter.dateCriteria = [new DateCriteria(field: "finishedAt", date: outcome.finishedAt, operator: "<")]
-			filter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: "desc")]
+			filter.dateCriteria = [new DateCriteria(field: "finishedAt", date: outcome.finishedAt, operator: operator)]
+			filter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: sortOrder)]
 		} else if (outcome.startedAt) {
-			filter.dateCriteria = [new DateCriteria(field: "startedAt", date: outcome.startedAt, operator: "<")]
-			filter.sorts = [new SortParameters(sort: "startedAt", sortOrder: "desc")]
+			filter.dateCriteria = [new DateCriteria(field: "startedAt", date: outcome.startedAt, operator: operator)]
+			filter.sorts = [new SortParameters(sort: "startedAt", sortOrder: sortOrder)]
 		} else if (outcome.testRun?.dateExecuted) {
-			filter.dateCriteria = [new DateCriteria(field: "testRun", date: outcome.testRun?.dateExecuted, operator: "<")]
-			filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")]
+			filter.dateCriteria = [new DateCriteria(field: "testRun", date: outcome.testRun?.dateExecuted, operator: operator)]
+			filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: sortOrder)]
 		} else {
-			filter.dateCriteria = [new DateCriteria(field: "dateCreated", date: outcome.dateCreated, operator: "<")]
-			filter.sorts = [new SortParameters(sort: "dateCreated", sortOrder: "desc")]
+			filter.dateCriteria = [new DateCriteria(field: "dateCreated", date: outcome.dateCreated, operator: operator)]
+			filter.sorts = [new SortParameters(sort: "dateCreated", sortOrder: sortOrder)]
 		}
 
 		filter.queryOffset = 0
 		filter.queryMax = 1
 		List outcomes = getTestOutcomes(filter)
 		TestOutcome outcome1 = outcomes[0] as TestOutcome
+
 		return outcome1
 	}
 

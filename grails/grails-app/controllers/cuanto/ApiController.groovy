@@ -1,8 +1,5 @@
 package cuanto
 
-import cuanto.TestOutcome
-import cuanto.TestRun
-import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -17,9 +14,9 @@ class ApiController {
 
 	static def allowedMethods = [deleteTestRun: 'POST']
 
-    def index = { }
+	def index = { }
 
-	
+
 	def addTestRun = {
 		TestRun testRun = parsingService.parseTestRun(request.JSON)
 		dataService.saveTestRun(testRun)
@@ -39,7 +36,7 @@ class ApiController {
 				render "Didn't successfully parse TestRun"
 			}
 		} catch (Exception e) {
-		    response.status = response.SC_INTERNAL_SERVER_ERROR
+			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render "Unknown error: ${e.getMessage()}"
 		}
 	}
@@ -97,17 +94,17 @@ class ApiController {
 			render "Project was not found for projectKey ${params.projectKey}"
 		}
 	}
-    
+
 
 	def addTestOutcome = {
 		TestOutcome testOutcome = parsingService.parseTestOutcome(request.JSON)
 		dataService.saveTestOutcomes([testOutcome])
 
 		if (testOutcome.testRun) {
-            testOutcome.tags?.each {
-                testOutcome.testRun.addToTags(it)
-            }
-            dataService.saveTestRun testOutcome.testRun
+			testOutcome.tags?.each {
+				testOutcome.testRun.addToTags(it)
+			}
+			dataService.saveTestRun testOutcome.testRun
 			statisticService.queueTestRunStats(testOutcome.testRun)
 		}
 
@@ -254,7 +251,7 @@ class ApiController {
 			response.status = response.SC_NOT_FOUND
 			render "TestRun ${params.id} not found"
 		} else {
-			dataService.deleteTestRun(testRun)
+			testRunService.deleteTestRun(testRun)
 			render "Deleted TestRun ${params.id}"
 		}
 	}
