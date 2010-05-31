@@ -5,7 +5,8 @@ import org.springframework.orm.hibernate3.HibernateSystemException
 
 class DataServiceTests extends GroovyTestCase {
 
-	DataService dataService
+	def dataService
+	def testRunService
 	def testOutcomeService
 	def initializationService
 
