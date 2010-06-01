@@ -29,7 +29,6 @@ class TestOutcomeService {
 	def dataService
 	def testRunService
 	def bugService
-	def statisticService
 	def failureStatusService
 	def testCaseFormatterRegistry
 
@@ -82,25 +81,27 @@ class TestOutcomeService {
 				dataService.deleteBugIfUnused origBug
 				failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
 
-				if (origOutcome.testResult != outcome.testResult && outcome.testRun != null) {
-					statisticService.queueTestRunStats outcome.testRun.id
-				}
+				// todo: conditional recalculation of test run statistics
+//				if (origOutcome.testResult != outcome.testResult && outcome.testRun != null) {
+//					statisticService.queueTestRunStats outcome.testRun.id
+//				}
 			}
 		}
 	}
 
 
 	def applyTestResultToTestOutcome(testOutcome, testResult) {
+		// todo: conditional recalculation of test run statistics
 		if (testOutcome && testResult) {
-			boolean recalc = false
-			if (testResult != testOutcome.testResult && testOutcome.testRun != null) {
-				recalc = true
-			}
+//			boolean recalc = false
+//			if (testResult != testOutcome.testResult && testOutcome.testRun != null) {
+//				recalc = true
+//			}
 
 			testOutcome.testResult = testResult
-			if (recalc) {
-				statisticService.queueTestRunStats(testOutcome.testRun)
-			}
+//			if (recalc) {
+//				statisticService.queueTestRunStats(testOutcome.testRun)
+//			}
 		}
 	}
 
@@ -145,7 +146,8 @@ class TestOutcomeService {
 
 		if (analysisState != outcome.analysisState) {
 			outcome.analysisState = analysisState
-			statisticService.calculateAnalysisStats(outcome.testRun)
+			// todo: conditional recalculation of test run statistics
+//			statisticService.calculateAnalysisStats(outcome.testRun)
 		}
 	}
 
@@ -227,7 +229,9 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
+
+		// todo: conditional recalculation of test run statistics
+		failureStatusService.queueFailureStatusUpdateForOutcomes(targetTestOutcomes)
 	}
 
 
@@ -241,7 +245,9 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
+
+		// todo: conditional recalculation of test run statistics
+		failureStatusService.queueFailureStatusUpdateForOutcomes(targetTestoutcomes)
 	}
 
 

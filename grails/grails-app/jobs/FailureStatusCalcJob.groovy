@@ -8,6 +8,7 @@ import cuanto.TestRun
 class FailureStatusCalcJob {
 	def dataService
 	def testOutcomeService
+	def statisticService
 	def transactional = true
 	def concurrent = false
 	static final long INTERVAL = 15000
@@ -24,10 +25,14 @@ class FailureStatusCalcJob {
 
 			switch (updateTask.type) {
 				case TestOutcome.class:
-					updatedTestOutcomes << updateTestOutcome(updateTask.targetId)
+					def updatedTestOutcome = updateTestOutcome(updateTask.targetId)
+					updatedTestOutcomes << updatedTestOutcome
+					// todo: conditional recalculation of test run statistics
+					statisticService.queueTestRunStats(updatedTestOutcome.testRun.id)
 					break
 				case TestRun.class:
 					updatedTestOutcomes + updateTestOutcomesForTestRun(updateTask.targetId)
+					statisticService.queueTestRunStats(updateTask.targetId)
 					break
 			}
 

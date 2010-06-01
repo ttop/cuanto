@@ -5,12 +5,18 @@ class FailureStatusService {
 	def dataService
 	boolean transactional = false
 
-	def queueFailureStatusUpdateForOutcome(affectedOutcome) {
-		if (affectedOutcome) {
-			log.info "adding test outcome ${affectedOutcome.id} to failure status update queue"
-			def updateTaskForAffectedOutcome = new FailureStatusUpdateTask(affectedOutcome)
-			dataService.saveDomainObject(updateTaskForAffectedOutcome)
+	def queueFailureStatusUpdateForOutcomes(affectedOutcomes) {
+		if (affectedOutcomes) {
+			log.info "adding test outcomes ${affectedOutcomes*.id} to failure status update queue"
+			def updateTasksForAffectedOutcomes = affectedOutcomes.collect { affectedOutcome ->
+				new FailureStatusUpdateTask(affectedOutcome)
+			}
+			dataService.saveTestOutcomes(updateTasksForAffectedOutcomes)
 		}
+	}
+
+	def queueFailureStatusUpdateForOutcome(affectedOutcome) {
+		queueFailureStatusUpdateForOutcomes([affectedOutcome])
 	}
 
 	def queueFailureStatusUpdateForRun(affectedTestRun) {
