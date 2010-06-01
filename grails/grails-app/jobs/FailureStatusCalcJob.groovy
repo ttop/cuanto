@@ -27,8 +27,7 @@ class FailureStatusCalcJob {
 				case TestOutcome.class:
 					def updatedTestOutcome = updateTestOutcome(updateTask.targetId)
 					updatedTestOutcomes << updatedTestOutcome
-					// todo: conditional recalculation of test run statistics
-					statisticService.queueTestRunStats(updatedTestOutcome.testRun.id)
+					statisticService.queueTestRunStats(updatedTestOutcome.testRun?.id)
 					break
 				case TestRun.class:
 					updatedTestOutcomes + updateTestOutcomesForTestRun(updateTask.targetId)
