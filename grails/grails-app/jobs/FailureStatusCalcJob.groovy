@@ -26,8 +26,10 @@ class FailureStatusCalcJob {
 			switch (updateTask.type) {
 				case TestOutcome.class:
 					def updatedTestOutcome = updateTestOutcome(updateTask.targetId)
-					updatedTestOutcomes << updatedTestOutcome
-					statisticService.queueTestRunStats(updatedTestOutcome.testRun?.id)
+					if (updatedTestOutcome) {
+						updatedTestOutcomes << updatedTestOutcome
+						statisticService.queueTestRunStats(updatedTestOutcome.testRun?.id)
+					}
 					break
 				case TestRun.class:
 					updatedTestOutcomes + updateTestOutcomesForTestRun(updateTask.targetId)
@@ -46,11 +48,20 @@ class FailureStatusCalcJob {
 
 	TestOutcome updateTestOutcome(Long testOutcomeId) {
 		def testOutcome = TestOutcome.get(testOutcomeId)
-		if (testOutcome)
-			testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
-		dataService.saveDomainObject testOutcome
+		if (testOutcome) {
+			def previousValue = testOutcome.isFailureStatusChanged
+			def newValue = testOutcomeService.isFailureStatusChanged(testOutcome)
+			if (previousValue != newValue) {
+				testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+				dataService.saveDomainObject testOutcome
+				return testOutcome
+			}
+		}
 
-		return testOutcome
+		log.info "Ignoring TestOutcome $testOutcomeId, " +
+			"because it either does not exist or the failure status did not change."
+
+		return null
 	}
 
 	List updateTestOutcomesForTestRun(Long testRunId) {
