@@ -6316,7 +6316,7 @@ YAHOO.widget.CalendarNavigator.prototype = {
 	/**
 	 * Displays the navigator and mask, updating the input controls to reflect the 
 	 * currently set month and year. The show method will invoke the render method
-	 * if the navigator has not been renderered already, allowing for lazy rendering
+	 * if the navigator has not been renderered already, allowing for cuanto rendering
 	 * of the control.
 	 * 
 	 * The show method will fire the Calendar/CalendarGroup's beforeShowNav and showNav events

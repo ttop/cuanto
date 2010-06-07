@@ -5,7 +5,8 @@ import org.springframework.orm.hibernate3.HibernateSystemException
 
 class DataServiceTests extends GroovyTestCase {
 
-	DataService dataService
+	def dataService
+	def testRunService
 	def testOutcomeService
 	def initializationService
 
@@ -434,6 +435,7 @@ class DataServiceTests extends GroovyTestCase {
 
 		def outcomes = []
 		def testRun = to.getTestRun(proj)
+		testRun.testRunStatistics = null // make sure testRunStatistics is null at first
 		if (!testRun.save()) {
 			reportError testRun
 		}
@@ -452,7 +454,7 @@ class DataServiceTests extends GroovyTestCase {
 			reportError testRun
 		}
 
-		dataService.deleteTestRun(testRun)
+		testRunService.deleteTestRun(testRun)
 
 		assertNull "Test run not deleted", TestRun.get(testRun.id)
 		assertEquals "Test outcomes not deleted", 0, TestOutcome.list().size()
@@ -486,7 +488,7 @@ class DataServiceTests extends GroovyTestCase {
 			reportError testRun
 		}
 
-		dataService.deleteTestRun(testRun)
+		testRunService.deleteTestRun(testRun)
 
 		assertNull "Test run not deleted", TestRun.get(testRun.id)
 		assertEquals "Test outcomes not deleted", 0, TestOutcome.list().size()
@@ -497,7 +499,7 @@ class DataServiceTests extends GroovyTestCase {
 	void testDeleteStatisticsForTestRun() {
 		Project proj = to.project
 		proj.save()
-		
+
 		def testRun = to.getTestRun(proj)
 		if (!testRun.save()) {
 			reportError testRun
@@ -507,7 +509,7 @@ class DataServiceTests extends GroovyTestCase {
 		stats.testRun = testRun
 		testRun.testRunStatistics = stats
 
-		if (!testRun.save(flush:true)) {
+		if (!testRun.save(flush: true)) {
 			reportError testRun
 		}
 
@@ -517,7 +519,7 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "AnalysisStatistics not deleted", 0, AnalysisStatistic.list().size()
 	}
 
-	
+
 	void testGetProject() {
 		Project proj = to.project
 		proj.save()
@@ -537,7 +539,7 @@ class DataServiceTests extends GroovyTestCase {
 			projects << to.project.save()
 		}
 		projects.each { proj ->
-			assertEquals "Wrong project", proj.id, dataService.getProjectByKey(proj.projectKey).id 
+			assertEquals "Wrong project", proj.id, dataService.getProjectByKey(proj.projectKey).id
 		}
 	}
 
@@ -810,7 +812,7 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "New test type not found", testType, TestType.findByName(typeName)
 
 		dataService.createTestType(dataService.getTestType("JUnit").name)
-		assertEquals "Wrong number of test types", numTypes + 1, TestType.list().size() 
+		assertEquals "Wrong number of test types", numTypes + 1, TestType.list().size()
 	}
 
 
@@ -832,7 +834,7 @@ class DataServiceTests extends GroovyTestCase {
 
 	void testGetMostRecentTestRunForProjectKey() {
 		def project = to.project
-		dataService.saveDomainObject project 
+		dataService.saveDomainObject project
 		assertNull "No runs should've been returned", dataService.getMostRecentTestRunForProjectKey(project.projectKey)
 
 		def mostRecent = to.getTestRun(project)
@@ -862,33 +864,7 @@ class DataServiceTests extends GroovyTestCase {
 
 		def outcomes = []
 		def testRuns = []
-		1.upto(4){
-			def testRun = to.getTestRun(project)
-			dataService.saveDomainObject testRun
-			testRuns << testRun
-			def testOutcome = to.getTestOutcome(testCase, testRun)
-			dataService.saveDomainObject testOutcome
-			outcomes << testOutcome
-			if (it != 4) {
-				sleep(SYSTEM_SLEEP)
-			}
-		}
-
-		assertEquals "Wrong outcome returned", outcomes[2], dataService.getPreviousOutcome(testCase, testRuns[3].dateExecuted)
-		assertEquals "Wrong outcome returned", outcomes[1], dataService.getPreviousOutcome(testCase, testRuns[2].dateExecuted)
-		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(testCase, testRuns[1].dateExecuted)
-	}
-
-	void testGetPreviousOutcome2() {
-		def project = to.project
-		dataService.saveDomainObject project
-
-		def testCase = to.getTestCase(project)
-		dataService.saveDomainObject testCase
-
-		def outcomes = []
-		def testRuns = []
-		1.upto(4){
+		1.upto(4) {
 			def testRun = to.getTestRun(project)
 			dataService.saveDomainObject testRun
 			testRuns << testRun
@@ -905,6 +881,32 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
 	}
 
+	void testGetNextOutcome() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		def testRuns = []
+		1.upto(4) {
+			def testRun = to.getTestRun(project)
+			dataService.saveDomainObject testRun
+			testRuns << testRun
+			def testOutcome = to.getTestOutcome(testCase, testRun)
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[3], dataService.getNextOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getNextOutcome(outcomes[1])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getNextOutcome(outcomes[0])
+	}
+
 
 	void testGetPreviousOutcomeFinishedAt() {
 		def project = to.project
@@ -914,7 +916,7 @@ class DataServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject testCase
 
 		def outcomes = []
-		1.upto(4){
+		1.upto(4) {
 			def testOutcome = to.getTestOutcome(testCase, null)
 
 			testOutcome.finishedAt = new Date()
@@ -931,6 +933,31 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
+	void testGetNextOutcomeFinishedAt() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		1.upto(4) {
+			def testOutcome = to.getTestOutcome(testCase, null)
+
+			testOutcome.finishedAt = new Date()
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[3], dataService.getNextOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getNextOutcome(outcomes[1])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getNextOutcome(outcomes[0])
+	}
+
+
 	void testGetPreviousOutcomeStartedAt() {
 		def project = to.project
 		dataService.saveDomainObject project
@@ -939,7 +966,7 @@ class DataServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject testCase
 
 		def outcomes = []
-		1.upto(4){
+		1.upto(4) {
 			def testOutcome = to.getTestOutcome(testCase, null)
 			testOutcome.startedAt = new Date()
 			dataService.saveDomainObject testOutcome
@@ -955,6 +982,30 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
+	void testGetNextOutcomeStartedAt() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		def outcomes = []
+		1.upto(4) {
+			def testOutcome = to.getTestOutcome(testCase, null)
+			testOutcome.startedAt = new Date()
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
+			}
+		}
+
+		assertEquals "Wrong outcome returned", outcomes[3], dataService.getNextOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getNextOutcome(outcomes[1])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getNextOutcome(outcomes[0])
+	}
+
+
 	void testGetPreviousOutcomeDateCreated() {
 		def project = to.project
 		dataService.saveDomainObject project
@@ -963,7 +1014,7 @@ class DataServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject testCase
 
 		def outcomes = []
-		1.upto(4){
+		1.upto(4) {
 			def testOutcome = to.getTestOutcome(testCase, null)
 			dataService.saveDomainObject testOutcome
 			outcomes << testOutcome
@@ -977,137 +1028,104 @@ class DataServiceTests extends GroovyTestCase {
 		assertEquals "Wrong outcome returned", outcomes[0], dataService.getPreviousOutcome(outcomes[1])
 	}
 
-	
-	void testGetNewFailures() {
+
+	void testGetNextOutcomeDateCreated() {
 		def project = to.project
 		dataService.saveDomainObject project
 
-		def testCases = []
-
-		1.upto(4){
-			def testCase = to.getTestCase(project)
-			dataService.saveDomainObject testCase
-			testCases << testCase
-		}
-
-		def testRuns = []
-
-		1.upto(4){
-			def testRun = to.getTestRun(project)
-			dataService.saveDomainObject testRun
-			testRuns << testRun
-			sleep(SYSTEM_SLEEP)
-		}
+		def testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
 
 		def outcomes = []
-		testRuns.each { testRun ->
-			def tmpoutcomes = []
-			testCases.each {testCase ->
-				def testOutcome = to.getTestOutcome(testCase, testRun)
-				testOutcome.testRun = testRun
-				dataService.saveDomainObject testOutcome 
-				tmpoutcomes << testOutcome
+		1.upto(4) {
+			def testOutcome = to.getTestOutcome(testCase, null)
+			dataService.saveDomainObject testOutcome
+			outcomes << testOutcome
+			if (it != 4) {
+				sleep(SYSTEM_SLEEP)
 			}
-			dataService.saveDomainObject testRun
-			outcomes << tmpoutcomes
 		}
 
-		assertEquals 4, outcomes.size()
-
-		def FAIL = dataService.result("fail")
-
-		outcomes[2][1].testResult = FAIL
-		outcomes[2][2].testResult = FAIL
-
-		outcomes[2].each { outc ->
-			dataService.saveDomainObject outc
-		}
-
-		outcomes[3][0].testResult = FAIL
-		outcomes[3][1].testResult = FAIL
-		outcomes[3][3].testResult = FAIL
-
-		def newFailures = dataService.getNewFailures(outcomes[3], testRuns[3].dateExecuted)
-		assertEquals "Wrong number of new failures", 2, newFailures.size()
-		assertEquals "Wrong new failed outcome", outcomes[3][0], newFailures[0]
-		assertEquals "Wrong new failed outcome", outcomes[3][3], newFailures[1]
-
-		def newRunOne = to.getTestRun(project)
-		outcomes.push([])
-		outcomes[4].push(to.getTestOutcome(testCases[0], newRunOne))
-		outcomes[4].push(to.getTestOutcome(testCases[1], newRunOne))
-		outcomes[4][0].testResult = FAIL
-		outcomes[4][1].testResult = FAIL
-
-		dataService.saveDomainObject(outcomes[4][0])
-		dataService.saveDomainObject(outcomes[4][1])
-		dataService.saveDomainObject newRunOne
-
-		newFailures = dataService.getNewFailures(outcomes[4], newRunOne.dateExecuted)
-		assertEquals "Wrong number of new failures", 0, newFailures.size()
-
-		def newRunTwo = to.getTestRun(project)
-		outcomes.push([])
-		outcomes[5].push(to.getTestOutcome(testCases[0], newRunTwo))
-		outcomes[5].push(to.getTestOutcome(testCases[1], newRunTwo))
-		outcomes[5].push(to.getTestOutcome(testCases[2], newRunTwo))
-		outcomes[5].push(to.getTestOutcome(testCases[3], newRunTwo))
-		outcomes[5][0].testResult = FAIL
-		outcomes[5][1].testResult = FAIL
-		outcomes[5][3].testResult = FAIL
-		outcomes[5].each {
-			dataService.saveDomainObject it
-		}
-		dataService.saveDomainObject newRunTwo
-
-		newFailures = dataService.getNewFailures(outcomes[5], newRunTwo.dateExecuted)
-		assertEquals "Wrong number of new failures", 0, newFailures.size()
-
-		outcomes[3][3].testResult = dataService.result("pass")
-		dataService.saveDomainObject outcomes[3][3]
-
-		newFailures = dataService.getNewFailures(outcomes[5], newRunTwo.dateExecuted)
-		assertEquals "Wrong number of new failures", 1, newFailures.size()
-		assertEquals "Wrong new failure", outcomes[5][3], newFailures[0]
+		assertEquals "Wrong outcome returned", outcomes[3], dataService.getNextOutcome(outcomes[2])
+		assertEquals "Wrong outcome returned", outcomes[2], dataService.getNextOutcome(outcomes[1])
+		assertEquals "Wrong outcome returned", outcomes[1], dataService.getNextOutcome(outcomes[0])
 	}
 
 
-	void testGetNewFailuresAllNew() {
-		def project = to.project
-		dataService.saveDomainObject project
+	void testGetTestOutcomesForNextTestRun() {
+		// create my project
+		Project proj1 = to.project
+		dataService.saveDomainObject(proj1)
 
-		def testCases = []
+		// create some other project
+		Project proj2 = to.project
+		dataService.saveDomainObject(proj2)
 
-		1.upto(4){
-			def testCase = to.getTestCase(project)
-			dataService.saveDomainObject testCase
-			testCases << testCase
+		// create test cases for my project
+		def testCasesForProj1 = []
+		1.upto(10) {
+			testCasesForProj1 << to.getTestCase(proj1)
+		}
+		dataService.addTestCases(proj1, testCasesForProj1)
+
+		// create test cases for other project
+		def testCasesForProj2 = []
+		1.upto(10) {
+			testCasesForProj2 << to.getTestCase(proj2)
+		}
+		dataService.addTestCases(proj2, testCasesForProj2)
+
+		// create a test run for proj 1
+		def outcomesForRun1 = createNewTestRun(proj1, new Date(1000), testCasesForProj1)
+		def testRun1 = outcomesForRun1[0].testRun
+
+		// create a test run for proj 2
+		createNewTestRun(proj2, new Date(2000), testCasesForProj2)
+
+		// create the next test run for proj 1
+		def outcomesForRun2 = createNewTestRun(proj1, new Date(3000), testCasesForProj1)
+		def testRun2 = outcomesForRun2[0].testRun
+
+		// create the next test run for proj 2
+		createNewTestRun(proj2, new Date(4000), testCasesForProj2)
+
+		// create the next test run for proj 1
+		def outcomesForRun3 = createNewTestRun(proj1, new Date(5000), testCasesForProj1)
+		def testRun3 = outcomesForRun3[0].testRun
+
+		// create the next test run for proj 2
+		createNewTestRun(proj2, new Date(6000), testCasesForProj2)
+
+		// find outcomes for the run after testRun1
+		def testRunAfterRun1 = dataService.getNextTestRun(testRun1)
+		assertEquals "Unexpected TestRun.", testRun2.id, testRunAfterRun1.id
+		assertEquals "Unexpected TestOutcomes for the next TestRun",
+			outcomesForRun2, dataService.getTestOutcomesForTestRun(testRunAfterRun1.id, 1000, 0)
+
+		// find outcomes for the run after testRun2
+		def testRunAfterRun2 = dataService.getNextTestRun(testRun2)
+		assertEquals "Unexpected TestRun.", testRun3.id, testRunAfterRun2.id
+		assertEquals "Unexpected TestOutcomes for the next TestRun",
+			outcomesForRun3, dataService.getTestOutcomesForTestRun(testRunAfterRun2.id, 1000, 0)
+
+		// find outcomes for the run after testRun3
+		def testRunAfterRun3 = dataService.getNextTestRun(testRun3)
+		assertNull "The last TestRun in this project should not have any next TestRuns.", testRunAfterRun3
+	}
+
+	List<TestOutcome> createNewTestRun(Project proj, Date dateExecuted, List<TestCase> testCases) {
+		TestRun testRun = to.getTestRun(proj)
+		testRun.dateExecuted = dateExecuted
+		dataService.saveDomainObject(testRun)
+
+		def testOutcomes = []
+		testCases.each { testCase ->
+			testOutcomes << to.getTestOutcome(testCase, testRun)
+			testOutcomes << to.getTestOutcome(testCase, testRun)
 		}
 
-		def testRun = to.getTestRun(project)
-		dataService.saveDomainObject testRun
-		sleep(SYSTEM_SLEEP)
-
-
-		def outcomes = []
-			testCases.each {testCase ->
-				def testOutcome = to.getTestOutcome(testCase, testRun)
-				testOutcome.testRun = null
-				dataService.saveDomainObject testOutcome
-				outcomes << testOutcome
-			}
-			dataService.saveDomainObject testRun
-
-		assertEquals 4, outcomes.size()
-
-		def FAIL = dataService.result("fail")
-		outcomes[0..1].each {
-			it.testResult = FAIL
-			dataService.saveDomainObject it
-		}
-
-		def newFailures = dataService.getNewFailures(outcomes, testRun.dateExecuted)
-		assertEquals "Wrong number of new failures", 2 , newFailures.size()
+		dataService.saveTestOutcomes(testOutcomes)
+		return testOutcomes
 	}
 
 

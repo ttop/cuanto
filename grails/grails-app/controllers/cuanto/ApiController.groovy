@@ -245,7 +245,7 @@ class ApiController {
 			response.status = response.SC_NOT_FOUND
 			render "TestRun ${params.id} not found"
 		} else {
-			dataService.deleteTestRun(testRun)
+			testRunService.deleteTestRun(testRun)
 			render "Deleted TestRun ${params.id}"
 		}
 	}

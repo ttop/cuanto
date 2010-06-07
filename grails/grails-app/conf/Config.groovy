@@ -67,12 +67,12 @@ log4j = {
 	       'org.codehaus.groovy.grails.commons', // core / classloading
 	       'org.codehaus.groovy.grails.plugins', // plugins
 	       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-			'org.codehaus.groovy.grails.scaffolding.view.ScaffoldingViewResolver',
+	       'org.codehaus.groovy.grails.scaffolding.view.ScaffoldingViewResolver',
 	       'org.springframework',
 	       'org.hibernate'
 
 	warn 'org.hibernate.SQL'
-    warn   'org.mortbay.log'
+    warn 'org.mortbay.log'
 }
 
 // UI Performance configurations
@@ -85,6 +85,9 @@ uiperformance.determineVersion = { -> appVersion }
 
 // statSleep is the time to sleep between calculating test run stats
 statSleep = 1000
+
+// testOutcomeAndTestRunInitSleep is the time to sleep between initializing TestOutcomes and TestRuns
+testOutcomeAndTestRunInitSleep = 5000
 
 bullet = "&bull;"
 

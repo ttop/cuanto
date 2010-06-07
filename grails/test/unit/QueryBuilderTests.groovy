@@ -28,6 +28,7 @@ import cuanto.queryprocessor.DateExecutedQueryModule
 import cuanto.DateCriteria
 import cuanto.queryprocessor.TagNameQueryModule
 import cuanto.queryprocessor.HasTagsQueryModule
+import cuanto.queryprocessor.FailureStatusChangedQueryModule
 
 /**
  * User: Todd Wells
@@ -43,12 +44,14 @@ public class QueryBuilderTests extends GroovyTestCase {
 
 	void setUp() {
 		queryBuilder = new QueryBuilder()
-		queryBuilder.queryModules = [new TestRunQueryModule(), new TestResultIsFailureQueryModule(),
-		new TestResultQueryModule(), new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(),
-		new TestCasePackageQueryModule(), new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(),
-		new IsAnalyzedQueryModule(), new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
-		new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule(),
-		new DateExecutedQueryModule(), new TagNameQueryModule(), new HasTagsQueryModule()]
+		queryBuilder.queryModules = [
+			new TestRunQueryModule(), new TestResultIsFailureQueryModule(), new TestResultQueryModule(),
+			new TestCaseFullNameQueryModule(), new TestCaseParametersQueryModule(), new TestCasePackageQueryModule(),
+			new ProjectQueryModule(), new TestResultIncludedInCalculationsQueryModule(), new IsAnalyzedQueryModule(),
+			new AnalysisStateQueryModule(), new BugQueryModule(), new OwnerQueryModule(),
+			new TestCaseQueryModule(), new NoteQueryModule(), new TestOutputQueryModule(),
+			new DateExecutedQueryModule(), new TagNameQueryModule(), new HasTagsQueryModule(),
+			new FailureStatusChangedQueryModule()]
 	}
 
 	void testTestRun() {

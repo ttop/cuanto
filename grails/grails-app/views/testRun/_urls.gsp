@@ -33,6 +33,7 @@ YAHOO.cuanto.urls.set('outputImg', "${resource(dir: 'images/tango/16x16', file: 
 YAHOO.cuanto.urls.set('analysisImg', "${resource(dir: 'images/tango/16x16', file: 'accessories-text-editor.png')}");
 YAHOO.cuanto.urls.set('progressImg', "${resource(dir: 'images/progress', file: 'mozilla_blu.gif')}");
 YAHOO.cuanto.urls.set('shortcutImg', "${resource(dir: 'images/tango/16x16', file: 'shortcut.png')}");
+YAHOO.cuanto.urls.set('alertImg', "${resource(dir: 'images/splashyicons/16x16', file: 'alert.png')}");
 YAHOO.cuanto.urls.set('bugSummary', "${createLink(controller:'testRun', action: 'bugSummary')}/${testRun?.id}");
 YAHOO.cuanto.urls.set('failureChart', "${createLink(controller:'testRun', action: 'failureChart')}/${testRun?.id}");
 YAHOO.cuanto.urls.set('summaryTable', "${createLink(controller:'testRun', action: 'summaryTable')}/${testRun?.id}");

@@ -1838,7 +1838,7 @@ YAHOO.widget.Node.prototype = {
 
         var ret = true;
 
-        // When returning from the lazy load handler, expand is called again
+        // When returning from the cuanto load handler, expand is called again
         // in order to render the new children.  The "expand" event already
         // fired before fething the new data, so we need to skip it now.
         if (!lazySource) {
@@ -1876,7 +1876,7 @@ YAHOO.widget.Node.prototype = {
 
         // this.getSpacer().title = this.getStateText();
 
-        // We do an extra check for children here because the lazy
+        // We do an extra check for children here because the cuanto
         // load feature can expose nodes that have no children.
 
         // if (!this.hasChildren()) {
@@ -1955,7 +1955,7 @@ YAHOO.widget.Node.prototype = {
         for (var i=0;i<this.children.length;++i) {
             var c = this.children[i];
             if (c.isDynamic()) {
-                this.logger.log("Not supported (lazy load + expand all)");
+                this.logger.log("Not supported (cuanto load + expand all)");
                 break;
             } else if (! c.multiExpand) {
                 this.logger.log("Not supported (no multi-expand + expand all)");
@@ -2025,8 +2025,8 @@ YAHOO.widget.Node.prototype = {
             return false;
         } else {
             return (!this.isRoot() && (this._dynLoad || this.tree.root._dynLoad));
-            // this.logger.log("isDynamic: " + lazy);
-            // return lazy;
+            // this.logger.log("isDynamic: " + cuanto);
+            // return cuanto;
         }
     },
 
@@ -2042,7 +2042,7 @@ YAHOO.widget.Node.prototype = {
     },
 
     /**
-     * Checks if this node has children.  If this node is lazy-loading and the
+     * Checks if this node has children.  If this node is cuanto-loading and the
      * children have not been rendered, we do not know whether or not there
      * are actual children.  In most cases, we need to assume that there are
      * children (for instance, the toggle needs to show the expandable 

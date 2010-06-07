@@ -34,6 +34,7 @@ class ParsingService {
 	def testParserRegistry
 	def statisticService
 	def projectService
+	def testOutcomeService
 
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
@@ -65,12 +66,12 @@ class ParsingService {
 		if (testRun) {
 			statisticService.queueTestRunStats(testRun)
 
-            testOutcomesToSave.each { outcome ->
-                outcome.tags?.each { tag ->
-                    testRun.addToTags(tag)
-                }
-            }
-            dataService.saveTestRun(testRun)
+			testOutcomesToSave.each { outcome ->
+				outcome.tags?.each { tag ->
+					testRun.addToTags(tag)
+				}
+			}
+			dataService.saveTestRun(testRun)
 		}
 		return testRun
 	}
@@ -115,6 +116,7 @@ class ParsingService {
 
 		testOutcome.note = parseJsonForString(jsonTestOutcome, "note")
 		testOutcome.owner = parseJsonForString(jsonTestOutcome, "owner")
+		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 
 		if (!jsonTestOutcome.isNull("bug")) {
 			def jsonBug = jsonTestOutcome.getJSONObject("bug")
@@ -129,16 +131,15 @@ class ParsingService {
 			testOutcome.analysisState = dataService.getAnalysisStateByName(jsonTestOutcome.getString("analysisState"))
 		}
 
-        if (!jsonTestOutcome.isNull("tags")) {
-            JSONArray jsonTags = jsonTestOutcome.getJSONArray("tags")
-            jsonTags.each {
-                testOutcome.addToTags(procureTag(it))
-            }
-        }
+		if (!jsonTestOutcome.isNull("tags")) {
+			JSONArray jsonTags = jsonTestOutcome.getJSONArray("tags")
+			jsonTags.each {
+				testOutcome.addToTags(procureTag(it))
+			}
+		}
 
 		return testOutcome;
 	}
-
 
 	/**
 	 * Parse a TestRun from the JSONObject.
@@ -174,7 +175,7 @@ class ParsingService {
 		testRun.testRunStatistics = new TestRunStats()
 		return testRun
 	}
-	
+
 
 	Project getProjectFromJsonObject(JSONObject jsonTestOutcome) {
 		String projectKey = jsonTestOutcome.getString("projectKey")
@@ -212,7 +213,7 @@ class ParsingService {
 
 		TestCase testCase = parseTestCase(parsableTestOutcome, project)
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
-		
+
 		if (matchingTestCase) {
 			testCase = matchingTestCase
 		} else {
@@ -234,11 +235,12 @@ class ParsingService {
 		testOutcome.testRun = testRun
 		testOutcome.startedAt = parsableTestOutcome.startedAt
 		testOutcome.finishedAt = parsableTestOutcome.finishedAt
+		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 		processTestFailure(testOutcome, project)
-        List tags = processTags(parsableTestOutcome)
-        tags.each {
-            testOutcome.addToTags(it)
-        }
+		List tags = processTags(parsableTestOutcome)
+		tags.each {
+			testOutcome.addToTags(it)
+		}
 		return testOutcome
 	}
 
@@ -302,7 +304,7 @@ class ParsingService {
 		parseFileFromStream(file.newInputStream(), testRunId)
 	}
 
-	TestRun parseFileWithoutTestRun(file,  projectId) {
+	TestRun parseFileWithoutTestRun(file, projectId) {
 		parseFileFromStream(file.newInputStream(), null, projectId)
 	}
 
@@ -347,7 +349,7 @@ class ParsingService {
 				def firstUrl = urls.find {it -> project.getBugMap(it).url }
 				def bugInfo = project.getBugMap(firstUrl)
 				if (bugInfo && bugInfo.url) {
-					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url) 
+					testOutcome.bug = bugService.getBug(bugInfo.title, bugInfo.url)
 					testOutcome.analysisState = AnalysisState.findByIsBug(true)
 					testOutcome.note = "Bug auto-populated based on the test output matching the project's bug pattern."
 				}
@@ -356,35 +358,33 @@ class ParsingService {
 		}
 	}
 
+	List<Tag> processTags(ParsableTestOutcome testOutcome) {
+		List tags = []
+		testOutcome.tags.each { tagName ->
+			def tag = procureTag(tagName)
+			tags << tag
+		}
+		return tags
+	}
 
-    List<Tag> processTags(ParsableTestOutcome testOutcome) {
-        List tags = []
-        testOutcome.tags.each { tagName ->
-            def tag = procureTag(tagName)
-            tags << tag
-        }
-        return tags
-    }
-
-
-    /**
-     * Find an existing tag or create a new tag
-     * @param tagName - the tag name
-     * @return The tag
-     */
-    Tag procureTag(String tagName) {
-        def existingTag = Tag.findByNameIlike(tagName)
-        if (existingTag) {
-            return existingTag
-        } else {
-            Tag newTag = new Tag(name: tagName)
-            dataService.saveDomainObject newTag
-            return newTag
-        }
-    }
+	/**
+	 * Find an existing tag or create a new tag
+	 * @param tagName - the tag name
+	 * @return The tag
+	 */
+	Tag procureTag(String tagName) {
+		def existingTag = Tag.findByNameIlike(tagName)
+		if (existingTag) {
+			return existingTag
+		} else {
+			Tag newTag = new Tag(name: tagName)
+			dataService.saveDomainObject newTag
+			return newTag
+		}
+	}
 
 
-    def parseUrls(strInput) {
+	def parseUrls(strInput) {
 		// return a list of all URLs found in strInput
 		def urls = []
 		def urlRegEx = '([A-Za-z][A-Za-z0-9+.-]{1,120}:[A-Za-z0-9/](([A-Za-z0-9$_.+!*,;/?:@&~=-])|%[A-Fa-f0-9]{2}){1,333}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*,;/?:@&~=%-]{0,1000}))?)'

@@ -39,6 +39,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	var historyImgUrl =  YAHOO.cuanto.urls.get('historyImg');
 	var outputImgUrl = YAHOO.cuanto.urls.get('outputImg');
 	var anlzImgUrl = YAHOO.cuanto.urls.get('analysisImg');
+	var alertImgUrl = YAHOO.cuanto.urls.get('alertImg');
 	var columnDialog;
     var tagButtons = [];
 
@@ -154,7 +155,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt", "tags"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt", "tags", "isFailureStatusChanged"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -457,8 +458,20 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 
 	function formatTestCase(elCell, oRecord, oColumn, oData) {
-		var displayStr = YAHOO.cuanto.format.breakOnToken(oData.name, '.', 400) + " ";
-		elCell.innerHTML = displayStr;
+		elCell.innerHTML = "";
+
+		var result = oRecord.getData().result.toLowerCase();
+		var isNewFailure = oRecord.getData().isFailureStatusChanged && (result == "fail" || result == "error");
+
+		var testCaseString = YAHOO.cuanto.format.breakOnToken(oData.name, '.', 400) + " ";
+		if (isNewFailure)
+		{
+			var alertImg = new Element('img', {src: alertImgUrl});
+			setImgTitleAndAlt(alertImg, "New Failure");
+			elCell.appendChild(alertImg);
+			elCell.innerHTML += " ";
+		}
+		elCell.innerHTML +=  testCaseString;
 	}
 
 	function formatParameters(elCell, oRecord, oColumn, oData) {

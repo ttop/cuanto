@@ -26,10 +26,7 @@ class InitializationService {
 
 	def grailsApplication
 	def dataService
-    def parsingService
 	boolean transactional = false
-
-
 
 	void initTestResults() {
 		if (TestResult.list().size() <= 0) {
@@ -77,8 +74,8 @@ class InitializationService {
 			def analysisList = []
 
 			analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
-			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false,  isBug: true)
-			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false,  isBug: false)
+			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false, isBug: true)
+			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Harness", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "No Repro", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
@@ -124,12 +121,12 @@ class InitializationService {
 			if (!Project.findByName("CuantoProd")) {
 				def grp = new ProjectGroup(name: "Sample").save()
 				new Project(name: "CuantoProd", projectKey: "CUANTO", projectGroup: grp,
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
 			if (!Project.findByName("CuantoNG")) {
 				def grp = ProjectGroup.findByName("Sample")
 				new Project(name: "CuantoNG", projectKey: "CNG", projectGroup: grp,
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
 			}
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
@@ -143,7 +140,7 @@ class InitializationService {
 			(rnd.nextInt(9) + 1).times { prjIndex ->
 				if (!Project.findByName("CuantoProd$grpIndex-$prjIndex")) {
 					new Project(name: "CuantoProd$grpIndex-$prjIndex", projectKey: "CUANTO$grpIndex-$prjIndex", projectGroup: grp,
-					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+						bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 				}
 			}
 		}
@@ -152,7 +149,7 @@ class InitializationService {
 			// create ungrouped projects
 			if (!Project.findByName("Ungrouped-$it")) {
 				new Project(name: "Ungrouped-$it", projectKey: "Ungrouped-$it",
-				bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("JUnit")).save()
 			}
 		}
 	}

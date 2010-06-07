@@ -48,6 +48,8 @@ admin tool or permanently by setting the value in my.cnf:
 [mysqld]
 innodb_buffer_pool_size = 100M
 
+In addition, execute init_test_outcome_summary.sql and add_test_output_summary_idx.sql for optimal performance.
+
 Restart the MySQL server for the change to take effect.
 
 If you are upgrading from an existing Cuanto installation that is earlier than 2.4, you'll want to execute the SQL scripts

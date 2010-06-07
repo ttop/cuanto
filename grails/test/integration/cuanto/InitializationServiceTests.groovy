@@ -1,4 +1,7 @@
 package cuanto
+
+import cuanto.test.TestObjects
+
 /**
  * User: Todd Wells
  * Date: Apr 22, 2009
@@ -10,15 +13,18 @@ class InitializationServiceTests extends GroovyTestCase {
 	def dataService
 	def testOutcomeService
 	def initializationService
+	def to = new TestObjects()
 
-	
 	@Override
-	void setUp() {
-		initializationService.initializeAll()
+	void setUp()
+	{
+		super.setUp()
+		to.dataService = dataService
 	}
 
-
 	void testDefaultAnalysisState() {
+		initializationService.initializeAll()
+
 		assertEquals "Wrong number of analysis states", 8, AnalysisState.list().size()
 		def analyzed = AnalysisState.findAllByIsAnalyzed(true)
 		assertEquals "Wrong number are analyzed", 6, analyzed.size()
@@ -38,6 +44,4 @@ class InitializationServiceTests extends GroovyTestCase {
 		assertEquals "Should only be one default analysis state", 1, stateDefault.size()
 		assertEquals "Wrong default analysis state", "Unanalyzed", stateDefault[0].name
 	}
-
-
 }
