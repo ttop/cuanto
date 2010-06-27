@@ -104,11 +104,11 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		// create a test case
 		TestCase tc = to.getTestCase(proj)
-		dataService.saveDomainObject tc 
+		dataService.saveDomainObject tc
 
 		// create a test run with an outcome
 		TestRun testRun = to.getTestRun(proj)
-		dataService.saveDomainObject testRun 
+		dataService.saveDomainObject testRun
 
 		TestOutcome outcome = to.getTestOutcome(tc, testRun)
 		dataService.saveDomainObject outcome
@@ -128,7 +128,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
 
 		outcome.refresh()
-		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [testResult:"Pass"])
+		testOutcomeService.applyAnalysisStateToTestOutcome(outcome, [testResult: "Pass"])
 		assertNull "Wrong analysis state when applying to passing TestOutcome without parameters", outcome.analysisState
 
 		outcome.testResult = TestResult.findByName("Fail")
@@ -163,11 +163,10 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		def csv = testOutcomeService.getDelimitedTextForTestOutcomes(outcomes, ",")
 		def csvLines = csv.readLines()
-		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size() 
+		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size()
 
 		// do 0 results, 1 result, 3 results, 10 results
 	}
-
 
     void testGetGroupedOutputSummaries() {
         Project proj = to.project
@@ -198,14 +197,12 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
         assertEquals "Wrong fourth group output", "java.lang.AssertionError: This has failed once", outputGroups[3][1]
     }
 
-
     private File getFile(filename) {
         File file = new File("test/resources/${filename}")
         assertTrue("Couldn't find file: ${file.toString()}", file.exists())
         return file
     }
     
-
 	def textWithoutScriptTags = '''
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 			Duis luctus erat ultrices ipsum mollis nec scelerisque nibh eleifend.

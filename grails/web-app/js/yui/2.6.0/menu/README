@@ -698,13 +698,13 @@ Fixed the following bugs:
 
 + Application of the "maxheight" configuration property is now correctly 
   deferred until the "render" event fires when Menu instance is being 
-  lazy loaded.
+  cuanto loaded.
 
 + The "maxheight" configuration property can now be set multiple times without 
   a Menu instance restoring itself to its original default height.
 
 + The "maxheight" configuration property can now be set on hidden Menu 
-  instances that use lazy loading. 
+  instances that use cuanto loading.
 
 + Menu instances with a "width" configuration property set will now render 
   at the specified width rather than shrink wrapping to their contents.
@@ -926,7 +926,7 @@ Added the following features:
 
     * "itemData" - Array of items to be added to the menu.
 
-    * "lazyLoad" - Boolean indicating if the menu's "lazy load" feature 
+    * "lazyLoad" - Boolean indicating if the menu's "cuanto load" feature
       is enabled.
 
 * Added new configuration properties to YAHOO.widget.Menu:

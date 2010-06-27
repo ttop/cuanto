@@ -42,10 +42,14 @@ class TestRunServiceTests extends GroovyTestCase {
 
 			TestOutcome outcome = to.getTestOutcome(tc, testRun)
 			outcome.duration = 1
+			outcome.isFailureStatusChanged = false
+
 			if (x == 2) {
 				outcome.testResult = dataService.result("fail")
+				outcome.isFailureStatusChanged = true
 			} else if (x == 3) {
 				outcome.testResult = dataService.result("error")
+				outcome.isFailureStatusChanged = true
 			} else if (x == 4) {
 				outcome.testResult = dataService.result("ignore")
 			}
@@ -283,7 +287,7 @@ class TestRunServiceTests extends GroovyTestCase {
 
 	void testCreateAndDeleteTestRun() {
 		Project proj = to.project
-		dataService.saveDomainObject proj, true 
+		dataService.saveDomainObject proj, true
 
 		def params = [:]
 		params.project = proj.projectKey
@@ -323,7 +327,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals "CustomProp2", listOfProps[1].name
 		assertEquals "Custom Value 2", listOfProps[1].value
 
-		dataService.deleteTestRun(fetchedTr)
+		testRunService.deleteTestRun(fetchedTr)
 		assertNull TestRun.get(fetchedTr.id)
 		assertEquals 0, TestRunLink.list().size()
 	}
@@ -442,7 +446,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals "Wrong number of test run properties", 2, fetchedTestRun.testProperties.size()
 
 		def fetchedProps = TestRunProperty.findAllByTestRun(origTestRun)
-		assertEquals "Wrong number of fetched properties", 2, fetchedProps.size() 
+		assertEquals "Wrong number of fetched properties", 2, fetchedProps.size()
 	}
 
 
@@ -467,7 +471,7 @@ class TestRunServiceTests extends GroovyTestCase {
 		assertEquals "Wrong property value", "updated", fetchedProps[0].value
 	}
 
-	
+
 	void testRemoveSinglePropertyOfTestRun() {
 		Project proj = to.project
 		dataService.saveDomainObject proj, true

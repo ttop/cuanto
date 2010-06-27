@@ -29,10 +29,11 @@ class TestRunStats {
 		passed(nullable: true)
 		failed(nullable: true)
 		analyzed(nullable: true)
-		totalDuration(nullable:true)
-		averageDuration(nullable:true)
-		successRate(nullable:true)
-		tests(nullable:true)
+		newFailures(nullable: true)
+		totalDuration(nullable: true)
+		averageDuration(nullable: true)
+		successRate(nullable: true)
+		tests(nullable: true)
 		analysisStatistics(nullable: true)
 	}
 
@@ -44,6 +45,7 @@ class TestRunStats {
 	Integer passed
 	Integer failed
 	Integer analyzed
+	Integer newFailures
 	Long totalDuration
 	Long averageDuration
 	BigDecimal successRate

@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module relativePaths="true" type="GRAILS_MODULE" version="4">
+<module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
-    <facet type="Grails" name="Grails">
-      <configuration />
-    </facet>
-    <facet type="Groovy" name="Groovy">
-      <configuration />
-    </facet>
     <facet type="Spring" name="Spring">
       <configuration>
         <fileset id="Grails" name="Grails" removed="false">
+          <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
           <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
         </fileset>
       </configuration>
@@ -21,11 +16,12 @@
           <root url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/plugins/ui-performance-1.1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/../../../../todd.wells/.grails/1.1/projects/grails/plugins/code-coverage-1.1.6/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/../../../../todd.wells/.grails/1.1/projects/grails/plugins/feeds-1.4/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/../../../../todd.wells/.grails/1.1/projects/grails/plugins/quartz-0.4.1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/../../../../todd.wells/.grails/1.1/projects/grails/plugins/ui-performance-1.1/web-app" relative="/" />
+          <root url="file:///todd.wells/.grails/1.1/projects/grails/plugins/code-coverage-1.1.6/web-app" relative="/" />
+          <root url="file:///todd.wells/.grails/1.1/projects/grails/plugins/feeds-1.4/web-app" relative="/" />
+          <root url="file:///todd.wells/.grails/1.1/projects/grails/plugins/quartz-0.4.1/web-app" relative="/" />
+          <root url="file:///todd.wells/.grails/1.1/projects/grails/plugins/ui-performance-1.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/plugins/feeds-1.4/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/web-app" relative="/" />
         </webroots>
         <sourceRoots />
         <building>
@@ -52,6 +48,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/web-app/plugins" />
     </content>
     <content url="file://$MODULE_DIR$/../testdata">
       <sourceFolder url="file://$MODULE_DIR$/../testdata" isTestSource="true" />
@@ -71,19 +68,9 @@
           <root url="file://$MODULE_DIR$/plugins/ui-performance-1.1/lib" />
           <root url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/tomcat-1.2.2/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/code-coverage-1.1.6/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/feeds-1.4/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/quartz-0.4.1/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/tomcat-1.2.2/lib" />
-          <root url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/ui-performance-1.1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/code-coverage-1.1.6/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/feeds-1.4/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/quartz-0.4.1/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/tomcat-1.2.2/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../.grails/1.2.2/projects/grails/plugins/ui-performance-1.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
@@ -92,6 +79,7 @@
         <jarDirectory url="file://$MODULE_DIR$/plugins/ui-performance-1.1/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="cuanto-grailsPlugins" />
   </component>
 </module>
 

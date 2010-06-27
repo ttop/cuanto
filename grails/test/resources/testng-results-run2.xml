@@ -1,0 +1,126 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Ant suite">
+    <groups>
+      <group name="functest">
+        <method signature="cuanto.test.testNgOne.testMethod4()" name="testMethod4" class="cuanto.test.testNgOne"/>
+        <method signature="cuanto.test.testNgOne.testMethod2()" name="testMethod2" class="cuanto.test.testNgOne"/>
+        <method signature="cuanto.test.testNgOne.testMethod1()" name="testMethod1" class="cuanto.test.testNgOne"/>
+        <method signature="cuanto.test.testNgOne.testMethod3()" name="testMethod3" class="cuanto.test.testNgOne"/>
+      </group>
+      <group name="checkintest">
+        <method signature="cuanto.test.testNgOne.testMethod2()" name="testMethod2" class="cuanto.test.testNgOne"/>
+        <method signature="cuanto.test.testNgOne.testMethod1()" name="testMethod1" class="cuanto.test.testNgOne"/>
+      </group>
+    </groups>
+    <test name="Ant test">
+      <class name="cuanto.test.testNgOne">
+        <test-method status="FAIL" signature="testMethod3()" name="testMethod3" duration-ms="2" started-at="2008-10-26T13:35:21Z" description="testMethod3 Description" finished-at="2008-10-26T13:35:21Z">
+        </test-method>
+         <test-method status="FAIL" signature="testMethod2()" name="testMethod2" duration-ms="6" started-at="2008-10-26T13:35:21Z" finished-at="2008-10-26T13:35:21Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[method 2 failed for some different error]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: method 2 failed for some different error]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="SKIP" signature="skippableTest()" name="skippableTest" duration-ms="1" started-at="2008-10-26T13:35:21Z" depends-on-methods="cuanto.test.testNgOne.dependencySample" finished-at="2008-10-26T13:35:21Z">
+        </test-method>
+        <test-method status="FAIL" signature="dependencySample()" name="dependencySample" duration-ms="5" started-at="2008-10-26T13:35:21Z" finished-at="2008-10-26T13:35:21Z">
+	        <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[method 2 failed]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: method 2 failed
+	at org.testng.AssertJUnit.fail(AssertJUnit.java:55)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:226)
+	at groovy.lang.MetaClassImpl.invokeStaticMethod(MetaClassImpl.java:1102)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeStaticMethod(InvokerHelper.java:800)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeStaticMethodN(ScriptBytecodeAdapter.java:212)
+	at cuanto.test.testNgOne.testMethod2(testNgOne.groovy:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="testMethod1()" name="testMethod1" duration-ms="0" started-at="2008-10-26T13:35:21Z" finished-at="2008-10-26T13:35:21Z">
+        </test-method>
+        <test-method status="FAIL" signature="testMethod4()" name="testMethod4" duration-ms="0" started-at="2008-10-26T13:35:21Z" finished-at="2008-10-26T13:35:21Z">
+	        <exception class="java.lang.IllegalArgumentException">
+            <message>
+              <![CDATA[Is this the right room for an argument?]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.IllegalArgumentException: Is this the right room for an argument?
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:494)
+	at org.codehaus.groovy.runtime.MetaClassHelper.doConstructorInvoke(MetaClassHelper.java:535)
+	at groovy.lang.MetaClassImpl.doConstructorInvoke(MetaClassImpl.java:2352)
+	at groovy.lang.MetaClassImpl.invokeConstructor(MetaClassImpl.java:1252)
+	at groovy.lang.MetaClassImpl.invokeConstructor(MetaClassImpl.java:1182)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeConstructorOf(InvokerHelper.java:805)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeNewN(ScriptBytecodeAdapter.java:227)
+	at cuanto.test.testNgOne.testMethod3(testNgOne.groovy:35)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:580)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:478)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:617)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:885)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:126)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:110)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:712)
+	at org.testng.TestRunner.privateRun(TestRunner.java:582)
+	at org.testng.TestRunner.run(TestRunner.java:477)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:324)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:319)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:292)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:198)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:823)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:790)
+	at org.testng.TestNG.run(TestNG.java:708)
+	at org.testng.TestNG.privateMain(TestNG.java:860)
+	at org.testng.TestNG.main(TestNG.java:833)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

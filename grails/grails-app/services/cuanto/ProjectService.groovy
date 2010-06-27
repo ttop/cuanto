@@ -20,10 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-
-import cuanto.CuantoException
-import cuanto.Project
-import cuanto.TestCase
 import cuanto.parsers.ParsableProject
 
 class ProjectService {
@@ -31,6 +27,7 @@ class ProjectService {
 	boolean transactional = false
 
 	def dataService
+	def testRunService
 
 	def getProject(projectString) {
 		def project = Project.findByProjectKey(projectString)
@@ -66,7 +63,7 @@ class ProjectService {
 				def testRuns = dataService.getTestRunsByProject(project)
 				dataService.deleteTestCasesForProject(project)
 				testRuns.each { testRun ->
-					dataService.deleteTestRun(testRun)
+					testRunService.deleteTestRun(testRun)
 				}
 				project.delete(flush: true)
 				deleteProjectGroupIfUnused(origGroup)
@@ -85,8 +82,8 @@ class ProjectService {
 		}
 		return groupToReturn
 	}
-	
-	
+
+
 	def createProject(Map params) {
 		def parsedProject = new ParsableProject()
 		parsedProject.bugUrlPattern = params?.bugUrlPattern
@@ -172,7 +169,7 @@ class ProjectService {
 	}
 
 
-	def createTestCase(params){
+	def createTestCase(params) {
 		def tc = null
 		if (params) {
 			def project = dataService.getProject(params.project)
@@ -191,7 +188,7 @@ class ProjectService {
 					tc.description = params.description
 					dataService.addTestCases(project, [tc])
 				} else {
-					throw new CuantoException("No test case name was provided") 
+					throw new CuantoException("No test case name was provided")
 				}
 			} else {
 				throw new CuantoException("Valid project not provided")

@@ -29,7 +29,8 @@ class TestOutcomeService {
 	def dataService
 	def testRunService
 	def bugService
-	def statisticService
+    def statisticService
+	def failureStatusService
 	def testCaseFormatterRegistry
     def parsingService
 
@@ -39,23 +40,13 @@ class TestOutcomeService {
 			applyTestResultToTestOutcome(outcome, dataService.result(params.testResult))
 			applyBugParametersToTestOutcome(outcome, params)
 			applyAnalysisStateToTestOutcome(outcome, params)
-
-			SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-			["startedAt", "finishedAt"].each {
-				if (params.it) {
-					Date candidate = formatter.parse(params.it)
-					if (candidate != null &&
-						(outcome.getProperty(it) == null) ||
-						Math.abs(candidate.time - outcome.getProperty(it)) > 1000) {
-						outcome.setProperty(it, candidate)
-					}
-				}
-			}
+			applyTimeParametersToTestOutcome(outcome, params)
 
 			outcome.note = Sanitizer.escapeHtmlScriptTags(params.note)
-			outcome.owner =  Sanitizer.escapeHtmlScriptTags(params.owner)
+			outcome.owner = Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
 			dataService.deleteBugIfUnused(outcome.bug)
+			failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
 		}
 	}
 
@@ -91,10 +82,7 @@ class TestOutcomeService {
 
 				dataService.saveDomainObject outcome
 				dataService.deleteBugIfUnused origBug
-
-				if (origOutcome.testResult != outcome.testResult && outcome.testRun != null) {
-					statisticService.queueTestRunStats outcome.testRun.id
-				}
+				failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
 			}
 		}
 	}
@@ -102,15 +90,7 @@ class TestOutcomeService {
 
 	def applyTestResultToTestOutcome(testOutcome, testResult) {
 		if (testOutcome && testResult) {
-			boolean recalc = false
-			if (testResult != testOutcome.testResult && testOutcome.testRun != null) {
-				recalc = true
-			}
-
 			testOutcome.testResult = testResult
-			if (recalc) {
-				statisticService.queueTestRunStats(testOutcome.testRun)
-			}
 		}
 	}
 
@@ -155,12 +135,25 @@ class TestOutcomeService {
 
 		if (analysisState != outcome.analysisState) {
 			outcome.analysisState = analysisState
-			statisticService.calculateAnalysisStats(outcome.testRun)
+		}
+	}
+
+	def applyTimeParametersToTestOutcome(outcome, Map params) {
+		SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
+		["startedAt", "finishedAt"].each {
+			if (params.it) {
+				Date candidate = formatter.parse(params.it)
+				if (candidate != null &&
+					(outcome.getProperty(it) == null) ||
+					Math.abs(candidate.time - outcome.getProperty(it)) > 1000) {
+					outcome.setProperty(it, candidate)
+				}
+			}
 		}
 	}
 
 
-	List <TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sortVal, String order) {
+	List<TestOutcome> getTestOutcomeHistory(TestCase testCase, int startIndex, int maxOutcomes, String sortVal, String order) {
 		def sortOptions = getSortOptions()
 		dataService.getTestOutcomeHistory(testCase, startIndex, maxOutcomes, sortOptions[sortVal], order)
 	}
@@ -172,13 +165,13 @@ class TestOutcomeService {
 	}
 
 
-	Map getSortOptions(){
-		return [result:"testResult.name", analysisState:"analysisState", duration:"duration", bug:"bug.title",
-			owner:"owner", note:"note", date:"testRun.dateExecuted", dateExecuted:"testRun.dateExecuted"]
+	Map getSortOptions() {
+		return [result: "testResult.name", analysisState: "analysisState", duration: "duration", bug: "bug.title",
+			owner: "owner", note: "note", date: "testRun.dateExecuted", dateExecuted: "testRun.dateExecuted"]
 	}
 
 
-	List <TestCase> findTestCaseByName(name, proj) {
+	List<TestCase> findTestCaseByName(name, proj) {
 		Project project = Project.get(proj)
 		dataService.findTestCaseByName(name, project)
 	}
@@ -197,11 +190,8 @@ class TestOutcomeService {
 
 		def totalCount
 
-		if (params.filter?.equalsIgnoreCase("allFailures")) {
-			totalCount = dataService.countTestOutcomes(new TestOutcomeQueryFilter(testRun: run, isFailure: true))
-		} else if (params.filter?.equalsIgnoreCase("newFailures")){
-			def queryFilter = getTestOutcomeQueryFilterForParams(params)
-			totalCount = getNewFailures(queryFilter).size()
+		if (params.filter) {
+			totalCount = dataService.countTestOutcomes(getTestOutcomeQueryFilterForParams(params))
 		} else if (params.outcome) {
 			/* todo: why is this parameter here? it smells bad */
 			totalCount = params.totalCount
@@ -226,7 +216,6 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
 	}
 
 
@@ -240,7 +229,6 @@ class TestOutcomeService {
 			}
 			dataService.saveDomainObject(targetOutcome)
 		}
-		statisticService.queueTestRunStats(sourceTestOutcome.testRun)
 	}
 
 
@@ -255,7 +243,7 @@ class TestOutcomeService {
 			formatter = testCaseFormatterRegistry.getFormatMap()[formatterDescription]
 		}
 
-		if (!formatter){
+		if (!formatter) {
 			formatter = testCaseFormatterRegistry.formatterList[0]
 		}
 		return formatter
@@ -264,7 +252,7 @@ class TestOutcomeService {
 	
 	def deleteTestOutcome(testOutcome) {
 		TestOutcome.withTransaction {
-			testOutcome.delete(flush:true)
+			testOutcome.delete(flush: true)
 		}
 	}
 	
@@ -274,10 +262,9 @@ class TestOutcomeService {
 		return dataService.countTestOutcomes(testOutcomeFilter)
 	}
 
-
 	/**
-	* Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
-	*/
+	 * Returns a map with [testOutcomes: List<TestOutcome>, totalCount: integer, offset: long, outputChars: integer]
+	 */
 	Map getTestOutcomeQueryResultsForParams(Map params) throws CuantoException {
 		TestOutcomeQueryFilter testOutcomeFilter = getTestOutcomeQueryFilterForParams(params)
 		def outputChars = params.outputChars ? params.outputChars : 180
@@ -299,7 +286,11 @@ class TestOutcomeService {
 			if (!testRun) {
 				throw new RuntimeException("No TestRun specified for getNewFailures()")
 			}
-			testOutcomes = getNewFailures(testOutcomeFilter)
+			def newFailureQueryFilter = new TestOutcomeQueryFilter(
+				testRun: testRun,
+				isFailure: true,
+				isFailureStatusChanged: true)
+			testOutcomes = dataService.getTestOutcomes(newFailureQueryFilter)
 			totalCount = testOutcomes.size()
 		} else if (params.outcome) { // todo: hmm, look at this
 			testOutcomes = [dataService.getTestOutcome(params.outcome)]
@@ -311,31 +302,6 @@ class TestOutcomeService {
 		}
 			
 		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
-	}
-
-
-	List<TestOutcome> getNewFailures(TestOutcomeQueryFilter testOutcomeFilter) {
-		if (!testOutcomeFilter.testRun) {
-			throw new RuntimeException("No TestRun specified for new failures")
-		}
-		TestOutcomeQueryFilter modifiedFilter = new TestOutcomeQueryFilter(testOutcomeFilter)
-		modifiedFilter.queryMax = null
-		modifiedFilter.queryOffset = null
-		def currentFailedOutcomes = dataService.getTestOutcomes(modifiedFilter)
-		def newFailedOutcomes = dataService.getNewFailures(currentFailedOutcomes, testOutcomeFilter.testRun?.dateExecuted)
-		def startRange = testOutcomeFilter.queryOffset ? testOutcomeFilter.queryOffset : 0
-		def endRange = testOutcomeFilter.queryMax ? testOutcomeFilter.queryMax + startRange - 1 : newFailedOutcomes.size() - 1
-		if (endRange > newFailedOutcomes.size() - 1) {
-			endRange = newFailedOutcomes.size() - 1
-		}
-		if (endRange < 0) {
-			endRange = 0
-		}
-		if (newFailedOutcomes.size() == 0) {
-			return []
-		} else {
-			return newFailedOutcomes[startRange..endRange]
-		}
 	}
 
 
@@ -383,7 +349,7 @@ class TestOutcomeService {
 		if (params.offset) {
 			filter.queryOffset = Integer.valueOf(params.offset)
 		} else if (params.recordStartIndex) {
-			filter.queryOffset = Integer.valueOf(params.recordStartIndex ) // todo: hunt down this difference in parameters and unify the usage
+			filter.queryOffset = Integer.valueOf(params.recordStartIndex) // todo: hunt down this difference in parameters and unify the usage
 		}
 
 		if (params.qry) {
@@ -391,8 +357,14 @@ class TestOutcomeService {
 			filter.setForSearchTerm(searchDetails.searchField, searchDetails.searchTerms)
 		}
 
-		if (params.filter?.equalsIgnoreCase("allFailures") || params.filter?.equalsIgnoreCase("newFailures")) {
+		if (params.filter?.equalsIgnoreCase("allFailures")) {
 			filter.isFailure = true
+		} else if (params.filter?.equalsIgnoreCase("newFailures")) {
+			filter.isFailure = true
+			filter.isFailureStatusChanged = true
+		} else if (params.filter?.equalsIgnoreCase("newPasses")) {
+			filter.isFailure = false
+			filter.isFailureStatusChanged = true
 		} else if (params.filter?.equalsIgnoreCase("unanalyzedFailures")) {
 			filter.isFailure = true
 			filter.isAnalyzed = false
@@ -410,7 +382,7 @@ class TestOutcomeService {
 	}
 
 
-	List<SortParameters> getSortParametersFromParamStrings(sortParam,  orderParam) {
+	List<SortParameters> getSortParametersFromParamStrings(sortParam, orderParam) {
 		def sorts = []
 		def sortParams = [sortParam].flatten()
 		def orderParams = [orderParam].flatten()
@@ -419,7 +391,7 @@ class TestOutcomeService {
 			throw new CuantoException("Number of sorts and number of orders don't match")
 		}
 
-		sortParams.eachWithIndex{ sort, indx ->
+		sortParams.eachWithIndex { sort, indx ->
 			final String sortName = TestOutcomeQueryFilter.getSortNameForFriendlyName(sort)
 			def primarySort = new SortParameters(sort: sortName, sortOrder: orderParams[indx])
 
@@ -443,7 +415,7 @@ class TestOutcomeService {
 		String d = delimiter
 		buff << "Test Outcome ID${d}Test Result${d}Analysis State${d}Started At${d}Finished At${d}Duration${d}Bug Title${d}Bug URL${d}Note\n"
 
-		outcomes.each{ outcome ->
+		outcomes.each { outcome ->
 			def renderList = []
 			renderList << outcome.id
 			renderList << outcome.testResult.name
@@ -471,28 +443,48 @@ class TestOutcomeService {
 		return buff.toString()
 	}
 
+	/**
+	 * Determines whether the failure status for a given TestOutcome has changed
+	 * from the last (if applicable) TestOutcome for the same TestCase.
+	 *
+	 * @param testOutcome to determine failure status change
+	 * @return true if the failure status changed or false otherwise
+	 */
+	def isFailureStatusChanged(testOutcome) {
+		def previousOutcome = dataService.getPreviousOutcome(testOutcome)
+
+		if (testOutcome.testResult?.isFailure) {
+			// if the previous test outcome does not exist or it was not a failure,
+			// the current failed test outcome is a change in failure status.
+			return !previousOutcome || !previousOutcome.testResult?.isFailure
+		} else {
+			// if the previous test outcome does not exist,
+			// this successful test outcome is not a change in failure status.
+			// but if it exists and was a failure, this successful test outcome is a change in failure status.
+			return previousOutcome && previousOutcome.testResult?.isFailure
+		}
+	}
 
 	List getGroupedOutputSummaries(TestRun testRun, Integer offset, Integer max, sort = "failures", order = "desc") {
+		if (order != "asc" && order != "desc") {
+			throw new IllegalArgumentException("Unknown order for grouped output summary sort")
+		}
 
-        if (order != "asc" && order != "desc") {
-            throw new IllegalArgumentException("Unknown order for grouped output summary sort")
-        }
+		def primarySort
+		def secondarySort
 
-        def primarySort
-        def secondarySort
+		if (sort.equalsIgnoreCase("output")) {
+			primarySort = "to.testOutputSummary ${order}"
+			secondarySort = "count(*) desc"
+		} else if (sort.equalsIgnoreCase("failures")) {
+			primarySort = "count(*) ${order}"
+			secondarySort = "to.testOutputSummary asc"
+		}
 
-        if (sort.equalsIgnoreCase("output")) {
-            primarySort = "to.testOutputSummary ${order}"
-            secondarySort = "count(*) desc"
-        } else if (sort.equalsIgnoreCase("failures")) {
-            primarySort = "count(*) ${order}"
-            secondarySort = "to.testOutputSummary asc"
-        }
-
-        def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
-        // returns a List where each item is a List with index 0 the count and index 1 the output summary text
-        TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
-    }
+		def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		// returns a List where each item is a List with index 0 the count and index 1 the output summary text
+		TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
+	}
 
 
     Long countGroupedOutputSummaries(TestRun testRun) {

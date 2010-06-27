@@ -27,18 +27,16 @@ class TestRunService {
 	def dataService
 	def projectService
 	def statisticService
+	def failureStatusService
 	def sessionFactory
 
 	boolean transactional = false
 
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
 
-
-
 	/**
 	 * valid params are offset, max, sort and order.  id is the project id
 	 */
-
 	List<TestRun> getTestRunsForProject(Map params) {
 
 		def queryParams = [:]
@@ -224,7 +222,7 @@ class TestRunService {
 			return null
 		}
 	}
-	
+
 
 	def countOutcomes(TestRun testRun) {
 		if (testRun) {
@@ -234,8 +232,8 @@ class TestRunService {
 		}
 	}
 
-
 	// given a List of TestOutcomes, return a Set of TestCases
+
 	Set getTestCasesOfTestOutcomes(List<TestOutcome> outcomes) {
 		def tCases = new HashSet()
 		outcomes.each {	tCases += it.testCase }
@@ -281,7 +279,7 @@ class TestRunService {
 
 	void updatePropertiesOfTestRun(TestRun origTestRun, testRun) {
 		testRun.testProperties?.each { tp ->
-			TestRunProperty origProp = origTestRun.testProperties?.find{ it.name == tp.name }
+			TestRunProperty origProp = origTestRun.testProperties?.find { it.name == tp.name }
 			if (origProp) {
 				if (tp.value != origProp.value) {
 					origProp.value = tp.value
@@ -290,7 +288,7 @@ class TestRunService {
 			} else {
 				// property not found in original, so add it
 				origTestRun.addToTestProperties(new TestRunProperty(tp.name, tp.value))
-				dataService.saveDomainObject origTestRun 
+				dataService.saveDomainObject origTestRun
 			}
 		}
 
@@ -408,7 +406,7 @@ class TestRunService {
 
 	def updateNote(testRun, note) {
 		testRun.note = note
-		dataService.saveDomainObject(testRun) 
+		dataService.saveDomainObject(testRun)
 		return testRun
 	}
 
@@ -535,7 +533,7 @@ class TestRunService {
 		return linksToAdd
 	}
 
-	
+
 	List parseTestPropertiesFromParams(Map params) {
 		def propsToAdd = []
 		if (params.testProperty) {
@@ -565,7 +563,7 @@ class TestRunService {
 
 	}
 
-	
+
 	def createManualTestRun(params) {
 		def testRun = createTestRun(params)
 		def testCases = projectService.getSortedTestCases(testRun.project)
@@ -585,7 +583,7 @@ class TestRunService {
 	def getBugSummary(testRun) {
 		def bugList = []
 
-		def rawBs= dataService.getBugSummary(testRun)
+		def rawBs = dataService.getBugSummary(testRun)
 		rawBs.each {
 			def entry = [bug: it[0], total: it[1]]
 			bugList << entry
@@ -620,7 +618,7 @@ class TestRunService {
 		def qryWhereClause = "where tr.project = ? and prop_0.name=? and prop_0.value=? "
 		def qryArgs = [proj, props[0].name, props[0].value]
 		for (def idx = 1; idx < props.size(); idx++) {
-		    qryFromClause += "left join tr.testProperties prop_${idx} "
+			qryFromClause += "left join tr.testProperties prop_${idx} "
 			qryWhereClause += "and prop_${idx}.name=? and prop_${idx}.value=? "
 			qryArgs << props[idx].name
 			qryArgs << props[idx].value
@@ -635,7 +633,51 @@ class TestRunService {
 		}
 	}
 
+
 	List<String> getTestRunPropertiesByProject(Project project) {
 		TestRunProperty.executeQuery("select name from cuanto.TestRunProperty trp where trp.testRun.project = ? group by name order by name", [project])
+	}
+
+
+	/**
+	 * Delete all TestOutcomes for a TestRun, then delete the TestRun,
+	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
+	 * for all TestOutcomes in the next TestRun.
+	 */
+    def deleteTestRun(TestRun run) {
+        TestRun testRun = TestRun.get(run.id)
+
+        if (testRun.tags) {
+            def testRunTagsToRemove = new ArrayList(testRun.tags)
+            testRunTagsToRemove.each {tag ->
+                testRun.removeFromTags(tag)
+            }
+
+            def outcomes = TestOutcome.findAllByTestRun(testRun)
+
+            outcomes.each {outcome ->
+                def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+                testOutcomeTagsToRemove.each {tag ->
+                    outcome.removeFromTags(tag)
+                }
+                outcome.delete()
+            }
+        } else {
+            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
+        }
+        testRun.delete()
+        failureStatusService.queueFailureStatusUpdateForRun(dataService.getNextTestRun(run))
+    }
+
+
+	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {
+		if (propToDelete) {
+			TestRun.withTransaction {
+				TestRun testRun = propToDelete.testRun
+				testRun.removeFromTestProperties(propToDelete)
+				dataService.saveDomainObject testRun
+				propToDelete.delete()
+			}
+		}
 	}
 }

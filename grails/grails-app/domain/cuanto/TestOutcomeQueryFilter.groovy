@@ -29,22 +29,23 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		testRun(nullable: true)
 		isFailure(nullable: true)
 		testResult(nullable:true)
-		testCaseFullName(nullable:true)
-		testCaseParameters(nullable:true)
-		testCasePackage(nullable:true)
-		project(nullable:true)
-		testResultIncludedInCalculations(nullable:true)
-		isAnalyzed(nullable:true)
-		analysisState(nullable:true)
-		bug(nullable:true)
-		owner(nullable:true)
-		testCase(nullable:true)
-		note(nullable:true)
-		testOutput(nullable:true)
-		dateCriteria(nullable:true)
+		testCaseFullName(nullable: true)
+		testCaseParameters(nullable: true)
+		testCasePackage(nullable: true)
+		project(nullable: true)
+		testResultIncludedInCalculations(nullable: true)
+		isAnalyzed(nullable: true)
+		analysisState(nullable: true)
+		bug(nullable: true)
+		owner(nullable: true)
+		testCase(nullable: true)
+		note(nullable: true)
+		testOutput(nullable: true)
+		dateCriteria(nullable: true)
 		sorts(nullable: true)
 		queryOffset(nullable: true)
-		queryMax(nullable:true)
+		queryMax(nullable: true)
+		isFailureStatusChanged(nullable: true)
 	}
 
 	TestOutcomeQueryFilter() {}
@@ -52,7 +53,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
 		["testRun", "isFailure", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
 		"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
-		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax"].each {
+		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged"].each {
 			this.setProperty(it, filterToCopy.getProperty(it))
 		}
 	}
@@ -191,6 +192,14 @@ public class TestOutcomeQueryFilter implements QueryFilter {
     * boolean value.
     */
     Boolean hasTags
+
+
+	/**
+	 * If true, only TestOutcomes with their isFailureStatusChanged == true will be returned.
+	 * If false, only TestOutcomes with their isFailureStatusChanged == false will be returned.
+	 * If null, TestOutcomes will not be filtered based on their isFailureStatusChanged state.
+	 */
+	Boolean isFailureStatusChanged
 
 
     String selectClause() {

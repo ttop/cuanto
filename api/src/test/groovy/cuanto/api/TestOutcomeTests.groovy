@@ -25,10 +25,23 @@ package cuanto.api
 public class TestOutcomeTests extends GroovyTestCase {
 
 	CuantoConnector client
-	WordGenerator wordGen = new WordGenerator()
+	List<TestRun> testRunsToCleanUp
+	static WordGenerator wordGen = new WordGenerator()
+	static testCaseCounter = 1
 
+	@Override
 	void setUp() {
+		super.setUp()
 		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
+		testRunsToCleanUp = []
+	}
+
+	@Override
+	void tearDown() {
+		testRunsToCleanUp.each {
+			client.deleteTestRun it
+		}
+		super.tearDown()
 	}
 
 
@@ -46,25 +59,23 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		try {
-			Long outcomeId = client.addTestOutcome(outcome, run)
-			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
-			assertNotNull "No outcome fetched", fetchedOutcome
-			assertEquals outcome.testCase, fetchedOutcome.testCase
-			assertNotNull "Bug", fetchedOutcome.bug
-			assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
-			assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
-			assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
-			assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
-			assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
-			assertEquals "duration", outcome.duration, fetchedOutcome.duration
-			assertEquals "owner", outcome.owner, fetchedOutcome.owner
-			assertEquals "note", outcome.note, fetchedOutcome.note
-			assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
-			assertEquals "testRun", run.id, fetchedOutcome.testRun.id
-		} finally {
-			client.deleteTestRun run
-		}
+		testRunsToCleanUp << run
+
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertNotNull "No outcome fetched", fetchedOutcome
+		assertEquals outcome.testCase, fetchedOutcome.testCase
+		assertNotNull "Bug", fetchedOutcome.bug
+		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+		assertEquals "duration", outcome.duration, fetchedOutcome.duration
+		assertEquals "owner", outcome.owner, fetchedOutcome.owner
+		assertEquals "note", outcome.note, fetchedOutcome.note
+		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
 	}
 
 
@@ -114,39 +125,34 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		try {
-			Long outcomeId = client.addTestOutcome(outcome, run)
-			outcome.bug = new Bug("MyOtherBug", "http://jira.codehaus.org/CUANTO-2")
-			outcome.analysisState = AnalysisState.Other
-			outcome.startedAt = new Date()
-			outcome.finishedAt = new Date() + 2
-			outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
-			outcome.owner = "New Cuanto"
-			outcome.note = "New Cuanto note"
-			outcome.testOutput = "Stupendous test output"
-			client.updateTestOutcome(outcome)
+		testRunsToCleanUp << run
 
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		outcome.bug = new Bug("MyOtherBug", "http://jira.codehaus.org/CUANTO-2")
+		outcome.analysisState = AnalysisState.Other
+		outcome.startedAt = new Date()
+		outcome.finishedAt = new Date() + 2
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = "New Cuanto"
+		outcome.note = "New Cuanto note"
+		outcome.testOutput = "Stupendous test output"
+		client.updateTestOutcome(outcome)
 
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
 
-			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
-
-			assertNotNull "No outcome fetched", fetchedOutcome
-			assertEquals outcome.testCase, fetchedOutcome.testCase
-			assertNotNull "Bug", fetchedOutcome.bug
-			assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
-			assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
-			assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
-			assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
-			assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
-			assertEquals "duration", outcome.duration, fetchedOutcome.duration
-			assertEquals "owner", outcome.owner, fetchedOutcome.owner
-			assertEquals "note", outcome.note, fetchedOutcome.note
-			assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
-			assertEquals "testRun", run.id, fetchedOutcome.testRun.id
-		} finally {
-			client.deleteTestRun run
-		}
-
+		assertNotNull "No outcome fetched", fetchedOutcome
+		assertEquals outcome.testCase, fetchedOutcome.testCase
+		assertNotNull "Bug", fetchedOutcome.bug
+		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+		assertEquals "duration", outcome.duration, fetchedOutcome.duration
+		assertEquals "owner", outcome.owner, fetchedOutcome.owner
+		assertEquals "note", outcome.note, fetchedOutcome.note
+		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
 	}
 
 
@@ -175,18 +181,15 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		try {
-			Long outcomeId = client.addTestOutcome(outcome, run)
-			client.addTestOutcome(outcomeTwo, run)
-			TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
-			List<TestOutcome> outcomes = client.getTestCaseOutcomesForTestRun(fetchedOutcome.testCase, run)
-			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
-			assertEquals "Wrong outcome first", outcomeTwo.id, outcomes[0].id
-			assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
-		} finally {
-			client.deleteTestRun run
-		}
+		testRunsToCleanUp << run
 
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		client.addTestOutcome(outcomeTwo, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		List<TestOutcome> outcomes = client.getTestCaseOutcomesForTestRun(fetchedOutcome.testCase, run)
+		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+		assertEquals "Wrong outcome first", outcomeTwo.id, outcomes[0].id
+		assertEquals "Wrong outcome second", outcome.id, outcomes[1].id
 	}
 
 
@@ -267,69 +270,65 @@ public class TestOutcomeTests extends GroovyTestCase {
 
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		try {
-			client.addTestOutcome(outcome, run)
-			sleep 1000
-			client.addTestOutcome(outcomeTwo, run)
-			List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
-			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
-			assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
-			assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
-		} finally {
-			client.deleteTestRun run
-		}
+		testRunsToCleanUp << run
+
+		client.addTestOutcome(outcome, run)
+		sleep 1000
+		client.addTestOutcome(outcomeTwo, run)
+		List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
+		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
+		assertEquals "Wrong outcome first", outcome.id, outcomes[0].id
+		assertEquals "Wrong outcome second", outcomeTwo.id, outcomes[1].id
 	}
 
 	void testGetTestOutcomesForTestRunMany() {
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
-		try {
-			1.upto(202) {
-				TestOutcome outcome = createTestOutcome(TestResult.Pass)
-				client.addTestOutcome(outcome, run)
-				sleep 10
-			}
-			List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
-			assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
-			outcomes = client.getTestOutcomesForTestRun(run, 100, 100, TestOutcome.Sort.FULL_NAME, "asc")
-			assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
-			outcomes = client.getTestOutcomesForTestRun(run, 200, 100, TestOutcome.Sort.FULL_NAME, "asc")
-			assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
-		} finally {
-			client.deleteTestRun run
+		testRunsToCleanUp << run
+
+		1.upto(202) {
+			TestOutcome outcome = createTestOutcome(TestResult.Pass)
+			client.addTestOutcome(outcome, run)
+			sleep 100
 		}
+		List<TestOutcome> outcomes = client.getTestOutcomesForTestRun(run, 0, 100, TestOutcome.Sort.FULL_NAME, "asc")
+		assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
+		outcomes = client.getTestOutcomesForTestRun(run, 100, 100, TestOutcome.Sort.FULL_NAME, "asc")
+		assertEquals "Wrong number of TestOutcomes", 100, outcomes.size()
+		outcomes = client.getTestOutcomesForTestRun(run, 200, 100, TestOutcome.Sort.FULL_NAME, "asc")
+		assertEquals "Wrong number of TestOutcomes", 2, outcomes.size()
 	}
 
 
 	void testCountTestOutcomesForTestRun() {
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
+		testRunsToCleanUp << run
+
 		def count = client.countTestOutcomesForTestRun(run)
 		assertEquals "Wrong count", 0, count
-		try {
-			client.addTestOutcome(createTestOutcome(TestResult.Pass), run)
-			count = client.countTestOutcomesForTestRun(run)
-			assertEquals "Wrong count", 1, count
 
-			1.upto(201) {
-				TestOutcome outcome = createTestOutcome(TestResult.Pass)
-				client.addTestOutcome(outcome, run)
-			}
+		client.addTestOutcome(createTestOutcome(TestResult.Pass), run)
+		count = client.countTestOutcomesForTestRun(run)
+		assertEquals "Wrong count", 1, count
 
-			count = client.countTestOutcomesForTestRun(run)
-			assertEquals "Wrong count", 202, count
-		} finally {
-			client.deleteTestRun run
+		1.upto(201) {
+			TestOutcome outcome = createTestOutcome(TestResult.Pass)
+			client.addTestOutcome(outcome, run)
+			sleep(100)
 		}
+
+		count = client.countTestOutcomesForTestRun(run)
+		assertEquals "Wrong count", 202, count
 	}
 
-	
 	void testGetTestOutcomesForTestRunSorts() {
 		TestRun run = new TestRun(new Date())
 		client.addTestRun(run)
+		testRunsToCleanUp << run
 
 		def outcomes = new ArrayList<TestOutcome>()
-		
+
 		outcomes << TestOutcome.newInstance("org.codehaus.cuanto", "testA", "aa", TestResult.Error)
 		outcomes[0].startedAt = new Date()
 		outcomes[0].finishedAt = new Date() + 1
@@ -338,7 +337,7 @@ public class TestOutcomeTests extends GroovyTestCase {
 		outcomes[0].note = "abc"
 		outcomes[0].testOutput = "abc"
 		outcomes[0].analysisState = AnalysisState.Bug
-		
+
 		outcomes << TestOutcome.newInstance("org.codehaus.cuanto", "testA", "ab", TestResult.Fail)
 		outcomes[1].startedAt = new Date() + 1
 		outcomes[1].finishedAt = new Date() + 2
@@ -382,53 +381,6 @@ public class TestOutcomeTests extends GroovyTestCase {
 	}
 
 
-    void testAddTestOutcomeForTestRunWithTags() {
-        TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
-            TestResult.valueOf("Fail"))
-        outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
-        outcome.analysisState = AnalysisState.Bug
-        outcome.startedAt = new Date()
-        outcome.finishedAt = new Date() + 1
-        outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
-        outcome.owner = "Cuanto"
-        outcome.note = "Cuanto note"
-        outcome.testOutput = "Fantastic test output"
-        outcome.addTag(wordGen.getWord())
-        outcome.addTag(wordGen.getWord())
-        assertEquals "tags", 2, outcome.tags?.size()
-
-        TestRun run = new TestRun(new Date())
-        client.addTestRun(run)
-        try {
-            Long outcomeId = client.addTestOutcome(outcome, run)
-            TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
-            assertNotNull "No outcome fetched", fetchedOutcome
-            assertEquals outcome.testCase, fetchedOutcome.testCase
-            assertNotNull "Bug", fetchedOutcome.bug
-            assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
-            assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
-            assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
-            assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
-            assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
-            assertEquals "duration", outcome.duration, fetchedOutcome.duration
-            assertEquals "owner", outcome.owner, fetchedOutcome.owner
-            assertEquals "note", outcome.note, fetchedOutcome.note
-            assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
-            assertEquals "testRun", run.id, fetchedOutcome.testRun.id
-
-            assertEquals "tags", outcome.tags.size(), fetchedOutcome.tags?.size()
-
-            TestRun fetchedRun = client.getTestRun(run.id)
-            outcome.tags.each { tag ->
-                assertNotNull "Couldn't find tag ${tag} on TestOutcome", fetchedOutcome.tags.find { it == tag }
-                assertNotNull "Couldn't find tag ${tag} on TestRun", fetchedRun.tags.find { it == tag }
-            }
-        } finally {
-            client.deleteTestRun run
-        }
-    }
-    
-
     void testTagsAndManyOutcomes() {
         def tags = []
         tags << wordGen.getCamelWords(2)
@@ -459,16 +411,167 @@ public class TestOutcomeTests extends GroovyTestCase {
     }
 
 
-
-	TestOutcome createTestOutcome(TestResult result) {
-		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "test${wordGen.getCamelWords(3)}",
-			wordGen.getSentence(2),	result)
+	void testAddTestOutcomeForTestRunWithTags() {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+			TestResult.valueOf("Fail"))
+		outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+		outcome.analysisState = AnalysisState.Bug
 		outcome.startedAt = new Date()
 		outcome.finishedAt = new Date() + 1
+		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+		outcome.owner = "Cuanto"
+		outcome.note = "Cuanto note"
+		outcome.testOutput = "Fantastic test output"
+		outcome.addTag(wordGen.getWord())
+		outcome.addTag(wordGen.getWord())
+		assertEquals "tags", 2, outcome.tags?.size()
+
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		testRunsToCleanUp << run
+
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertNotNull "No outcome fetched", fetchedOutcome
+		assertEquals outcome.testCase, fetchedOutcome.testCase
+		assertNotNull "Bug", fetchedOutcome.bug
+		assertEquals "Bug title", outcome.bug.title, fetchedOutcome.bug.title
+		assertEquals "Bug url", outcome.bug.url, fetchedOutcome.bug.url
+		assertEquals "Analysis state", outcome.analysisState, fetchedOutcome.analysisState
+		assertEquals "startedAt", outcome.startedAt, fetchedOutcome.startedAt
+		assertEquals "finishedAt", outcome.finishedAt, fetchedOutcome.finishedAt
+		assertEquals "duration", outcome.duration, fetchedOutcome.duration
+		assertEquals "owner", outcome.owner, fetchedOutcome.owner
+		assertEquals "note", outcome.note, fetchedOutcome.note
+		assertEquals "testOutput", outcome.testOutput, client.getTestOutput(fetchedOutcome)
+		assertEquals "testRun", run.id, fetchedOutcome.testRun.id
+
+		assertEquals "tags", outcome.tags.size(), fetchedOutcome.tags?.size()
+
+		TestRun fetchedRun = client.getTestRun(run.id)
+		outcome.tags.each { tag ->
+			assertNotNull "Couldn't find tag ${tag} on TestOutcome", fetchedOutcome.tags.find { it == tag }
+			assertNotNull "Couldn't find tag ${tag} on TestRun", fetchedRun.tags.find { it == tag }
+		}
+	}
+
+
+	void testAddPassingTestOutcomeForFirstTime() {
+		TestOutcome outcome = createTestOutcome(TestResult.Pass)
+
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		testRunsToCleanUp << run
+
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertFalse "For the first pass, the failure status is not considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+
+	void testAddFailingTestOutcomeForFirstTime() {
+		TestOutcome outcome = createTestOutcome(TestResult.Fail)
+
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		testRunsToCleanUp << run
+
+		Long outcomeId = client.addTestOutcome(outcome, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertTrue "For the first fail, the failure status is considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+
+	void testAddConsecutivelyPassedTestOutcome() {
+		TestOutcome outcome1 = createTestOutcome(TestResult.Pass)
+		TestOutcome outcome2 = createTestOutcome(TestResult.Pass)
+
+		TestRun run = new TestRun(new Date())
+		client.addTestRun(run)
+		testRunsToCleanUp << run
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run)
+		Long outcomeId = client.addTestOutcome(outcome2, run)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertFalse "For the consecutive pass, the failure status is not considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+	void testAddConsecutivelyFailedTestOutcome() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		TestOutcome outcome2 = createTestOutcome(TestResult.Fail, testName)
+		outcome2.testCase = outcome1.testCase
+
+		TestRun run1 = new TestRun(new Date())
+		TestRun run2 = new TestRun(new Date())
+		client.addTestRun(run1)
+		client.addTestRun(run2)
+		testRunsToCleanUp << run1
+		testRunsToCleanUp << run2
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		Long outcomeId = client.addTestOutcome(outcome2, run2)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertFalse "For the consecutive fail, the failure status is not considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+	void testAddNewlyFailedTestOutcome() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+
+		TestOutcome outcome1 = createTestOutcome(TestResult.Pass, testName)
+		TestOutcome outcome2 = createTestOutcome(TestResult.Fail, testName)
+		outcome2.testCase = outcome1.testCase
+
+		TestRun run1 = new TestRun(new Date())
+		TestRun run2 = new TestRun(new Date())
+		client.addTestRun(run1)
+		client.addTestRun(run2)
+		testRunsToCleanUp << run1
+		testRunsToCleanUp << run2
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		Long secondOutcomeId = client.addTestOutcome(outcome2, run2)
+		TestOutcome fetchedOutcome = client.getTestOutcome(secondOutcomeId)
+		assertTrue "For the newly failed test outcome, the failure status is considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+	void testAddNewlyPassedTestOutcome() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		TestOutcome outcome2 = createTestOutcome(TestResult.Pass, testName)
+		outcome2.testCase = outcome1.testCase
+
+		TestRun run1 = new TestRun(new Date())
+		TestRun run2 = new TestRun(new Date())
+		client.addTestRun(run1)
+		client.addTestRun(run2)
+		testRunsToCleanUp << run1
+		testRunsToCleanUp << run2
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		Long outcomeId = client.addTestOutcome(outcome2, run2)
+		TestOutcome fetchedOutcome = client.getTestOutcome(outcomeId)
+		assertTrue "For the newly passed test outcome, the failure status is considered changed.",
+			fetchedOutcome.isFailureStatusChanged
+	}
+
+	TestOutcome createTestOutcome(TestResult result, String testName = "test${wordGen.getCamelWords(3)}") {
+		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", testName, wordGen.getSentence(2), result)
+		outcome.startedAt = new Date(System.currentTimeMillis() + 1000 * testCaseCounter)
+		outcome.finishedAt = new Date(System.currentTimeMillis() + 2000 * testCaseCounter)
 		outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
 		outcome.owner = wordGen.getSentence(2)
 		outcome.note = wordGen.getSentence(3)
 		outcome.testOutput = wordGen.getSentence(10)
+
+		testCaseCounter++
 		return outcome
 	}
 
