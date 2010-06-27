@@ -46,7 +46,7 @@ class RenameServiceTests extends GroovyTestCase
 		}
 
 		// replace the common package with the existing package
-		renameService.renameAllPackages(project, commonPackageName, testCaseWithTargetPackage.packageName)
+		renameService.renamePackages(project, commonPackageName, testCaseWithTargetPackage.packageName)
 
 		// verify package/fullName
 		def retrievedTestCaseWithTargetPackage = TestCase.get(testCaseWithTargetPackage.id)
@@ -88,7 +88,7 @@ class RenameServiceTests extends GroovyTestCase
 
 		// replace the common package with a new package
 		def newPackage = "new.package.name." + RandomStringUtils.randomAlphabetic(5)
-		renameService.renameAllPackages(project, commonPackageName, newPackage)
+		renameService.renamePackages(project, commonPackageName, newPackage)
 
 		// verify package/fullName
 		def untouchedTestCase = TestCase.get(untouchableTestCase.id)

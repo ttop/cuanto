@@ -22,7 +22,7 @@ package cuanto
 class RenameService
 {
 	def dataService
-	boolean transactional = false
+	boolean transactional = true
 
 	/**
 	 * Replace the package of all test cases for the given project
@@ -32,21 +32,30 @@ class RenameService
 	 * @param oldPackageName the exact, old package name from which to rename test cases
 	 * @param newPackageName the new package name to which to replace rename test cases
 	 */
-	void renameAllPackages(Project project, String oldPackageName, String newPackageName)
+	void renamePackages(Project project, String oldPackageName, String newPackageName)
 	{
 		def findTargetTestCases = true
 		while (findTargetTestCases)
 		{
-			TestCase.withTransaction {
-				def targetTestCases = TestCase.findAllByPackageName(oldPackageName, [max: 500])
-				findTargetTestCases = targetTestCases.size() > 0
-				for (TestCase targetTestCase: targetTestCases)
-				{
-					targetTestCase.packageName = targetTestCase.packageName.replace(oldPackageName, newPackageName)
-					targetTestCase.fullName = targetTestCase.packageName + "." + targetTestCase.testName
-					targetTestCase.save()
-				}
-			}
+			def targetTestCases = TestCase.findAllByPackageName(oldPackageName, [max: 500])
+			findTargetTestCases = targetTestCases.size() > 0
+			renamePackages(targetTestCases, newPackageName)
+		}
+	}
+
+	/**
+	 * Replace the package of all given test cases to the new package name.
+	 *
+	 * @param testCases for which to replace the package name
+	 * @param newPackageName to which to replace the package name
+	 */
+	void renamePackages(List<TestCase> testCases, String newPackageName)
+	{
+		for (TestCase targetTestCase: testCases)
+		{
+			targetTestCase.packageName = newPackageName
+			targetTestCase.fullName = targetTestCase.packageName + "." + targetTestCase.testName
+			targetTestCase.save()
 		}
 	}
 }
