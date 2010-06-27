@@ -108,8 +108,14 @@ class StatisticService {
 				calculatedStats.tests = rawTestRunStats[0]
 				calculatedStats.totalDuration = rawTestRunStats[1]
 				calculatedStats.averageDuration = rawTestRunStats[2]
-				def allFailuresQueryFilter = new TestOutcomeQueryFilter(isFailure: true)
-				def newFailuresQueryFilter = new TestOutcomeQueryFilter(isFailure: true, isFailureStatusChanged: true)
+				def allFailuresQueryFilter = new TestOutcomeQueryFilter(
+					testRun: testRun,
+					testResultIncludedInCalculations: true,
+					isFailure: true)
+				def newFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
+					testResultIncludedInCalculations: true,
+					isFailure: true,
+					isFailureStatusChanged: true)
 				calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
 				calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
 				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
