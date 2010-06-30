@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Groovy" name="Groovy">
+      <configuration />
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -10,9 +15,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="GROOVY" level="application" />
     <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.4" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.codehaus.groovy:groovy-all:1.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant:1.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant-launcher:1.7.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: jline:jline:0.9.94" level="project" />
@@ -36,7 +41,6 @@
     <orderEntry type="library" name="Maven: org.codehaus.groovy.maven:gmaven-common:1.0-rc-5" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.qdox:qdox:1.8" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all-minimal:1.5.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-project:2.0.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-settings:2.0.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-model:2.0.9" level="project" />
