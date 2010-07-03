@@ -527,18 +527,16 @@ class TestOutcomeService {
 
 	/**
 	 * Queue the next test outcome for failure status recalculation,
-	 * upon completion of which test run stat recalculation will be queued.
-	 * If the next test outcome is not available (i.e., the current outcome's test run is the latest),
-	 * then just queue the test run stat recalculation here.
+	 * upon completion of which test run stat recalculation will be queued for the next test run.
+	 *
+	 * In addition, queue test run stat recalculation for the current test run.
 	 *
 	 * @param outcome the updated outcome which warrants recalculation
 	 */
 	def queueRecalculationJobs(TestOutcome outcome)
 	{
 		def nextTestOutcome = dataService.getNextOutcome(outcome)
-		if (nextTestOutcome)
-			failureStatusService.queueFailureStatusUpdateForOutcome(nextTestOutcome)
-		else
-			statisticService.queueTestRunStats(outcome.testRun?.id)
+		failureStatusService.queueFailureStatusUpdateForOutcome(nextTestOutcome)
+		statisticService.queueTestRunStats(outcome.testRun?.id)
 	}
 }
