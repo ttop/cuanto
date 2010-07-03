@@ -46,7 +46,8 @@ class TestOutcomeService {
 			outcome.owner = Sanitizer.escapeHtmlScriptTags(params.owner)
 			dataService.saveDomainObject(outcome)
 			dataService.deleteBugIfUnused(outcome.bug)
-			failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
+
+			queueRecalculationJobs(outcome)
 		}
 	}
 
@@ -82,7 +83,7 @@ class TestOutcomeService {
 
 				dataService.saveDomainObject outcome
 				dataService.deleteBugIfUnused origBug
-				failureStatusService.queueFailureStatusUpdateForOutcome(dataService.getNextOutcome(outcome))
+				queueRecalculationJobs(outcome)
 			}
 		}
 	}
@@ -495,7 +496,7 @@ class TestOutcomeService {
 
 
     TestOutcome addTestOutcome(request) {
-        TestOutcome testOutcome
+        TestOutcome testOutcome = null
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             dataService.saveTestOutcomes([testOutcome])
@@ -513,16 +514,31 @@ class TestOutcomeService {
 
 
     TestOutcome apiUpdateTestOutcome(request) {
-        TestOutcome testOutcome
+        TestOutcome testOutcome = null
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             if (testOutcome) {
                 updateTestOutcome(testOutcome)
-                if (testOutcome.testRun) {
-                    statisticService.queueTestRunStats(testOutcome.testRun)
-                }
             }
         }
         return testOutcome
     }
+
+
+	/**
+	 * Queue the next test outcome for failure status recalculation,
+	 * upon completion of which test run stat recalculation will be queued.
+	 * If the next test outcome is not available (i.e., the current outcome's test run is the latest),
+	 * then just queue the test run stat recalculation here.
+	 *
+	 * @param outcome the updated outcome which warrants recalculation
+	 */
+	def queueRecalculationJobs(TestOutcome outcome)
+	{
+		def nextTestOutcome = dataService.getNextOutcome(outcome)
+		if (nextTestOutcome)
+			failureStatusService.queueFailureStatusUpdateForOutcome(nextTestOutcome)
+		else
+			statisticService.queueTestRunStats(outcome.testRun?.id)
+	}
 }
