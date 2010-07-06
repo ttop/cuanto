@@ -23,6 +23,7 @@ class ApiController {
 	def addTestRun = {
 		TestRun testRun = parsingService.parseTestRun(request.JSON)
 		dataService.saveTestRun(testRun)
+		statisticService.queueTestRunStats(testRun)
 		response.status = response.SC_CREATED
 		render testRun.toJSONMap() as JSON
 	}
@@ -33,6 +34,7 @@ class ApiController {
 			TestRun testRun = parsingService.parseTestRun(request.JSON)
 			if (testRun) {
 				testRunService.update(testRun)
+				statisticService.queueTestRunStats(testRun)
 				render "TestRun updated"
 			} else {
 				response.status = response.SC_INTERNAL_SERVER_ERROR

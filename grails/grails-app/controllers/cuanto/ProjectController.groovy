@@ -289,7 +289,7 @@ class ProjectController {
 			}
 
 			def numAnalyzed;
-			if (stats && stats.failed > 0) {
+			if (stats && stats.failed >= 0) {
 				numAnalyzed = "${stats?.analyzed} of ${stats?.failed}"
 			} else {
 				numAnalyzed = ""
