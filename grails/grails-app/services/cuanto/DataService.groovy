@@ -484,7 +484,7 @@ class DataService {
 		def anStates = [:]
 		AnalysisState.list().each { anStates[it.id] = it }
 		def total = TestOutcome.executeQuery("""select t.analysisState.id, count(t.analysisState) from
-			cuanto.TestOutcome t where t.testRun = ? and t.analysisState is not null group by t.analysisState""",
+			cuanto.TestOutcome t where t.testRun = ? and t.analysisState is not null and t.testResult.isFailure = true group by t.analysisState""",
 			[testRun])
 		def stats = []
 		for (rawData in total) {
