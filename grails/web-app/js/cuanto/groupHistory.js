@@ -29,7 +29,11 @@ YAHOO.cuanto.groupHistory = function() {
 		this.onEventSelectRow(e);
 		var currentRow = this.getSelectedRows()[0];
 		var currentRecord = this.getRecord(currentRow);
-		window.location = YAHOO.cuanto.urls.get('testRunLatest') + currentRecord.getData('projectKey');
+		var numTests = currentRecord.getData("tests");
+		if (numTests && numTests > 0)
+		{
+			window.location = YAHOO.cuanto.urls.get('testRunLatest') + currentRecord.getData('projectKey');
+		}
 	};
 
 

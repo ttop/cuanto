@@ -32,7 +32,11 @@ YAHOO.cuanto.projectHistory = function() {
 		this.onEventSelectRow(e);
 		var currentRow = this.getSelectedRows()[0];
 		var currentRecord = this.getRecord(currentRow);
-		window.location = YAHOO.cuanto.urls.get('testRunResults') + currentRecord.getData('id');
+		var numTests = currentRecord.getData("tests");
+		if (numTests && numTests > 0)
+		{
+			window.location = YAHOO.cuanto.urls.get('testRunResults') + currentRecord.getData('id');
+		}
 	};
 
 
