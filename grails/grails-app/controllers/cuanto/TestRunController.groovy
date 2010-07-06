@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import grails.converters.JSON
+import grails.converters.*
 import java.text.SimpleDateFormat
 
 class TestRunController {
@@ -189,9 +189,13 @@ class TestRunController {
 				render myJson as JSON
 			}
 			xml {
-				def outcomesToRender = results?.testOutcomes.collect {it.toTestOutcomeApi()}
-				response.contentType = "text/xml"
-				render xstream.toXML(outcomesToRender)
+				if (results?.testOutcomes) {
+					response.contentType = "text/xml"
+					render results.testOutcomes as XML
+				} else {
+					response.status = response.SC_NO_CONTENT
+					render "No test outcomes in this test run."
+				}
 			}
 			csv {
 				response.contentType = "text/csv"
