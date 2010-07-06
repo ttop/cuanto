@@ -126,7 +126,9 @@ YAHOO.cuanto.projectHistory = function() {
 		       "&offset=" + state.pagination.recordOffset +
 		       "&max=" + state.pagination.rowsPerPage +
 		       "&order=" + ((state.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC) ? "desc" : "asc") +
-		       "&sort=" + state.sortedBy.key;
+		       "&sort=" + state.sortedBy.key +
+		       "&cb=" + new Date().getTime()
+			;
 	}
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
