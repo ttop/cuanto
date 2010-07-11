@@ -176,7 +176,8 @@ public class TestNgListener implements ITestListener {
 			packageName, testCaseName, testCaseParameters, cuantoTestResult);
 		String[] tags = testCaseResult.getMethod().getGroups();
 		long duration = testCaseResult.getEndMillis() - testCaseResult.getStartMillis();
-		testOutcome.setTestOutput(getTestOutput(testCaseResult));
+		if (cuantoTestResult != TestResult.Pass)
+			testOutcome.setTestOutput(getTestOutput(testCaseResult));
 		testOutcome.addTags(Arrays.asList(tags));
 		testOutcome.setDuration(duration);
 		cuanto.addTestOutcome(testOutcome, testRun);

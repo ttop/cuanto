@@ -9,23 +9,23 @@ import org.testng.annotations.Test;
  */
 public class TestNgListenerAdHocTests {
 
-	@Test
+	@Test(groups = "Happy")
 	public void testHappy1() {
 		System.out.println("testHappy1");
 	}
 
-	@Test
+	@Test(groups = { "Happy", "Second" })
 	public void testHappy2() {
 		System.out.println("testHappy2");
 	}
 
-	@Test
+	@Test(groups = "Sad")
 	public void testSad1() {
 		System.out.println("testSad1");
 		Assert.fail("sad1");
 	}
 
-	@Test
+	@Test(groups = { "Sad", "Second" })
 	public void testSad2() {
 		System.out.println("testSad2");
 		Assert.fail("sad2");
