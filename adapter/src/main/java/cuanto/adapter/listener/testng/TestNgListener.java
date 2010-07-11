@@ -31,7 +31,6 @@ public class TestNgListener implements ITestListener {
 
 	private CuantoConnector cuanto;
 	private TestRun testRun;
-	private PrintStream stdout;
 	private StringOutputStream cuantoOutputStream;
 	private DualOutputStream dualOutputStream;
 
@@ -57,9 +56,8 @@ public class TestNgListener implements ITestListener {
 		cuanto = CuantoConnector.newInstance(cuantoUrl, cuantoProjectKey);
 		Long testRunId = determineTestRunId(cuantoProjectKey, cuantoTestRun);
 		testRun = cuanto.getTestRun(testRunId);
-		stdout = System.out;
 		cuantoOutputStream = new StringOutputStream();
-		dualOutputStream = new DualOutputStream(stdout, cuantoOutputStream);
+		dualOutputStream = new DualOutputStream(System.out, cuantoOutputStream);
 		System.setOut(new PrintStream(dualOutputStream));
 	}
 
