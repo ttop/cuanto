@@ -63,6 +63,9 @@ public class TestNgListener implements ITestListener {
 
 	/**
 	 * {@inheritDoc}
+	 * <p/>
+	 * Re-initialize the cuantoOutputStream (stream2 on dualOutputStream),
+	 * so that the stdout written by the following test will be isolated and usable for the test output.
 	 */
 	public void onTestStart(ITestResult iTestResult) {
 		cuantoOutputStream = new StringOutputStream();
