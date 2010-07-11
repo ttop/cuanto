@@ -72,7 +72,7 @@ public class TestOutcome {
 	 * @return The new TestOutcome object.
 	 */
 	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName, TestResult testResult) {
-		return newInstance(testCasePackageName, testCaseTestName, null, testResult);
+		return newInstance(testCasePackageName, testCaseTestName, (String) null, testResult);
 	}
 
 
@@ -104,6 +104,35 @@ public class TestOutcome {
 		testOutcome.testCase = testCase;
 		testOutcome.testResult = testResult;
 		return testOutcome;
+	}
+
+
+	/**
+	 * Creates a new TestOutcome for the named test case. This is not added to the Cuanto server until
+	 * CuantoConnector.addTestOutcome() is called.
+	 *
+	 * @param testCasePackageName The packageName of the TestCase. A package is a namespace for a particular test. In java
+	 *                            (for instance, JUnit and TestNG), it will most often correspond to the fully-qualified
+	 *                            java class name of a particular test method. For example, org.myorganization.my.package.TestClassName.
+	 * @param testCaseTestName    The name of the TestCase. This is usually the method name of the test.
+	 * @param testCaseParameters  The parameters of this TestCase.
+	 * @param testResult          The result of executing the TestCase.
+	 * @return The new TestOutcome object.
+	 */
+	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName,
+		Object[] testCaseParameters,
+		TestResult testResult) {
+
+		StringBuilder sb = new StringBuilder();
+		if (testCaseParameters != null && testCaseParameters.length > 0) {
+			sb.append(testCaseParameters[0].toString());
+			for (int i = 1; i < testCaseParameters.length; ++i) {
+			    sb.append(", ");
+				sb.append(testCaseParameters[i].toString());
+			}
+		}
+
+		return newInstance(testCasePackageName, testCaseTestName, sb.toString(), testResult);
 	}
 
 

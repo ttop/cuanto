@@ -64,7 +64,7 @@ public class TestRun {
 	}
 
 
-	TestRun(String projectKey) {
+	public TestRun(String projectKey) {
 		this.projectKey = projectKey;
 	}
 
