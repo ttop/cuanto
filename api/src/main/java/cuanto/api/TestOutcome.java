@@ -125,16 +125,17 @@ public class TestOutcome {
 
 		StringBuilder sb = new StringBuilder();
 		if (testCaseParameters != null && testCaseParameters.length > 0) {
-			sb.append(testCaseParameters[0].toString());
+			Object firstParam = testCaseParameters[0];
+			sb.append(resolveTestCaseParameterName(firstParam));
 			for (int i = 1; i < testCaseParameters.length; ++i) {
-			    sb.append(", ");
-				sb.append(testCaseParameters[i].toString());
+				sb.append(", ");
+				Object param = testCaseParameters[i];
+				sb.append(resolveTestCaseParameterName(param));
 			}
 		}
 
 		return newInstance(testCasePackageName, testCaseTestName, sb.toString(), testResult);
 	}
-
 
 	/**
 	 * Gets the TestCase associated with this TestOutcome.
@@ -590,6 +591,21 @@ public class TestOutcome {
 		} else {
 			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).format(date);
 		}
+	}
+
+
+	/**
+	 * Resolve the test case parameter name to some user-friendly String.
+	 * <p/>
+	 * If the parameter is null, then "null" will be its name.
+	 *
+	 * @param param to resolve the parameter name
+	 * @return user-friendly String describing the specified parameter
+	 */
+	private static String resolveTestCaseParameterName(Object param) {
+		return param == null
+			? "null"
+			: param.toString();
 	}
 
 

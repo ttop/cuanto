@@ -2,6 +2,7 @@ package cuanto.adapter.listener.testng;
 
 import org.testng.Assert;
 import org.testng.SkipException;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -41,5 +42,23 @@ public class TestNgListenerAdHocTests {
 	public void testSkip2() {
 		System.out.println("testSkip2");
 		throw new SkipException("skip2");
+	}
+
+	@Test(
+		groups = { "Happy", "Sad" },
+		dataProvider = "data-provider")
+	public void testDataProvider(String p1, Integer p2) {
+		System.out.println(p1 + ":" + p2);
+		if (p1 == null || p2 == null)
+			throw new IllegalArgumentException("The test method parameter may not be null.");
+	}
+
+	@DataProvider(name = "data-provider")
+	private Object[][] dataProvider() {
+		return new Object[][] {
+			new Object[] { "1-param1", 12 },
+			new Object[] { "2-param1", null },
+			new Object[] { null, 22 },
+		};
 	}
 }
