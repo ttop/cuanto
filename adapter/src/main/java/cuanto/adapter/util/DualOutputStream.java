@@ -9,30 +9,30 @@ import java.io.OutputStream;
  * @author Suk-Hyun Cho
  */
 public class DualOutputStream extends OutputStream {
-	private OutputStream stream1;
-	private OutputStream stream2;
+	private OutputStream firstStream;
+	private OutputStream secondStream;
 
 	/**
 	 * Construct a DualOutputStream that splits the stream into the two specified OutputStreams.
 	 *
-	 * @param stream1 the first OutputStream
-	 * @param stream2 the second OutputStream
+	 * @param firstStream  the first OutputStream
+	 * @param secondStream the second OutputStream
 	 */
-	public DualOutputStream(OutputStream stream1, OutputStream stream2) {
-		this.stream1 = stream1;
-		this.stream2 = stream2;
+	public DualOutputStream(OutputStream firstStream, OutputStream secondStream) {
+		this.firstStream = firstStream;
+		this.secondStream = secondStream;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * <p/>
-	 * Output to the two OutputStreams, stream1 firstly and stream2 secondly.
-	 * If writing to stream1 throws IOException, stream2 will not be written.
+	 * Output to the two OutputStreams, firstStream firstly and secondStream secondly.
+	 * If writing to firstStream throws IOException, secondStream will not be written.
 	 */
 	@Override
 	public void write(int b) throws IOException {
-		stream1.write(b);
-		stream2.write(b);
+		firstStream.write(b);
+		secondStream.write(b);
 	}
 
 	/**
@@ -40,20 +40,20 @@ public class DualOutputStream extends OutputStream {
 	 *
 	 * @return the first OutputStream
 	 */
-	public OutputStream getStream1() {
-		return stream1;
+	public OutputStream getFirstStream() {
+		return firstStream;
 	}
 
 	/**
 	 * Flush and close the first stream, if applicable, then set it to the specified stream.
 	 *
-	 * @param stream1 to replace the first OutputStream
+	 * @param firstStream to replace the first OutputStream
 	 */
-	public void setStream1(OutputStream stream1) {
-		if (this.stream1 != null)
-			flush(stream1);
+	public void setFirstStream(OutputStream firstStream) {
+		if (this.firstStream != null)
+			flush(firstStream);
 
-		this.stream1 = stream1;
+		this.firstStream = firstStream;
 	}
 
 	/**
@@ -61,20 +61,20 @@ public class DualOutputStream extends OutputStream {
 	 *
 	 * @return the second OutputStream
 	 */
-	public OutputStream getStream2() {
-		return stream2;
+	public OutputStream getSecondStream() {
+		return secondStream;
 	}
 
 	/**
 	 * Flush and close the second stream, if applicable, then set it to the specified stream.
 	 *
-	 * @param stream2 to replace the second OutputStream
+	 * @param secondStream to replace the second OutputStream
 	 */
-	public void setStream2(OutputStream stream2) {
-		if (this.stream2 != null)
-			flush(stream2);
+	public void setSecondStream(OutputStream secondStream) {
+		if (this.secondStream != null)
+			flush(secondStream);
 
-		this.stream2 = stream2;
+		this.secondStream = secondStream;
 	}
 
 	/**
@@ -84,8 +84,8 @@ public class DualOutputStream extends OutputStream {
 	 */
 	@Override
 	protected void finalize() {
-		flush(stream1);
-		flush(stream2);
+		flush(firstStream);
+		flush(secondStream);
 	}
 
 	/**
@@ -96,10 +96,10 @@ public class DualOutputStream extends OutputStream {
 	 */
 	private void flush(OutputStream stream) {
 		try {
-			stream1.flush();
+			firstStream.flush();
 		} catch (IOException e) {
 			try {
-				stream1.close();
+				firstStream.close();
 			} catch (IOException e1) {
 				// ignore
 			}

@@ -69,7 +69,7 @@ public class TestNgListener implements ITestListener {
 	 */
 	public void onTestStart(ITestResult iTestResult) {
 		cuantoOutputStream = new StringOutputStream();
-		dualOutputStream.setStream2(cuantoOutputStream);
+		dualOutputStream.setSecondStream(cuantoOutputStream);
 	}
 
 	/**
