@@ -39,13 +39,21 @@ class StatisticService {
 
 
 	void queueTestRunStats(Long testRunId) {
-		if (!testRunId)
+		if (testRunId == null) {
+			log.debug "TestRun id for which to queue TestRunStats was null."
 			return
+		}
+		
+		def testRun = TestRun.get(testRunId)
+		if (testRun == null) {
+			log.debug "TestRun [$testRunId] was not found."
+			return
+		}
 
 		synchronized (queueLock) {
 			if (!queueHasTestRun(testRunId)) {
 				log.info "adding test run ${testRunId} to stat queue"
-				def queuedItem = new QueuedTestRunStat('testRunId': testRunId)
+				def queuedItem = new QueuedTestRunStat(testRunId: testRunId)
 				dataService.saveDomainObject queuedItem, true
 			}
 			if (Environment.current == Environment.TEST) {
