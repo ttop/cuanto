@@ -1,6 +1,7 @@
 package cuanto.adapter.listener.testng;
 
 import cuanto.adapter.CuantoAdapterException;
+import cuanto.adapter.util.ArgumentParser;
 import cuanto.adapter.util.DualOutputStream;
 import cuanto.adapter.util.StringOutputStream;
 import cuanto.api.CuantoConnector;
@@ -20,6 +21,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * ITestListener implementation to be used with TestNG to report test outcomes to Cuanto on-the-fly.
@@ -40,22 +42,28 @@ public class TestNgListener implements ITestListener {
 	 * The following environment variables are used to connect to Cuanto:
 	 * - cuanto.url: the url at which Cuanto is running; required
 	 * - cuanto.projectkey: the project key for which the tests run; required
-	 * - cuanto.testrun: the id of
+	 * - cuanto.testrun: the id of an existing TestRun to use; if null, a new TestRun will be created
+	 * - cuanto.testrun.properties: testProperties map in the form of key1:val1,key2:val2,...
+	 * - cuanto.testrun.links: links map in the form of cuanto:http://cuanto.codehaus.org,google:http://www.google.com
 	 *
 	 * @throws CuantoAdapterException if unable to connect to Cuanto
 	 */
 	public TestNgListener() throws CuantoAdapterException {
+		// parse environment variables
 		String cuantoUrl = System.getenv("cuanto.url");
 		String cuantoProjectKey = System.getenv("cuanto.projectkey");
 		String cuantoTestRun = System.getenv("cuanto.testrun");
+		String testRunPropertiesString = System.getenv("cuanto.testrun.properties");
+		String testRunLinksString = System.getenv("cuanto.testrun.links");
+		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
+		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
 
 		if (cuantoUrl == null || cuantoProjectKey == null) {
 			throw new CuantoAdapterException("Please provide cuanto.url and cuanto.projectkey");
 		}
 
 		cuanto = CuantoConnector.newInstance(cuantoUrl, cuantoProjectKey);
-		Long testRunId = determineTestRunId(cuantoProjectKey, cuantoTestRun);
-		testRun = cuanto.getTestRun(testRunId);
+		prepareTestRun(cuantoProjectKey, cuantoTestRun, testRunProperties, testRunLinks);
 		cuantoOutputStream = new StringOutputStream();
 		dualOutputStream = new DualOutputStream(System.out, cuantoOutputStream);
 		System.setOut(new PrintStream(dualOutputStream));
@@ -113,17 +121,20 @@ public class TestNgListener implements ITestListener {
 	}
 
 	/**
-	 * Determine the TestRun id.
+	 * Prepare the TestRun to be used to post test outcomes.
 	 * <p/>
 	 * If cuanto.testrun is provided, attempt to parse that to Long. If not, create a new TestRun and use its id.
 	 *
 	 * @param cuantoProjectKey Cuanto project key
 	 * @param cuantoTestRun    TestRun id for which to submit test results
-	 * @return Long id of the provided or newly created TestRun
+	 * @param testProperties   to set for TestRun.testProperties
+	 * @param links            to set for TestRun.links
 	 * @throws CuantoAdapterException if cuanto.testrun is provided but cannot be parsed as Long
 	 */
-	private Long determineTestRunId(String cuantoProjectKey, String cuantoTestRun) throws CuantoAdapterException {
+	private void prepareTestRun(String cuantoProjectKey, String cuantoTestRun,
+		Map<String, String> testProperties, Map<String, String> links) throws CuantoAdapterException {
 		Long testRunId = null;
+
 		if (cuantoTestRun == null) {
 			logger.info("cuanto.testrun not provided. Creating a new TestRun...");
 			testRunId = createTestRun(cuantoProjectKey);
@@ -136,7 +147,12 @@ public class TestNgListener implements ITestListener {
 				throw new CuantoAdapterException("Unable to parse cuanto.testrun.", nfe);
 			}
 		}
-		return testRunId;
+
+		testRun = cuanto.getTestRun(testRunId);
+		testRun.setTestProperties(testProperties);
+		for (Map.Entry<String, String> entry : links.entrySet())
+			testRun.addLink(entry.getValue(), entry.getKey());
+		cuanto.updateTestRun(testRun);
 	}
 
 	/**

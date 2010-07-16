@@ -2,8 +2,7 @@ package cuanto.adapter.util;
 
 import org.testng.annotations.Test;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.testng.Assert.assertEquals;
 
@@ -13,72 +12,149 @@ import static org.testng.Assert.assertEquals;
 public class ArgumentParserTests {
 
 	@Test
-	public void testSingleKeyWithValueSeparatorOnly() {
+	public void testParseMapForNullString() {
+		Map<String, String> actual = ArgumentParser.parseMap(null);
+		Map<String, String> expected = new LinkedHashMap<String, String>();
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseMapForEmptyString() {
+		Map<String, String> actual = ArgumentParser.parseMap("");
+		Map<String, String> expected = new LinkedHashMap<String, String>();
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseMapForSingleKeyWithValueSeparatorOnly() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:");
 		Map<String, String> expected = makeMap("key1", "");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testSingleKeyWithoutValueSeparator() {
+	public void testParseMapForSingleKeyWithoutValueSeparator() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1");
 		Map<String, String> expected = makeMap("key1", null);
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeysWithMismatchingValuePairsWithValueSeparator() {
+	public void testParseMapForMultipleKeysWithMismatchingValuePairsWithValueSeparator() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:,key2:val2");
 		Map<String, String> expected = makeMap("key1", "", "key2", "val2");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeysWithMismatchingValuePairsAtEndWithValueSeparator() {
+	public void testParseMapForMultipleKeysWithMismatchingValuePairsAtEndWithValueSeparator() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:val1,key2:");
 		Map<String, String> expected = makeMap("key1", "val1", "key2", "");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeysWithMismatchingValuePairsWithoutValueSeparator() {
+	public void testParseMapForMultipleKeysWithMismatchingValuePairsWithoutValueSeparator() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1,key2:val2");
 		Map<String, String> expected = makeMap("key1", null, "key2", "val2");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeysWithMismatchingValuePairsAtEndWithoutValueSeparator() {
+	public void testParseMapForMultipleKeysWithMismatchingValuePairsAtEndWithoutValueSeparator() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:val1,key2");
 		Map<String, String> expected = makeMap("key1", "val1", "key2", null);
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testSingleKeyValuePair() {
+	public void testParseMapForSingleKeyValuePair() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:val1");
 		Map<String, String> expected = makeMap("key1", "val1");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeyValuePairs() {
+	public void testParseMapForMultipleKeyValuePairs() {
 		Map<String, String> actual = ArgumentParser.parseMap("key1:val1,key2:val2");
 		Map<String, String> expected = makeMap("key1", "val1", "key2", "val2");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testKeyWithUrlValue() {
+	public void testParseMapForKeyWithUrlValue() {
 		Map<String, String> actual = ArgumentParser.parseMap("xkcd:http://www.xkcd.com");
 		Map<String, String> expected = makeMap("xkcd", "http://www.xkcd.com");
 		assertEquals(actual, expected);
 	}
 
 	@Test
-	public void testMultipleKeysWithUrlValue() {
+	public void testParseMapForMultipleKeysWithUrlValue() {
 		Map<String, String> actual = ArgumentParser.parseMap("xkcd:http://www.xkcd.com,reddit:http://www.reddit.com");
 		Map<String, String> expected = makeMap("xkcd", "http://www.xkcd.com", "reddit", "http://www.reddit.com");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForNullString() {
+		List<String> actual = ArgumentParser.parseList(null);
+		List<String> expected = new LinkedList<String>();
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForEmptyString() {
+		List<String> actual = ArgumentParser.parseList("");
+		List<String> expected = new LinkedList<String>();
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForSingleSeparatorOnly() {
+		List<String> actual = ArgumentParser.parseList(",");
+		List<String> expected = new LinkedList<String>();
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForSingleElement() {
+		List<String> actual = ArgumentParser.parseList("foo");
+		List<String> expected = Arrays.asList("foo");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForSingleElementStartingWithSeparator() {
+		List<String> actual = ArgumentParser.parseList(",foo");
+		List<String> expected = Arrays.asList("foo");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForSingleElementEndingWithSeparator() {
+		List<String> actual = ArgumentParser.parseList("foo,");
+		List<String> expected = Arrays.asList("foo");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForSingleElementStartingAndEndingWithSeparator() {
+		List<String> actual = ArgumentParser.parseList(",foo,");
+		List<String> expected = Arrays.asList("foo");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForMultipleElements() {
+		List<String> actual = ArgumentParser.parseList("foo,bar");
+		List<String> expected = Arrays.asList("foo", "bar");
+		assertEquals(actual, expected);
+	}
+
+	@Test
+	public void testParseListForMultipleElementsEndingWithSeparator() {
+		List<String> actual = ArgumentParser.parseList("foo,bar,");
+		List<String> expected = Arrays.asList("foo", "bar");
 		assertEquals(actual, expected);
 	}
 

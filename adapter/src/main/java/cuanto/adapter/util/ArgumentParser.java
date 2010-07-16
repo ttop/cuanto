@@ -1,7 +1,6 @@
 package cuanto.adapter.util;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Parser for string arguments that represent various data structures such as a map or a list.
@@ -14,15 +13,42 @@ public class ArgumentParser {
 	private static final char ARG_SEPARATOR = ',';
 
 	/**
+	 * Parse a string in the form of E1,E2,...,En
+	 * to create a List in the form of [E1, E2, ..., En].
+	 *
+	 * @param listArgument from which to create a List
+	 * @return List parsed from the provided listArgument; empty if listArgument is null or of length zero
+	 */
+	public static List<String> parseList(String listArgument) {
+		// use a linked list to preserve the order of elements
+		List<String> list = new LinkedList<String>();
+
+		if (listArgument == null || listArgument.length() == 0)
+			return list;
+
+		List<String> parsedElements = Arrays.asList(
+			listArgument.split(String.valueOf(ARG_SEPARATOR)));
+
+		for (String element : parsedElements)
+			if (element != null && !element.equals(""))
+				list.add(element);
+
+		return list;
+	}
+
+	/**
 	 * Parse a string in the form of K1:V1,K2:V2,...Kn:Vn
 	 * to create a Map in the form of [K1:V1, K2:V2, ... Kn:Vn].
 	 *
 	 * @param mapArgument from which to create a Map
-	 * @return Map parsed from the provided mapArgument
+	 * @return Map parsed from the provided mapArgument; empty if mapArgument is null or of length zero
 	 */
 	public static Map<String, String> parseMap(String mapArgument) {
 		// use linked map to preserve the order of key-value pairs
 		Map<String, String> map = new LinkedHashMap<String, String>();
+
+		if (mapArgument == null || mapArgument.length() == 0)
+			return map;
 
 		int lastIndex = -1;
 		int currentIndex = 0;
@@ -39,11 +65,11 @@ public class ArgumentParser {
 				// if the current token is a key or the current index has an argument separator, then process the token
 				if (!isTokenValue || c == ARG_SEPARATOR) {
 					lastIndex = currentIndex;
-					lastKey = processToken(map, lastKey, token);
+					lastKey = processMapToken(map, lastKey, token);
 					// this is needed in case an argument separator is found before a key-value separator
 					// (e.g., key1,key2:val2), in which case a null value is used for the key
 					if (lastKey != null && c == ARG_SEPARATOR)
-						lastKey = processToken(map, lastKey, null);
+						lastKey = processMapToken(map, lastKey, null);
 				}
 
 				isTokenValue = lastKey != null;
@@ -55,11 +81,11 @@ public class ArgumentParser {
 		// so, parse the last bit and process the token.
 		if (currentIndex != lastIndex) {
 			String lastStringSegment = mapArgument.substring(lastIndex + 1);
-			lastKey = processToken(map, lastKey, lastStringSegment);
+			lastKey = processMapToken(map, lastKey, lastStringSegment);
 			// this is needed in case an argument separator is found before a key-value separator
 			// (e.g., key1,key2:val2), in which case a null value is used for the key
 			if (lastKey != null)
-				processToken(map, lastKey, null);
+				processMapToken(map, lastKey, null);
 		}
 
 		return map;
@@ -77,7 +103,7 @@ public class ArgumentParser {
 	 * @param token   the current token to process
 	 * @return the last key (see above)
 	 */
-	private static String processToken(Map<String, String> map, String lastKey, String token) {
+	private static String processMapToken(Map<String, String> map, String lastKey, String token) {
 		if (lastKey == null)
 			return token;
 		else

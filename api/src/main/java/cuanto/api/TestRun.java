@@ -21,13 +21,13 @@
 package cuanto.api;
 
 
-import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -184,7 +184,8 @@ public class TestRun {
 
 	/**
 	 * Get the tags associated with this test run.
-	 * @return An unmodifiable List of the tags.  
+	 *
+	 * @return An unmodifiable List of the tags.
 	 */
 	public List<String> getTags() {
 		return Collections.unmodifiableList(tags);
@@ -199,7 +200,7 @@ public class TestRun {
 	void addTag(String tag) {
 		tags.add(tag);
 	}
-	
+
 
 	/**
 	 * Deletes a Link from this TestRun object. This change is not reflected on the Cuanto server until you create or update
@@ -224,6 +225,7 @@ public class TestRun {
 
 	/**
 	 * Gets the note associated with this TestRun.
+	 *
 	 * @return The note associated with this TestRun.
 	 */
 	public String getNote() {
@@ -236,7 +238,7 @@ public class TestRun {
 	 * retrieved from the Cuanto server.
 	 *
 	 * @return The date this TestRun was added to the Cuanto server or null if this TestRun was not retrieved from the
-	 * server.
+	 *         server.
 	 */
 	public Date getDateCreated() {
 		return dateCreated;
@@ -282,6 +284,16 @@ public class TestRun {
 	 */
 	public Map getTestProperties() {
 		return Collections.unmodifiableMap(testProperties);
+	}
+
+
+	/**
+	 * Gets TestProperties associated with this TestRun.
+	 *
+	 * @param testProperties A map where each entry's key is a property name and it's value is the property's value.
+	 */
+	public void setTestProperties(Map<String, String> testProperties) {
+		this.testProperties = testProperties;
 	}
 
 
@@ -356,5 +368,4 @@ public class TestRun {
 	void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
-
 }
