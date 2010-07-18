@@ -200,14 +200,20 @@ public class TestNgListener implements ITestListener {
 		cuanto.addTestOutcome(testOutcome, testRun);
 	}
 
+	/**
+	 * Get the test output to store in the test outcome.
+	 * <p/>
+	 * The stderr must show first in order for the grouped output feature to work as expected.
+	 *
+	 * @param testCaseResult result of the current test case
+	 * @return the stderr appended with the stdout
+	 */
 	@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 	private String getTestOutput(ITestResult testCaseResult) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("[stdout]\r\n");
-		sb.append(cuantoOutputStream.toString());
-		sb.append("\r\n---\r\n\r\n");
-		sb.append("[stderr]\r\n");
 		sb.append(getStackTrace(testCaseResult.getThrowable()));
+		sb.append("\r\n---\r\n\r\n");
+		sb.append(cuantoOutputStream.toString());
 		return sb.toString();
 	}
 
