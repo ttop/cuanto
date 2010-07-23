@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Custom suite" parallel="methods" thread-count="3">
+<suite name="Custom suite" parallel="methods" thread-count="1">
 	<listeners>
 		<listener class-name="cuanto.adapter.listener.testng.TestNgListener" />
 	</listeners>
