@@ -70,6 +70,7 @@ class ParsingService {
 					testRun.addToTags(tag)
 				}
 			}
+			dataService.deleteStatisticsForTestRun(testRun)
 			dataService.saveTestRun(testRun)
 			statisticService.queueTestRunStats(testRun)			
 		}

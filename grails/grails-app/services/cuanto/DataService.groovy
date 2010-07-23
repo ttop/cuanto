@@ -59,7 +59,11 @@ class DataService {
 
 
 	def deleteStatisticsForTestRun(TestRun testRun) {
-		if (testRun?.testRunStatistics) {
+		// null out testRunStatistics first, in case testRunStatistics points to a nonexistent TestRunStats
+		testRun.testRunStatistics = null
+
+		// delete the TestRunStats if it exists
+		if (testRun?.testRunStatistics?.id && TestRunStats.get(testRun.testRunStatistics.id)) {
 			testRun.testRunStatistics.delete()
 			testRun.testRunStatistics = null
 			saveDomainObject testRun
