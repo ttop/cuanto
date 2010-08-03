@@ -496,30 +496,6 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
-	void testDeleteStatisticsForTestRun() {
-		Project proj = to.project
-		proj.save()
-
-		def testRun = to.getTestRun(proj)
-		if (!testRun.save()) {
-			reportError testRun
-		}
-
-		TestRunStats stats = new TestRunStats(passed: 8, failed: 0, tests: 8)
-		stats.testRun = testRun
-		testRun.testRunStatistics = stats
-
-		if (!testRun.save(flush: true)) {
-			reportError testRun
-		}
-
-		dataService.deleteStatisticsForTestRun(testRun)
-		def fetchedTestRun = TestRun.get(testRun.id)
-		assertNull "TestRunStatistics not deleted", fetchedTestRun.testRunStatistics
-		assertEquals "AnalysisStatistics not deleted", 0, AnalysisStatistic.list().size()
-	}
-
-
 	void testGetProject() {
 		Project proj = to.project
 		proj.save()

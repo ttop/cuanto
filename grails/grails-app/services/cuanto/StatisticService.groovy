@@ -109,10 +109,10 @@ class StatisticService {
 			if (!testRun) {
 				log.error "Couldn't find test run ${testRunId}"
 			} else {
-				dataService.deleteStatisticsForTestRun(testRun)
-				TestRunStats calculatedStats = new TestRunStats(testRun: testRun)
+				TestRunStats calculatedStats = testRun.getTestRunStatistics() ?: new TestRunStats()
 
 				def rawTestRunStats = dataService.getRawTestRunStats(testRun)
+				calculatedStats.testRun = testRun
 				calculatedStats.tests = rawTestRunStats[0]
 				calculatedStats.totalDuration = rawTestRunStats[1]
 				calculatedStats.averageDuration = rawTestRunStats[2]
@@ -134,13 +134,13 @@ class StatisticService {
 				}
 
 				testRun.testRunStatistics = calculatedStats
-				testRun.testRunStatistics = calculateAnalysisStats(testRun)
+				calculateAnalysisStats(testRun)
 
 				def tagStats = getTagStatistics(testRun)
 				tagStats.each {
 					testRun.testRunStatistics.addToTagStatistics(it)
 				}
-				dataService.saveDomainObject(testRun, true)
+				dataService.saveDomainObject(testRun.testRunStatistics, true)
 			}
 		}
 	}

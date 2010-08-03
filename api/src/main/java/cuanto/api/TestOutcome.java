@@ -72,7 +72,7 @@ public class TestOutcome {
 	 * @return The new TestOutcome object.
 	 */
 	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName, TestResult testResult) {
-		return newInstance(testCasePackageName, testCaseTestName, null, testResult);
+		return newInstance(testCasePackageName, testCaseTestName, (String) null, testResult);
 	}
 
 
@@ -106,6 +106,36 @@ public class TestOutcome {
 		return testOutcome;
 	}
 
+
+	/**
+	 * Creates a new TestOutcome for the named test case. This is not added to the Cuanto server until
+	 * CuantoConnector.addTestOutcome() is called.
+	 *
+	 * @param testCasePackageName The packageName of the TestCase. A package is a namespace for a particular test. In java
+	 *                            (for instance, JUnit and TestNG), it will most often correspond to the fully-qualified
+	 *                            java class name of a particular test method. For example, org.myorganization.my.package.TestClassName.
+	 * @param testCaseTestName    The name of the TestCase. This is usually the method name of the test.
+	 * @param testCaseParameters  The parameters of this TestCase.
+	 * @param testResult          The result of executing the TestCase.
+	 * @return The new TestOutcome object.
+	 */
+	public static TestOutcome newInstance(String testCasePackageName, String testCaseTestName,
+		Object[] testCaseParameters,
+		TestResult testResult) {
+
+		StringBuilder sb = new StringBuilder();
+		if (testCaseParameters != null && testCaseParameters.length > 0) {
+			Object firstParam = testCaseParameters[0];
+			sb.append(resolveTestCaseParameterName(firstParam));
+			for (int i = 1; i < testCaseParameters.length; ++i) {
+				sb.append(", ");
+				Object param = testCaseParameters[i];
+				sb.append(resolveTestCaseParameterName(param));
+			}
+		}
+
+		return newInstance(testCasePackageName, testCaseTestName, sb.toString(), testResult);
+	}
 
 	/**
 	 * Gets the TestCase associated with this TestOutcome.
@@ -561,6 +591,21 @@ public class TestOutcome {
 		} else {
 			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).format(date);
 		}
+	}
+
+
+	/**
+	 * Resolve the test case parameter name to some user-friendly String.
+	 * <p/>
+	 * If the parameter is null, then "null" will be its name.
+	 *
+	 * @param param to resolve the parameter name
+	 * @return user-friendly String describing the specified parameter
+	 */
+	private static String resolveTestCaseParameterName(Object param) {
+		return param == null
+			? "null"
+			: param.toString();
 	}
 
 

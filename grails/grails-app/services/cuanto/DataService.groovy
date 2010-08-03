@@ -57,15 +57,6 @@ class DataService {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [run])
 	}
 
-
-	def deleteStatisticsForTestRun(TestRun testRun) {
-		if (testRun?.testRunStatistics) {
-			testRun.testRunStatistics.delete()
-			testRun.testRunStatistics = null
-			saveDomainObject testRun
-		}
-	}
-
 	
 	def getProject(id) {
 		Project.get(id)

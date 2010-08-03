@@ -29,10 +29,8 @@ class FailureStatusService
 	{
 		if (affectedOutcomes)
 		{
-			log.info "adding test outcomes ${affectedOutcomes*.id} to failure status update queue"
-			def notNullOutcomes = affectedOutcomes.findAll {
-				it != null
-			}
+			def notNullOutcomes = affectedOutcomes.findAll { it != null }
+			log.info "adding affected test outcomes ${notNullOutcomes*.id} to failure status update queue"
 			def updateTasksForAffectedOutcomes = notNullOutcomes.collect { affectedOutcome ->
 				new FailureStatusUpdateTask(affectedOutcome)
 			}
