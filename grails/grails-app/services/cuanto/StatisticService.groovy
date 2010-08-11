@@ -93,6 +93,15 @@ class StatisticService {
 	}
 
 
+	void deleteStatisticForTestRuns(TestRun testRun) {
+		def allStats = TestRunStats.findAllByTestRun(testRun)
+		allStats.each {stats ->
+			clearAnalysisStatistics(stats)
+			stats.delete()
+		}
+	}
+
+
 	QueuedTestRunStat getFirstTestRunIdInQueue() {
 		def latest = QueuedTestRunStat.listOrderByDateCreated(max: 1)
 		if (latest.size() == 0) {
@@ -109,7 +118,8 @@ class StatisticService {
 			if (!testRun) {
 				log.error "Couldn't find test run ${testRunId}"
 			} else {
-				TestRunStats calculatedStats = testRun.getTestRunStatistics() ?: new TestRunStats()
+				def foundStats = TestRunStats.findByTestRun(testRun)
+				TestRunStats calculatedStats = foundStats ?: new TestRunStats()
 				def rawTestRunStats = dataService.getRawTestRunStats(testRun)
 				calculatedStats.testRun = testRun
 				calculatedStats.tests = rawTestRunStats[0]
@@ -133,15 +143,15 @@ class StatisticService {
 				}
 
                 dataService.saveDomainObject(calculatedStats)
-				testRun.testRunStatistics = calculatedStats
 				calculateAnalysisStats(testRun)
                 dataService.saveDomainObject(calculatedStats)
 
 				def tagStats = getTagStatistics(testRun)
+				def testRunStatistics = TestRunStats.findByTestRun(testRun)
 				tagStats.each {
-					testRun.testRunStatistics.addToTagStatistics(it)
+					testRunStatistics.addToTagStatistics(it)
 				}
-				dataService.saveDomainObject(testRun.testRunStatistics, true)
+				dataService.saveDomainObject(testRunStatistics, true)
 			}
 		}
 	}
@@ -149,8 +159,8 @@ class StatisticService {
 
 	def calculateAnalysisStats(TestRun testRun) {
 		TestRun.withTransaction {
-			def calculatedStats = testRun?.testRunStatistics
-			dataService.clearAnalysisStatistics(testRun)
+			def calculatedStats = TestRunStats.findByTestRun(testRun)
+			clearAnalysisStatistics(calculatedStats)
 			def analysisStats = dataService.getAnalysisStatistics(testRun)
 			analysisStats?.each { stat ->
 				calculatedStats?.addToAnalysisStatistics(stat)
@@ -229,5 +239,57 @@ class StatisticService {
 			}
 		}
 		log.debug "Completed calculating analysis statistics"
+	}
+
+
+	def clearAnalysisStatistics(TestRunStats testRunStatistics) {
+		if (testRunStatistics) {
+			def statsToDelete = testRunStatistics?.analysisStatistics?.collect {it}
+			statsToDelete?.each { AnalysisStatistic stat ->
+				testRunStatistics.removeFromAnalysisStatistics(stat)
+				stat.delete()
+			}
+			dataService.saveDomainObject testRunStatistics
+		}
+	}
+
+
+	def deleteStatsForTestRun(TestRun testRun) {
+		TestRunStats stats = TestRunStats.findByTestRun(testRun)
+		if (stats) {
+			stats.delete()
+		}
+	}
+
+
+	def deleteEmptyTestRuns() {
+		def now = new Date().time
+		def TEN_MINUTES = 1000 * 60 * 10
+		def ONE_DAY = 1000 * 60 * 60 * 24
+		def beforeDate = new Date(now - TEN_MINUTES)
+		def afterDate = new Date(now - ONE_DAY)
+		def runDeletionCandidates = TestRun.executeQuery("from cuanto.TestRun as tr where " +
+			"tr.dateExecuted > ? and tr.dateExecuted < ? ", [afterDate, beforeDate])
+
+		def runsToDelete = []
+		runDeletionCandidates.each { TestRun testRun ->
+			def foundStats = TestRunStats.findByTestRun(testRun)
+			if (!foundStats) {
+				def outcomes = TestOutcome.countByTestRun(testRun)
+				if (outcomes == 0) {
+					runsToDelete << testRun
+				} else {
+					queueTestRunStats(testRun)
+				}
+			}
+		}
+
+		if (runsToDelete.size() > 0) {
+			log.info "found ${runDeletionCandidates.size()} empty test runs to delete"
+
+			runsToDelete.each {run ->
+				run.delete()
+			}
+		}
 	}
 }

@@ -40,7 +40,7 @@ class InitializeTestOutcomeAndTestRunJob {
 	static final String TEST_RUN_UPDATE_QUERY = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
 
 	static triggers = {
-		simple name: JOB_NAME, startDelay: 10000, repeatInterval: 1000
+		simple name: JOB_NAME, startDelay: 0, repeatInterval: 1000
 	}
 
 	static int initializedTestOutcomeCount = 0
@@ -87,15 +87,15 @@ class InitializeTestOutcomeAndTestRunJob {
 
 	def initializeTestRuns() {
 		TestRun.withTransaction {
-			def testRunsToUpdate = getTestRunsWithNullNewFailures()
-			if (testRunsToUpdate) {
+			def testRunStatsToUpdate = TestRunStats.executeQuery("from TestRunStats stats where stats.newFailures is null")
+			if (testRunStatsToUpdate) {
 				// there are test runs to update--so calculate newFailures and set it
-				for (TestRun testRun: testRunsToUpdate) {
-					testRun.testRunStatistics.newFailures = getNewFailuresCount(testRun)
+				for (TestRunStats testRunStatistics: testRunStatsToUpdate) {
+					testRunStatistics.newFailures = getNewFailuresCount(testRun)
 					initializedTestRunCount += TestRunStats.executeUpdate(TEST_RUN_UPDATE_QUERY,
-						[testRun.testRunStatistics.newFailures, testRun.testRunStatistics.id])
+						[testRunStatistics.newFailures, testRunStatistics.id])
 				}
-				log.info "Initialized ${testRunsToUpdate.size()} TestRuns: ${testRunsToUpdate*.id}."
+				log.info "Initialized ${testRunStatsToUpdate.size()} TestRuns: ${testRunStatsToUpdate*.testRun.id}."
 			} else {
 				// there are no test runs to update--this means all test runs have been initialized
 				allTestRunsInitialized = true
@@ -104,14 +104,6 @@ class InitializeTestOutcomeAndTestRunJob {
 		}
 	}
 
-	List<TestRun> getTestRunsWithNullNewFailures() {
-		return TestRun.createCriteria().list {
-			testRunStatistics {
-				isNull('newFailures')
-			}
-			maxResults(100)
-		}
-	}
 
 	Integer getNewFailuresCount(TestRun testRun) {
 		return TestOutcome.createCriteria().count {

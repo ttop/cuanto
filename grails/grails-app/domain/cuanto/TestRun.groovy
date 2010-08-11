@@ -28,7 +28,6 @@ class TestRun {
 		project(nullable: false)
 		note(nullable: true, blank: true)
 		valid(nullable: true)
-		testRunStatistics(nullable:true)
         tags(nullable:true)
 	}
 
@@ -46,7 +45,6 @@ class TestRun {
 	String note
 	Boolean valid = true
 	Date lastUpdated  // for calculations
-	TestRunStats testRunStatistics
 	Project project
 	List<TestRunLink> links
 	List<TestRunProperty> testProperties

@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <div id="tagSummaryDiv">
     <p></p>
-    <g:if test="${testRun?.testRunStatistics?.tagStatistics}">
+    <g:if test="${stats?.tagStatistics}">
 
         <h1>Tag Summary</h1>
 
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </tr>
             </thead>
             <tbody>
-            <g:each var="tagstat" in="${testRun?.testRunStatistics?.tagStatistics}">
+            <g:each var="tagstat" in="${stats?.tagStatistics}">
                 <tr class="brd">
                     <td align="center">${tagstat.tag.name}</td>
                     <td align="center">${tagstat.passed}</td>

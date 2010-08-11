@@ -317,28 +317,25 @@ class TestRunController {
 
 				myJson['results'] = []
 				if (params.header) {
-					if (!testRun.testRunStatistics) {
+					TestRunStats stats = TestRunStats.findByTestRun(testRun)
+					if (!stats) {
 						statisticService.queueTestRunStats(testRun)
 					}
-					myJson['results'] += testRun.testRunStatistics.toJsonMap()
+					myJson['results'] += stats.toJsonMap()
 				}
 
 				render myJson as JSON
 			}
 			text {
 				def testRunMap = [:]
-				TestRunStats stats = testRun.testRunStatistics
+				TestRunStats stats = TestRunStats.findByTestRun(testRun)
+
 				if (stats) {
 					testRunMap.tests = stats.tests
 					testRunMap.passed = stats.passed
 					testRunMap.failed = stats.failed
 				}
 				render(view: 'get', model: ['testRunMap': testRunMap])
-			}
-			xml {
-				def stats = testRun.testRunStatistics?.toTestRunStatsApi()
-				response.contentType = 'application/xml'
-				render(xstream.toXML(stats))
 			}
 		}
 	}
@@ -373,11 +370,12 @@ class TestRunController {
 			def pieChartUrl = testRunService.getGoogleChartUrlForTestRunFailures(testRun)
 			def bugSummary = testRunService.getBugSummary(testRun)
 			def tcFormatList = testCaseFormatterRegistry.formatterList
+			def stats = TestRunStats.findByTestRun(testRun)
 			return ['testRun': testRun, 'filter': getDefaultFilter(testRun), 'filterList': getFilterList(),
 				'testResultList': getJavascriptList(TestResult.listOrderByName()),
 				'analysisStateList': getJavascriptList(analysisStates), 'pieChartUrl': pieChartUrl,
 				'bugSummary': bugSummary, 'formatters': tcFormatList,
-				'project': testRun?.project, 'tcFormat': tcFormatList[0].key]
+				'project': testRun?.project, 'tcFormat': tcFormatList[0].key, 'stats': stats]
 		} else {
 			redirect(controller: 'project', action: 'list')
 		}
@@ -397,7 +395,8 @@ class TestRunController {
 	def summaryTable = {
 		if (params.id) {
 			def testRun = TestRun.get(Long.valueOf(params.id))
-			render(template: "summaryTable", model: ['testRun': testRun])
+			def stats = TestRunStats.findByTestRun(testRun)
+			render(template: "summaryTable", model: ['stats': stats])
 		} else {
 			redirect(controller: 'project', action: 'list')
 		}
@@ -415,7 +414,8 @@ class TestRunController {
 
 	private getDefaultFilter(testRun) {
 		def filter
-		if (testRun.testRunStatistics?.failed == 0 || testRun.project.testType.name == "Manual") {
+		def stats = TestRunStats.findByTestRun(testRun)
+		if (stats?.failed == 0 || testRun.project.testType.name == "Manual") {
 			filter = "All Results"
 		} else {
 			filter = "All Failures"

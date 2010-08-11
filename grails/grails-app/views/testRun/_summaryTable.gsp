@@ -31,12 +31,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<th>Avg Duration</th>
 		</tr>
 		<tr>
-			<td>${testRun?.testRunStatistics?.tests?.encodeAsHTML()}</td>
-			<td>${testRun?.testRunStatistics?.passed?.encodeAsHTML()}</td>
-			<td>${testRun?.testRunStatistics?.failed?.encodeAsHTML()}</td>
-			<td>${testRun?.testRunStatistics?.successRate?.encodeAsHTML()} %</td>
-			<td><g:formatDuration ms="${testRun?.testRunStatistics?.totalDuration}"/></td>
-			<td><g:formatDuration ms="${testRun?.testRunStatistics?.averageDuration}"/></td>
+			<td>${stats?.tests?.encodeAsHTML()}</td>
+			<td>${stats?.passed?.encodeAsHTML()}</td>
+			<td>${stats?.failed?.encodeAsHTML()}</td>
+			<td>${stats?.successRate?.encodeAsHTML()} %</td>
+			<td><g:formatDuration ms="${stats?.totalDuration}"/></td>
+			<td><g:formatDuration ms="${stats?.averageDuration}"/></td>
 			<td><span class="progress"></span></td>
 		</tr>
 	</table>

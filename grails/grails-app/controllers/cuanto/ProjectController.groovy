@@ -208,10 +208,11 @@ class ProjectController {
 					sort: "dateExecuted", order: "desc"])
 
 				testRuns.each {testRun ->
-					if (testRun.testRunStatistics){
+					def stats = TestRunStats.findByTestRun(testRun)
+					if (stats){
 						entry(testRun.dateExecuted) {
 							link = createLink(controller: "testRun", action: "summary", id: testRun.id)
-							def feedTxt = testRunService.getFeedText(testRun)
+							def feedTxt = testRunService.getFeedText(testRun, stats)
 							return feedTxt
 						}
 					}
@@ -279,7 +280,7 @@ class ProjectController {
 
 
 	def getJsonForTestRun(testRun, graph) {
-		def stats = testRun?.testRunStatistics
+		def stats = TestRunStats.findByTestRun(testRun)
 		if (stats) {
 			def friendlyDate
 			if (graph) {
@@ -303,7 +304,6 @@ class ProjectController {
 				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,
 				averageDuration: stats?.averageDuration, 'numAnalyzed' : numAnalyzed, tags: testRun?.tags?.collect{it.name}?.sort()]
 		}
-
 	}
 }
 

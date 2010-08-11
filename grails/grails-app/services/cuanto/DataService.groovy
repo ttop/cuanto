@@ -108,7 +108,10 @@ class DataService {
 
 
 	def countTestRunsByProject(proj) {
-		TestRun.countByProjectAndTestRunStatisticsIsNotNull(proj)
+		TestRun.countByProject(proj)
+		//TestRun.countByProjectAndTestRunStatisticsIsNotNull(proj)
+		//TestRun.executeQuery("select tr.count from cuanto.TestRun tr inner join cuanto.TestRunStats as stats where project = ? ")
+
 	}
 
 	def getNextTestRun(testRun) {
@@ -178,9 +181,6 @@ class DataService {
 
 
 	def saveTestRun(TestRun testRun) {
-		if (testRun.testRunStatistics) {
-			testRun.testRunStatistics.save()
-		}
 		saveDomainObject testRun, true
 		return testRun
 	}
@@ -488,14 +488,6 @@ class DataService {
 	}
 
 	
-	def clearAnalysisStatistics(TestRun testRun) {
-		def statsToDelete = testRun?.testRunStatistics?.analysisStatistics?.collect {it}
-		statsToDelete?.each { stat ->
-			testRun.testRunStatistics.removeFromAnalysisStatistics(stat)
-			stat.delete()
-		}
-		testRun?.save()
-	}
 
 
 	List<TestCase> findTestCaseByName(String name, Project project) {
@@ -564,25 +556,6 @@ class DataService {
 		TestCase.findAllByProject(project)
 	}
 
-
-	def deleteEmptyTestRuns() {
-		def now = new Date().time
-		def TEN_MINUTES = 1000 * 60 * 10
-		def cutoffDate = new Date(now - TEN_MINUTES)
-
-		def runs = TestRun.executeQuery("from cuanto.TestRun as tr where tr.testRunStatistics is null and " +
-			"tr.dateExecuted < ?", [cutoffDate])
-
-		if (runs.size() > 0) {
-			log.info "found ${runs.size()} empty test runs to delete"
-
-			runs.each {run ->
-				run.delete()
-			}
-		}
-	}
-
-
 	def deleteTestCase(testCase) {
 		TestOutcome.executeUpdate("delete cuanto.TestOutcome out where out.testCase = ?", [testCase])
 		testCase.delete(flush: true)
@@ -590,7 +563,6 @@ class DataService {
 
 
 	def deleteTestCasesForProject(project) {
-		//TestOutcome.executeUpdate("delete cuanto.TestOutcome out where out.testCase.project = ?", [project])
 		def cases = getTestCases(project)
 		cases.each { TestCase tc ->
 			def outcomes = TestOutcome.findAllByTestCase(tc)
@@ -599,7 +571,6 @@ class DataService {
 			}
 		}
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
-		
 	}
 
 

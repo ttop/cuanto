@@ -114,7 +114,7 @@ class TestRunService {
 			def passedDataSet = new StringBuffer()
 			def failedDataSet = new StringBuffer()
 			testRuns.eachWithIndex {testRun, indx ->
-				def stats = testRun.testRunStatistics
+				TestRunStats stats = TestRunStats.findByTestRun(testRun)
 
 				if (stats) {
 
@@ -189,7 +189,9 @@ class TestRunService {
 
 
 	def getGoogleChartUrlForTestRunFailures(testRun) {
-		def analysisStats = testRun?.testRunStatistics?.analysisStatistics
+		TestRunStats stats = TestRunStats.findByTestRun(testRun)
+
+		def analysisStats = stats?.analysisStatistics
 		if (analysisStats) {
 			def chartString = new StringBuffer()
 			chartString.append "cht=p" // chart style
@@ -201,10 +203,10 @@ class TestRunService {
 			def data = new StringBuffer()
 			analysisStats.eachWithIndex {cause, idx ->
 				def pct
-				if (testRun.testRunStatistics?.failed == 0) {
+				if (stats?.failed == 0) {
 					pct = 0
 				} else {
-					pct = (cause.qty / testRun.testRunStatistics.failed * 100).intValue().toString()
+					pct = (cause.qty / stats.failed * 100).intValue().toString()
 				}
 				labels.append("$pct% ").append(cause.state.name)
 				data.append cause.qty
@@ -421,9 +423,8 @@ class TestRunService {
 	}
 
 
-	def getFeedText(TestRun run) {
+	def getFeedText(TestRun run, TestRunStats stats) {
 		SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-		TestRunStats stats = run.testRunStatistics
 		String dateTxt = formatter.format(run.dateExecuted)
 
 		def text = """<table>
@@ -645,9 +646,8 @@ class TestRunService {
 	 */
     def deleteTestRun(TestRun run) {
         TestRun testRun = TestRun.get(run.id)
-        if (testRun.testRunStatistics) {
-            testRun.testRunStatistics.delete()
-        }
+
+	    statisticService.deleteStatsForTestRun(run)
 
         if (testRun.tags) {
             def testRunTagsToRemove = new ArrayList(testRun.tags)
@@ -670,6 +670,7 @@ class TestRunService {
         testRun.delete()
         failureStatusService.queueFailureStatusUpdateForRun(dataService.getNextTestRun(run))
     }
+
 
 
 	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {
