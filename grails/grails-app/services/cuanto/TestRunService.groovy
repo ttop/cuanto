@@ -501,7 +501,6 @@ class TestRunService {
 			testRun.addToTestProperties(it)
 		}
 
-		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
 		dataService.saveTestRun(testRun)
 		return testRun
 	}
@@ -646,6 +645,9 @@ class TestRunService {
 	 */
     def deleteTestRun(TestRun run) {
         TestRun testRun = TestRun.get(run.id)
+        if (testRun.testRunStatistics) {
+            testRun.testRunStatistics.delete()
+        }
 
         if (testRun.tags) {
             def testRunTagsToRemove = new ArrayList(testRun.tags)

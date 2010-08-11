@@ -23,8 +23,6 @@ package cuanto
 
 class TestRunStats {  
 
-	static belongsTo = [testRun: TestRun]
-
 	static constraints = {
 		passed(nullable: true)
 		failed(nullable: true)
@@ -35,6 +33,7 @@ class TestRunStats {
 		successRate(nullable: true)
 		tests(nullable: true)
 		analysisStatistics(nullable: true)
+        testRun(nullable: false)
 	}
 
 	static mapping = {
@@ -52,6 +51,7 @@ class TestRunStats {
 	Date lastUpdated
 	List analysisStatistics
     List tagStatistics
+    TestRun testRun
 
 	static hasMany = [analysisStatistics: AnalysisStatistic, tagStatistics:TagStatistic]
 

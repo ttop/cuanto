@@ -110,7 +110,6 @@ class StatisticService {
 				log.error "Couldn't find test run ${testRunId}"
 			} else {
 				TestRunStats calculatedStats = testRun.getTestRunStatistics() ?: new TestRunStats()
-
 				def rawTestRunStats = dataService.getRawTestRunStats(testRun)
 				calculatedStats.testRun = testRun
 				calculatedStats.tests = rawTestRunStats[0]
@@ -133,8 +132,10 @@ class StatisticService {
 					calculatedStats.successRate = successRate.round(new MathContext(4))
 				}
 
+                dataService.saveDomainObject(calculatedStats)
 				testRun.testRunStatistics = calculatedStats
 				calculateAnalysisStats(testRun)
+                dataService.saveDomainObject(calculatedStats)
 
 				def tagStats = getTagStatistics(testRun)
 				tagStats.each {

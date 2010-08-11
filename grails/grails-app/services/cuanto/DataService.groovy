@@ -178,6 +178,9 @@ class DataService {
 
 
 	def saveTestRun(TestRun testRun) {
+		if (testRun.testRunStatistics) {
+			testRun.testRunStatistics.save()
+		}
 		saveDomainObject testRun, true
 		return testRun
 	}

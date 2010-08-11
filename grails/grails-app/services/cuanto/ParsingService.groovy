@@ -172,7 +172,6 @@ class ParsingService {
 			testRun.addToTestProperties(new TestRunProperty(key, value))
 		}
 
-		testRun.testRunStatistics = new TestRunStats()
 		return testRun
 	}
 

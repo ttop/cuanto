@@ -449,7 +449,10 @@ class DataServiceTests extends GroovyTestCase {
 		}
 
 		TestRunStats stats = new TestRunStats(passed: 8, failed: 0, tests: 8)
+        stats.testRun = testRun
+        dataService.saveDomainObject stats
 		testRun.testRunStatistics = stats
+
 		if (!testRun.save()) {
 			reportError testRun
 		}

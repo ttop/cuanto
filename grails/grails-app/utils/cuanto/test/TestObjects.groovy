@@ -61,7 +61,6 @@ class TestObjects {
 
 	TestRun getTestRun(Project project){
 		TestRun tr = new TestRun(project:project)
-		tr.testRunStatistics = new TestRunStats()
 		tr.note = wordGen.getSentence(10)
 		tr.valid = true
 		tr.dateExecuted = new Date()

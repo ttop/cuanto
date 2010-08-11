@@ -55,8 +55,11 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 		assertEquals "Wrong number of test runs", numTestRuns, TestRun.list().size()
 		
 		0.upto(2) { indx ->
-			runs[indx].testRunStatistics = null
-			dataService.saveDomainObject runs[indx]
+			if (runs[indx].testRunStatistics) {
+              runs[indx].testRunStatistics.delete()
+              runs[indx].testRunStatistics = null
+            }
+			dataService.saveDomainObject runs[indx], true
 		}
 
 		dataService.deleteEmptyTestRuns()
