@@ -122,9 +122,7 @@ class ProjectController {
 					def jsonRuns = []
 					testRuns.each { testRun ->
 						Map run = getJsonForTestRun(testRun, false)
-						if (run) {
-							jsonRuns += run
-						}
+						jsonRuns += run
 					}
 
 					def myJson = [count: jsonRuns.size(), 'testRuns': jsonRuns, 'totalCount': totalCount]
@@ -303,6 +301,8 @@ class ProjectController {
 				valid: testRun?.valid, successRate: stats?.successRate ? stats?.successRate : 0,
 				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,
 				averageDuration: stats?.averageDuration, 'numAnalyzed' : numAnalyzed, tags: testRun?.tags?.collect{it.name}?.sort()]
+		} else {
+			return [:]
 		}
 	}
 }
