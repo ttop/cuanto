@@ -91,7 +91,7 @@ class InitializeTestOutcomeAndTestRunJob {
 			if (testRunStatsToUpdate) {
 				// there are test runs to update--so calculate newFailures and set it
 				for (TestRunStats testRunStatistics: testRunStatsToUpdate) {
-					testRunStatistics.newFailures = getNewFailuresCount(testRun)
+					testRunStatistics.newFailures = getNewFailuresCount(testRunStatistics.testRun)
 					initializedTestRunCount += TestRunStats.executeUpdate(TEST_RUN_UPDATE_QUERY,
 						[testRunStatistics.newFailures, testRunStatistics.id])
 				}
