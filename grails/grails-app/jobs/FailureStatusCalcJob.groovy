@@ -74,7 +74,7 @@ class FailureStatusCalcJob {
 			}
 		}
 
-		log.info "Ignoring TestOutcome $testOutcomeId, " +
+		log.debug "Ignoring TestOutcome $testOutcomeId, " +
 			"because it either does not exist or the failure status did not change."
 
 		return null
