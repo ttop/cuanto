@@ -133,9 +133,15 @@ class StatisticService {
 					testResultIncludedInCalculations: true,
 					isFailure: true,
 					isFailureStatusChanged: true)
+				def allSkipsQueryFilter = new TestOutcomeQueryFilter(
+					testRun: testRun,
+					testResultIncludedInCalculations: true,
+					isSkip: true
+				)
 				calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
 				calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
-				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
+				calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
+				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
 
 				if (calculatedStats.tests > 0) {
 					BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
@@ -188,15 +194,15 @@ class StatisticService {
 				def tagStat = new TagStatistic()
 				tagStat.tag = tag
 
-				def passed = rawStats.findAll {!it[0].isFailure && it[0].includeInCalculations}.collect {it[1]}.sum()
+				def passed = rawStats.findAll {!it[0].isFailure && !it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
 				tagStat.passed = passed ? passed : 0;
 				log.debug "${passed} passed for ${tag.name}"
 
-				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name != "Skip"}.collect {it[1]}.sum()
+				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && !it[0].isSkip}.collect {it[1]}.sum()
 				tagStat.failed = failed ? failed : 0;
 				log.debug "${failed} failed for ${tag.name}"
 
-				def skipped = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name == "Skip"}.collect {it[1]}.sum()
+				def skipped = rawStats.findAll {it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
 				tagStat.skipped = skipped ? skipped : 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 
