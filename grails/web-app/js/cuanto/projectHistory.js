@@ -135,17 +135,21 @@ YAHOO.cuanto.projectHistory = function() {
 		elCell.innerHTML = oData + " %";
 	}
 
+
 	function propertyFormatter(elCell, oRecord, oColumn, oData) {
 		var out = "";
 		var propName = oColumn.label;
-		var prop = oRecord.getData("testProperties").find(function(pr) {
-			return pr.name.toLowerCase() == propName.toLowerCase();
-		});
-		if (prop) {
-			out = prop["value"];
+		if (oRecord && oRecord.getData("testProperties")) {
+			var prop = oRecord.getData("testProperties").find(function(pr) {
+				return pr.name.toLowerCase() == propName.toLowerCase();
+			});
+			if (prop) {
+				out = prop["value"];
+			}
+			elCell.innerHTML = out;
 		}
-		elCell.innerHTML = out;
 	}
+
 
 	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
@@ -156,7 +160,7 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
-        if (oData.length > 0) {
+        if (oData && oData.length > 0) {
             elCell.innerHTML = oData.join(", ");
         }
     }
