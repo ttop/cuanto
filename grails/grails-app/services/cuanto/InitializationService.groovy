@@ -35,7 +35,7 @@ class InitializationService {
 			new TestResult(name: "Error", includeInCalculations: true, isFailure: true, isSkip: false),
 			new TestResult(name: "Ignore", includeInCalculations: false, isFailure: false, isSkip: false),
 			new TestResult(name: "Skip", includeInCalculations: true, isFailure: false, isSkip: true),
-			new TestResult(name: "Unexecuted", includeInCalculations: false, isFailure: false, isSkip: false),
+			new TestResult(name: "Unexecuted", includeInCalculations: false, isFailure: false, isSkip: false)
 		]
 
 		resultList.each {TestResult result ->
@@ -50,16 +50,16 @@ class InitializationService {
 				}
 
 				if (dirty) {
-					log.info "Updating definition of TestResult ${fetchedResult.name}"
+					log.debug "Updating definition of TestResult ${fetchedResult.name}"
 					dataService.saveDomainObject fetchedResult, true
-					log.info "Updated definition of TestResult ${fetchedResult.name}"
+					log.debug "Updated definition of TestResult ${fetchedResult.name}"
 				} else {
-					log.info "Definition of TestResult ${fetchedResult.name} is current."
+					log.debug "Definition of TestResult ${fetchedResult.name} is current."
 				}
 			} else {
-				log.info "Creating definition for TestResult ${fetchedResult.name}"
+				log.debug "Creating definition for TestResult ${result.name}"
 				dataService.saveDomainObject result, true
-				log.info "Created definition for TestResult ${fetchedResult.name}"
+				log.debug "Created definition for TestResult ${result.name}"
 			}
 		}
 	}
