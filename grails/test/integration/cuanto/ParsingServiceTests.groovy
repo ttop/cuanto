@@ -227,7 +227,7 @@ class ParsingServiceTests extends GroovyTestCase {
 		}
 
 		outcomes = TestOutcome.executeQuery("from TestOutcome to where to.testResult.isSkip = true")
-		assertEquals "Wrong number of failures", 41, outcomes.size()
+		assertEquals "Wrong number of skips", 41, outcomes.size()
 		outcomes.each {
 			assertNotNull "testOutputSummary is null", it.testOutputSummary
 			assertTrue "testOutputSummary is blank", it.testOutputSummary?.size() > 0
