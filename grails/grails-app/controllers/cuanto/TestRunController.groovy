@@ -297,6 +297,18 @@ class TestRunController {
 	}
 
 
+	def recalc = {
+		def testRun = TestRun.get(params.id)
+		if (!testRun) {
+			response.status = response.SC_NOT_FOUND
+			render "testRun ${params.id} not found"
+		} else {
+			statisticService.queueTestRunStats(testRun)
+			render "OK"
+		}
+	}
+
+	
 	def statistics = {
 		def testRun = TestRun.get(params.id)
 		if (!testRun) {

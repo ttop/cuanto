@@ -137,6 +137,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		YAHOO.util.Event.addListener("saveNote", "click", onSaveNote);
 		YAHOO.util.Event.addListener("cancelNote", "click", onCancelNote);
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
+		YAHOO.util.Event.addListener("recalcStats", "click", recalcStats);
 		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
 
@@ -935,6 +936,17 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		delDialog.cfg.queueProperty("buttons", myButtons);
 		delDialog.render(document.body);
 		delDialog.show();
+	}
+
+	function recalcStats(e) {
+		YAHOO.util.Event.preventDefault(e);
+		new Ajax.Request(YAHOO.cuanto.urls.get('testRunRecalcStats'),
+		{
+			parameters: {'id': $('testRunId').getValue()},
+			onSuccess: function(o) {
+				showFlashMsg("Queued for recalculating statistics.");
+			}
+		});
 	}
 
 	function unescapeHtmlEntities(s) {

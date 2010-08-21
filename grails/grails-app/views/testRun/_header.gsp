@@ -29,7 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:link controller="testRun" action="export" id="${testRun?.id}">Export</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
 		</span> ${bullet}
-		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span>
+		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span> ${bullet}
+		<span><a alt="Recalculate Stats" id="recalcStats" href="#recalcStats">Recalc</a></span>
 	</span>
 	<br/>
 	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
