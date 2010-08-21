@@ -26,6 +26,7 @@ class TestRunStats {
 	static constraints = {
 		passed(nullable: true)
 		failed(nullable: true)
+		skipped(nullable: true)
 		analyzed(nullable: true)
 		newFailures(nullable: true)
 		totalDuration(nullable: true)
@@ -43,6 +44,7 @@ class TestRunStats {
 	Integer tests
 	Integer passed
 	Integer failed
+	Integer skipped
 	Integer analyzed
 	Integer newFailures
 	Long totalDuration
@@ -59,6 +61,7 @@ class TestRunStats {
 		def json = [:]
 		json['id'] = this.id
 		json['passed'] = passed
+		json['skipped'] = skipped
 		json['failed'] = failed
 		json['tests'] = tests
 		json['totalDuration'] = totalDuration

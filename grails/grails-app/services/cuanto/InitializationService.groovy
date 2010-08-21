@@ -29,41 +29,37 @@ class InitializationService {
 	boolean transactional = false
 
 	void initTestResults() {
-		if (TestResult.list().size() <= 0) {
-			// set up the base TestResult types
-			def resultList = []
-			TestResult run = new TestResult(name: "Pass", includeInCalculations: true, isFailure: false)
-			resultList += run
+		def resultList = [
+			new TestResult(name: "Pass", includeInCalculations: true, isFailure: false, isSkip: false),
+			new TestResult(name: "Fail", includeInCalculations: true, isFailure: true, isSkip: false),
+			new TestResult(name: "Error", includeInCalculations: true, isFailure: true, isSkip: false),
+			new TestResult(name: "Ignore", includeInCalculations: false, isFailure: false, isSkip: false),
+			new TestResult(name: "Skip", includeInCalculations: true, isFailure: false, isSkip: true),
+			new TestResult(name: "Unexecuted", includeInCalculations: false, isFailure: false, isSkip: false),
+		]
 
-			TestResult fail = new TestResult(name: "Fail", includeInCalculations: true, isFailure: true)
-			resultList += fail
-
-			TestResult error = new TestResult(name: "Error", includeInCalculations: true, isFailure: true)
-			resultList += error
-
-			TestResult ignore = new TestResult(name: "Ignore", includeInCalculations: false, isFailure: false)
-			resultList += ignore
-
-			TestResult skip = new TestResult(name: "Skip", includeInCalculations: true, isFailure: true)
-			resultList += skip
-
-			TestResult unexecuted = new TestResult(name: "Unexecuted", includeInCalculations: false, isFailure: false)
-			resultList += unexecuted
-
-			resultList.each {result ->
-				if (!result.save()) {
-					result.errors.allErrors.each {
-						log.warning it.toString()
+		resultList.each {TestResult result ->
+			def dirty = false
+			def fetchedResult = TestResult.findByName(result.name)
+			if (fetchedResult) {
+				["includeInCalculations", "isFailure", "isSkip"].each {
+					if (fetchedResult.getProperty(it) != result.getProperty(it)) {
+						fetchedResult.setProperty(it, result.getProperty(it))
+						dirty = true
 					}
 				}
-			}
-		} else {
-			TestResult skip = TestResult.findByName("Skip")
-			if (!(skip.includeInCalculations && skip.isFailure)) {
-				log.info "Updating TestResult 'Skip' to be included in calculations and considered a failure"
-				skip.includeInCalculations = true
-				skip.isFailure = true
-				dataService.saveDomainObject skip
+
+				if (dirty) {
+					log.info "Updating definition of TestResult ${fetchedResult.name}"
+					dataService.saveDomainObject fetchedResult, true
+					log.info "Updated definition of TestResult ${fetchedResult.name}"
+				} else {
+					log.info "Definition of TestResult ${fetchedResult.name} is current."
+				}
+			} else {
+				log.info "Creating definition for TestResult ${fetchedResult.name}"
+				dataService.saveDomainObject result, true
+				log.info "Created definition for TestResult ${fetchedResult.name}"
 			}
 		}
 	}
