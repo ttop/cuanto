@@ -238,6 +238,7 @@ public class CuantoConnector {
 			if (httpStatus == HttpStatus.SC_CREATED) {
 				TestOutcome fetchedOutcome = TestOutcome.fromJSON(getResponseBodyAsString(post));
 				testOutcome.setId(fetchedOutcome.getId());
+				testOutcome.getTestCase().setId(fetchedOutcome.getTestCase().getId());
 				return fetchedOutcome.getId();
 			} else {
 				throw new RuntimeException("Adding the TestOutcome failed with HTTP status code " + httpStatus + ": \n" +
