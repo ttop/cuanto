@@ -39,11 +39,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <tbody>
             <g:each var="tagstat" in="${stats?.tagStatistics}">
                 <tr class="brd">
-                    <td align="center">${tagstat.tag.name}</td>
-                    <td align="center">${tagstat.passed}</td>
-                    <td align="center">${tagstat.failed}</td>
-                    <td align="center">${tagstat.skipped}</td>
-                    <td align="center">${tagstat.total}</td>
+                    <td align="center">${tagstat?.tag?.name}</td>
+                    <td align="center">${tagstat?.passed}</td>
+                    <td align="center">${tagstat?.failed}</td>
+                    <td align="center">${tagstat?.skipped}</td>
+                    <td align="center">${tagstat?.total}</td>
                 </tr>
             </g:each>
             </tbody>
