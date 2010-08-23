@@ -646,10 +646,10 @@ class TestRunService {
 	 */
     def deleteTestRun(TestRun run) {
         TestRun testRun = TestRun.get(run.id)
+	    TestRun nextRun = dataService.getNextTestRun(run)
 
 	    statisticService.deleteStatsForTestRun(run)
-
-        if (testRun.tags) {
+	    if (testRun.tags) {
             def testRunTagsToRemove = new ArrayList(testRun.tags)
             testRunTagsToRemove.each {tag ->
                 testRun.removeFromTags(tag)
@@ -668,7 +668,7 @@ class TestRunService {
             TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
         }
         testRun.delete()
-        failureStatusService.queueFailureStatusUpdateForRun(dataService.getNextTestRun(run))
+        failureStatusService.queueFailureStatusUpdateForRun(nextRun)
     }
 
 
