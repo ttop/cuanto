@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import org.hibernate.StaleObjectStateException
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
+import org.springframework.dao.OptimisticLockingFailureException
 
 class TestRunService {
 
@@ -644,32 +647,50 @@ class TestRunService {
 	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
 	 * for all TestOutcomes in the next TestRun.
 	 */
-    def deleteTestRun(TestRun run) {
-        TestRun testRun = TestRun.get(run.id)
-	    TestRun nextRun = dataService.getNextTestRun(run)
 
-	    statisticService.deleteStatsForTestRun(run)
-	    if (testRun.tags) {
-            def testRunTagsToRemove = new ArrayList(testRun.tags)
-            testRunTagsToRemove.each {tag ->
-                testRun.removeFromTags(tag)
-            }
+	def deleteTestRun(TestRun run) {
+		try {
+			TestRun testRun = TestRun.get(run.id)
+			TestRun nextRun = dataService.getNextTestRun(run)
+			statisticService.dequeueTestRunStats(run.id)
+			statisticService.deleteStatsForTestRun(run)
 
-            def outcomes = TestOutcome.findAllByTestRun(testRun)
+			if (testRun.tags) {
+				def testRunTagsToRemove = new ArrayList(testRun.tags)
+				testRunTagsToRemove.each {tag ->
+					testRun.removeFromTags(tag)
+				}
 
-            outcomes.each {outcome ->
-                def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
-                testOutcomeTagsToRemove.each {tag ->
-                    outcome.removeFromTags(tag)
-                }
-                outcome.delete()
-            }
-        } else {
-            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
-        }
-        testRun.delete()
-        failureStatusService.queueFailureStatusUpdateForRun(nextRun)
-    }
+				def outcomes = TestOutcome.findAllByTestRun(testRun)
+
+				outcomes.each {outcome ->
+					def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+					testOutcomeTagsToRemove.each {tag ->
+						outcome.removeFromTags(tag)
+					}
+					outcome.delete()
+				}
+			} else {
+				TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
+			}
+			testRun.save()
+			testRun.delete()
+			if (nextRun) {
+				failureStatusService.queueFailureStatusUpdateForRun(nextRun)
+				nextRun?.discard()
+			}
+		} catch (OptimisticLockingFailureException e) {
+			log.error "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+			// leave it in queue so it gets tried again
+		} catch (HibernateOptimisticLockingFailureException e) {
+			log.error "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+		}
+		catch (StaleObjectStateException e) {
+			log.error "StaleObjectStateException for test run ${queuedItem.testRunId}"
+			// leave it in queue so it gets tried again
+		}
+
+	}
 
 
 
