@@ -78,8 +78,9 @@ class TestOutcome {
 			id: outcome.id,
 			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
 			testCase: [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
-				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description, id: outcome.testCase?.id,
+				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description, 
 				fullName: outcome.testCase?.fullName],
+
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
 			note: outcome.note,
@@ -89,6 +90,11 @@ class TestOutcome {
 			lastUpdated: dateFormatter.format(lastUpdated),
 			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
+
+		if (outcome.testCase?.id) {
+			myJson.testCase.id = outcome.testCase.id
+		}
+
 
 		if (includeTestOutput) {
 			myJson.testOutput = outcome.testOutput
