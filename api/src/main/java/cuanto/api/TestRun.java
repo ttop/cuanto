@@ -118,13 +118,27 @@ public class TestRun {
 
 	Map toJsonMap() {
 		Map jsonMap = new HashMap();
-		jsonMap.put("id", this.id);
-		jsonMap.put("dateExecuted", toJsonDate(this.dateExecuted));
-		jsonMap.put("valid", this.valid);
 		jsonMap.put("projectKey", this.projectKey);
-		jsonMap.put("note", this.note);
-		jsonMap.put("links", links);
-		jsonMap.put("testProperties", testProperties);
+		
+		if (this.id != null) {
+			jsonMap.put("id", this.id);
+		}
+		if (this.dateExecuted != null){
+			jsonMap.put("dateExecuted", toJsonDate(this.dateExecuted));
+		}
+		if (this.valid != null) {
+			jsonMap.put("valid", this.valid);
+		}
+
+		if (this.note != null) {
+			jsonMap.put("note", this.note);
+		}
+		if (this.links != null && this.links.size() > 0) {
+			jsonMap.put("links", links);
+		}
+		if (this.testProperties != null && this.testProperties.size() > 0) {
+			jsonMap.put("testProperties", testProperties);
+		}
 		return jsonMap;
 	}
 
