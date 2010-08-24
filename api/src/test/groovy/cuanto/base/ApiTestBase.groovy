@@ -33,10 +33,7 @@ class ApiTestBase extends GroovyTestCase {
 	@Override
 	void setUp() {
 		super.setUp()
-		//client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
-		client = CuantoConnector.newInstance("http://172.16.150.1:8080/cuanto",
-			"ClientTest", "192.168.125.128", 8888)
-
+		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
 		testRunsToCleanUp = []
 	}
 
