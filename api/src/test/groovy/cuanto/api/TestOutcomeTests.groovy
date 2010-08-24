@@ -21,28 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+import cuanto.base.ApiTestBase
 
-public class TestOutcomeTests extends GroovyTestCase {
 
-	CuantoConnector client
-	List<TestRun> testRunsToCleanUp
-	static WordGenerator wordGen = new WordGenerator()
+public class TestOutcomeTests extends ApiTestBase {
+
 	static testCaseCounter = 1
-
-	@Override
-	void setUp() {
-		super.setUp()
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
-		testRunsToCleanUp = []
-	}
-
-	@Override
-	void tearDown() {
-		testRunsToCleanUp.each {
-			client.deleteTestRun it
-		}
-		super.tearDown()
-	}
 
 
 	void testAddTestOutcomeAndGetTestOutcomeWithTestRun() {
@@ -387,7 +371,7 @@ public class TestOutcomeTests extends GroovyTestCase {
         tags << wordGen.getCamelWords(2)
 
         def outcomes = []
-        1.upto(2000) {
+        1.upto(1000) {
             TestOutcome outcome = createTestOutcome(TestResult.Pass)
             outcome.addTags(tags)
             outcomes << outcome

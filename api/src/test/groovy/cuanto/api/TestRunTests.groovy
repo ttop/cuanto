@@ -21,14 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+import cuanto.base.ApiTestBase
 
-public class TestRunTests extends GroovyTestCase {
 
-	CuantoConnector client
-
-	void setUp() {
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto/", "ClientTest")
-	}
+public class TestRunTests extends ApiTestBase {
 
 
 	void testAddTestRunAndGetTestRun() {
@@ -148,9 +144,16 @@ public class TestRunTests extends GroovyTestCase {
 	void testGetAllTestRuns() {
 		def testRuns = []
 
+		def notes = ["first run", "second run", "third run"]
+		def links = [["http://build/1": "build artifacts"], ["http://build/2": "build artifacts"], ["http://build/3": "build artifacts"]]
+		def testProps = [["greeting": "Hello"], ["greeting": "Bonjour"], ["greeting": "Hola"]]
+
 		try {
-			1.upto(5) {
+			1.upto(3) {
 				TestRun testRun = new TestRun(new Date() + it)
+				testRun.note = notes[it - 1]
+				testRun.links = links[it - 1]
+				testRun.testProperties = testProps[it - 1]
 				sleep 500
 				client.addTestRun(testRun)
 				testRuns << testRun
