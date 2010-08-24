@@ -22,6 +22,8 @@ package cuanto
 import grails.util.Environment
 import java.math.MathContext
 import org.springframework.dao.OptimisticLockingFailureException
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
+import org.hibernate.StaleObjectStateException
 
 class StatisticService {
 
@@ -63,6 +65,28 @@ class StatisticService {
 	}
 
 
+	void dequeueTestRunStats(Long testRunId) {
+		if (testRunId == null) {
+			log.debug "TestRun id for which to dequeue TestRunStats was null."
+			return
+		}
+
+		def testRun = TestRun.get(testRunId)
+		if (testRun == null) {
+			log.debug "TestRun [$testRunId] was not found for dequeuing."
+			return
+		}
+
+		synchronized (queueLock) {
+			def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId)
+			if (queuedItem) {
+				log.info "removing test run ${testRunId} from stat queue"
+				queuedItem.delete(flush: true)
+			}
+		}
+	}
+
+
 	Boolean queueHasTestRun(Long testRunId) {
 		def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId)
 		return queuedItem != null
@@ -81,6 +105,12 @@ class StatisticService {
 						queuedItem.delete(flush: true)
 					} catch (OptimisticLockingFailureException e) {
 						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+						// leave it in queue so it gets tried again
+					} catch (HibernateOptimisticLockingFailureException e) {
+						log.info "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+					}
+					catch (StaleObjectStateException e) {
+						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
 						// leave it in queue so it gets tried again
 					}
 					queueSize = QueuedTestRunStat.list().size()
@@ -142,9 +172,9 @@ class StatisticService {
 					calculatedStats.successRate = successRate.round(new MathContext(4))
 				}
 
-                dataService.saveDomainObject(calculatedStats)
+				dataService.saveDomainObject(calculatedStats)
 				calculateAnalysisStats(testRun)
-                dataService.saveDomainObject(calculatedStats)
+				dataService.saveDomainObject(calculatedStats)
 
 				def tagStats = getTagStatistics(testRun)
 				def testRunStatistics = TestRunStats.findByTestRun(testRun)
@@ -211,7 +241,7 @@ class StatisticService {
 
 	def updateTestRunsWithoutAnalysisStats() {
 		TestRun.withTransaction {
-			def runs = dataService.getTestRunsWithoutAnalysisStatistics().collect {it.id}
+			def runs = getTestRunsWithoutAnalysisStatistics().collect {it.id}
 			log.debug "${runs.size()} runs without stats"
 
 			def num = 0
@@ -291,5 +321,19 @@ class StatisticService {
 				run.delete()
 			}
 		}
+	}
+
+
+	def getTestRunsWithoutAnalysisStatistics() {
+		def criteria = TestRunStats.createCriteria()
+		def trStats = criteria.list {
+			and {
+				isEmpty("analysisStatistics")
+				gt("failed", 0)
+			}
+			order("id")
+		}
+		def runs = trStats.collect { it.testRun }
+		return runs
 	}
 }

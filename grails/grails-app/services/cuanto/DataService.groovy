@@ -132,18 +132,6 @@ class DataService {
 	}
 
 
-	def getTestRunsWithoutAnalysisStatistics() {
-		def criteria = TestRunStats.createCriteria()
-		def trStats = criteria.list {
-			and {
-				isEmpty("analysisStatistics")
-				gt("failed", 0)
-			}
-			order("id")
-		}
-		def runs = trStats.collect { it.testRun }
-		return runs 
-	}
 
 
 	def findMatchingTestCaseForProject(Project project, TestCase testcase) {
