@@ -584,8 +584,8 @@ public class CuantoConnector {
 			Map jsonMap = new HashMap();
 			jsonMap.put("projectKey", getProjectKey());
 			jsonMap.put("testProperties", JSONObject.fromObject(testProperties));
-
-			post.setRequestEntity(new StringRequestEntity(jsonMap.toString(), "application/json", null));
+			JSONObject jsonToPost = JSONObject.fromObject(jsonMap);
+			post.setRequestEntity(new StringRequestEntity(jsonToPost.toString(), "application/json", null));
 			int httpStatus = getHttpClient().executeMethod(post);
 			if (httpStatus == HttpStatus.SC_OK) {
 				JSONObject jsonReturned = JSONObject.fromObject(getResponseBodyAsString(post));
