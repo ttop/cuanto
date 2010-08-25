@@ -100,4 +100,12 @@ class TestObjects {
 	TestRunProperty getTestProperty() {
 		return new TestRunProperty(wordGen.getCamelWords(3), wordGen.getSentence(3))
 	}
+
+	TestOutcomeProperty getTestOutcomeProperty() {
+		return new TestOutcomeProperty(wordGen.getCamelWords(3), wordGen.getSentence(3))
+	}
+
+	TestOutcomeLink getTestOutcomeLink() {
+		return new TestOutcomeLink("http://${wordGen.getCamelWords(3)}", wordGen.getSentence(3))
+	}
 }
