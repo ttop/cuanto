@@ -49,9 +49,12 @@ class TestOutcome {
         tags lazy: false
 		isFailureStatusChanged lazy: false, index: 'is_failure_status_changed_idx'
 		testOutputSummary index:'test_output_summary_idx'
+		testOutcomeLink fetch: "join"
+		testOutcomeProperty fetch: "join"
+
 	}
 
-    static hasMany = [tags: Tag]
+    static hasMany = [tags: Tag, testProperties: TestOutcomeProperty, links: TestOutcomeLink]
 
 	TestCase testCase
 	TestRun testRun
@@ -68,6 +71,8 @@ class TestOutcome {
 	Date dateCreated  // this is the timestamp for when the database record was created
 	Date lastUpdated // timestamp for when the database record was last updated
 	Boolean isFailureStatusChanged
+	List<TestOutcomeLink> links
+	List<TestOutcomeProperty> testProperties
 
 
 	Map toJSONmap(Boolean includeTestOutput = false) {
