@@ -164,7 +164,107 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
         queryFilterC.hasTags = true
         fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
         assertEquals "Wrong number of TestOutcomes returned", 7, fetchedOutcomes.size()
-
     }
 
+
+	void testFilterByTestOutcomeProperties() {
+		def testCases = []
+		def numOutcomes = 10
+		0.upto(numOutcomes - 1) {
+		    def tc = testObjects.getTestCase(project)
+		    dataService.saveDomainObject tc
+		    testCases << tc
+		}
+
+		def outcomes = []
+		def testRun = testObjects.getTestRun(project)
+		dataService.saveTestRun testRun
+
+		testCases.each {
+		    outcomes << testObjects.getTestOutcome(it, testRun)
+		}
+		
+		Tag coolTag = new Tag(name: "cool")
+		dataService.saveDomainObject(coolTag)
+	
+		outcomes[0].addToTestProperties(new TestOutcomeProperty("john", "lennon"))
+		outcomes[0].addToTags(coolTag)
+
+		outcomes[1].addToTestProperties(new TestOutcomeProperty("john", "lennon"))
+		outcomes[1].addToTestProperties(new TestOutcomeProperty("paul", "mccartney"))
+		outcomes[1].addToTags(coolTag)
+
+		outcomes[2].addToTestProperties(new TestOutcomeProperty("john", "lennon"))
+		outcomes[2].addToTestProperties(new TestOutcomeProperty("paul", "mccartney"))
+		outcomes[2].addToTestProperties(new TestOutcomeProperty("george", "harrison"))
+
+		outcomes[3].addToTestProperties(new TestOutcomeProperty("john", "lennon"))
+		outcomes[3].addToTestProperties(new TestOutcomeProperty("george", "harrison"))
+		outcomes[3].addToTags(coolTag)
+
+		outcomes.each {
+			dataService.saveDomainObject it, true
+		}
+
+		def totalProps = TestOutcomeProperty.count()
+		println "*********** ${totalProps} total TestProperties" 
+
+		TestOutcomeQueryFilter queryFilterA = new TestOutcomeQueryFilter()
+		queryFilterA.testRun = testRun
+		queryFilterA.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
+
+		def fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
+		assertEquals "Wrong number of TestOutcomes returned", 4, fetchedOutcomes.size()
+
+
+		
+		TestOutcomeQueryFilter queryfilterB = new TestOutcomeQueryFilter()
+		queryfilterB.testRun = testRun
+		queryfilterB.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon"), new TestOutcomeProperty("paul", "mccartney")]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryfilterB)
+		assertEquals "Wrong number of TestOutcomes returned", 2, fetchedOutcomes.size()
+
+		TestOutcomeQueryFilter queryfilterC = new TestOutcomeQueryFilter()
+		queryfilterC.testRun = testRun
+		queryfilterC.hasAllTestOutcomeProperties = [new TestOutcomeProperty("george", "harrison")]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryfilterC)
+		assertEquals "Wrong number of TestOutcomes returned", 2, fetchedOutcomes.size()
+		
+		TestOutcomeQueryFilter queryfilterD = new TestOutcomeQueryFilter()
+		queryfilterD.testRun = testRun
+		queryfilterD.hasAllTestOutcomeProperties = [new TestOutcomeProperty("ringo", "starr")]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryfilterD)
+		assertEquals "Wrong number of TestOutcomes returned", 0, fetchedOutcomes.size()
+
+		println "****** ${Tag.count()} tags"
+
+		TestOutcomeQueryFilter queryFilterWithTagsB = new TestOutcomeQueryFilter()
+		queryFilterWithTagsB.testRun = testRun
+		//queryFilterWithTagsB.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
+		queryFilterWithTagsB.tags = ["cool"]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsB)
+		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+
+
+		TestOutcomeQueryFilter queryFilterWithTags = new TestOutcomeQueryFilter()
+		queryFilterWithTags.testRun = testRun
+		queryFilterWithTags.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
+		queryFilterWithTags.tags = ["cool"]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTags)
+		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+
+		TestOutcomeQueryFilter queryFilterWithTagsC = new TestOutcomeQueryFilter()
+		queryFilterWithTagsC.testRun = testRun
+		queryFilterWithTagsC.hasAllTestOutcomeProperties = [new TestOutcomeProperty("george", "harrison")]
+		queryFilterWithTagsC.tags = ["cool"]
+
+		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsC)
+		assertEquals "Wrong number of TestOutcomes returned", 1, fetchedOutcomes.size()
+
+	}
 }

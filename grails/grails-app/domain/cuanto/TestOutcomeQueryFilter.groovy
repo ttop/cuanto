@@ -47,6 +47,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		queryOffset(nullable: true)
 		queryMax(nullable: true)
 		isFailureStatusChanged(nullable: true)
+		hasAllTestOutcomeProperties(nullable: true)
 	}
 
 	TestOutcomeQueryFilter() {}
@@ -210,6 +211,13 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 */
 	Boolean isFailureStatusChanged
 
+	/**
+	 * If not null or empty, only TestOutcomes that have testProperties which contain all of the specified properties
+	 * will be returned.
+	 */
+	List hasAllTestOutcomeProperties
+
+	
 
     String selectClause() {
         def select = "select distinct t"
@@ -273,6 +281,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		nameMap.lastupdated = "lastUpdated"
 		nameMap.startdate = "startedAt"
         nameMap.dateexecuted = "testRun.dateExecuted"
+		nameMap.testproperties = "prop_0.name"
 		def resolvedValue = nameMap[name]
 		if (!resolvedValue) {
 			resolvedValue = "testCase.fullName"
