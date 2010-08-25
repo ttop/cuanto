@@ -7,6 +7,15 @@ class TestOutcomeProperty implements Comparable {
 	String name
 	String value
 
+	TestOutcomeProperty() {
+
+	}
+
+	TestOutcomeProperty(String name, String value) {
+		this.name = name
+		this.value = value
+	}
+
 	int compareTo(Object o) {
 		TestOutcomeProperty other = (TestOutcomeProperty) o
 		int result = this.name.compareTo(other.name)

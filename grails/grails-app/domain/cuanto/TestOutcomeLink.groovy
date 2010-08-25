@@ -7,6 +7,12 @@ class TestOutcomeLink implements Comparable {
      String description
      String url
 
+	TestOutcomeLink(String url, String description) {
+		this.url = url
+		this.description = description
+	}
+
+	TestOutcomeLink() {}
 
 	int compareTo(Object o) {
 		TestOutcomeLink other = (TestOutcomeLink) o
