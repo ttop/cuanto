@@ -272,6 +272,7 @@ class TestOutcomeService {
 		def offset
 		def totalCount
 		def testOutcomes
+		def customProperties
 
 		// todo: hunt down this difference in parameters and unify the usage
 		if (params.containsKey("recordStartIndex")) {
@@ -301,8 +302,22 @@ class TestOutcomeService {
 			testOutcomes = dataService.getTestOutcomes(testOutcomeFilter)
 			totalCount = dataService.countTestOutcomes(testOutcomeFilter)
 		}
-			
-		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
+
+		customProperties = getCustomPropertyNames(testOutcomes)
+
+		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars,
+		    testProperties: customProperties]
+	}
+
+	
+	List getCustomPropertyNames(testOutcomes) {
+		Set<String> propSet = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+		testOutcomes.each { TestOutcome outcome ->
+			outcome.testProperties?.each { TestOutcomeProperty prop ->
+				propSet.add(prop.name)
+			}
+		}
+		return new ArrayList(propSet).sort()
 	}
 
 

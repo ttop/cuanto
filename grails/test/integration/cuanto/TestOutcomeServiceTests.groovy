@@ -179,8 +179,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
         def offset = 0
         def max = 5
-        def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, 0, 100)
-        outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
+        def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
         assertNotNull outputGroups
         assertEquals "Wrong number of groups returned", 4, outputGroups.size()
 
@@ -196,6 +195,36 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
         assertEquals "Wrong fourth group size", 1, outputGroups[3][0]
         assertEquals "Wrong fourth group output", "java.lang.AssertionError: This has failed once", outputGroups[3][1]
     }
+
+
+	void testGetCustomPropertyNames() {
+		Project proj = to.project
+		proj.testType = TestType.findByName("TestNG")
+		TestRun testRun = to.getTestRun(proj)
+		TestCase tc = to.getTestCase(proj)
+		
+		def outcomes = []
+		1.upto(5){
+			outcomes << to.getTestOutcome(tc, testRun)
+		}
+
+		outcomes[0].addToTestProperties(new TestOutcomeProperty("john", "lennon"))
+		outcomes[1].addToTestProperties(new TestOutcomeProperty("paul", "mccartney"))
+		outcomes[1].addToTestProperties(new TestOutcomeProperty("John", "lennon"))
+		outcomes[2].addToTestProperties(new TestOutcomeProperty("Paul", "Jones"))
+		outcomes[3].addToTestProperties(new TestOutcomeProperty("George", "Harrison"))
+
+		def propNames = testOutcomeService.getCustomPropertyNames(outcomes)
+		assertEquals "Wrong number of property names", 3, propNames.size()
+		assertTrue "Couldn't find property name", propNames.contains("john")
+		assertTrue "Couldn't find property name", propNames.contains("paul")
+		assertTrue "Couldn't find property name", propNames.contains("George")
+
+		assertEquals "Wrong property name", "George", propNames[0]
+		assertEquals "Wrong property name", "john", propNames[1]
+		assertEquals "Wrong property name", "paul", propNames[2]
+	}
+
 
     private File getFile(filename) {
         File file = new File("test/resources/${filename}")
