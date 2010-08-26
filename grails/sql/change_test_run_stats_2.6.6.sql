@@ -1,5 +1,3 @@
-use cuanto; 
-
 ALTER TABLE test_run_stats ADD COLUMN test_run_id bigint(20);
 UPDATE test_run_stats trs, test_run tr SET trs.test_run_id = tr.id WHERE tr.test_run_statistics_id = trs.id;
 
