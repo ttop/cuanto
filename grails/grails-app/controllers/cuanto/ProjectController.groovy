@@ -103,15 +103,7 @@ class ProjectController {
 					} else {
 						def chartUrl = testRunService.getGoogleChartUrlForProject(proj)
 						def propNames = testRunService.getTestRunPropertiesByProject(proj)
-						def propString = "["
-						propNames.eachWithIndex { name, idx ->
-							propString += "\"${name}\""
-							if (idx < propNames.size() - 1) {
-								propString += ","
-							}
-						}
-						propString += "]"
-
+						def propString = "[" + propNames.collect{'"' + it + '"'}.join(",") + "]"
 						render(view: "history", model: [project: proj, 'chartUrl': chartUrl, 'propNames': propString])
 					}
 				}
