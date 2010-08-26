@@ -28,6 +28,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	static constraints = {
 		testRun(nullable: true)
 		isFailure(nullable: true)
+		isSkip(nullable: true)
 		testResult(nullable:true)
 		testCaseFullName(nullable: true)
 		testCaseParameters(nullable: true)
@@ -51,7 +52,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	TestOutcomeQueryFilter() {}
 
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
-		["testRun", "isFailure", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
+		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
 		"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
 		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged"].each {
 			this.setProperty(it, filterToCopy.getProperty(it))
@@ -72,6 +73,14 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 * If null, outcomes will not be returned based on failure status.
 	 */
 	Boolean isFailure
+
+
+	/**
+	 * If true then all returned outcomes that are considered skips will be returned.
+	 * If false, then all returned outcomes that are not considered skips will be returned.
+	 * If null, outcomes will not be returned based on isSkip status
+	 */
+	Boolean isSkip
 
 
 	/**

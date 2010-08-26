@@ -369,6 +369,8 @@ class TestOutcomeService {
 		} else if (params.filter?.equalsIgnoreCase("unanalyzedFailures")) {
 			filter.isFailure = true
 			filter.isAnalyzed = false
+		} else if (params.filter?.equalsIgnoreCase("allskipped")) {
+			filter.isSkip = true
 		}
 
         if (params.tag) {

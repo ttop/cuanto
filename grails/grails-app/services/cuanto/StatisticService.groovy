@@ -143,48 +143,54 @@ class StatisticService {
 
 
 	void calculateTestRunStats(Long testRunId) {
-		TestRun.withTransaction {
-			def testRun = TestRun.get(testRunId)
-			if (!testRun) {
-				log.error "Couldn't find test run ${testRunId}"
-			} else {
-				def foundStats = TestRunStats.findByTestRun(testRun)
-				TestRunStats calculatedStats = foundStats ?: new TestRunStats()
-				def rawTestRunStats = dataService.getRawTestRunStats(testRun)
-				calculatedStats.testRun = testRun
-				calculatedStats.tests = rawTestRunStats[0]
-				calculatedStats.totalDuration = rawTestRunStats[1]
-				calculatedStats.averageDuration = rawTestRunStats[2]
-				def allFailuresQueryFilter = new TestOutcomeQueryFilter(
-					testRun: testRun,
-					testResultIncludedInCalculations: true,
-					isFailure: true)
-				def newFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
-					testResultIncludedInCalculations: true,
-					isFailure: true,
-					isFailureStatusChanged: true)
-				calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
-				calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
-				calculatedStats.passed = calculatedStats.tests - calculatedStats.failed
+			TestRun.withTransaction {
+				def testRun = TestRun.get(testRunId)
+				if (!testRun) {
+					log.error "Couldn't find test run ${testRunId}"
+				} else {
+					def foundStats = TestRunStats.findByTestRun(testRun)
+					TestRunStats calculatedStats = foundStats ?: new TestRunStats()
+					def rawTestRunStats = dataService.getRawTestRunStats(testRun)
+					calculatedStats.testRun = testRun
+					calculatedStats.tests = rawTestRunStats[0]
+					calculatedStats.totalDuration = rawTestRunStats[1]
+					calculatedStats.averageDuration = rawTestRunStats[2]
+					def allFailuresQueryFilter = new TestOutcomeQueryFilter(
+						testRun: testRun,
+						testResultIncludedInCalculations: true,
+						isFailure: true)
+					def newFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
+						testResultIncludedInCalculations: true,
+						isFailure: true,
+						isFailureStatusChanged: true)
+					def allSkipsQueryFilter = new TestOutcomeQueryFilter(
+						testRun: testRun,
+						testResultIncludedInCalculations: true,
+						isSkip: true
+					)
+					calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
+					calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
+					calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
+					calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
 
-				if (calculatedStats.tests > 0) {
-					BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
-					calculatedStats.successRate = successRate.round(new MathContext(4))
+					if (calculatedStats.tests > 0) {
+						BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
+						calculatedStats.successRate = successRate.round(new MathContext(4))
+					}
+
+					dataService.saveDomainObject(calculatedStats)
+					calculateAnalysisStats(testRun)
+					dataService.saveDomainObject(calculatedStats)
+
+					def tagStats = getTagStatistics(testRun)
+					def testRunStatistics = TestRunStats.findByTestRun(testRun)
+					tagStats.each {
+						testRunStatistics.addToTagStatistics(it)
+					}
+					dataService.saveDomainObject(testRunStatistics, true)
 				}
-
-				dataService.saveDomainObject(calculatedStats)
-				calculateAnalysisStats(testRun)
-				dataService.saveDomainObject(calculatedStats)
-
-				def tagStats = getTagStatistics(testRun)
-				def testRunStatistics = TestRunStats.findByTestRun(testRun)
-				tagStats.each {
-					testRunStatistics.addToTagStatistics(it)
-				}
-				dataService.saveDomainObject(testRunStatistics, true)
 			}
 		}
-	}
 
 
 	def calculateAnalysisStats(TestRun testRun) {
@@ -218,15 +224,15 @@ class StatisticService {
 				def tagStat = new TagStatistic()
 				tagStat.tag = tag
 
-				def passed = rawStats.findAll {!it[0].isFailure && it[0].includeInCalculations}.collect {it[1]}.sum()
+				def passed = rawStats.findAll {!it[0].isFailure && !it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
 				tagStat.passed = passed ? passed : 0;
 				log.debug "${passed} passed for ${tag.name}"
 
-				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name != "Skip"}.collect {it[1]}.sum()
+				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && !it[0].isSkip}.collect {it[1]}.sum()
 				tagStat.failed = failed ? failed : 0;
 				log.debug "${failed} failed for ${tag.name}"
 
-				def skipped = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && it[0].name == "Skip"}.collect {it[1]}.sum()
+				def skipped = rawStats.findAll {it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
 				tagStat.skipped = skipped ? skipped : 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 

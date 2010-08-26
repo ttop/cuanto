@@ -297,6 +297,18 @@ class TestRunController {
 	}
 
 
+	def recalc = {
+		def testRun = TestRun.get(params.id)
+		if (!testRun) {
+			response.status = response.SC_NOT_FOUND
+			render "testRun ${params.id} not found"
+		} else {
+			statisticService.queueTestRunStats(testRun)
+			render "OK"
+		}
+	}
+
+	
 	def statistics = {
 		def testRun = TestRun.get(params.id)
 		if (!testRun) {
@@ -429,6 +441,7 @@ class TestRunController {
 		filterList += [id: "allfailures", value: "All Failures"]
 		filterList += [id: "newfailures", value: "New Failures"]
 		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
+		filterList += [id: "allskipped", value: "All Skipped"]
 		filterList += [id: "newpasses", value: "New Passes"]
 		filterList += [id: "allresults", value: "All Results"]
 		return filterList

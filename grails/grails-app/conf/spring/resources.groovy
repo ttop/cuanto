@@ -47,6 +47,7 @@ import cuanto.queryprocessor.HasTagsQueryModule
 import cuanto.queryprocessor.DateExecutedQueryModule
 import cuanto.parsers.NUnitParser
 import cuanto.queryprocessor.FailureStatusChangedQueryModule
+import cuanto.queryprocessor.TestResultIsSkipQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -72,6 +73,7 @@ beans = {
 		queryModules = [
 			new TestRunQueryModule(),
 			new TestResultIsFailureQueryModule(),
+			new TestResultIsSkipQueryModule(),
 			new TestResultQueryModule(),
 			new TestCaseFullNameQueryModule(),
 			new TestCaseParametersQueryModule(),

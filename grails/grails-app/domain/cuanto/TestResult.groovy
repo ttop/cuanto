@@ -23,10 +23,11 @@ package cuanto
 class TestResult {
 	String name
 	Boolean includeInCalculations // include when computing test Run pass/failure totals?
-	Boolean isFailure  // If a test is this result, it will be considered "not passing"
+	Boolean isFailure             // If a test is this result, it will be considered "not passing"
+	Boolean isSkip                // should this test be counted in the skip column?
 
 	static mapping = {
-		cache usage:'read-only'
+		cache usage:'nonstrict-read-write'
 	}
 
 	String toString() {

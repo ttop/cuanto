@@ -43,6 +43,7 @@ YAHOO.cuanto.urls.set('testRunInfo', "${createLink(controller: 'testRun', action
 YAHOO.cuanto.urls.set('testRunUpdate', "${createLink(controller: 'testRun', action:'update')}/");
 YAHOO.cuanto.urls.set('testRunUpdateNote', "${createLink(controller: 'testRun', action:'updateNote')}/");
 YAHOO.cuanto.urls.set('testRunDelete', "${createLink(controller: 'testRun', action:'delete')}/");
+YAHOO.cuanto.urls.set('testRunRecalcStats', "${createLink(controller: 'testRun', action:'recalc')}/");
 YAHOO.cuanto.urls.set('singleOutcome', "${createLink(controller: 'testOutcome', action: 'get')}/");
 YAHOO.cuanto.urls.set('saveOutcome',"${createLink(controller: 'testOutcome', action: 'saveDetails')}/");
 YAHOO.cuanto.urls.set('testCaseHistory', "${createLink(controller: 'testCase', action: 'history')}/");
