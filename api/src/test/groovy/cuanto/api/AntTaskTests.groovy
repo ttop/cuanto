@@ -20,16 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+import cuanto.base.ApiTestBase
 
 
-public class AntTaskTests extends GroovyTestCase {
 
-	CuantoConnector client
-
-
-	void setUp() {
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
-	}
+public class AntTaskTests extends ApiTestBase {
 
 
 	void testSubmitSingleSuite() {

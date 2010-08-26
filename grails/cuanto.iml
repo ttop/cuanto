@@ -7,6 +7,7 @@
           <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
           <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
           <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
+          <file>file://$MODULE_DIR$/web-app/WEB-INF/applicationContext.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -22,6 +23,7 @@
           <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/plugins/ui-performance-1.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/plugins/feeds-1.4/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/web-app" relative="/" />
         </webroots>
         <sourceRoots />
@@ -43,6 +45,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/target/test-reports" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <content url="file://$MODULE_DIR$/../testdata" />
