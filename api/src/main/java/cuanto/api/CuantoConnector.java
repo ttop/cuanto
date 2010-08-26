@@ -52,7 +52,7 @@ public class CuantoConnector {
 	 * deserialization.
 	 */
 	public final static String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.6.5; Jakarta Commons-HttpClient/3.1";
+	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.6.6; Jakarta Commons-HttpClient/3.1";
 
 	private static final String HTTP_GET = "get";
 	private static final String HTTP_POST = "post";
