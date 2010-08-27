@@ -41,17 +41,18 @@ class TestOutcome {
 		lastUpdated(nullable: true)
         tags(nullable:true)
 		isFailureStatusChanged(nullable:true)
+		//testOutcomeLink(nullable: true)
+		//testOutcomeProperty(nullable: true)
 	}
 
 	static mapping = {
 		cache true
 		analysisState lazy: false
-        tags lazy: false
+        tags fetch: "join", lazy: false
 		isFailureStatusChanged lazy: false, index: 'is_failure_status_changed_idx'
 		testOutputSummary index:'test_output_summary_idx'
-		testOutcomeLink fetch: "join"
-		testOutcomeProperty fetch: "join"
-
+		links fetch: "join", lazy: false, cascade: "all-delete-orphan"
+		testProperties fetch: "join", lazy: false, cascade: "all-delete-orphan"
 	}
 
     static hasMany = [tags: Tag, testProperties: TestOutcomeProperty, links: TestOutcomeLink]
@@ -73,7 +74,6 @@ class TestOutcome {
 	Boolean isFailureStatusChanged
 	List<TestOutcomeLink> links
 	List<TestOutcomeProperty> testProperties
-
 
 	Map toJSONmap(Boolean includeTestOutput = false) {
 		def outcome = this
@@ -111,6 +111,22 @@ class TestOutcome {
         if (tags) {
             myJson.tags = tags.collect{it.name}.sort()
         }
+
+		if (testProperties) {
+			def propJson = [:]
+
+			testProperties.each {
+				propJson[it.name] = it.value
+			}
+			myJson["testProperties"] = propJson
+		}
+
+		if (links) {
+			def linkJson = [:]
+			links.each {
+				linkJson[it.description] = it.url
+			}
+		}
         
 		return myJson
 	}
