@@ -211,10 +211,51 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		if (!oRequest || !oRequest.match("outcome=")) {
 			oPayload.totalRecords = parseInt(oResponse.meta.totalCount);
 		}
+
+		processProperties(oResponse);
 		cacheOutput();
 		return oPayload;
 	}
 
+
+	function processProperties(oResponse) {
+		var propNames = [];
+		oResponse.results.each(function(item) {
+			for (var key in item.testProperties) {
+				propNames.push(key);
+			}
+		});
+		propNames = propNames.uniq().sort();
+		if (propNames.length > 0) {
+			var colNames = dataTable.getColumnSet().keys.collect(function(k) {
+				return k.key;
+			});
+			//propNames.each(function(prop) {
+			for (var p = 0; p < propNames.length; p++) {
+				var prop = propNames[p];
+				var hasColumn = colNames.any(function(name) {
+					var match = name.toLowerCase() == prop.toLowerCase();
+					return match;
+				});
+				if (!hasColumn) {
+					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
+						formatter: propertyFormatter});
+					dataTable.insertColumn(col);
+					colNames.push(prop);
+				}
+			}
+		}
+	}
+
+
+	function hasColumnNamed(dt, colName) {
+		dt.getColumnSet().keys.each(function(col) {
+			if (col.key == colName) {
+				return true;
+			}
+		});
+		return false;
+	}
 
 	function initDataTablePageOne(oRequest, oResponse, oPayload) {
 		var origSort = dataTable.get('sortedBy');  // keep the sort indicator
@@ -990,20 +1031,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function propertyFormatter(elCell, oRecord, oColumn, oData) {
-		// todo: dupe method in projectHistory.js
 		var out = "";
-		var propName = oColumn.label;
-		if (oRecord && oRecord.getData("testProperties")) {
-			var prop = oRecord.getData("testProperties").find(function(pr) {
-				return pr.name.toLowerCase() == propName.toLowerCase();
-			});
-			if (prop) {
-				out = prop["value"];
+		var propName = oColumn.label.toLowerCase();
+		if (oRecord) {
+			var props = oRecord.getData("testProperties");
+			for (var prop in props) {
+				if (prop.toLowerCase() == propName) {
+					out = props[prop];
+				}
 			}
 			elCell.innerHTML = out;
 		}
 	}
-
 
 
     function initTagButtons() {
