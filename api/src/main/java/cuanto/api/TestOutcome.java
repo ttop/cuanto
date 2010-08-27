@@ -53,6 +53,8 @@ public class TestOutcome {
 	String projectKey;
 	List<String> tags = new ArrayList<String>();
 	Boolean isFailureStatusChanged;
+	Map<String, String> links = new HashMap<String, String>();
+	Map<String, String> testProperties = new HashMap<String, String>();
 
 
 	TestOutcome() {
@@ -489,6 +491,23 @@ public class TestOutcome {
 				jsonOutcome.getBoolean("isFailureStatusChanged"));
 		}
 
+		if (!(jsonOutcome.get("testProperties") instanceof JSONNull)) {
+			JSONObject propObj = jsonOutcome.getJSONObject("testProperties");
+			for (Object propKeyObj : propObj.keySet()) {
+				String propName = (String) propKeyObj;
+				String propValue = propObj.getString(propName);
+				testOutcome.addTestProperty(propName, propValue);
+			}
+		}
+
+		if (!(jsonOutcome.get("links") instanceof JSONNull)) {
+			JSONObject linkObj = jsonOutcome.getJSONObject("links");
+			for (Object linkKeyObj : linkObj.keySet()) {
+				String linkUrl = (String) linkKeyObj;
+				String linkDesc = linkObj.getString(linkUrl);
+				testOutcome.addLink(linkUrl, linkDesc);
+			}
+		}
 		return testOutcome;
 	}
 
@@ -577,8 +596,16 @@ public class TestOutcome {
 			jsonMap.put("testRun", runMap);
 		}
 
-		if (tags.size() > 0) {
+		if (this.tags.size() > 0) {
 			jsonMap.put("tags", tags);
+		}
+
+		if (this.testProperties.size() > 0) {
+			jsonMap.put("testProperties", this.testProperties);
+		}
+
+		if (this.links.size() > 0) {
+			jsonMap.put("links", this.links);
 		}
 
 		JSONObject jsonTestOutcome = JSONObject.fromObject(jsonMap);
@@ -613,6 +640,45 @@ public class TestOutcome {
 	 */
 	public void addTags(List<String> tags) {
 		this.tags.addAll(tags);
+	}
+
+
+	/**
+	 * Adds or updates a TestProperty. This change is not reflected on the Cuanto service until you create or update the
+	 * TestOutcome with the CuantoConnector.
+	 *
+	 * @param name  The name of the property
+	 * @param value The value of the property
+	 * @return The TestOutcome associated with the TestProperty
+	 */
+	public TestOutcome addTestProperty(String name, String value) {
+		testProperties.put(name, value);
+		return this;
+	}
+
+
+	/**
+	 * Deletes a TestProperty from this TestOutcome object. This change is not reflected on the Cuanto server until you create
+	 * or update the TestOutcome with the CuantoConnector.
+	 *
+	 * @param name The TestProperty name to delete.
+	 */
+	public void deleteTestProperty(String name) {
+		testProperties.remove(name);
+	}
+
+
+	/**
+	 * Adds or updates a Link. This change is not reflected on the Cuanto server until you create or update the TestOutcome with
+	 * the CuantoConnector.
+	 *
+	 * @param url         The url of the link
+	 * @param description The description of the link
+	 * @return The TestOutcome associated with this link
+	 */
+	public TestOutcome addLink(String url, String description) {
+		links.put(url, description);
+		return this;
 	}
 
 

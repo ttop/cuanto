@@ -108,24 +108,25 @@ class TestOutcome {
 		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
 
-        if (tags) {
-            myJson.tags = tags.collect{it.name}.sort()
+        if (outcome.tags) {
+            myJson.tags = outcome.tags.collect{it.name}.sort()
         }
 
-		if (testProperties) {
+		if (outcome.testProperties) {
 			def propJson = [:]
 
-			testProperties.each {
+			outcome.testProperties.each {
 				propJson[it.name] = it.value
 			}
 			myJson["testProperties"] = propJson
 		}
 
-		if (links) {
+		if (outcome.links) {
 			def linkJson = [:]
-			links.each {
-				linkJson[it.description] = it.url
+			outcome.links.each {
+				linkJson[it.url] = it.description
 			}
+			myJson["links"] = linkJson
 		}
         
 		return myJson

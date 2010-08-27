@@ -546,6 +546,63 @@ public class TestOutcomeTests extends ApiTestBase {
 			fetchedOutcome.isFailureStatusChanged
 	}
 
+
+	void testOutcomeProperties() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		outcome1.addTestProperty("foo", "bar")
+
+		TestRun run1 = new TestRun(new Date())
+
+		client.addTestRun(run1)
+		testRunsToCleanUp << run1
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		TestOutcome fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of properties", 1, fetchedOutcome?.testProperties?.size()
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("foo")
+		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["foo"]
+
+		outcome1.addTestProperty("double", "rainbow")
+		client.updateTestOutcome(outcome1)
+
+		firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of properties", 2, fetchedOutcome?.testProperties?.size()
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("foo")
+		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["foo"]
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("double")
+		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["rainbow"]
+	}
+
+
+	void testOutcomeLinks() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		outcome1.addLink("http://foobar", "FOOBAR")
+
+		TestRun run1 = new TestRun(new Date())
+
+		client.addTestRun(run1)
+		testRunsToCleanUp << run1
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		TestOutcome fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of links", 1, fetchedOutcome?.links?.size()
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://foobar")
+		assertEquals "Link description", "FOOBAR", fetchedOutcome.links.get("http://foobar")
+
+		outcome1.addLink("http://double/rainbow", "Almost a triple!")
+		client.updateTestOutcome(outcome1)
+		fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of links", 2, fetchedOutcome?.links?.size()
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://foobar")
+		assertEquals "Link description", "FOOBAR", fetchedOutcome.links.get("http://foobar")
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://double/rainbow")
+		assertEquals "Link description", "Almost a triple!", fetchedOutcome.links.get("http://double/rainbow")
+	}
+
+
 	TestOutcome createTestOutcome(TestResult result, String testName = "test${wordGen.getCamelWords(3)}") {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", testName, wordGen.getSentence(2), result)
 		outcome.startedAt = new Date(System.currentTimeMillis() + 1000 * testCaseCounter)
