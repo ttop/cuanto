@@ -124,6 +124,11 @@ class InitializationService {
 				new Project(name: "CuantoNG", projectKey: "CNG", projectGroup: grp,
 					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
 			}
+			if (!Project.findByName("ClientTest")) {
+				def grp = ProjectGroup.findByName("Sample")
+				new Project(name: "ClientTest", projectKey: "ClientTest", projectGroup: grp,
+					bugUrlPattern: "http://tpjira/browse/{BUG}", testType: TestType.findByName("TestNG")).save()
+			}
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
 		}
