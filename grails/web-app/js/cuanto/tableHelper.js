@@ -74,26 +74,30 @@ YAHOO.cuanto.tables = function() {
 
 	function getPostBodyForRecord(record) {
 		var body = "id=" + record.getData("id");
-
 		var bug = record.getData("bug");
-		if (typeof bug == "string"){
-			body += "&bug=" + record.getData("bug");
-		} else {
-			if (bug.title) {
-				body += "&bugTitle=" + encodeURIComponent(bug.title);
-			}
-			if (bug.url) {
-				body += "&bugUrl=" + encodeURIComponent(bug.url);
+
+		if (bug != null) {
+			if (typeof bug == "string") {
+				body += "&bug=" + record.getData("bug");
+			} else {
+				if (bug.title) {
+					body += "&bugTitle=" + encodeURIComponent(bug.title);
+				}
+				if (bug.url) {
+					body += "&bugUrl=" + encodeURIComponent(bug.url);
+				}
 			}
 		}
 		var fields = [{key: 'result', param:'testResult'}, {key: 'analysisState', param: 'analysisStateName'},
 			{key: 'note', param: 'note'}, {key: 'owner', param: 'owner'}];
 
-		for (var f=0; f < fields.length; f++) {
+		for (var f = 0; f < fields.length; f++) {
 			var field = fields[f];
-			var data = record.getData(field['key']);
-			if (data) {
-				body += "&" + field['param'] + "=" + encodeURIComponent(data);
+			if (f) {
+				var data = record.getData(field['key']);
+				if (data) {
+					body += "&" + field['param'] + "=" + encodeURIComponent(data);
+				}
 			}
 		}
 		return body;
