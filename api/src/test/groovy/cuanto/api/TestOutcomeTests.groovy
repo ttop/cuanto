@@ -572,7 +572,7 @@ public class TestOutcomeTests extends ApiTestBase {
 		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("foo")
 		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["foo"]
 		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("double")
-		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["rainbow"]
+		assertEquals "Wrong property value", "rainbow", fetchedOutcome.testProperties["double"]
 	}
 
 
