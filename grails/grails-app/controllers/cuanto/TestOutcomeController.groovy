@@ -36,6 +36,7 @@ class TestOutcomeController {
 
 	def index = { redirect(action: list, params: params) }
 
+	/* //todo: delete?
 	def get = {
 		TestOutcome outcome = TestOutcome.get(params.id)
 		def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
@@ -52,6 +53,7 @@ class TestOutcomeController {
 			duration: outcome.duration]
 		render myJson as JSON
 	}
+	*/
 
 
 	def outcome = {   //todo: is this and the corresponding GSP used anymore? investigate
