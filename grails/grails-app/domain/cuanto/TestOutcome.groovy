@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import cuanto.formatter.TestNameFormatter
 
 class TestOutcome {
 
@@ -75,17 +76,13 @@ class TestOutcome {
 	List<TestOutcomeLink> links
 	List<TestOutcomeProperty> testProperties
 
-	Map toJSONmap(Boolean includeTestOutput = false) {
+	Map toJSONmap(Boolean includeTestOutput = false, Integer truncateOutput = null, TestNameFormatter testCaseFormatter = null) {
 		def outcome = this
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
 
 		def myJson = [
 			id: outcome.id,
 			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
-			testCase: [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
-				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description, 
-				fullName: outcome.testCase?.fullName],
-
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
 			note: outcome.note,
@@ -96,14 +93,36 @@ class TestOutcome {
 			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
 
+		def testCaseJson
+		if (testCaseFormatter) {
+			testCaseJson = [name: testCaseFormatter.getTestName(outcome.testCase), id: outcome.testCase.id]
+			if (outcome.testCase.parameters) {
+				testCaseJson.parameters = outcome.testCase.parameters
+			}
+		} else {
+			testCaseJson = [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
+				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description,
+				fullName: outcome.testCase?.fullName]
+		}
+
+		myJson.testCase = testCaseJson
+
+
 		if (outcome.testCase?.id) {
 			myJson.testCase.id = outcome.testCase.id
 		}
 
-
 		if (includeTestOutput) {
-			myJson.testOutput = outcome.testOutput
+		    if (truncateOutput) {
+			    def maxChars = outcome.testOutput.size() > truncateOutput ? truncateOutput : outcome.testOutput.size()
+			    myJson.testOutput = outcome.testOutput[0..maxChars - 1]
+		    } else {
+			    myJson.testOutput = outcome.testOutput
+		    }
+		} else {
+			myJson.testOutput = null
 		}
+
 		myJson.bug = outcome.bug == null ? null : [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id]
 		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)

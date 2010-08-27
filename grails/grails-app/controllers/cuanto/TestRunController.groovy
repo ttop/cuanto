@@ -152,40 +152,12 @@ class TestRunController {
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
-				results?.testOutcomes?.each {outcome ->
-					def currentOutcome = [
-						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
-						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
-						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
-						isFailureStatusChanged: outcome.isFailureStatusChanged
-					]
-
-					if (outcome.testOutput) {
-						def maxChars = outcome.testOutput.size() > results?.outputChars ? results?.outputChars : outcome.testOutput.size()
-						currentOutcome.output = outcome.testOutput[0..maxChars - 1]
-					} else {
-						currentOutcome.output = null
-					}
-
-					def currentTestCase = [name: formatter.getTestName(outcome.testCase), id: outcome.testCase.id]
-
-					if (outcome.testCase.parameters) {
-						currentTestCase.parameters = outcome.testCase.parameters
-					}
-
-					if (outcome.tags) {
-						currentOutcome.tags = outcome.tags.collect {it.name}.sort()
-					}
-
-					if (outcome.isFailureStatusChanged != null)
-						currentOutcome.isFailureStatusChanged = outcome.isFailureStatusChanged
-
-					currentOutcome.testCase = currentTestCase
-					jsonOutcomes << currentOutcome
+				results?.testOutcomes?.each { outcome ->
+					jsonOutcomes << outcome.toJSONmap(true, 180, formatter)
 				}
 
 				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
-					'offset': results?.offset]
+					'offset': results?.offset, testProperties: results?.testProperties]
 				render myJson as JSON
 			}
 			xml {

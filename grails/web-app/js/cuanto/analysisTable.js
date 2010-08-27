@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 YAHOO.namespace('cuanto');
 
-YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
+YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propNames) {
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
 	var prefHiddenColumns = "hiddenColumns";
@@ -156,7 +156,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt", "tags", "isFailureStatusChanged"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
+				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -395,7 +396,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		var toolWidth = Prototype.Browser.IE ? 70 : 50;
 
-		return [
+		var columns = [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
@@ -405,7 +406,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
-				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
+				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true}),
+				formatter: formatAnalysis},
 			{key:"startedAt", label: "Started At", sortable:true},
 			{key:"finishedAt", label: "Finished At", sortable:true},
 			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
@@ -414,9 +416,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
 			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
                 editor: noteEditor},
-			{key: "output", label: "Output", minWidth: 150, resizeable: true, sortable: true,
+			{key: "testOutput", label: "Output", minWidth: 150, resizeable: true, sortable: true,
 				formatter:YAHOO.cuanto.format.formatOutput}
 		];
+
+		/*
+		for (var i=0; i < propertyNames.length; i++) {
+			columns.push({key: "prop|" + propertyNames[i], label: propertyNames[i], sortable: true, isProp: true,
+				formatter: propertyFormatter});
+		}
+		*/
+
+		return columns;
 	}
 
 
@@ -521,6 +532,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
             elCell.innerHTML = oData.join(", ");
         }
     }
+
+	function formatAnalysis(elCell, oRecord, oColumn, oData) {
+		if (oData && oData.name) {
+			elCell.innerHTML = oData.name;
+		}
+	}
 
 	function setImgTitleAndAlt(imgElem, title) {
 		imgElem.setAttribute('title', title);
@@ -971,6 +988,23 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	function formatDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
 	}
+
+	function propertyFormatter(elCell, oRecord, oColumn, oData) {
+		// todo: dupe method in projectHistory.js
+		var out = "";
+		var propName = oColumn.label;
+		if (oRecord && oRecord.getData("testProperties")) {
+			var prop = oRecord.getData("testProperties").find(function(pr) {
+				return pr.name.toLowerCase() == propName.toLowerCase();
+			});
+			if (prop) {
+				out = prop["value"];
+			}
+			elCell.innerHTML = out;
+		}
+	}
+
+
 
     function initTagButtons() {
         
