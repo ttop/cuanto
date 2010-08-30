@@ -230,7 +230,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			var colNames = dataTable.getColumnSet().keys.collect(function(k) {
 				return k.key;
 			});
-			//propNames.each(function(prop) {
 			for (var p = 0; p < propNames.length; p++) {
 				var prop = propNames[p];
 				var hasColumn = colNames.any(function(name) {
@@ -240,7 +239,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				if (!hasColumn) {
 					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
 						formatter: propertyFormatter});
+					var hiddenCols = getHiddenColumns();
 					dataTable.insertColumn(col);
+					if (hiddenCols[prop]) {
+						dataTable.hideColumn(prop);
+					}
 					colNames.push(prop);
 				}
 			}
