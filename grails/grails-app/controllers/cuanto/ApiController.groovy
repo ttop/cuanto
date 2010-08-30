@@ -187,7 +187,7 @@ class ApiController {
 
 			def jsonArray = []
 			out.each {
-				jsonArray << it.toJSONmap()
+				jsonArray << it.toJSONmap(false, null, null, false)
 			}
 			def jsonMap = [testOutcomes: jsonArray]
 			render jsonMap as JSON

@@ -76,7 +76,8 @@ class TestOutcome {
 	List<TestOutcomeLink> links
 	List<TestOutcomeProperty> testProperties
 
-	Map toJSONmap(Boolean includeTestOutput = false, Integer truncateOutput = null, TestNameFormatter testCaseFormatter = null) {
+	Map toJSONmap(Boolean includeTestOutput = false, Integer truncateOutput = null, TestNameFormatter testCaseFormatter = null,
+		Boolean includeTestRunDetails = true) {
 		def outcome = this
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
 
@@ -87,11 +88,17 @@ class TestOutcome {
 			owner: outcome.owner,
 			note: outcome.note,
 			duration: outcome.duration,
-			testRun: outcome.testRun?.toJSONMap(),
+			//testRun: outcome.testRun?.toJSONMap(),
 			dateCreated: dateFormatter.format(dateCreated),
 			lastUpdated: dateFormatter.format(lastUpdated),
 			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
+
+		if (includeTestRunDetails) {
+			myJson.testRun = outcome.testRun?.toJSONMap()
+		} else {
+			myJson.testRun = ["id": outcome.testRun?.id]
+		}
 
 		def testCaseJson
 		if (testCaseFormatter) {

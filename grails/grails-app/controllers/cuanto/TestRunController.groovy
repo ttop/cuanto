@@ -153,11 +153,11 @@ class TestRunController {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
 				results?.testOutcomes?.each { outcome ->
-					jsonOutcomes << outcome.toJSONmap(true, 180, formatter)
+					jsonOutcomes << outcome.toJSONmap(true, 180, formatter, false)
 				}
 
 				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
-					'offset': results?.offset, testProperties: results?.testProperties]
+					'offset': results?.offset, testProperties: results?.testProperties, links: results?.links]
 				render myJson as JSON
 			}
 			xml {
