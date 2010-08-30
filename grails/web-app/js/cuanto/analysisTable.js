@@ -157,7 +157,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
 			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
-				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties"],
+				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties", "links"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -461,15 +461,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
                 editor: noteEditor},
 			{key: "testOutput", label: "Output", minWidth: 150, resizeable: true, sortable: true,
-				formatter:YAHOO.cuanto.format.formatOutput}
+				formatter:YAHOO.cuanto.format.formatOutput},
+			{key: "links", label: "Links", minWidth: 100, resizeable:true, sortable: false, formatter: linkFormatter }
 		];
-
-		/*
-		for (var i=0; i < propertyNames.length; i++) {
-			columns.push({key: "prop|" + propertyNames[i], label: propertyNames[i], sortable: true, isProp: true,
-				formatter: propertyFormatter});
-		}
-		*/
 
 		return columns;
 	}
@@ -1045,6 +1039,29 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			}
 			elCell.innerHTML = out;
 		}
+	}
+
+	function linkFormatter(elCell, oRecord, oColumn, oData) {
+		var links = oRecord.getData("links");
+
+		var linkDesc = [];
+		var descMap = {};
+		for (var d in links) {
+			linkDesc.push(links[d]);
+			descMap[links[d]] = d;
+		}
+		var sortedDesc = linkDesc.sort();
+		var output = "";
+
+		for (var i = 0; i < sortedDesc.length; i++) {
+			var desc = sortedDesc[i];
+			output += "<a href='" + descMap[desc] + "'>" + desc + "</a>";
+			if (i != sortedDesc.length - 1) {
+				output += "<br/>";
+			}
+		}
+		
+		elCell.innerHTML = output;
 	}
 
 
