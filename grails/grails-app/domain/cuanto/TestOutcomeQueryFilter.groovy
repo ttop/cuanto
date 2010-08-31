@@ -54,8 +54,9 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
 		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
-		"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
-		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged"].each {
+			"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
+			"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged",
+			"hasAllTestOutcomeProperties"].each {
 			this.setProperty(it, filterToCopy.getProperty(it))
 		}
 	}
@@ -254,6 +255,12 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 			this.testOutput = searchTerm
 		} else if (field == "owner") {
 			this.owner = searchTerm
+		} else if (field == "properties") {
+			def delim = searchTerm.indexOf("|")
+			def propName = searchTerm.substring(0, delim)
+			def propVal = searchTerm.substring(delim + 1)
+			def prop = new TestOutcomeProperty(propName, propVal)
+			this.hasAllTestOutcomeProperties = [prop]
 		}
 	}
 

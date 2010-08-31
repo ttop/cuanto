@@ -75,6 +75,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	if (!dataTable) {
 		YAHOO.util.Event.addListener('trDetailsFilter', "change", onFilterChange);
 		YAHOO.util.Event.addListener('tcFormat', "change", onTcFormatChange);
+		YAHOO.util.Event.addListener('searchTerm', "change", onSearchTermChange);
+		onSearchTermChange(null);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
 
@@ -348,7 +350,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 	function getSearchQuery() {
 		if (searchQueryIsSpecified()) {
-			return "&qry=" + $F("searchTerm") + "|" + $F("searchQry");
+			var term = $F("searchTerm");
+			if (term == "Properties") {
+				return "&qry=" + term + "|" + $F("propName") + "|" + $F("searchQry");
+			} else {
+				return "&qry=" + term + "|" + $F("searchQry");
+			}
 		} else {
 			return "";
 		}
@@ -1106,5 +1113,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
         onFilterChange(e);
     }
+
+	function onSearchTermChange(e) {
+		var searchTerm = $('searchTerm');
+		if ($F('searchTerm') == "Properties") {
+			$$('.propSearch').each(function(item) {
+				item.show();
+			});
+		} else {
+			$$('.propSearch').each(function(item) {
+				item.hide();
+			});
+		}
+	}
 };
 
