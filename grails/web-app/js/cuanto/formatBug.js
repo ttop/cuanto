@@ -93,45 +93,42 @@ YAHOO.cuanto.format = function() {
 		return false;
 	};
 
-	pub.formatBug = function(elCell, oRecord, oColumn, oData)
-	{
-		var title = oData.title;
-		var url = oData.url;
-		if (title != null && url != null && url != "")
-		{
-			var cnt = new Element('div');
-			var titleSpan = new Element('span');
-			titleSpan.innerHTML = title + " ";
-			cnt.appendChild(titleSpan);
-			var link = new Element('a', {'href': url});
-			var img = new Element('img', {'src': YAHOO.cuanto.urls.get("shortcutImg"), width:13, height:13});
-			link.appendChild(img);
-			cnt.appendChild(link);
-			elCell.innerHTML = "";
-			elCell.appendChild(cnt);
-			YAHOO.util.Event.addListener(link, "click", showBugInNewWindow);
-		}
-		else if (title != null)
-		{
-			elCell.innerHTML = title;
-		}
-		else if (url != null && url != "")
-		{
-			var cnt = new Element('div');
-			var titleSpan = new Element('span');
-			titleSpan.innerHTML = title + " ";
-			cnt.appendChild(titleSpan);
-			var link = new Element('a', {'href': url});
-			var img = new Element('img', {'src': YAHOO.cuanto.urls.get("shortcutImg"), width:13, height:13});
-			link.appendChild(img);
-			cnt.appendChild(link);
-			elCell.innerHTML = "";
-			elCell.appendChild(cnt);
-			YAHOO.util.Event.addListener(link, "click", pub.showBugInNewWindow);
-		}
-		else
-		{
-			elCell.innerHTML = "";
+	pub.formatBug = function(elCell, oRecord, oColumn, oData) {
+		if (oData) {
+			var title = oData.title;
+			var url = oData.url;
+			if (title != null && url != null && url != "") {
+				var cnt = new Element('div');
+				var titleSpan = new Element('span');
+				titleSpan.innerHTML = title + " ";
+				cnt.appendChild(titleSpan);
+				var link = new Element('a', {'href': url});
+				var img = new Element('img', {'src': YAHOO.cuanto.urls.get("shortcutImg"), width:13, height:13});
+				link.appendChild(img);
+				cnt.appendChild(link);
+				elCell.innerHTML = "";
+				elCell.appendChild(cnt);
+				YAHOO.util.Event.addListener(link, "click", showBugInNewWindow);
+			}
+			else if (title != null) {
+				elCell.innerHTML = title;
+			}
+			else if (url != null && url != "") {
+				var cnt = new Element('div');
+				var titleSpan = new Element('span');
+				titleSpan.innerHTML = title + " ";
+				cnt.appendChild(titleSpan);
+				var link = new Element('a', {'href': url});
+				var img = new Element('img', {'src': YAHOO.cuanto.urls.get("shortcutImg"), width:13, height:13});
+				link.appendChild(img);
+				cnt.appendChild(link);
+				elCell.innerHTML = "";
+				elCell.appendChild(cnt);
+				YAHOO.util.Event.addListener(link, "click", pub.showBugInNewWindow);
+			}
+			else {
+				elCell.innerHTML = "";
+			}
 		}
 	};
 

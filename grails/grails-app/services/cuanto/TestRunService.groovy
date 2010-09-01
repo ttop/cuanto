@@ -322,7 +322,7 @@ class TestRunService {
 				}
 			} else {
 				// link not found in original, so add it
-				origTestRun.addToLinks(new TestRunLink(link.description, link.url))
+				origTestRun.addToLinks(new TestRunLink(link.url, link.description))
 			}
 		}
 
@@ -370,7 +370,7 @@ class TestRunService {
 						if (!descr) {
 							descr = linkUrl
 						}
-						def link = new TestRunLink(descr, linkUrl)
+						def link = new TestRunLink(linkUrl, descr)
 						testRun.addToLinks(link)
 					}
 				}
@@ -649,49 +649,54 @@ class TestRunService {
 	 */
 
 	def deleteTestRun(TestRun run) {
-		try {
-			TestRun testRun = TestRun.get(run.id)
-			TestRun nextRun = dataService.getNextTestRun(run)
-			statisticService.dequeueTestRunStats(run.id)
-			statisticService.deleteStatsForTestRun(run)
+		TestRun.withTransaction {
+			try {
+				TestRun testRun = TestRun.lock(run.id)
+				TestRun nextRun = dataService.getNextTestRun(run)
+				statisticService.dequeueTestRunStats(run.id)
+				statisticService.deleteStatsForTestRun(run)
 
-			if (testRun.tags) {
-				def testRunTagsToRemove = new ArrayList(testRun.tags)
-				testRunTagsToRemove.each {tag ->
-					testRun.removeFromTags(tag)
-				}
-
-				def outcomes = TestOutcome.findAllByTestRun(testRun)
-
-				outcomes.each {outcome ->
-					def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
-					testOutcomeTagsToRemove.each {tag ->
-						outcome.removeFromTags(tag)
+				if (testRun.tags) {
+					def testRunTagsToRemove = new ArrayList(testRun.tags)
+					testRunTagsToRemove.each {tag ->
+						testRun.removeFromTags(tag)
 					}
-					outcome.delete()
 				}
-			} else {
-				TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
-			}
-			testRun.save()
-			testRun.delete()
-			if (nextRun) {
-				failureStatusService.queueFailureStatusUpdateForRun(nextRun)
-				nextRun?.discard()
-			}
-		} catch (OptimisticLockingFailureException e) {
-			log.error "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-			// leave it in queue so it gets tried again
-		} catch (HibernateOptimisticLockingFailureException e) {
-			log.error "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-		}
-		catch (StaleObjectStateException e) {
-			log.error "StaleObjectStateException for test run ${queuedItem.testRunId}"
-			// leave it in queue so it gets tried again
-		}
 
+				def outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
+				while (outcomes) {
+					outcomes.each {outcome ->
+						if (outcome.tags) {
+							def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+							testOutcomeTagsToRemove.each {tag ->
+								outcome.removeFromTags(tag)
+							}
+						}
+
+						outcome.delete()
+					}
+
+					TestOutcome.withSession {
+						it.flush()
+					}
+					outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
+				}
+
+				testRun.save()
+				testRun.delete()
+				if (nextRun) {
+					failureStatusService.queueFailureStatusUpdateForRun(nextRun)
+					nextRun?.discard()
+				}
+			} catch (OptimisticLockingFailureException e) {
+				log.error "OptimisticLockingFailureException for test run ${run.id}"
+			} catch (HibernateOptimisticLockingFailureException e) {
+				log.error "HibernateOptimisticLockingFailureException for test run ${run.id}"
+			} catch (StaleObjectStateException e) {
+				log.error "StaleObjectStateException for test run ${run.id}"
+			}
+		}
 	}
-
 
 
 	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {

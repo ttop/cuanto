@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 YAHOO.namespace('cuanto');
 
-YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
+YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propNames) {
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
 	var prefHiddenColumns = "hiddenColumns";
@@ -75,6 +75,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 	if (!dataTable) {
 		YAHOO.util.Event.addListener('trDetailsFilter', "change", onFilterChange);
 		YAHOO.util.Event.addListener('tcFormat', "change", onTcFormatChange);
+		YAHOO.util.Event.addListener('searchTerm', "change", onSearchTermChange);
+		onSearchTermChange(null);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
 
@@ -156,7 +158,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "output", "startedAt", "finishedAt", "tags", "isFailureStatusChanged"],
+			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
+				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties", "links"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -210,10 +213,54 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		if (!oRequest || !oRequest.match("outcome=")) {
 			oPayload.totalRecords = parseInt(oResponse.meta.totalCount);
 		}
+
+		processProperties(oResponse);
 		cacheOutput();
 		return oPayload;
 	}
 
+
+	function processProperties(oResponse) {
+		var propNames = [];
+		oResponse.results.each(function(item) {
+			for (var key in item.testProperties) {
+				propNames.push(key);
+			}
+		});
+		propNames = propNames.uniq().sort();
+		if (propNames.length > 0) {
+			var colNames = dataTable.getColumnSet().keys.collect(function(k) {
+				return k.key;
+			});
+			for (var p = 0; p < propNames.length; p++) {
+				var prop = propNames[p];
+				var hasColumn = colNames.any(function(name) {
+					var match = name.toLowerCase() == prop.toLowerCase();
+					return match;
+				});
+				if (!hasColumn) {
+					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
+						formatter: propertyFormatter});
+					var hiddenCols = getHiddenColumns();
+					dataTable.insertColumn(col);
+					if (hiddenCols[prop]) {
+						dataTable.hideColumn(prop);
+					}
+					colNames.push(prop);
+				}
+			}
+		}
+	}
+
+
+	function hasColumnNamed(dt, colName) {
+		dt.getColumnSet().keys.each(function(col) {
+			if (col.key == colName) {
+				return true;
+			}
+		});
+		return false;
+	}
 
 	function initDataTablePageOne(oRequest, oResponse, oPayload) {
 		var origSort = dataTable.get('sortedBy');  // keep the sort indicator
@@ -303,7 +350,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 	function getSearchQuery() {
 		if (searchQueryIsSpecified()) {
-			return "&qry=" + $F("searchTerm") + "|" + $F("searchQry");
+			var term = $F("searchTerm");
+			if (term == "Properties") {
+				return "&qry=" + term + "|" + $F("propName") + "|" + $F("searchQry");
+			} else {
+				return "&qry=" + term + "|" + $F("searchQry");
+			}
 		} else {
 			return "";
 		}
@@ -395,7 +447,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
 		var toolWidth = Prototype.Browser.IE ? 70 : 50;
 
-		return [
+		var columns = [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
 			{label:"Tools", resizeable:false, formatter: formatActionCol, width:toolWidth},
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
@@ -405,7 +457,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
-				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
+				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true}),
+				formatter: formatAnalysis},
 			{key:"startedAt", label: "Started At", sortable:true},
 			{key:"finishedAt", label: "Finished At", sortable:true},
 			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
@@ -414,9 +467,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 			{key:"owner", label:"Owner", width:90, sortable:true, editor:new YAHOO.widget.TextboxCellEditor()},
 			{key:"note", label:"Note", formatter:YAHOO.cuanto.format.formatNote, minWidth:150, resizeable:true, sortable:true,
                 editor: noteEditor},
-			{key: "output", label: "Output", minWidth: 150, resizeable: true, sortable: true,
-				formatter:YAHOO.cuanto.format.formatOutput}
+			{key: "testOutput", label: "Output", minWidth: 150, resizeable: true, sortable: true,
+				formatter:YAHOO.cuanto.format.formatOutput},
+			{key: "links", label: "Links", minWidth: 100, resizeable:true, sortable: false, formatter: linkFormatter }
 		];
+
+		return columns;
 	}
 
 
@@ -521,6 +577,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
             elCell.innerHTML = oData.join(", ");
         }
     }
+
+	function formatAnalysis(elCell, oRecord, oColumn, oData) {
+		if (oData && oData.name) {
+			elCell.innerHTML = oData.name;
+		}
+	}
 
 	function setImgTitleAndAlt(imgElem, title) {
 		imgElem.setAttribute('title', title);
@@ -972,6 +1034,44 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
 	}
 
+	function propertyFormatter(elCell, oRecord, oColumn, oData) {
+		var out = "";
+		var propName = oColumn.label.toLowerCase();
+		if (oRecord) {
+			var props = oRecord.getData("testProperties");
+			for (var prop in props) {
+				if (prop.toLowerCase() == propName) {
+					out = props[prop];
+				}
+			}
+			elCell.innerHTML = out;
+		}
+	}
+
+	function linkFormatter(elCell, oRecord, oColumn, oData) {
+		var links = oRecord.getData("links");
+
+		var linkDesc = [];
+		var descMap = {};
+		for (var d in links) {
+			linkDesc.push(links[d]);
+			descMap[links[d]] = d;
+		}
+		var sortedDesc = linkDesc.sort();
+		var output = "";
+
+		for (var i = 0; i < sortedDesc.length; i++) {
+			var desc = sortedDesc[i];
+			output += "<a href='" + descMap[desc] + "'>" + desc + "</a>";
+			if (i != sortedDesc.length - 1) {
+				output += "<br/>";
+			}
+		}
+		
+		elCell.innerHTML = output;
+	}
+
+
     function initTagButtons() {
         
         $$('.tagspan').each(function(tagspan) {
@@ -1013,5 +1113,18 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames) {
 
         onFilterChange(e);
     }
+
+	function onSearchTermChange(e) {
+		var searchTerm = $('searchTerm');
+		if ($F('searchTerm') == "Properties") {
+			$$('.propSearch').each(function(item) {
+				item.show();
+			});
+		} else {
+			$$('.propSearch').each(function(item) {
+				item.hide();
+			});
+		}
+	}
 };
 

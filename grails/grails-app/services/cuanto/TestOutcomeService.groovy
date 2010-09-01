@@ -301,8 +301,44 @@ class TestOutcomeService {
 			testOutcomes = dataService.getTestOutcomes(testOutcomeFilter)
 			totalCount = dataService.countTestOutcomes(testOutcomeFilter)
 		}
-			
-		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars]
+
+		def propsAndLinks = getCustomPropertyAndLinkNames(testOutcomes)
+		def customProperties = propsAndLinks["testProperties"]
+		def customLinks = propsAndLinks["links"]
+
+		return ['testOutcomes': testOutcomes, 'totalCount': totalCount, 'offset': offset, 'outputChars': outputChars,
+		    testProperties: customProperties, links: customLinks]
+	}
+
+	
+	Map getCustomPropertyAndLinkNames(testOutcomes) {
+		Set<String> propSet = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+		Set<String> linkSet = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+		testOutcomes.each { TestOutcome outcome ->
+			outcome.testProperties?.each { TestOutcomeProperty prop ->
+				propSet.add(prop.name)
+			}
+			outcome.links?.each { TestOutcomeLink link ->
+				linkSet.add(link.description)
+			}
+		}
+
+		return [
+		    testProperties: new ArrayList(propSet).sort(),
+			links: new ArrayList(linkSet).sort()
+		]
+		//return new ArrayList(propSet).sort()
+	}
+
+
+	List getCustomPropertyNames(testOutcomes) {
+		Set<String> propSet = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+		testOutcomes.each { TestOutcome outcome ->
+			outcome.testProperties?.each { TestOutcomeProperty prop ->
+				propSet.add(prop.name)
+			}
+		}
+		return new ArrayList(propSet).sort()
 	}
 
 

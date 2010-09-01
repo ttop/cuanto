@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import cuanto.formatter.TestNameFormatter
 
 class TestOutcome {
 
@@ -41,17 +42,21 @@ class TestOutcome {
 		lastUpdated(nullable: true)
         tags(nullable:true)
 		isFailureStatusChanged(nullable:true)
+		//testOutcomeLink(nullable: true)
+		//testOutcomeProperty(nullable: true)
 	}
 
 	static mapping = {
 		cache true
 		analysisState lazy: false
-        tags lazy: false
+        tags fetch: "join", lazy: false
 		isFailureStatusChanged lazy: false, index: 'is_failure_status_changed_idx'
 		testOutputSummary index:'test_output_summary_idx'
+		links fetch: "join", lazy: false, cascade: "all-delete-orphan"
+		testProperties fetch: "join", lazy: false, cascade: "all-delete-orphan"
 	}
 
-    static hasMany = [tags: Tag]
+    static hasMany = [tags: Tag, testProperties: TestOutcomeProperty, links: TestOutcomeLink]
 
 	TestCase testCase
 	TestRun testRun
@@ -68,44 +73,86 @@ class TestOutcome {
 	Date dateCreated  // this is the timestamp for when the database record was created
 	Date lastUpdated // timestamp for when the database record was last updated
 	Boolean isFailureStatusChanged
+	List<TestOutcomeLink> links
+	List<TestOutcomeProperty> testProperties
 
-
-	Map toJSONmap(Boolean includeTestOutput = false) {
+	Map toJSONmap(Boolean includeTestOutput = false, Integer truncateOutput = null, TestNameFormatter testCaseFormatter = null,
+		Boolean includeTestRunDetails = true) {
 		def outcome = this
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
 
 		def myJson = [
 			id: outcome.id,
 			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
-			testCase: [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
-				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description, 
-				fullName: outcome.testCase?.fullName],
-
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
 			note: outcome.note,
 			duration: outcome.duration,
-			testRun: outcome.testRun?.toJSONMap(),
-			dateCreated: dateFormatter.format(dateCreated),
-			lastUpdated: dateFormatter.format(lastUpdated),
 			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
+
+		if (includeTestRunDetails) {
+			myJson.testRun = outcome.testRun?.toJSONMap()
+		} else {
+			myJson.testRun = ["id": outcome.testRun?.id]
+		}
+
+		def testCaseJson
+		if (testCaseFormatter) {
+			testCaseJson = [name: testCaseFormatter.getTestName(outcome.testCase), id: outcome.testCase.id]
+			if (outcome.testCase.parameters) {
+				testCaseJson.parameters = outcome.testCase.parameters
+			}
+		} else {
+			testCaseJson = [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
+				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description,
+				fullName: outcome.testCase?.fullName]
+		}
+
+		myJson.testCase = testCaseJson
+
 
 		if (outcome.testCase?.id) {
 			myJson.testCase.id = outcome.testCase.id
 		}
 
-
 		if (includeTestOutput) {
-			myJson.testOutput = outcome.testOutput
+		    if (truncateOutput) {
+			    def maxChars = outcome.testOutput.size() > truncateOutput ? truncateOutput : outcome.testOutput.size()
+			    myJson.testOutput = outcome.testOutput[0..maxChars - 1]
+		    } else {
+			    myJson.testOutput = outcome.testOutput
+		    }
+		} else {
+			myJson.testOutput = null
 		}
+
 		myJson.bug = outcome.bug == null ? null : [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id]
+		myJson.dateCreated = outcome.dateCreated == null ? null : dateFormatter.format(outcome.dateCreated)
+		myJson.lastUpdated = outcome.lastUpdated == null ? null : dateFormatter.format(outcome.lastUpdated)
 		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
 
-        if (tags) {
-            myJson.tags = tags.collect{it.name}.sort()
+        if (outcome.tags) {
+            myJson.tags = outcome.tags.collect{it.name}.sort()
         }
+
+		if (outcome.testProperties) {
+			def propJson = [:]
+
+			outcome.testProperties.each {
+				propJson[it.name] = it.value
+			}
+			myJson["testProperties"] = propJson
+		}
+
+		if (outcome.links) {
+			def linkJson = [:]
+			outcome.links.each {
+				linkJson[it.url] = it.description
+			}
+			myJson["links"] = linkJson
+		}
         
 		return myJson
 	}

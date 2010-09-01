@@ -159,6 +159,19 @@ class ParsingService {
 			}
 		}
 
+		if (!jsonTestOutcome.isNull("testProperties")) {
+			def testProps = jsonTestOutcome.getJSONObject("testProperties")
+			testProps?.each {key, value ->
+				testOutcome.addToTestProperties(new TestOutcomeProperty(key, value))
+			}
+		}
+
+		if (!jsonTestOutcome.isNull("links")) {
+			def links = jsonTestOutcome.getJSONObject("links")
+			links?.each { key, value ->
+				testOutcome.addToLinks(new TestOutcomeLink(key, value))
+			}
+		}
 		return testOutcome;
 	}
 
@@ -188,7 +201,7 @@ class ParsingService {
 		if (!jsonObj.isNull("links")) {
 			def links = jsonObj.getJSONObject("links")
 			links?.each { key, value ->
-				testRun.addToLinks(new TestRunLink(value, key))
+				testRun.addToLinks(new TestRunLink(key, value))
 			}
 		}
 

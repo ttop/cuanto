@@ -40,8 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</span>
 					<span id="searchSpan" class="formHeader"> Search: 
 						<form id="searchForm" name="searchForm">
-							<g:select id="searchTerm" name="search" from="${['Name', 'Note', 'Output', 'Owner']}"/>
-							<g:textField id="searchQry" name="qry"/>
+							<g:select id="searchTerm" name="search" from="${['Name', 'Note', 'Output', 'Owner', 'Properties']}"/>
+							<span class="propSearch" style="display:none">Name: <g:textField id="propName" name='propName'/></span>
+							<span class="propSearch" style="display:none">Value: </span><g:textField id="searchQry" name="qry"/>
 							<g:submitButton id="searchSubmit" name="submit" value="Search"/>
 						</form>
 					</span>

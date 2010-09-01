@@ -566,8 +566,57 @@ class TestOutcomeTests extends GroovyTestCase {
 
 		testOutcomeService.applyBugParametersToTestOutcome(outcome, [foo: "bar"])
 	}
-	
 
+
+	void testOutcomeProperty() {
+		Project proj = to.project
+		dataService.saveDomainObject proj
+		TestCase tc = to.getTestCase(proj)
+		dataService.saveDomainObject tc
+
+		TestRun run = to.getTestRun(proj)
+		dataService.saveDomainObject run
+
+		TestOutcome outcome = to.getTestOutcome(tc, run)
+		outcome.addToTestProperties(to.testOutcomeProperty)
+		outcome.addToTestProperties(to.testOutcomeProperty)
+		dataService.saveDomainObject outcome
+
+		TestOutcome fetchedOutcome = outcome.get(outcome.id)
+		assertEquals "Wrong number of test properties", 2, fetchedOutcome.testProperties?.size()
+
+		assertEquals "Wrong first property name", outcome.testProperties[0].name, fetchedOutcome.testProperties[0].name
+		assertEquals "Wrong first property value", outcome.testProperties[0].value, fetchedOutcome.testProperties[0].value
+		assertEquals "Wrong second property name", outcome.testProperties[1].name, fetchedOutcome.testProperties[1].name
+		assertEquals "Wrong second property value", outcome.testProperties[1].value, fetchedOutcome.testProperties[1].value
+	}
+
+
+	void testOutcomeLinks() {
+		Project proj = to.project
+		dataService.saveDomainObject proj
+		TestCase tc = to.getTestCase(proj)
+		dataService.saveDomainObject tc
+
+		TestRun run = to.getTestRun(proj)
+		dataService.saveDomainObject run
+
+		TestOutcome outcome = to.getTestOutcome(tc, run)
+		outcome.addToLinks(to.testOutcomeLink)
+		outcome.addToLinks(to.testOutcomeLink)
+		dataService.saveDomainObject outcome
+
+		TestOutcome fetchedOutcome = outcome.get(outcome.id)
+		assertEquals "Wrong number of test links", 2, fetchedOutcome.links?.size()
+
+		assertEquals "Wrong first link url", outcome.links[0].url, fetchedOutcome.links[0].url
+		assertEquals "Wrong first link description", outcome.links[0].description, fetchedOutcome.links[0].description
+
+		assertEquals "Wrong second link url", outcome.links[1].url, fetchedOutcome.links[1].url
+		assertEquals "Wrong second link description", outcome.links[1].description, fetchedOutcome.links[1].description
+	}
+
+	
 	def assertAnalysisEquals(TestOutcome source, TestOutcome target) {
 		assertAnalysisEquals(source, target, ["analysisState", "bug", "owner", "note"])
 	}

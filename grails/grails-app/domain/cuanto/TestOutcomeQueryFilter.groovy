@@ -47,14 +47,16 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		queryOffset(nullable: true)
 		queryMax(nullable: true)
 		isFailureStatusChanged(nullable: true)
+		hasAllTestOutcomeProperties(nullable: true)
 	}
 
 	TestOutcomeQueryFilter() {}
 
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
 		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
-		"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
-		"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged"].each {
+			"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
+			"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged",
+			"hasAllTestOutcomeProperties"].each {
 			this.setProperty(it, filterToCopy.getProperty(it))
 		}
 	}
@@ -210,6 +212,13 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 */
 	Boolean isFailureStatusChanged
 
+	/**
+	 * If not null or empty, only TestOutcomes that have testProperties which contain all of the specified properties
+	 * will be returned.
+	 */
+	List hasAllTestOutcomeProperties
+
+	
 
     String selectClause() {
         def select = "select distinct t"
@@ -246,6 +255,12 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 			this.testOutput = searchTerm
 		} else if (field == "owner") {
 			this.owner = searchTerm
+		} else if (field == "properties") {
+			def delim = searchTerm.indexOf("|")
+			def propName = searchTerm.substring(0, delim)
+			def propVal = searchTerm.substring(delim + 1)
+			def prop = new TestOutcomeProperty(propName, propVal)
+			this.hasAllTestOutcomeProperties = [prop]
 		}
 	}
 
@@ -273,6 +288,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		nameMap.lastupdated = "lastUpdated"
 		nameMap.startdate = "startedAt"
         nameMap.dateexecuted = "testRun.dateExecuted"
+		nameMap.testproperties = "prop_0.name"
 		def resolvedValue = nameMap[name]
 		if (!resolvedValue) {
 			resolvedValue = "testCase.fullName"

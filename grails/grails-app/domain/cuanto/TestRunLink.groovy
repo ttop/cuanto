@@ -28,7 +28,7 @@ class TestRunLink implements Comparable {
 
 	public TestRunLink(){}
 	
-	public TestRunLink(String description, String url) {
+	public TestRunLink(String url, String description) {
 		this.description = description
 		this.url = url
 	}

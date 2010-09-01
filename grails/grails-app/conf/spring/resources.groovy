@@ -48,6 +48,7 @@ import cuanto.queryprocessor.DateExecutedQueryModule
 import cuanto.parsers.NUnitParser
 import cuanto.queryprocessor.FailureStatusChangedQueryModule
 import cuanto.queryprocessor.TestResultIsSkipQueryModule
+import cuanto.queryprocessor.TestOutcomeHasAllPropertiesQueryModule
 
 beans = {
     testParserRegistry(cuanto.TestParserRegistry) {
@@ -90,7 +91,8 @@ beans = {
             new TagNameQueryModule(),
             new HasTagsQueryModule(),
 			new DateExecutedQueryModule(),
-			new FailureStatusChangedQueryModule()
+			new FailureStatusChangedQueryModule(),
+			new TestOutcomeHasAllPropertiesQueryModule()
 		]
 	}
 }
