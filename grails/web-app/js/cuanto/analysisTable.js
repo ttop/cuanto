@@ -197,7 +197,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			pageLinks          : 25,
 			rowsPerPage        : rows,
 			rowsPerPageOptions : [5,10,15,20,30,50,100],
-			template       : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}<br/>Show {RowsPerPageDropdown} per page"
+			template       : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}<br/>Show {RowsPerPageDropdown} rows per page"
 		};
 		config.initialPage = page;
 		config.totalRecords = totalRecs;
@@ -215,7 +215,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		}
 
 		processProperties(oResponse);
+		updateTotalRows(oResponse);
 		cacheOutput();
+
 		return oPayload;
 	}
 
@@ -252,6 +254,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		}
 	}
 
+	function updateTotalRows(oResponse) {
+		$('trTotalRows').update(oResponse.meta.totalCount);
+	}
 
 	function hasColumnNamed(dt, colName) {
 		dt.getColumnSet().keys.each(function(col) {

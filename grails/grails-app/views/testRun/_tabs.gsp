@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</div>
 				<div id='trDetailsTable'>Loading...</div>
 				<div id="trDetailsPaging"></div>
+				<span id="trTotalRows">0</span> total rows
 			</div>
 
 		</div>
