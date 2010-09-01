@@ -88,9 +88,6 @@ class TestOutcome {
 			owner: outcome.owner,
 			note: outcome.note,
 			duration: outcome.duration,
-			//testRun: outcome.testRun?.toJSONMap(),
-			dateCreated: dateFormatter.format(dateCreated),
-			lastUpdated: dateFormatter.format(lastUpdated),
 			isFailureStatusChanged: outcome.isFailureStatusChanged
 		]
 
@@ -131,6 +128,8 @@ class TestOutcome {
 		}
 
 		myJson.bug = outcome.bug == null ? null : [title: outcome.bug?.title, url: outcome.bug?.url, 'id': outcome.bug?.id]
+		myJson.dateCreated = outcome.dateCreated == null ? null : dateFormatter.format(outcome.dateCreated)
+		myJson.lastUpdated = outcome.lastUpdated == null ? null : dateFormatter.format(outcome.lastUpdated)
 		myJson.startedAt = outcome.startedAt == null ? null : dateFormatter.format(outcome.startedAt)
 		myJson.finishedAt = outcome.finishedAt == null ? null : dateFormatter.format(outcome.finishedAt)
 
