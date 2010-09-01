@@ -649,50 +649,52 @@ class TestRunService {
 	 */
 
 	def deleteTestRun(TestRun run) {
-		try {
-			TestRun testRun = TestRun.get(run.id)
-			TestRun nextRun = dataService.getNextTestRun(run)
-			statisticService.dequeueTestRunStats(run.id)
-			statisticService.deleteStatsForTestRun(run)
+		TestRun.withTransaction {
+			try {
+				TestRun testRun = TestRun.lock(run.id)
+				TestRun nextRun = dataService.getNextTestRun(run)
+				statisticService.dequeueTestRunStats(run.id)
+				statisticService.deleteStatsForTestRun(run)
 
-			if (testRun.tags) {
-				def testRunTagsToRemove = new ArrayList(testRun.tags)
-				testRunTagsToRemove.each {tag ->
-					testRun.removeFromTags(tag)
+				if (testRun.tags) {
+					def testRunTagsToRemove = new ArrayList(testRun.tags)
+					testRunTagsToRemove.each {tag ->
+						testRun.removeFromTags(tag)
+					}
 				}
-			}
 
-			def outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
-			while (outcomes) {
-				outcomes.each {outcome ->
-					if (outcome.tags) {
-						def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
-						testOutcomeTagsToRemove.each {tag ->
-							outcome.removeFromTags(tag)
+				def outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
+				while (outcomes) {
+					outcomes.each {outcome ->
+						if (outcome.tags) {
+							def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+							testOutcomeTagsToRemove.each {tag ->
+								outcome.removeFromTags(tag)
+							}
 						}
+
+						outcome.delete()
 					}
 
-					outcome.delete()
+					TestOutcome.withSession {
+						it.flush()
+					}
+					outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
 				}
-				
-				TestOutcome.withSession {
-					it.flush()
-				}
-				outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
-			}
 
-			testRun.save()
-			testRun.delete()
-			if (nextRun) {
-				failureStatusService.queueFailureStatusUpdateForRun(nextRun)
-				nextRun?.discard()
+				testRun.save()
+				testRun.delete()
+				if (nextRun) {
+					failureStatusService.queueFailureStatusUpdateForRun(nextRun)
+					nextRun?.discard()
+				}
+			} catch (OptimisticLockingFailureException e) {
+				log.error "OptimisticLockingFailureException for test run ${run.id}"
+			} catch (HibernateOptimisticLockingFailureException e) {
+				log.error "HibernateOptimisticLockingFailureException for test run ${run.id}"
+			} catch (StaleObjectStateException e) {
+				log.error "StaleObjectStateException for test run ${run.id}"
 			}
-		} catch (OptimisticLockingFailureException e) {
-			log.error "OptimisticLockingFailureException for test run ${run.id}"
-		} catch (HibernateOptimisticLockingFailureException e) {
-			log.error "HibernateOptimisticLockingFailureException for test run ${run.id}"
-		} catch (StaleObjectStateException e) {
-			log.error "StaleObjectStateException for test run ${run.id}"
 		}
 	}
 

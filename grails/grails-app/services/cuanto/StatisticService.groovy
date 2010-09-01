@@ -78,10 +78,12 @@ class StatisticService {
 		}
 
 		synchronized (queueLock) {
-			def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId)
-			if (queuedItem) {
-				log.info "removing test run ${testRunId} from stat queue"
-				queuedItem.delete(flush: true)
+			QueuedTestRunStat.withTransaction {
+				def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
+				if (queuedItem) {
+					log.info "removing test run ${testRunId} from stat queue"
+					queuedItem.delete(flush: true)
+				}
 			}
 		}
 	}
@@ -101,24 +103,26 @@ class StatisticService {
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
 					try {
-						calculateTestRunStats(queuedItem.testRunId)
-						queuedItem.delete(flush: true)
+						QueuedTestRunStat.withTransaction {
+							calculateTestRunStats(queuedItem.testRunId)
+							queuedItem.delete(flush: true)
+							queueSize = QueuedTestRunStat.list().size()
+						}
 					} catch (OptimisticLockingFailureException e) {
 						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
 						// leave it in queue so it gets tried again
 					} catch (HibernateOptimisticLockingFailureException e) {
 						log.info "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-					}
-					catch (StaleObjectStateException e) {
+					} catch (StaleObjectStateException e) {
 						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
 						// leave it in queue so it gets tried again
 					}
-					queueSize = QueuedTestRunStat.list().size()
-				}
-				if (grailsApplication.config.statSleep) {
-					sleep(grailsApplication.config.statSleep)
 				}
 			}
+			if (grailsApplication.config.statSleep) {
+				sleep(grailsApplication.config.statSleep)
+			}
+
 		}
 	}
 
@@ -143,54 +147,52 @@ class StatisticService {
 
 
 	void calculateTestRunStats(Long testRunId) {
-			TestRun.withTransaction {
-				def testRun = TestRun.get(testRunId)
-				if (!testRun) {
-					log.error "Couldn't find test run ${testRunId}"
-				} else {
-					def foundStats = TestRunStats.findByTestRun(testRun)
-					TestRunStats calculatedStats = foundStats ?: new TestRunStats()
-					def rawTestRunStats = dataService.getRawTestRunStats(testRun)
-					calculatedStats.testRun = testRun
-					calculatedStats.tests = rawTestRunStats[0]
-					calculatedStats.totalDuration = rawTestRunStats[1]
-					calculatedStats.averageDuration = rawTestRunStats[2]
-					def allFailuresQueryFilter = new TestOutcomeQueryFilter(
-						testRun: testRun,
-						testResultIncludedInCalculations: true,
-						isFailure: true)
-					def newFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
-						testResultIncludedInCalculations: true,
-						isFailure: true,
-						isFailureStatusChanged: true)
-					def allSkipsQueryFilter = new TestOutcomeQueryFilter(
-						testRun: testRun,
-						testResultIncludedInCalculations: true,
-						isSkip: true
-					)
-					calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
-					calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
-					calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
-					calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
+		def testRun = TestRun.lock(testRunId)
+		if (!testRun) {
+			log.error "Couldn't find test run ${testRunId}"
+		} else {
+			def foundStats = TestRunStats.findByTestRun(testRun, [lock: true])
+			TestRunStats calculatedStats = foundStats ?: new TestRunStats()
+			def rawTestRunStats = dataService.getRawTestRunStats(testRun)
+			calculatedStats.testRun = testRun
+			calculatedStats.tests = rawTestRunStats[0]
+			calculatedStats.totalDuration = rawTestRunStats[1]
+			calculatedStats.averageDuration = rawTestRunStats[2]
+			def allFailuresQueryFilter = new TestOutcomeQueryFilter(
+				testRun: testRun,
+				testResultIncludedInCalculations: true,
+				isFailure: true)
+			def newFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
+				testResultIncludedInCalculations: true,
+				isFailure: true,
+				isFailureStatusChanged: true)
+			def allSkipsQueryFilter = new TestOutcomeQueryFilter(
+				testRun: testRun,
+				testResultIncludedInCalculations: true,
+				isSkip: true
+			)
+			calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
+			calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
+			calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
+			calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
 
-					if (calculatedStats.tests > 0) {
-						BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
-						calculatedStats.successRate = successRate.round(new MathContext(4))
-					}
-
-					dataService.saveDomainObject(calculatedStats)
-					calculateAnalysisStats(testRun)
-					dataService.saveDomainObject(calculatedStats)
-
-					def tagStats = getTagStatistics(testRun)
-					def testRunStatistics = TestRunStats.findByTestRun(testRun)
-					tagStats.each {
-						testRunStatistics.addToTagStatistics(it)
-					}
-					dataService.saveDomainObject(testRunStatistics, true)
-				}
+			if (calculatedStats.tests > 0) {
+				BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
+				calculatedStats.successRate = successRate.round(new MathContext(4))
 			}
+
+			dataService.saveDomainObject(calculatedStats)
+			calculateAnalysisStats(testRun)
+			dataService.saveDomainObject(calculatedStats)
+
+			def tagStats = getTagStatistics(testRun)
+			def testRunStatistics = TestRunStats.findByTestRun(testRun)
+			tagStats.each {
+				testRunStatistics.addToTagStatistics(it)
+			}
+			dataService.saveDomainObject(testRunStatistics, true)
 		}
+	}
 
 
 	def calculateAnalysisStats(TestRun testRun) {
