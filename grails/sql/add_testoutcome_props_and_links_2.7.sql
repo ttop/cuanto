@@ -5,11 +5,8 @@
   `test_outcome_id` bigint(20) NOT NULL,
   `url` varchar(255) NOT NULL,
   `links_idx` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_LINK_OUTCOME` (`test_outcome_id`),
-  CONSTRAINT `FK_LINK_OUTCOME` FOREIGN KEY (`test_outcome_id`) REFERENCES `test_outcome` (`id`)
+  PRIMARY KEY (`id`)
 );
-
 
  CREATE TABLE `test_outcome_property` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -18,7 +15,8 @@
   `value` varchar(255) NOT NULL,
   `test_outcome_id` bigint(20) NOT NULL,
   `test_properties_idx` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_PROP_OUTCOME` (`test_outcome_id`),
-  CONSTRAINT `FK_PROP_OUTCOME` FOREIGN KEY (`test_outcome_id`) REFERENCES `test_outcome` (`id`)
+  PRIMARY KEY (`id`)
 );
+
+ALTER TABLE test_outcome_property ADD INDEX outcome_prop_name_index (name);
+ALTER TABLE test_outcome_property ADD INDEX outcome_prop_value_index (value);
