@@ -37,7 +37,7 @@ class TestOutcomeHasAllPropertiesQueryModule implements QueryModule {
 			queryFilter.hasAllTestOutcomeProperties.eachWithIndex { prop, indx ->
 				fromClauses << " left join t.testProperties prop_${indx} "
 				whereClauses << " upper(prop_${indx}.name) = ? and upper(prop_${indx}.value) like ? "
-				qryArgs << prop.name
+				qryArgs << prop.name.toUpperCase()
 				qryArgs << "%${prop.value.toUpperCase()}%"
 			}
 			
