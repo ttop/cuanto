@@ -28,7 +28,6 @@ YAHOO.cuanto.urls = function() {
 		set: function(attr, url) {
 			var tmp = url;
 			tmp = tmp.replace(/;jsessionid=.*(?=[\/|$])/, ""); // workaround for CUANTO-34
-			//tmp = tmp.replace(/;jsessionid=\w*/, ""); // workaround for CUANTO-34
 			urls[attr] = tmp;
 		},
 
