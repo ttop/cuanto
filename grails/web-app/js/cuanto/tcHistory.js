@@ -26,8 +26,9 @@ YAHOO.cuanto.testCaseHistory = function() {
 
 	var tcHistoryDataTable;
 	var tcHistoryId;
-	var outputPanel = new YAHOO.cuanto.OutputPanel();
 	var cacheOutputTimer;
+	var outputPanel = new YAHOO.cuanto.OutputPanel();
+	var timeParser = new YAHOO.cuanto.TimeParser();
 
 	function getCurrentFilter() {
 		return  $F('tcHistoryFilter', "value");
@@ -39,8 +40,8 @@ YAHOO.cuanto.testCaseHistory = function() {
 			{key:"date", label:"Date", width:130, sortable:true},
 			{key:"result", label:"Result", width: 70, sortable:true},
 			{key:"analysisState", label:"Reason", width: 100, sortable:true},
-			{key:"duration", label:"Duration", sortable:true},
-			{key:"bug", label:"Bug",formatter:YAHOO.cuanto.format.formatBug, sortable:false},
+			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
+			{key:"bug", label:"Bug", formatter: YAHOO.cuanto.format.formatBug, sortable:false},
 			{key:"owner", label:"Owner", sortable:true},
 			{key:"note", label:"Note", width:250, resizeable:true, sortable:true}
 		];
@@ -194,6 +195,10 @@ YAHOO.cuanto.testCaseHistory = function() {
 		outLinkDiv.appendChild(outputImg);
 		elCell.appendChild(outLinkDiv);
 		YAHOO.util.Event.addListener(outputLinkId, "click", outputPanel.showOutputForLink);
+	}
+
+	function formatDuration(elCell, oRecord, oColumn, oData) {
+		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
 	}
 
 	function cacheOutput(){
