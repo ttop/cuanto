@@ -268,7 +268,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 		startProgressIcon();
 		YAHOO.cuanto.events.bulkAnalysisEvent.fire({'sourceOutcome': sourceOutcome, 'fields': fields});
 		$('anContainer').hide();
-		getAnlzPanel.hide();
+		getAnlzPanel().hide();
 		YAHOO.util.Event.preventDefault(e);
 	}
 
