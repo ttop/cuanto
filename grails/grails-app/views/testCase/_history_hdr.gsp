@@ -35,4 +35,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <g:javascript src="cuanto/formatBug.js"/>
 <g:javascript src="cuanto/url.js"/>
 <g:javascript src="cuanto/tableHelper.js"/>
+<g:javascript src="cuanto/timeParser.js"/>
 <g:javascript src="cuanto/tcHistory.js"/>
