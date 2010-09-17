@@ -78,7 +78,7 @@ YAHOO.cuanto.tables = function() {
 
 		if (bug != null) {
 			if (typeof bug == "string") {
-				body += "&bug=" + record.getData("bug");
+				body += "&bug=" + bug;
 			} else {
 				if (bug.title) {
 					body += "&bugTitle=" + encodeURIComponent(bug.title);
@@ -88,8 +88,17 @@ YAHOO.cuanto.tables = function() {
 				}
 			}
 		}
-		var fields = [{key: 'result', param:'testResult'}, {key: 'analysisState', param: 'analysisStateName'},
-			{key: 'note', param: 'note'}, {key: 'owner', param: 'owner'}];
+
+		var analysisState = record.getData("analysisState");
+		if (analysisState != null) {
+			if (typeof analysisState == "string") {
+				body += "&analysisStateName=" + analysisState;
+			} else {
+				body += "&analysisStateName=" + analysisState.name;
+			}
+		}
+
+		var fields = [{key: 'result', param:'testResult'},{key: 'note', param: 'note'}, {key: 'owner', param: 'owner'}];
 
 		for (var f = 0; f < fields.length; f++) {
 			var field = fields[f];
