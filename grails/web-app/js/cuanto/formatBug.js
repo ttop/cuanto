@@ -129,6 +129,8 @@ YAHOO.cuanto.format = function() {
 			else {
 				elCell.innerHTML = "";
 			}
+		} else {
+			elCell.innerHTML = "";
 		}
 	};
 

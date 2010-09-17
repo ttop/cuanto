@@ -645,7 +645,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				}
 
 				if (updatedData.fields.hasOwnProperty("analysisState")) {
-					record.setData('analysisState', updatedData.fields.analysisState.name);
+					record.setData('analysisState', updatedData.fields.analysisState);
 				}
 
 				if (updatedData.fields.hasOwnProperty("bug")) {
