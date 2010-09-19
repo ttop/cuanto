@@ -1,5 +1,6 @@
-package cuanto.adapter.listener.testng;
+package cuanto.adapter.listener.testng.adhoc;
 
+import cuanto.adapter.listener.testng.TestNgListener;
 import cuanto.adapter.objects.TestNgListenerArguments;
 import org.testng.Assert;
 import org.testng.SkipException;
@@ -12,8 +13,9 @@ import java.net.URISyntaxException;
 
 /**
  * Ad-hoc tests intended for use with TestNgListener to exercise all TestOutcome possibilities.
+ * <p/>
+ * Failures are expected and do not indicate a bug.
  */
-//@Test(sequential = true)
 public class TestNgListenerAdHocTests {
 
 	@BeforeClass
