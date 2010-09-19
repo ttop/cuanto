@@ -92,7 +92,6 @@ public class DualOutputStream extends OutputStream {
 	 * Flush and close the given stream.
 	 *
 	 * @param stream to flush and close
-	 * @throws IOException if flushing fails
 	 */
 	private void flush(OutputStream stream) {
 		try {

@@ -38,7 +38,7 @@ public class TestNgListener implements ITestListener {
 	private StringOutputStream cuantoOutputStream;
 	private DualOutputStream dualOutputStream;
 
-	private static TestNgListenerArguments failoverTestNgListenerArguments = new TestNgListenerArguments();
+	private static TestNgListenerArguments failoverTestNgListenerArguments;
 
 	private static final ThreadLocal<TestNgListenerArguments> testNgListenerArguments =
 		new ThreadLocal<TestNgListenerArguments>() {
@@ -70,28 +70,7 @@ public class TestNgListener implements ITestListener {
 		cuantoOutputStream = new StringOutputStream();
 		dualOutputStream = new DualOutputStream(System.out, cuantoOutputStream);
 		System.setOut(new PrintStream(dualOutputStream));
-
-		// parse environment variables
-		String cuantoUrl = System.getenv("cuanto.url");
-		String cuantoProjectKey = System.getenv("cuanto.projectkey");
-		String cuantoTestRun = System.getenv("cuanto.testrun");
-		String testRunPropertiesString = System.getenv("cuanto.testrun.properties");
-		String testRunLinksString = System.getenv("cuanto.testrun.links");
-		String cuantoCreateTestRun = System.getenv("cuanto.testrun.create");
-
-		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
-		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
-
-		if (cuantoUrl != null)
-			failoverTestNgListenerArguments.setCuantoUrl(new URI(cuantoUrl));
-		if (cuantoTestRun != null)
-			failoverTestNgListenerArguments.setTestRunId(Long.valueOf(cuantoTestRun));
-
-		failoverTestNgListenerArguments.setProjectKey(cuantoProjectKey);
-		failoverTestNgListenerArguments.setTestProperties(testRunProperties);
-		failoverTestNgListenerArguments.setLinks(testRunLinks);
-		failoverTestNgListenerArguments.setCreateTestRun(false);
-		failoverTestNgListenerArguments.setCreateTestRun(Boolean.valueOf(cuantoCreateTestRun));
+		failoverTestNgListenerArguments = getFailoverTestNgListenerArguments();
 	}
 
 	/**
@@ -145,6 +124,9 @@ public class TestNgListener implements ITestListener {
 	public void onFinish(ITestContext iTestContext) {
 	}
 
+	/**
+	 * @return cuantoUrl for the current thread
+	 */
 	public static URI getCuantoUrl() {
 		synchronized (adapterModificationLock) {
 			URI currentThreadCuantoUrl = testNgListenerArguments.get().getCuantoUrl();
@@ -154,6 +136,9 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return testRunId for the current thread
+	 */
 	public static Long getTestRunId() {
 		synchronized (adapterModificationLock) {
 			Long currentThreadTestRunId = testNgListenerArguments.get().getTestRunId();
@@ -163,6 +148,9 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return projectKey for the current thread
+	 */
 	public static String getProjectKey() {
 		synchronized (adapterModificationLock) {
 			String currentThreadProjectKey = testNgListenerArguments.get().getProjectKey();
@@ -172,6 +160,9 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return links for the current thread
+	 */
 	public static Map<String, String> getLinks() {
 		synchronized (adapterModificationLock) {
 			Map<String, String> currentThreadLinks = testNgListenerArguments.get().getLinks();
@@ -181,6 +172,9 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return testProperties for the current thread
+	 */
 	public static Map<String, String> getTestProperties() {
 		synchronized (adapterModificationLock) {
 			Map<String, String> currentThreadTestProperties = testNgListenerArguments.get().getTestProperties();
@@ -190,6 +184,9 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return isCreateTestRun for the current thread
+	 */
 	public static Boolean isCreateTestRun() {
 		synchronized (adapterModificationLock) {
 			Boolean currentThreadCreateTestRun = testNgListenerArguments.get().isCreateTestRun();
@@ -199,14 +196,18 @@ public class TestNgListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * @return the testNgListenerArguments for the current thread
+	 */
 	public static TestNgListenerArguments getTestNgListenerArguments() {
 		return new TestNgListenerArguments(testNgListenerArguments.get());
 	}
 
+	/**
+	 * @param testNgListenerArguments to set for the current thread
+	 */
 	public static void setTestNgListenerArguments(TestNgListenerArguments testNgListenerArguments) {
 		TestNgListener.testNgListenerArguments.set(testNgListenerArguments);
-		if (TestNgListener.failoverTestNgListenerArguments == null)
-			TestNgListener.failoverTestNgListenerArguments = new TestNgListenerArguments(testNgListenerArguments);
 	}
 
 	/**
@@ -345,5 +346,38 @@ public class TestNgListener implements ITestListener {
 		PrintWriter printWriter = new PrintWriter(stacktrace);
 		throwable.printStackTrace(printWriter);
 		return stacktrace.toString();
+	}
+
+	/**
+	 * Parse the system environment properties to construct a TestNgListenerArguments to which to fail over.
+	 *
+	 * @return failover TestNgListenerArguments
+	 * @throws URISyntaxException if cuanto.url is a malformed URI
+	 */
+	private static TestNgListenerArguments getFailoverTestNgListenerArguments() throws URISyntaxException {
+		TestNgListenerArguments arguments = new TestNgListenerArguments();
+
+		// parse environment variables
+		String cuantoUrl = System.getenv("cuanto.url");
+		String cuantoProjectKey = System.getenv("cuanto.projectkey");
+		String cuantoTestRun = System.getenv("cuanto.testrun");
+		String testRunPropertiesString = System.getenv("cuanto.testrun.properties");
+		String testRunLinksString = System.getenv("cuanto.testrun.links");
+		String cuantoCreateTestRun = System.getenv("cuanto.testrun.create");
+
+		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
+		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
+
+		if (cuantoUrl != null)
+			arguments.setCuantoUrl(new URI(cuantoUrl));
+		if (cuantoTestRun != null)
+			arguments.setTestRunId(Long.valueOf(cuantoTestRun));
+
+		arguments.setProjectKey(cuantoProjectKey);
+		arguments.setTestProperties(testRunProperties);
+		arguments.setLinks(testRunLinks);
+		arguments.setCreateTestRun(false);
+		arguments.setCreateTestRun(Boolean.valueOf(cuantoCreateTestRun));
+		return arguments;
 	}
 }
