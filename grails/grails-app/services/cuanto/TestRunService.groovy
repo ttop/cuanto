@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 import java.text.SimpleDateFormat
+import org.hibernate.StaleObjectStateException
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
+import org.springframework.dao.OptimisticLockingFailureException
 
 class TestRunService {
 
@@ -114,7 +117,7 @@ class TestRunService {
 			def passedDataSet = new StringBuffer()
 			def failedDataSet = new StringBuffer()
 			testRuns.eachWithIndex {testRun, indx ->
-				def stats = testRun.testRunStatistics
+				TestRunStats stats = TestRunStats.findByTestRun(testRun)
 
 				if (stats) {
 
@@ -189,7 +192,9 @@ class TestRunService {
 
 
 	def getGoogleChartUrlForTestRunFailures(testRun) {
-		def analysisStats = testRun?.testRunStatistics?.analysisStatistics
+		TestRunStats stats = TestRunStats.findByTestRun(testRun)
+
+		def analysisStats = stats?.analysisStatistics
 		if (analysisStats) {
 			def chartString = new StringBuffer()
 			chartString.append "cht=p" // chart style
@@ -201,10 +206,10 @@ class TestRunService {
 			def data = new StringBuffer()
 			analysisStats.eachWithIndex {cause, idx ->
 				def pct
-				if (testRun.testRunStatistics?.failed == 0) {
+				if (stats?.failed == 0) {
 					pct = 0
 				} else {
-					pct = (cause.qty / testRun.testRunStatistics.failed * 100).intValue().toString()
+					pct = (cause.qty / stats.failed * 100).intValue().toString()
 				}
 				labels.append("$pct% ").append(cause.state.name)
 				data.append cause.qty
@@ -317,7 +322,7 @@ class TestRunService {
 				}
 			} else {
 				// link not found in original, so add it
-				origTestRun.addToLinks(new TestRunLink(link.description, link.url))
+				origTestRun.addToLinks(new TestRunLink(link.url, link.description))
 			}
 		}
 
@@ -365,7 +370,7 @@ class TestRunService {
 						if (!descr) {
 							descr = linkUrl
 						}
-						def link = new TestRunLink(descr, linkUrl)
+						def link = new TestRunLink(linkUrl, descr)
 						testRun.addToLinks(link)
 					}
 				}
@@ -421,9 +426,8 @@ class TestRunService {
 	}
 
 
-	def getFeedText(TestRun run) {
+	def getFeedText(TestRun run, TestRunStats stats) {
 		SimpleDateFormat formatter = new SimpleDateFormat(Defaults.dateFormat)
-		TestRunStats stats = run.testRunStatistics
 		String dateTxt = formatter.format(run.dateExecuted)
 
 		def text = """<table>
@@ -501,7 +505,6 @@ class TestRunService {
 			testRun.addToTestProperties(it)
 		}
 
-		testRun.testRunStatistics = new TestRunStats()  //todo: is this needed?
 		dataService.saveTestRun(testRun)
 		return testRun
 	}
@@ -644,30 +647,56 @@ class TestRunService {
 	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
 	 * for all TestOutcomes in the next TestRun.
 	 */
-    def deleteTestRun(TestRun run) {
-        TestRun testRun = TestRun.get(run.id)
 
-        if (testRun.tags) {
-            def testRunTagsToRemove = new ArrayList(testRun.tags)
-            testRunTagsToRemove.each {tag ->
-                testRun.removeFromTags(tag)
-            }
+	def deleteTestRun(TestRun run) {
+		TestRun.withTransaction {
+			try {
+				TestRun testRun = TestRun.lock(run.id)
+				TestRun nextRun = dataService.getNextTestRun(run)
+				statisticService.dequeueTestRunStats(run.id)
+				statisticService.deleteStatsForTestRun(run)
 
-            def outcomes = TestOutcome.findAllByTestRun(testRun)
+				if (testRun.tags) {
+					def testRunTagsToRemove = new ArrayList(testRun.tags)
+					testRunTagsToRemove.each {tag ->
+						testRun.removeFromTags(tag)
+					}
+				}
 
-            outcomes.each {outcome ->
-                def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
-                testOutcomeTagsToRemove.each {tag ->
-                    outcome.removeFromTags(tag)
-                }
-                outcome.delete()
-            }
-        } else {
-            TestOutcome.executeUpdate("delete cuanto.TestOutcome t where t.testRun = ?", [testRun])
-        }
-        testRun.delete()
-        failureStatusService.queueFailureStatusUpdateForRun(dataService.getNextTestRun(run))
-    }
+				def outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
+				while (outcomes) {
+					outcomes.each {outcome ->
+						if (outcome.tags) {
+							def testOutcomeTagsToRemove = new ArrayList(outcome.tags)
+							testOutcomeTagsToRemove.each {tag ->
+								outcome.removeFromTags(tag)
+							}
+						}
+
+						outcome.delete()
+					}
+
+					TestOutcome.withSession {
+						it.flush()
+					}
+					outcomes = TestOutcome.findAllByTestRun(testRun, [max: 500])
+				}
+
+				testRun.save()
+				testRun.delete()
+				if (nextRun) {
+					failureStatusService.queueFailureStatusUpdateForRun(nextRun)
+					nextRun?.discard()
+				}
+			} catch (OptimisticLockingFailureException e) {
+				log.error "OptimisticLockingFailureException for test run ${run.id}"
+			} catch (HibernateOptimisticLockingFailureException e) {
+				log.error "HibernateOptimisticLockingFailureException for test run ${run.id}"
+			} catch (StaleObjectStateException e) {
+				log.error "StaleObjectStateException for test run ${run.id}"
+			}
+		}
+	}
 
 
 	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {

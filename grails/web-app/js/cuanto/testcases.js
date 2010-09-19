@@ -97,10 +97,7 @@ YAHOO.cuanto.testCases = function() {
 	}
 
 	function formatTestCase(elCell, oRecord, oColumn, oData) {
-		var tcId = oRecord.getData().id;
-		var link = YAHOO.cuanto.urls.get('singleOutcome') + tcId;
-		var displayStr = YAHOO.cuanto.format.breakOnToken(oData, '.',400);
-		elCell.innerHTML = displayStr;
+		elCell.innerHTML = YAHOO.cuanto.format.breakOnToken(oData, '.',400);
 	}
 
 	function formatOperations(elCell, oRecord, oColumn, oData) {

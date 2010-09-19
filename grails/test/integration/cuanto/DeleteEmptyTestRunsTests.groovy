@@ -30,6 +30,7 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 	}
 
 	void testDeleteEmptyTestRuns() {
+
 		def proj = to.project
 		dataService.saveDomainObject proj
 
@@ -43,7 +44,7 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 			runs << testRun
 		}
 
-		dataService.deleteEmptyTestRuns()
+		statisticService.deleteEmptyTestRuns()
 		assertEquals "Wrong number of test runs", numTestRuns, TestRun.list().size()
 
 		runs.each { testRun ->
@@ -51,15 +52,19 @@ class DeleteEmptyTestRunsTests extends GroovyTestCase {
 			testRun.dateExecuted = new Date(olderTime)
 			dataService.saveDomainObject testRun
 		}
-		dataService.deleteEmptyTestRuns()
+		statisticService.deleteEmptyTestRuns()
 		assertEquals "Wrong number of test runs", numTestRuns, TestRun.list().size()
 		
 		0.upto(2) { indx ->
-			runs[indx].testRunStatistics = null
-			dataService.saveDomainObject runs[indx]
+
+			def stats = TestRunStats.findByTestRun(runs[indx])
+			if (stats) {
+              stats.delete()
+            }
+			dataService.saveDomainObject runs[indx], true
 		}
 
-		dataService.deleteEmptyTestRuns()
+		statisticService.deleteEmptyTestRuns()
 
 		assertEquals "Wrong number of test runs", 7, TestRun.list().size()
 	}

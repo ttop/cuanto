@@ -32,7 +32,11 @@ YAHOO.cuanto.projectHistory = function() {
 		this.onEventSelectRow(e);
 		var currentRow = this.getSelectedRows()[0];
 		var currentRecord = this.getRecord(currentRow);
-		window.location = YAHOO.cuanto.urls.get('testRunResults') + currentRecord.getData('id');
+		//var numTests = currentRecord.getData("tests");
+		//if (numTests && numTests > 0)
+		//{
+			window.location = YAHOO.cuanto.urls.get('testRunResults') + currentRecord.getData('id');
+		//}
 	};
 
 
@@ -42,7 +46,7 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunDataSource.connXhrMode = "queueRequests";
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
-			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed",
+			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed", "skipped",
 				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties", "tags"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
@@ -67,6 +71,7 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
 			{key:"failed", label: "Failed", sortable:true},
+			{key:"skipped", label: "Skipped", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
@@ -122,24 +127,30 @@ YAHOO.cuanto.projectHistory = function() {
 		       "&offset=" + state.pagination.recordOffset +
 		       "&max=" + state.pagination.rowsPerPage +
 		       "&order=" + ((state.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC) ? "desc" : "asc") +
-		       "&sort=" + state.sortedBy.key;
+		       "&sort=" + state.sortedBy.key +
+		       "&cb=" + new Date().getTime()
+			;
 	}
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = oData + " %";
 	}
 
+
 	function propertyFormatter(elCell, oRecord, oColumn, oData) {
 		var out = "";
 		var propName = oColumn.label;
-		var prop = oRecord.getData("testProperties").find(function(pr) {
-			return pr.name.toLowerCase() == propName.toLowerCase();
-		});
-		if (prop) {
-			out = prop["value"];
+		if (oRecord && oRecord.getData("testProperties")) {
+			var prop = oRecord.getData("testProperties").find(function(pr) {
+				return pr.name.toLowerCase() == propName.toLowerCase();
+			});
+			if (prop) {
+				out = prop["value"];
+			}
+			elCell.innerHTML = out;
 		}
-		elCell.innerHTML = out;
 	}
+
 
 	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
 		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
@@ -150,7 +161,7 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
-        if (oData.length > 0) {
+        if (oData && oData.length > 0) {
             elCell.innerHTML = oData.join(", ");
         }
     }

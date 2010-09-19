@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </span>
       </span>
 
-      <g:each var="tag" in="${testRun.tags.collect{it.name}.sort()}" status="tIdx">
+      <g:each var="tag" in="${testRun.tags?.collect{it.name}.sort()}" status="tIdx">
         <span id="tagspan-${tIdx + 2}" class="tagspan yui-button yui-checkbox-button">
           <span class="first-child">
             <button type="button" name="tagbtn-${tIdx + 2}">${tag}</button>

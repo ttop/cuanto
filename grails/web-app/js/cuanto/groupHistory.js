@@ -29,7 +29,11 @@ YAHOO.cuanto.groupHistory = function() {
 		this.onEventSelectRow(e);
 		var currentRow = this.getSelectedRows()[0];
 		var currentRecord = this.getRecord(currentRow);
-		window.location = YAHOO.cuanto.urls.get('testRunLatest') + currentRecord.getData('projectKey');
+		//var numTests = currentRecord.getData("tests");
+		//if (numTests && numTests > 0)
+		//{
+			window.location = YAHOO.cuanto.urls.get('testRunLatest') + currentRecord.getData('projectKey');
+		//}
 	};
 
 
@@ -39,7 +43,7 @@ YAHOO.cuanto.groupHistory = function() {
 		testRunDataSource.connXhrMode = "queueRequests";
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
-			fields: ["projectName", "projectKey","dateExecuted", "note", "valid", "testProperties",
+			fields: ["projectName", "projectKey","dateExecuted", "note", "valid", "testProperties", "skipped",
 				"tests", "passed", "failed","totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
@@ -61,6 +65,7 @@ YAHOO.cuanto.groupHistory = function() {
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
 			{key:"failed", label: "Failed", sortable:true},
+			{key:"skipped", label: "Skipped", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},

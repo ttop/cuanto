@@ -79,19 +79,22 @@ class ParsingService {
 
 	TestOutcome parseTestOutcome(JSONObject jsonTestOutcome) {
 		Project project = getProjectFromJsonObject(jsonTestOutcome)
-
-		TestCase testCase = parseTestCase(jsonTestOutcome.getJSONObject("testCase"), project)
-		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
-		if (matchingTestCase) {
-			testCase = matchingTestCase
-		} else {
-			dataService.addTestCases(project, [testCase])
-		}
-
-		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
+		TestOutcome testOutcome = null
 
 		if (!jsonTestOutcome.isNull("id")) {
-			testOutcome.id = jsonTestOutcome.getLong("id")
+			testOutcome = TestOutcome.get(jsonTestOutcome.getLong("id"))
+		}
+
+		if (!testOutcome) {
+			TestCase testCase = parseTestCase(jsonTestOutcome.getJSONObject("testCase"), project)
+			def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
+			if (matchingTestCase) {
+				testCase = matchingTestCase
+			} else {
+				dataService.addTestCases(project, [testCase])
+			}
+
+			testOutcome = new TestOutcome('testCase': testCase)
 		}
 
 		if (jsonTestOutcome.has("testRun")) {
@@ -102,8 +105,15 @@ class ParsingService {
 		}
 		testOutcome.testResult = dataService.result(jsonTestOutcome.getString("result").toLowerCase())
 
-		testOutcome.startedAt = getDateFromJson(jsonTestOutcome, "startedAt")
-		testOutcome.finishedAt = getDateFromJson(jsonTestOutcome, "finishedAt")
+		def startedAt = getDateFromJson(jsonTestOutcome, "startedAt")
+		if (startedAt) {
+			testOutcome.startedAt = startedAt
+		}
+
+		def finishedAt = getDateFromJson(jsonTestOutcome, "finishedAt")
+		if (finishedAt) {
+			testOutcome.finishedAt = getDateFromJson(jsonTestOutcome, "finishedAt")
+		}
 
 		if (!jsonTestOutcome.isNull("duration")) {
 			testOutcome.duration = jsonTestOutcome.getLong("duration")
@@ -111,11 +121,22 @@ class ParsingService {
 			testOutcome.duration = testOutcome.finishedAt.time - testOutcome.startedAt.time
 		}
 
-		testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
-        setTestOutputSummary(testOutcome);
+		def testOutput = parseJsonForString(jsonTestOutcome, "testOutput") 
+		if (testOutput) {
+			testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
+			setTestOutputSummary(testOutcome);
+		}
 
-		testOutcome.note = parseJsonForString(jsonTestOutcome, "note")
-		testOutcome.owner = parseJsonForString(jsonTestOutcome, "owner")
+		def note = parseJsonForString(jsonTestOutcome, "note")
+		if (note) {
+			testOutcome.note = note
+		}
+
+		def owner = parseJsonForString(jsonTestOutcome, "owner")
+		if (owner) {
+			testOutcome.owner = owner
+		}
+		
 		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 
 		if (!jsonTestOutcome.isNull("bug")) {
@@ -138,6 +159,19 @@ class ParsingService {
 			}
 		}
 
+		if (!jsonTestOutcome.isNull("testProperties")) {
+			def testProps = jsonTestOutcome.getJSONObject("testProperties")
+			testProps?.each {key, value ->
+				testOutcome.addToTestProperties(new TestOutcomeProperty(key, value))
+			}
+		}
+
+		if (!jsonTestOutcome.isNull("links")) {
+			def links = jsonTestOutcome.getJSONObject("links")
+			links?.each { key, value ->
+				testOutcome.addToLinks(new TestOutcomeLink(key, value))
+			}
+		}
 		return testOutcome;
 	}
 
@@ -164,15 +198,19 @@ class ParsingService {
 		}
 		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
 
-		jsonObj.getJSONObject("links").each {key, value ->
-			testRun.addToLinks(new TestRunLink(value, key))
+		if (!jsonObj.isNull("links")) {
+			def links = jsonObj.getJSONObject("links")
+			links?.each { key, value ->
+				testRun.addToLinks(new TestRunLink(key, value))
+			}
 		}
 
-		jsonObj.getJSONObject("testProperties").each {key, value ->
-			testRun.addToTestProperties(new TestRunProperty(key, value))
+		if (!jsonObj.isNull("testProperties")) {
+			def testProps = jsonObj.getJSONObject("testProperties")
+			testProps?.each {key, value ->
+				testRun.addToTestProperties(new TestRunProperty(key, value))
+			}
 		}
-
-		testRun.testRunStatistics = new TestRunStats()
 		return testRun
 	}
 
@@ -259,23 +297,28 @@ class ParsingService {
     }
 
 
-    private TestCase parseTestCase(JSONObject jsonTestCase, Project project) {
-		TestCase testCase = new TestCase(testName: jsonTestCase.getString("testName"), 'project': project)
-
-		if (!jsonTestCase.isNull("packageName")) {
-			testCase.packageName = jsonTestCase.getString("packageName")
-			testCase.fullName = testCase.packageName + "." + testCase.testName
+	private TestCase parseTestCase(JSONObject jsonTestCase, Project project) {
+		TestCase testCase
+		if (!jsonTestCase.isNull("id")) {
+			testCase = TestCase.get(jsonTestCase.getLong("id"))
 		} else {
-			testCase.packageName = ""
-			testCase.fullName = testCase.testName
-		}
+			testCase = new TestCase(testName: jsonTestCase.getString("testName"), 'project': project)
 
-		if (!jsonTestCase.isNull("parameters")) {
-			testCase.parameters = jsonTestCase.getString("parameters")
-		}
+			if (!jsonTestCase.isNull("packageName")) {
+				testCase.packageName = jsonTestCase.getString("packageName")
+				testCase.fullName = testCase.packageName + "." + testCase.testName
+			} else {
+				testCase.packageName = ""
+				testCase.fullName = testCase.testName
+			}
 
-		if (!jsonTestCase.isNull("description")) {
-			testCase.description = jsonTestCase.getString("description")
+			if (!jsonTestCase.isNull("parameters")) {
+				testCase.parameters = jsonTestCase.getString("parameters")
+			}
+
+			if (!jsonTestCase.isNull("description")) {
+				testCase.description = jsonTestCase.getString("description")
+			}
 		}
 		return testCase
 	}

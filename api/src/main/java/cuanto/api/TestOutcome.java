@@ -53,6 +53,8 @@ public class TestOutcome {
 	String projectKey;
 	List<String> tags = new ArrayList<String>();
 	Boolean isFailureStatusChanged;
+	Map<String, String> links = new HashMap<String, String>();
+	Map<String, String> testProperties = new HashMap<String, String>();
 
 
 	TestOutcome() {
@@ -489,6 +491,23 @@ public class TestOutcome {
 				jsonOutcome.getBoolean("isFailureStatusChanged"));
 		}
 
+		if (!(jsonOutcome.get("testProperties") instanceof JSONNull)) {
+			JSONObject propObj = jsonOutcome.getJSONObject("testProperties");
+			for (Object propKeyObj : propObj.keySet()) {
+				String propName = (String) propKeyObj;
+				String propValue = propObj.getString(propName);
+				testOutcome.addTestProperty(propName, propValue);
+			}
+		}
+
+		if (!(jsonOutcome.get("links") instanceof JSONNull)) {
+			JSONObject linkObj = jsonOutcome.getJSONObject("links");
+			for (Object linkKeyObj : linkObj.keySet()) {
+				String linkUrl = (String) linkKeyObj;
+				String linkDesc = linkObj.getString(linkUrl);
+				testOutcome.addLink(linkUrl, linkDesc);
+			}
+		}
 		return testOutcome;
 	}
 
@@ -500,13 +519,22 @@ public class TestOutcome {
 	 */
 	public String toJSON() {
 		Map jsonMap = new HashMap();
-		jsonMap.put("id", this.getId());
 		jsonMap.put("projectKey", this.getProjectKey());
+
+		if (this.getId() != null) {
+			jsonMap.put("id", this.getId());
+		}
 		if (this.bug != null) {
 			Map bugMap = new HashMap();
-			bugMap.put("id", this.bug.getId());
-			bugMap.put("title", this.bug.getTitle());
-			bugMap.put("url", this.bug.getUrl());
+			if (this.bug.getId() != null) {
+				bugMap.put("id", this.bug.getId());
+			}
+			if (this.bug.getTitle() != null) {
+				bugMap.put("title", this.bug.getTitle());
+			}
+			if (this.bug.getUrl() != null) {
+				bugMap.put("url", this.bug.getUrl());
+			}
 			jsonMap.put("bug", bugMap);
 		}
 
@@ -517,28 +545,67 @@ public class TestOutcome {
 		jsonMap.put("analysisState", analysisStr);
 
 		Map testCaseMap = new HashMap();
-		testCaseMap.put("id", this.testCase.getId());
-		testCaseMap.put("testName", this.testCase.getTestName());
-		testCaseMap.put("packageName", this.testCase.getPackageName());
-		testCaseMap.put("parameters", this.testCase.getParameters());
-		testCaseMap.put("description", this.testCase.getDescription());
+		if (this.testCase.getId() != null) {
+			testCaseMap.put("id", this.testCase.getId());
+		} else {
+			testCaseMap.put("testName", this.testCase.getTestName());
+			testCaseMap.put("packageName", this.testCase.getPackageName());
+
+			if (this.testCase.getParameters() != null) {
+				testCaseMap.put("parameters", this.testCase.getParameters());
+			}
+
+			if (this.testCase.getDescription() != null) {
+				testCaseMap.put("description", this.testCase.getDescription());
+			}
+		}
 		jsonMap.put("testCase", testCaseMap);
 
 		jsonMap.put("result", this.testResult.toString());
-		jsonMap.put("owner", this.owner);
-		jsonMap.put("note", this.note);
-		jsonMap.put("testOutput", this.testOutput);
-		jsonMap.put("duration", this.duration);
-		jsonMap.put("startedAt", toJsonDate(startedAt));
-		jsonMap.put("finishedAt", toJsonDate(finishedAt));
-		jsonMap.put("isFailureStatusChanged", isFailureStatusChanged);
-
-		if (this.testRun != null) {
-			jsonMap.put("testRun", this.testRun.toJsonMap());
+		if (this.owner != null) {
+			jsonMap.put("owner", this.owner);
 		}
 
-		if (tags.size() > 0) {
+		if (this.note != null) {
+			jsonMap.put("note", this.note);
+		}
+
+		if (this.testOutput != null) {
+			jsonMap.put("testOutput", this.testOutput);
+		}
+
+		if (this.duration != null) {
+			jsonMap.put("duration", this.duration);
+		}
+
+		if (this.startedAt != null) {
+			jsonMap.put("startedAt", toJsonDate(startedAt));
+		}
+
+		if (this.finishedAt != null) {
+			jsonMap.put("finishedAt", toJsonDate(finishedAt));
+		}
+
+		if (this.isFailureStatusChanged != null) {
+			jsonMap.put("isFailureStatusChanged", isFailureStatusChanged);
+		}
+
+		if (this.testRun != null) {
+			Map runMap = new HashMap();
+			runMap.put("id", this.testRun.getId());
+			jsonMap.put("testRun", runMap);
+		}
+
+		if (this.tags.size() > 0) {
 			jsonMap.put("tags", tags);
+		}
+
+		if (this.testProperties.size() > 0) {
+			jsonMap.put("testProperties", this.testProperties);
+		}
+
+		if (this.links.size() > 0) {
+			jsonMap.put("links", this.links);
 		}
 
 		JSONObject jsonTestOutcome = JSONObject.fromObject(jsonMap);
@@ -573,6 +640,45 @@ public class TestOutcome {
 	 */
 	public void addTags(List<String> tags) {
 		this.tags.addAll(tags);
+	}
+
+
+	/**
+	 * Adds or updates a TestProperty. This change is not reflected on the Cuanto service until you create or update the
+	 * TestOutcome with the CuantoConnector.
+	 *
+	 * @param name  The name of the property
+	 * @param value The value of the property
+	 * @return The TestOutcome associated with the TestProperty
+	 */
+	public TestOutcome addTestProperty(String name, String value) {
+		testProperties.put(name, value);
+		return this;
+	}
+
+
+	/**
+	 * Deletes a TestProperty from this TestOutcome object. This change is not reflected on the Cuanto server until you create
+	 * or update the TestOutcome with the CuantoConnector.
+	 *
+	 * @param name The TestProperty name to delete.
+	 */
+	public void deleteTestProperty(String name) {
+		testProperties.remove(name);
+	}
+
+
+	/**
+	 * Adds or updates a Link. This change is not reflected on the Cuanto server until you create or update the TestOutcome with
+	 * the CuantoConnector.
+	 *
+	 * @param url         The url of the link
+	 * @param description The description of the link
+	 * @return The TestOutcome associated with this link
+	 */
+	public TestOutcome addLink(String url, String description) {
+		links.put(url, description);
+		return this;
 	}
 
 

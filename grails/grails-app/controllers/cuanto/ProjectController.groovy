@@ -103,15 +103,7 @@ class ProjectController {
 					} else {
 						def chartUrl = testRunService.getGoogleChartUrlForProject(proj)
 						def propNames = testRunService.getTestRunPropertiesByProject(proj)
-						def propString = "["
-						propNames.eachWithIndex { name, idx ->
-							propString += "\"${name}\""
-							if (idx < propNames.size() - 1) {
-								propString += ","
-							}
-						}
-						propString += "]"
-
+						def propString = "[" + propNames.collect{'"' + it + '"'}.join(",") + "]"
 						render(view: "history", model: [project: proj, 'chartUrl': chartUrl, 'propNames': propString])
 					}
 				}
@@ -208,10 +200,11 @@ class ProjectController {
 					sort: "dateExecuted", order: "desc"])
 
 				testRuns.each {testRun ->
-					if (testRun.testRunStatistics){
+					def stats = TestRunStats.findByTestRun(testRun)
+					if (stats){
 						entry(testRun.dateExecuted) {
 							link = createLink(controller: "testRun", action: "summary", id: testRun.id)
-							def feedTxt = testRunService.getFeedText(testRun)
+							def feedTxt = testRunService.getFeedText(testRun, stats)
 							return feedTxt
 						}
 					}
@@ -279,7 +272,7 @@ class ProjectController {
 
 
 	def getJsonForTestRun(testRun, graph) {
-		def stats = testRun?.testRunStatistics
+		def stats = TestRunStats.findByTestRun(testRun)
 		if (stats) {
 			def friendlyDate
 			if (graph) {
@@ -289,7 +282,7 @@ class ProjectController {
 			}
 
 			def numAnalyzed;
-			if (stats && stats.failed > 0) {
+			if (stats && stats.failed >= 0) {
 				numAnalyzed = "${stats?.analyzed} of ${stats?.failed}"
 			} else {
 				numAnalyzed = ""
@@ -300,10 +293,12 @@ class ProjectController {
 				testProperties: testRun?.jsonTestProperties(),
 				dateCreated: testRun?.dateCreated, note: testRun?.note,
 				valid: testRun?.valid, successRate: stats?.successRate ? stats?.successRate : 0,
-				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, totalDuration: stats?.totalDuration,
-				averageDuration: stats?.averageDuration, 'numAnalyzed' : numAnalyzed, tags: testRun?.tags?.collect{it.name}?.sort()]
+				tests: stats?.tests, passed: stats?.passed, failed: stats?.failed, skipped: stats?.skipped,
+				totalDuration: stats?.totalDuration, averageDuration: stats?.averageDuration,
+				'numAnalyzed' : numAnalyzed, tags: testRun?.tags?.collect{it.name}?.sort()]
+		} else {
+			return null
 		}
-
 	}
 }
 

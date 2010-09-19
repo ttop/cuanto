@@ -52,7 +52,7 @@ public class CuantoConnector {
 	 * deserialization.
 	 */
 	public final static String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.6.2; Jakarta Commons-HttpClient/3.1";
+	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.6.6; Jakarta Commons-HttpClient/3.1";
 
 	private static final String HTTP_GET = "get";
 	private static final String HTTP_POST = "post";
@@ -238,6 +238,7 @@ public class CuantoConnector {
 			if (httpStatus == HttpStatus.SC_CREATED) {
 				TestOutcome fetchedOutcome = TestOutcome.fromJSON(getResponseBodyAsString(post));
 				testOutcome.setId(fetchedOutcome.getId());
+				testOutcome.getTestCase().setId(fetchedOutcome.getTestCase().getId());
 				return fetchedOutcome.getId();
 			} else {
 				throw new RuntimeException("Adding the TestOutcome failed with HTTP status code " + httpStatus + ": \n" +
@@ -583,8 +584,8 @@ public class CuantoConnector {
 			Map jsonMap = new HashMap();
 			jsonMap.put("projectKey", getProjectKey());
 			jsonMap.put("testProperties", JSONObject.fromObject(testProperties));
-
-			post.setRequestEntity(new StringRequestEntity(jsonMap.toString(), "application/json", null));
+			JSONObject jsonToPost = JSONObject.fromObject(jsonMap);
+			post.setRequestEntity(new StringRequestEntity(jsonToPost.toString(), "application/json", null));
 			int httpStatus = getHttpClient().executeMethod(post);
 			if (httpStatus == HttpStatus.SC_OK) {
 				JSONObject jsonReturned = JSONObject.fromObject(getResponseBodyAsString(post));

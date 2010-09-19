@@ -76,24 +76,49 @@ public class TestRun {
 
 
 	static TestRun fromJSON(JSONObject jsonTestRun) throws ParseException {
-		TestRun testRun = new TestRun(jsonTestRun.getJSONObject("project").getString("projectKey"));
-		testRun.setId(jsonTestRun.getLong("id"));
-		testRun.setDateExecuted(parseJsonDate(jsonTestRun.getString("dateExecuted")));
-		testRun.setDateCreated(parseJsonDate(jsonTestRun.getString("dateCreated")));
-		testRun.setLastUpdated(parseJsonDate(jsonTestRun.getString("lastUpdated")));
-		testRun.setNote(jsonTestRun.getString("note"));
 
+		TestRun testRun = new TestRun();
 
-		JSONObject links = jsonTestRun.getJSONObject("links");
-		for (Object urlObj : links.keySet()) {
-			String url = (String) urlObj;
-			testRun.addLink(url, links.getString(url));
+		if (!jsonTestRun.getJSONObject("project").isNullObject()) {
+			testRun.setProjectKey(jsonTestRun.getJSONObject("project").getString("projectKey"));
 		}
 
-		JSONArray props = jsonTestRun.getJSONArray("testProperties");
-		for (Object propObj : props) {
-			JSONObject prop = (JSONObject) propObj;
-			testRun.addTestProperty(prop.getString("name"), prop.getString("value"));
+		if (jsonTestRun.has("id")) {
+			testRun.setId(jsonTestRun.getLong("id"));
+		}
+
+		if (jsonTestRun.has("dateExecuted")) {
+			testRun.setDateExecuted(parseJsonDate(jsonTestRun.getString("dateExecuted")));
+		}
+
+		if (jsonTestRun.has("dateCreated")) {
+			testRun.setDateCreated(parseJsonDate(jsonTestRun.getString("dateCreated")));
+		}
+
+		if (jsonTestRun.has("lastUpdated")) {
+			testRun.setLastUpdated(parseJsonDate(jsonTestRun.getString("lastUpdated")));
+		}
+
+		if (jsonTestRun.has("note")) {
+			testRun.setNote(jsonTestRun.getString("note"));
+		}
+
+		if (jsonTestRun.has("links")) {
+			JSONObject links = jsonTestRun.getJSONObject("links");
+			if (!links.isNullObject()) {
+				for (Object urlObj : links.keySet()) {
+					String url = (String) urlObj;
+					testRun.addLink(url, links.getString(url));
+				}
+			}
+		}
+
+		if (jsonTestRun.has("testProperties")) {
+			JSONArray props = jsonTestRun.getJSONArray("testProperties");
+			for (Object propObj : props) {
+				JSONObject prop = (JSONObject) propObj;
+				testRun.addTestProperty(prop.getString("name"), prop.getString("value"));
+			}
 		}
 
 		if ((jsonTestRun.get("tags") != null) && !(jsonTestRun.get("tags") instanceof JSONNull)) {
@@ -118,19 +143,37 @@ public class TestRun {
 
 	Map toJsonMap() {
 		Map jsonMap = new HashMap();
-		jsonMap.put("id", this.id);
-		jsonMap.put("dateExecuted", toJsonDate(this.dateExecuted));
-		jsonMap.put("valid", this.valid);
 		jsonMap.put("projectKey", this.projectKey);
-		jsonMap.put("note", this.note);
-		jsonMap.put("links", links);
-		jsonMap.put("testProperties", testProperties);
+		
+		if (this.id != null) {
+			jsonMap.put("id", this.id);
+		}
+		if (this.dateExecuted != null){
+			jsonMap.put("dateExecuted", toJsonDate(this.dateExecuted));
+		}
+		if (this.valid != null) {
+			jsonMap.put("valid", this.valid);
+		}
+
+		if (this.note != null) {
+			jsonMap.put("note", this.note);
+		}
+		if (this.links != null && this.links.size() > 0) {
+			jsonMap.put("links", links);
+		}
+		if (this.testProperties != null && this.testProperties.size() > 0) {
+			jsonMap.put("testProperties", testProperties);
+		}
 		return jsonMap;
 	}
 
 
 	private static Date parseJsonDate(String dateString) throws ParseException {
-		return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).parse(dateString);
+		if (dateString == null) {
+			return null;
+		} else {
+			return new SimpleDateFormat(CuantoConnector.JSON_DATE_FORMAT).parse(dateString);
+		}
 	}
 
 

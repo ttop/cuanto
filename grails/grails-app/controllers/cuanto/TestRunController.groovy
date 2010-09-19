@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import grails.converters.JSON
+import grails.converters.*
 import java.text.SimpleDateFormat
 
 class TestRunController {
@@ -152,46 +152,22 @@ class TestRunController {
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
 				def jsonOutcomes = []
-				results?.testOutcomes?.each {outcome ->
-					def currentOutcome = [
-						result: outcome.testResult.name, analysisState: outcome.analysisState?.name,
-						duration: outcome.duration, owner: outcome.owner, startedAt: outcome.startedAt, finishedAt: outcome.finishedAt,
-						bug: [title: outcome.bug?.title, url: outcome.bug?.url], note: outcome.note, id: outcome.id,
-						isFailureStatusChanged: outcome.isFailureStatusChanged
-					]
-
-					if (outcome.testOutput) {
-						def maxChars = outcome.testOutput.size() > results?.outputChars ? results?.outputChars : outcome.testOutput.size()
-						currentOutcome.output = outcome.testOutput[0..maxChars - 1]
-					} else {
-						currentOutcome.output = null
-					}
-
-					def currentTestCase = [name: formatter.getTestName(outcome.testCase), id: outcome.testCase.id]
-
-					if (outcome.testCase.parameters) {
-						currentTestCase.parameters = outcome.testCase.parameters
-					}
-
-					if (outcome.tags) {
-						currentOutcome.tags = outcome.tags.collect {it.name}.sort()
-					}
-
-					if (outcome.isFailureStatusChanged != null)
-						currentOutcome.isFailureStatusChanged = outcome.isFailureStatusChanged
-
-					currentOutcome.testCase = currentTestCase
-					jsonOutcomes << currentOutcome
+				results?.testOutcomes?.each { outcome ->
+					jsonOutcomes << outcome.toJSONmap(true, 180, formatter, false)
 				}
 
 				def myJson = ['totalCount': results?.totalCount, count: results?.testOutcomes?.size(), testOutcomes: jsonOutcomes,
-					'offset': results?.offset]
+					'offset': results?.offset, testProperties: results?.testProperties, links: results?.links]
 				render myJson as JSON
 			}
 			xml {
-				def outcomesToRender = results?.testOutcomes.collect {it.toTestOutcomeApi()}
-				response.contentType = "text/xml"
-				render xstream.toXML(outcomesToRender)
+				if (results?.testOutcomes) {
+					response.contentType = "text/xml"
+					render results.testOutcomes as XML
+				} else {
+					response.status = response.SC_NO_CONTENT
+					render "No test outcomes in this test run."
+				}
 			}
 			csv {
 				response.contentType = "text/csv"
@@ -293,6 +269,18 @@ class TestRunController {
 	}
 
 
+	def recalc = {
+		def testRun = TestRun.get(params.id)
+		if (!testRun) {
+			response.status = response.SC_NOT_FOUND
+			render "testRun ${params.id} not found"
+		} else {
+			statisticService.queueTestRunStats(testRun)
+			render "OK"
+		}
+	}
+
+	
 	def statistics = {
 		def testRun = TestRun.get(params.id)
 		if (!testRun) {
@@ -313,28 +301,25 @@ class TestRunController {
 
 				myJson['results'] = []
 				if (params.header) {
-					if (!testRun.testRunStatistics) {
+					TestRunStats stats = TestRunStats.findByTestRun(testRun)
+					if (!stats) {
 						statisticService.queueTestRunStats(testRun)
 					}
-					myJson['results'] += testRun.testRunStatistics.toJsonMap()
+					myJson['results'] += stats.toJsonMap()
 				}
 
 				render myJson as JSON
 			}
 			text {
 				def testRunMap = [:]
-				TestRunStats stats = testRun.testRunStatistics
+				TestRunStats stats = TestRunStats.findByTestRun(testRun)
+
 				if (stats) {
 					testRunMap.tests = stats.tests
 					testRunMap.passed = stats.passed
 					testRunMap.failed = stats.failed
 				}
 				render(view: 'get', model: ['testRunMap': testRunMap])
-			}
-			xml {
-				def stats = testRun.testRunStatistics?.toTestRunStatsApi()
-				response.contentType = 'application/xml'
-				render(xstream.toXML(stats))
 			}
 		}
 	}
@@ -369,11 +354,12 @@ class TestRunController {
 			def pieChartUrl = testRunService.getGoogleChartUrlForTestRunFailures(testRun)
 			def bugSummary = testRunService.getBugSummary(testRun)
 			def tcFormatList = testCaseFormatterRegistry.formatterList
+			def stats = TestRunStats.findByTestRun(testRun)
 			return ['testRun': testRun, 'filter': getDefaultFilter(testRun), 'filterList': getFilterList(),
 				'testResultList': getJavascriptList(TestResult.listOrderByName()),
 				'analysisStateList': getJavascriptList(analysisStates), 'pieChartUrl': pieChartUrl,
 				'bugSummary': bugSummary, 'formatters': tcFormatList,
-				'project': testRun?.project, 'tcFormat': tcFormatList[0].key]
+				'project': testRun?.project, 'tcFormat': tcFormatList[0].key, 'stats': stats]
 		} else {
 			redirect(controller: 'project', action: 'list')
 		}
@@ -393,7 +379,8 @@ class TestRunController {
 	def summaryTable = {
 		if (params.id) {
 			def testRun = TestRun.get(Long.valueOf(params.id))
-			render(template: "summaryTable", model: ['testRun': testRun])
+			def stats = TestRunStats.findByTestRun(testRun)
+			render(template: "summaryTable", model: ['stats': stats])
 		} else {
 			redirect(controller: 'project', action: 'list')
 		}
@@ -411,7 +398,8 @@ class TestRunController {
 
 	private getDefaultFilter(testRun) {
 		def filter
-		if (testRun.testRunStatistics?.failed == 0 || testRun.project.testType.name == "Manual") {
+		def stats = TestRunStats.findByTestRun(testRun)
+		if (stats?.failed == 0 || testRun.project.testType.name == "Manual") {
 			filter = "All Results"
 		} else {
 			filter = "All Failures"
@@ -425,6 +413,7 @@ class TestRunController {
 		filterList += [id: "allfailures", value: "All Failures"]
 		filterList += [id: "newfailures", value: "New Failures"]
 		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
+		filterList += [id: "allskipped", value: "All Skipped"]
 		filterList += [id: "newpasses", value: "New Passes"]
 		filterList += [id: "allresults", value: "All Results"]
 		return filterList

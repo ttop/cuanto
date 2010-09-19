@@ -1,3 +1,7 @@
+import cuanto.TestRun
+import cuanto.TestRunStats
+import cuanto.TestOutcome
+
 /*
  Copyright (c) 2008 thePlatform, Inc.
 
@@ -20,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class DeleteEmptyTestRunJob {
 
-	def dataService
+	def statisticService
 
 	static triggers = {
 		simple name: 'DeleteEmptyTestRuns', startDelay: 10000, repeatInterval: 60000
@@ -29,6 +33,7 @@ class DeleteEmptyTestRunJob {
     def execute() {
         // execute task
 	    log.debug "executing ${this.class.simpleName}"
-	    dataService.deleteEmptyTestRuns()
+	    statisticService.deleteEmptyTestRuns()
     }
+
 }

@@ -23,11 +23,10 @@ package cuanto
 
 class TestRunStats {  
 
-	static belongsTo = [testRun: TestRun]
-
 	static constraints = {
 		passed(nullable: true)
 		failed(nullable: true)
+		skipped(nullable: true)
 		analyzed(nullable: true)
 		newFailures(nullable: true)
 		totalDuration(nullable: true)
@@ -35,6 +34,7 @@ class TestRunStats {
 		successRate(nullable: true)
 		tests(nullable: true)
 		analysisStatistics(nullable: true)
+        testRun(nullable: false)
 	}
 
 	static mapping = {
@@ -44,6 +44,7 @@ class TestRunStats {
 	Integer tests
 	Integer passed
 	Integer failed
+	Integer skipped
 	Integer analyzed
 	Integer newFailures
 	Long totalDuration
@@ -52,6 +53,7 @@ class TestRunStats {
 	Date lastUpdated
 	List analysisStatistics
     List tagStatistics
+    TestRun testRun
 
 	static hasMany = [analysisStatistics: AnalysisStatistic, tagStatistics:TagStatistic]
 
@@ -59,6 +61,7 @@ class TestRunStats {
 		def json = [:]
 		json['id'] = this.id
 		json['passed'] = passed
+		json['skipped'] = skipped
 		json['failed'] = failed
 		json['tests'] = tests
 		json['totalDuration'] = totalDuration

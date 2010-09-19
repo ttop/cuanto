@@ -21,28 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto.api
 
+import cuanto.base.ApiTestBase
 
-public class TestOutcomeTests extends GroovyTestCase {
 
-	CuantoConnector client
-	List<TestRun> testRunsToCleanUp
-	static WordGenerator wordGen = new WordGenerator()
+public class TestOutcomeTests extends ApiTestBase {
+
 	static testCaseCounter = 1
-
-	@Override
-	void setUp() {
-		super.setUp()
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
-		testRunsToCleanUp = []
-	}
-
-	@Override
-	void tearDown() {
-		testRunsToCleanUp.each {
-			client.deleteTestRun it
-		}
-		super.tearDown()
-	}
 
 
 	void testAddTestOutcomeAndGetTestOutcomeWithTestRun() {
@@ -387,7 +371,7 @@ public class TestOutcomeTests extends GroovyTestCase {
         tags << wordGen.getCamelWords(2)
 
         def outcomes = []
-        1.upto(2000) {
+        1.upto(1000) {
             TestOutcome outcome = createTestOutcome(TestResult.Pass)
             outcome.addTags(tags)
             outcomes << outcome
@@ -561,6 +545,63 @@ public class TestOutcomeTests extends GroovyTestCase {
 		assertTrue "For the newly passed test outcome, the failure status is considered changed.",
 			fetchedOutcome.isFailureStatusChanged
 	}
+
+
+	void testOutcomeProperties() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		outcome1.addTestProperty("foo", "bar")
+
+		TestRun run1 = new TestRun(new Date())
+
+		client.addTestRun(run1)
+		testRunsToCleanUp << run1
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		TestOutcome fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of properties", 1, fetchedOutcome?.testProperties?.size()
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("foo")
+		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["foo"]
+
+		outcome1.addTestProperty("double", "rainbow")
+		client.updateTestOutcome(outcome1)
+
+		firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of properties", 2, fetchedOutcome?.testProperties?.size()
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("foo")
+		assertEquals "Wrong property value", "bar", fetchedOutcome.testProperties["foo"]
+		assertTrue "Property not found", fetchedOutcome.testProperties.keySet().contains("double")
+		assertEquals "Wrong property value", "rainbow", fetchedOutcome.testProperties["double"]
+	}
+
+
+	void testOutcomeLinks() {
+		String testName = "test${wordGen.getCamelWords(3)}"
+		TestOutcome outcome1 = createTestOutcome(TestResult.Fail, testName)
+		outcome1.addLink("http://foobar", "FOOBAR")
+
+		TestRun run1 = new TestRun(new Date())
+
+		client.addTestRun(run1)
+		testRunsToCleanUp << run1
+
+		Long firstOutcomeId = client.addTestOutcome(outcome1, run1)
+		TestOutcome fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of links", 1, fetchedOutcome?.links?.size()
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://foobar")
+		assertEquals "Link description", "FOOBAR", fetchedOutcome.links.get("http://foobar")
+
+		outcome1.addLink("http://double/rainbow", "Almost a triple!")
+		client.updateTestOutcome(outcome1)
+		fetchedOutcome = client.getTestOutcome(firstOutcomeId)
+		assertEquals "Wrong number of links", 2, fetchedOutcome?.links?.size()
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://foobar")
+		assertEquals "Link description", "FOOBAR", fetchedOutcome.links.get("http://foobar")
+		assertTrue "Link not found", fetchedOutcome.links.keySet().contains("http://double/rainbow")
+		assertEquals "Link description", "Almost a triple!", fetchedOutcome.links.get("http://double/rainbow")
+	}
+
 
 	TestOutcome createTestOutcome(TestResult result, String testName = "test${wordGen.getCamelWords(3)}") {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", testName, wordGen.getSentence(2), result)

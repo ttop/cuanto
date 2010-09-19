@@ -59,8 +59,9 @@ class TestRunServiceTests extends GroovyTestCase {
 
 		statisticService.calculateTestRunStats(testRun.id)
 
-		assertNotNull "results not found", testRun.testRunStatistics
-		TestRunStats result = testRun.testRunStatistics
+		def testRunStatistics = TestRunStats.findByTestRun(testRun)
+		assertNotNull "results not found", testRunStatistics
+		TestRunStats result = testRunStatistics
 		assertEquals "wrong total tests", 10, result.tests
 		assertEquals "wrong failures", 2, result.failed
 		assertEquals "wrong passed", 8, result.passed

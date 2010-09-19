@@ -26,12 +26,9 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 	var analysisCookieName = "cuantoAnalysis";
 	var newCols = true;
 
-	var columnKeys = datatable.getColumnSet().keys.collect(function(item) {
-		return item.key;
-	});
-
 
 	function getColumnPanel() {
+
 		if (!panel) {
 			panel = new YAHOO.widget.Panel("columnPanel", {dragOnly: true, x: 150,
 				width: "330px", visible: true, iframe: false, underlay: "none"});
@@ -79,52 +76,57 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 			YAHOO.util.Event.stopEvent(e);
 		}
 
-		if (newCols) {
-			var allColumns = [];
-			columnKeys.each(function(colKey) {
-				var col = datatable.getColumn(colKey);
-				allColumns.push(col);
+		var elPicker = YAHOO.util.Dom.get("columnPanel-picker");
+		$(elPicker).childElements().each(function(el) {
+			$(el).remove();
+		});
+
+
+		var columnKeys = datatable.getColumnSet().keys.collect(function(item) {
+			return item.key;
+		});
+		var allColumns = [];
+		columnKeys.each(function(colKey) {
+			var col = datatable.getColumn(colKey);
+			allColumns.push(col);
+		});
+
+		var elTemplateCol = document.createElement("div");
+		YAHOO.util.Dom.addClass(elTemplateCol, "columnPanel-pickercol");
+		var elTemplateKey = elTemplateCol.appendChild(document.createElement("span"));
+		YAHOO.util.Dom.addClass(elTemplateKey, "columnPanel-pickerkey");
+		var elTemplateBtns = elTemplateCol.appendChild(document.createElement("span"));
+		YAHOO.util.Dom.addClass(elTemplateBtns, "columnPanel-pickerbtns");
+		var onclickObj = {fn:handleButtonClick, obj:this, scope:false };
+
+		var elColumn, elKey, elButton, oButtonGrp;
+		for (var i = 0,l = allColumns.length; i < l; i++) {
+			var oColumn = allColumns[i];
+			elColumn = elTemplateCol.cloneNode(true);
+			elKey = elColumn.firstChild;
+			elKey.innerHTML = oColumn.label;
+
+			oButtonGrp = new YAHOO.widget.ButtonGroup({
+				id: "buttongrp" + i,
+				name: oColumn.getKey(),
+				container: elKey.nextSibling
 			});
+			oButtonGrp.addButtons([
+				{
+					label: "Show",
+					value: "Show",
+					checked: ((!oColumn.hidden)),
+					onclick: onclickObj
+				},
+				{
+					label: "Hide",
+					value: "Hide",
+					checked: ((oColumn.hidden)),
+					onclick: onclickObj
+				}
+			]);
 
-			var elPicker = YAHOO.util.Dom.get("columnPanel-picker");
-			var elTemplateCol = document.createElement("div");
-			YAHOO.util.Dom.addClass(elTemplateCol, "columnPanel-pickercol");
-			var elTemplateKey = elTemplateCol.appendChild(document.createElement("span"));
-			YAHOO.util.Dom.addClass(elTemplateKey, "columnPanel-pickerkey");
-			var elTemplateBtns = elTemplateCol.appendChild(document.createElement("span"));
-			YAHOO.util.Dom.addClass(elTemplateBtns, "columnPanel-pickerbtns");
-			var onclickObj = {fn:handleButtonClick, obj:this, scope:false };
-
-			var elColumn, elKey, elButton, oButtonGrp;
-			for (var i = 0,l = allColumns.length; i < l; i++) {
-				var oColumn = allColumns[i];
-				elColumn = elTemplateCol.cloneNode(true);
-				elKey = elColumn.firstChild;
-				elKey.innerHTML = oColumn.label;
-
-				oButtonGrp = new YAHOO.widget.ButtonGroup({
-					id: "buttongrp" + i,
-					name: oColumn.getKey(),
-					container: elKey.nextSibling
-				});
-				oButtonGrp.addButtons([
-					{
-						label: "Show",
-						value: "Show",
-						checked: ((!oColumn.hidden)),
-						onclick: onclickObj
-					},
-					{
-						label: "Hide",
-						value: "Hide",
-						checked: ((oColumn.hidden)),
-						onclick: onclickObj
-					}
-				]);
-
-				elPicker.appendChild(elColumn);
-			}
-			newCols = false;
+			elPicker.appendChild(elColumn);
 		}
 	};
 	

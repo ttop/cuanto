@@ -19,6 +19,8 @@
 
 package cuanto
 
+import org.hibernate.StaleObjectStateException
+
 class FailureStatusService
 {
 
@@ -43,12 +45,17 @@ class FailureStatusService
 		queueFailureStatusUpdateForOutcomes([affectedOutcome])
 	}
 
-	def queueFailureStatusUpdateForRun(affectedTestRun)
-	{
-		if (affectedTestRun)
-		{
-			log.info "adding test run ${affectedTestRun.id} to failure status update queue"
-			dataService.saveDomainObject(new FailureStatusUpdateTask(affectedTestRun))
+
+	def queueFailureStatusUpdateForRun(affectedTestRun) {
+		if (affectedTestRun) {
+			TestRun.withTransaction {
+				try {
+					log.info "adding test run ${affectedTestRun.id} to failure status update queue"
+					dataService.saveDomainObject(new FailureStatusUpdateTask(affectedTestRun))
+				} catch (StaleObjectStateException e) {
+					log.info "StaleObjectStateException for test run ${affectedTestRun.testRunId}"
+				}
+			}
 		}
 	}
 }

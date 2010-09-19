@@ -1,6 +1,6 @@
-%{--
+/*
 
- Copyright (c) 2008 thePlatform, Inc.
+Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -17,28 +17,37 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+*/
 
---}%
+package cuanto
 
-<div id="summaryTable">
-	<table class="cuanto ">
-		<tr>
-			<th>Total Tests</th>
-			<th>Passed</th>
-			<th>Failed</th>
-			<th>Success</th>
-			<th>Duration</th>
-			<th>Avg Duration</th>
-		</tr>
-		<tr>
-			<td>${stats?.tests?.encodeAsHTML()}</td>
-			<td>${stats?.passed?.encodeAsHTML()}</td>
-			<td>${stats?.failed?.encodeAsHTML()}</td>
-			<td>${stats?.successRate?.encodeAsHTML()} %</td>
-			<td><g:formatDuration ms="${stats?.totalDuration}"/></td>
-			<td><g:formatDuration ms="${stats?.averageDuration}"/></td>
-			<td><span class="progress"></span></td>
-		</tr>
-	</table>
+class TestOutcomeProperty implements Comparable {
 
-</div>
+	static belongsTo = [testOutcome: TestOutcome]
+
+	String name
+	String value
+
+	TestOutcomeProperty() {
+
+	}
+
+	TestOutcomeProperty(String name, String value) {
+		this.name = name
+		this.value = value
+	}
+
+	String toString() {
+		return "${this.name}: ${this.value}"
+	}
+
+	int compareTo(Object o) {
+		TestOutcomeProperty other = (TestOutcomeProperty) o
+		int result = this.name.compareTo(other.name)
+		if (result == 0) {
+			return this.value.compareTo(other.value)
+		} else {
+			return result
+		}
+	}
+}
