@@ -462,8 +462,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
-				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true}),
-				formatter: formatAnalysis},
+				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
 			{key:"startedAt", label: "Started At", sortable:true},
 			{key:"finishedAt", label: "Finished At", sortable:true},
 			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
@@ -582,12 +581,6 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
             elCell.innerHTML = oData.join(", ");
         }
     }
-
-	function formatAnalysis(elCell, oRecord, oColumn, oData) {
-		if (oData && oData.name) {
-			elCell.innerHTML = oData.name;
-		}
-	}
 
 	function setImgTitleAndAlt(imgElem, title) {
 		imgElem.setAttribute('title', title);
