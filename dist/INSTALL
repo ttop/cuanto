@@ -40,6 +40,14 @@ Upgrading
 =========
 If you are upgrading, shut down Cuanto and back up your database first.
 
+If you are upgrading from 2.6.6, then execute add_skips_2.7.sql and add_testoutcome_props_and_links_2.7.sql. After
+starting Cuanto, all of the test run statistics will be recalculated, and skips will be tracked separately from failures.
+It takes about one second per existing test run to update the statistics, so it may take a while for all of them to be
+updated. Cuanto is still usable while they are being recalculated.
+
+If you are upgrading from 2.6.0 - 2.6.5, please execute change_test_run_stats_2.6.6.sql, changing the FKNAME as described
+in the script. Then execute the subsequent scripts above.
+
 If you are upgrading from 2.5, you'll want to execute the init_test_outcome_summary.sql script found in the sql directory.
 Please note, if you are using a default MySQL installation, this script may not run successfully unless you increase the size
 of the MySQL innodb_buffer_pool_size variable beyond the default 8MB (100MB+ is good). You can do this directly in MySQL's

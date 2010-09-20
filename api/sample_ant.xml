@@ -7,7 +7,7 @@
 	<target name="init">
 		<path id="api.class.path">
 		   <fileset dir="target">
-		     <include name="cuanto-api-2.6.5.jar"/>
+		     <include name="cuanto-api-2.7.0.jar"/>
 		     <include name="dependency/*.jar"/>
 		   </fileset>
 		 </path>
