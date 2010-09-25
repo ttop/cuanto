@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <span class="heading">
 	<span id="projectHeading">
 		<span class="text">
+			for
 			<g:if test="${project?.projectGroup}">
 				<g:link controller="project" action="listGroup"
 					params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project.projectKey]">${project?.name?.encodeAsHTML()}</g:link></span>

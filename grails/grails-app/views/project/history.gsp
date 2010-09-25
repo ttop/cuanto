@@ -62,27 +62,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
 	<body class=" yui-skin-sam">
-		<div class="body yui-skin-sam">
+	<div class="body yui-skin-sam">
+		<div>
 			<span class="head1">Test Run History for
 				<g:if test="${project?.projectGroup}">
-				<g:link controller="project" action="listGroup"
-					params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
+					<g:link controller="project" action="listGroup"
+						params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
 				<g:link controller="project" action="feed" id="${project?.id}">
 					<g:set var="feedTxt" value="RSS feed"/>
 					<img id="feedImg" src="${resource(dir: 'images/feedicons-standard', file: 'feed-icon-14x14.png')}"
 						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
 			</span>
-			<span class="heading">Project Key: </span><span class="text">${project?.projectKey}</span>
+			<span class="smaller hdActions">
+				<a id="chooseColumns" class="selectCmd smaller" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
+				<span class="smaller">
+					<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
+					<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
+						<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
+					</g:if></span>
 
+			</span>
 			<br/>
-			<a id="chooseColumns" class="selectCmd smaller" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
-			<span class="smaller"> <a href="${createLink(controller: 'testRun', action:'latest')}/${project?.projectKey}">Most Recent</a> ${bullet}
-			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
-			<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
-				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-			</g:if></span>
-			<br/>
+			<div class="propsAndLinks">
 			<input type="hidden" name="projectId" id="projectId" value="${project?.id}"/>
+			<span class="heading">Project Key:</span><span class="text">${project?.projectKey}</span>
+			</div>
+		</div>
 			<div id="columnPanel" style="visibility:hidden">
 				<div class="hd">Columns</div>
 				<div id="columnPanel-picker" class="bd">

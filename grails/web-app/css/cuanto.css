@@ -313,7 +313,7 @@ form label.dialogLabel {
 }
 
 #trEditBody {
-	width: 750px;
+	width: 96%;
 }
 
 .newProp {
@@ -327,4 +327,14 @@ form label.dialogLabel {
 	clear:none;
 	display: inline;
 	float:none;
+}
+
+.hdActions {
+	float:right;
+}
+
+.propsAndLinks {
+	margin: 6px 0;
+	padding: 5px;
+	background-color:lightgray;
 }
