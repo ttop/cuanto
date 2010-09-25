@@ -87,17 +87,23 @@ class DataService {
 			return realResult
 		} else {
 			def paginateParams = [:]
-			if (queryParams.max != null)
+			if (queryParams.max != null) {
 				paginateParams['max'] = Integer.valueOf(queryParams.max)
-			if (queryParams.offset != null)
+			}
+			if (queryParams.offset != null) {
 				paginateParams['offset'] = Integer.valueOf(queryParams.offset)
-			def q = "from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+			}
+
+			def q = "from cuanto.TestRun t, cuanto.TestRunStats trs where trs.testRun = t and t.project = ? order by ${queryParams.sort} ${queryParams.order}"
 
 			// use the paginate params if applicable; otherwise, don't paginate
-			if (paginateParams.size() > 0)
-				return TestRun.executeQuery(q, [proj], paginateParams)
-			else
-				return TestRun.executeQuery(q, [proj])
+			if (paginateParams.size() > 0){
+				def results = TestRun.executeQuery(q, [proj], paginateParams)
+				return results.collect{it[0]}
+			} else {
+				def results = TestRun.executeQuery(q, [proj])
+				return results.collect{it[0]}
+			}
 		}
 	}
 
@@ -109,9 +115,6 @@ class DataService {
 
 	def countTestRunsByProject(proj) {
 		TestRun.countByProject(proj)
-		//TestRun.countByProjectAndTestRunStatisticsIsNotNull(proj)
-		//TestRun.executeQuery("select tr.count from cuanto.TestRun tr inner join cuanto.TestRunStats as stats where project = ? ")
-
 	}
 
 	def getNextTestRun(testRun) {
