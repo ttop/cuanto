@@ -33,15 +33,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<span><a alt="Recalculate Stats" id="recalcStats" href="#recalcStats">Recalc</a></span>
 	</span>
 	<br/>
-	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
-	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span>
+	<g:render template="/project/header" model="[project:testRun.project]"/>
 	<br/>
-	<g:if test="${testRun?.testProperties || testRun?.links}">
-		<div id="trPropsAndLinks">
+	<div id="trPropsAndLinks">
+		<span class="heading">Test Run ID:</span><span class="text" id="trhId">${testRun?.id}</span>
+		<g:if test="${testRun?.testProperties || testRun?.links}">
 			<span id="trhTestProps">
 				<g:if test="${testRun?.testProperties}">
+					${bullet}
 					<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
-						<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
+						<span class="heading">${testProp.name}:</span><span class="text">${testProp.value}</span>
 						<g:if test="${idx < testRun.testProperties.size() - 1}">${bullet}</g:if>
 					</g:each>
 				</g:if>
@@ -56,8 +57,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</g:each>
 				</div>
 			</g:if>
-		</div>
-	</g:if>
+
+		</g:if>
+	</div>
 	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">
