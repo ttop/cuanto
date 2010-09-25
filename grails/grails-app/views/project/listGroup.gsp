@@ -29,8 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 	%>
   <head>
-	  <title>Cuanto: Projects: ${grp?.name?.encodeAsHTML()}</title>
-	  <meta name="layout" content="main" />
+	<title>Cuanto: Projects: ${grp?.name?.encodeAsHTML()}</title>
+
+	<meta name="layout" content="mainBare"/>
+	<g:render template="/shared/yui26"/>
+
 	<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
 	<p:css name='../js/yui/2.6.0/autocomplete/assets/skins/sam/autocomplete'/>
 	<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
@@ -45,6 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
 	<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.6.0"/>
 
+	<g:javascript src="jq/jquery-1.4.2.min.js"/>
 	<g:javascript src="cuanto/url.js"/>
 	<g:javascript src="cuanto/projectDialog.js"/>
 	<g:javascript src="cuanto/deleteProjectDialog.js"/>
