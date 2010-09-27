@@ -4,3 +4,4 @@ lib/runtime/
 lib/test/
 target/
 *.war
+reports/
