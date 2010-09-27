@@ -98,7 +98,11 @@ class TestOutcomeController {
 			}
 
 			fields.each {myField ->
-				fieldUpdateMap[myField] = source.getProperty(myField)
+				if (myField == "analysisState") {
+					fieldUpdateMap[myField] = source.analysisState.toString()
+				} else {
+					fieldUpdateMap[myField] = source.getProperty(myField)
+				}
 			}
 			testOutcomeService.applyAnalysis(source, targets, fields)
 		}
