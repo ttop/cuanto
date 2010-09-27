@@ -59,7 +59,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 		expDate.setDate(expDate.getDate() + 30);
 
 		var colHidden = [];
-		datatable.getColumnSet().flat.each(function(column) {
+		$.each(datatable.getColumnSet().flat, function(idx, column) {
 			if (!column.key.startsWith("yui-")) {
 				colHidden.push(column.key + ":" + column.hidden);
 			}
@@ -131,7 +131,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 		if (cookie) {
 			var cols = {};
 			var pairs = cookie.split(",");
-			pairs.each(function(pair) {
+			$.each(pairs, function(idx, pair) {
 				var items = pair.split(":");
 				cols[items[0]] = (/^true$/i).test(items[1]);
 			});

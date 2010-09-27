@@ -24,6 +24,19 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 	var pub = {}; // public methods
 
+	Function.prototype.bindFunc = function(){
+		// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Functions:arguments
+		var _$A = function(a){return Array.prototype.slice.call(a);};
+
+		if(arguments.length < 2 && (typeof arguments[0] == "undefined")) return this;
+
+		var __method = this, args = _$A(arguments), object = args.shift();
+
+		return function() {
+		  return __method.apply(object, args.concat(_$A(arguments)));
+		}
+	};
+
 	var dpDialog = new YAHOO.widget.Dialog('deleteProjectDialog', {
 		width: "400px",
 		visible: false,
@@ -80,7 +93,7 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 			if (onDeleteSuccessful) {
 				var toCall;
 				if (scope) {
-					toCall = onDeleteSuccessful.bind(scope);
+					toCall = onDeleteSuccessful.bindFunc(scope);
 				} else {
 					toCall = onDeleteSuccessful;
 				}

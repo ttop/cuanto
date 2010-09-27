@@ -22,18 +22,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.OutputProxy = function() {
+
+
 	var pub = {}; // public methods
 	var outputCache = new YAHOO.cuanto.LruCache(50);
 
+	Function.prototype.bindFunc = function(){
+		// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Functions:arguments
+		var _$A = function(a){return Array.prototype.slice.call(a);};
+
+		if(arguments.length < 2 && (typeof arguments[0] == "undefined")) return this;
+
+		var __method = this, args = _$A(arguments), object = args.shift();
+
+		return function() {
+		  return __method.apply(object, args.concat(_$A(arguments)));
+		}
+	};
+
 	pub.prefetchOutputs = function(outputIdArray){
 		// only fetches outputs that aren't already cached
-		var toFetch = outputIdArray.findAll(function(outId) {
+
+		var toFetch = $.grep(outputIdArray, function(outId, idx) {
 			return outputCache.getItem(outId) == undefined;
 		});
 
 		if (toFetch.length > 0) {
 			var fetchString = "";
-			toFetch.each(function(idToFetch) {
+			$.each(toFetch, function(idx, idToFetch) {
 				fetchString += "&id=" + idToFetch;
 			});
 			var url = YAHOO.cuanto.urls.get('testOutputDataSource') + "?format=json" + fetchString;
@@ -41,7 +57,7 @@ YAHOO.cuanto.OutputProxy = function() {
 			var callback = {
 				success: function(o) {
 					var response = YAHOO.lang.JSON.parse(o.responseText);
-					response["testOutputs"].each(function(out) {
+					$.each(response["testOutputs"], function(idx, out) {
 						outputCache.addItem(out.id, {'output': out.output, 'testName': out.testName,
 							'shortName': out.shortName, 'id': out.id});
 					});
@@ -59,7 +75,7 @@ YAHOO.cuanto.OutputProxy = function() {
 	pub.getOutputForId = function(outcomeId, userCallback, scope) {
 		var funcToCall;
 		if (scope) {
-			funcToCall = userCallback.bind(scope);
+			funcToCall = userCallback.bindFunc(scope);
 		} else {
 			funcToCall = userCallback;
 		}

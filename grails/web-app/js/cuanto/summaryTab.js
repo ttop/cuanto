@@ -33,19 +33,21 @@ YAHOO.cuanto.SummaryTab = function() {
 	tabView.set('activeIndex', 0);
 
 	function refreshSummaryTab() {
-		$$(".progress").each(function(item) {
-			item.innerHTML = " " + getProgressImg();
+		$.each($(".progress"), function(idx, item) {
+			item.html(" " + getProgressImg());
 		});
-		new Ajax.Updater('bugSummary',
-			YAHOO.cuanto.urls.get('bugSummary') + "?rand=" + new Date().getTime(), {method: 'get'});
-		new Ajax.Updater('failureChart',
-			YAHOO.cuanto.urls.get('failureChart') + "?rand=" + new Date().getTime(), {method: 'get'});
-		new Ajax.Updater('summaryTable',
-			YAHOO.cuanto.urls.get('summaryTable') + "?rand=" + new Date().getTime(), {method: 'get'});
+		update(YAHOO.cuanto.urls.get('bugSummary') + "?rand=" + new Date().getTime(), $('#bugSummary'));
+		update(YAHOO.cuanto.urls.get('failureChart') + "?rand=" + new Date().getTime(), $("#failureChart"));
+		update(YAHOO.cuanto.urls.get('summaryTable') + "?rand=" + new Date().getTime(), $("#summaryTable"));
+	}
+
+	function update(url, elem) {
+		$.get(url, null, function(data, status, request) {
+			elem.html(data);
+		}, "html");
 	}
 
 	function getProgressImg() {
-		var img = YAHOO.cuanto.urls.get('progressImg');
-		return "<img src ='" + img + "'/>";
+		return "<img src ='" + YAHOO.cuanto.urls.get('progressImg') + "'/>";
 	}
 };

@@ -29,9 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page import="java.text.SimpleDateFormat; cuanto.TestResult" contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
 		<title>Cuanto: Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</title>
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
+
+		<g:render template="/shared/yui26"/>
 
 		<p:css name='analysis'/>
 		<p:css name='columnDialog'/>
@@ -52,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="history" file="history-min.js" version="2.6.0"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
 
+		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="cuanto/events.js"/>
 		<g:javascript src="cuanto/formatBug.js"/>
 		<g:javascript src="cuanto/url.js"/>
@@ -63,15 +66,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
-		<g:javascript src="cuanto/columnDialog.js"/>
+		<g:javascript src="cuanto/jcolumnDialog.js"/>
 		<g:javascript src="cuanto/groupedOutput.js"/>
 
 		<script type="text/javascript">
 
 		YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="urls"/>
-            var newWidth = document.viewport.getWidth() * .95;
-            $('tabContainer').setStyle({width: newWidth + "px"});
+            var newWidth = $(window).width() * .95;
+            $('#tabContainer').width(newWidth);
             tabView = new YAHOO.widget.TabView("tabContainer");
             
 			new YAHOO.cuanto.SummaryTab();

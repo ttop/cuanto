@@ -44,8 +44,8 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 			var outcomeId = getOutcomeIdFromEvent(e);
 
 			var chkBoxId = 'chk' + outcomeId;
-			var chkBox = $(chkBoxId);
-			if (!chkBox.checked) { 
+			var chkBox = $("#" + chkBoxId);
+			if (!chkBox.checked) {
 				chkBox.checked = true;
 				YAHOO.cuanto.events.recordSelectedEvent.fire(chkBoxId);
 			}
@@ -54,16 +54,16 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 			anlzPanel.cfg.setProperty('xy', getDesiredAnlzPanelXY());
 			anlzPanel.render();
 
-			var escapeKey = new YAHOO.util.KeyListener($('anPanel'), { keys:27 }, { fn:closeAnlzPanel});
+			var escapeKey = new YAHOO.util.KeyListener($('#anPanel'), { keys:27 }, { fn:closeAnlzPanel});
 			escapeKey.enable();
 			anlzPanel.cfg.queueProperty('keylisteners', escapeKey);
 
-			$('anPanel').removeClassName("hidden");
-			$('anPanel').setStyle({visibility: 'visible'});
-			$('anContainer').show();
+			$('#anPanel').removeClass("hidden");
+			$('#anPanel').css('visibility', 'visible');
+			$('#anContainer').show();
 			anlzPanel.show();
 
-			var closeElm = $$("#anPanel > .container-close");
+			var closeElm = $(".container-close", "#anPanel");
 			YAHOO.util.Event.removeListener(closeElm, "click", closeAnlzPanel);
 			YAHOO.util.Event.addListener(closeElm, "click", closeAnlzPanel);
 			fetchAnalysisHistory(outcomeId);
@@ -89,10 +89,8 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 	}
 
 	function populateAnalysisHistory() {
-		var historyElem = $('anlzHistory');
-		historyElem.childElements().each(function(child) {
-			child.remove();
-		});
+		var historyElem = $('#anlzHistory');
+		historyElem.children().remove();
 		var outcomes = analyses['outcomes'];
 
 		YAHOO.util.Event.addListener(historyElem, "change", function(e) {
@@ -103,7 +101,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 
 		for (var i = 0; i < outcomes.length; i++) {
 			var option = getOptionForOutcome(outcomes[i], i);
-			historyElem.appendChild(option);
+			historyElem[0].appendChild(option);
 		}
 
 		var maxSize = 9;
@@ -112,10 +110,12 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 
 
 	function updateHistory(e, updated) {
-		var displayedOutcome =  analyses['outcomes'][0]['id'];
-		if (updated[0]['updatedRecords'].any(function(outcomeId){
+		var displayedOutcome = analyses['outcomes'][0]['id'];
+		var anyUpdated = $.grep(updated[0]['updatedRecords'], function(outcomeId) {
 			return outcomeId == displayedOutcome;
-		})) {
+		}).length > 0;
+
+		if (anyUpdated) {
 			fetchAnalysisHistory(displayedOutcome);
 		}
 	}
@@ -123,16 +123,17 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 
 	function getOptionForOutcome(outcome, val) {
 		// val is the value to assign the option element
-		var option = new Element('option', {value: val});
+		var option = $("<option/>");
+		option.val(val);
 		var text = outcome['testRun'] + ": ";
 		text += getStateText(outcome) + " ";
 
 		var note = getShortNote(outcome, text.length);
-		if (!note.blank()) {
+		if ($.trim(note).length > 0) {
 			text += "- <i>" + note + "</i>";
 		}
-		option.innerHTML = text;
-		return option;
+		option.html(text);
+		return option[0];
 	}
 
 
@@ -153,8 +154,8 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 		var maxNoteLength = maxLineLength - currentLength;
 		var shortNote = "";
 		var note = outcome['note'];
-		if (note && note.strip().length > 0) {
-			shortNote = note.truncate(maxNoteLength);
+		if (note && $.trim(note).length > 0) {
+			shortNote = note.substr(0, maxNoteLength);
 		}
 		return shortNote;
 	}
@@ -165,41 +166,40 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 		if (targ.id) {
 			idToGrep = targ.id;
 		} else {
-			if (Prototype.Browser.IE) {
+			if ($.browser.msie) {
 				idToGrep = targ.parentElement.id;
 			} else {
-				idToGrep = targ.up('.anlzLink').id;
+				idToGrep = $(targ).closest('.anlzLink')[0].id;
 			}
 		}
 		return idToGrep.match(/.+?(\d+)/)[1];
 	}
 
 	function getDesiredAnlzPanelXY() {
-		var vp = document.viewport.getScrollOffsets();
-		var pX = vp[0] + PANEL_X_POSITION;
-		var pY = vp[1] + PANEL_Y_POSITION;
+		var pX = $(window).scrollLeft() + PANEL_X_POSITION;
+		var pY = $(window).scrollTop() + PANEL_Y_POSITION;
 		return [pX, pY];
 	}
 
 	function showAnalysis(offset) {
 		var analysis = analyses['outcomes'][offset];
-		$('testCase').innerHTML = analyses['testCase']['shortName'];
+		$('#testCase').html(analyses['testCase']['shortName']);
 		for (var field in analysis) {
 			if (field == "bug") {
-				$('bug').setAttribute('href', analysis['bug'].url);
+				$('#bug').attr('href', analysis['bug'].url);
 				if (!analysis['bug'].title) {
 					analysis['bug'].title = analysis['bug'].url;
 				}
-				$('bug').innerHTML = analysis['bug'].title ? analysis['bug'].title : "";
+				$('#bug').html(analysis['bug'].title ? analysis['bug'].title : "");
 				YAHOO.util.Event.addListener('bug', "click", YAHOO.cuanto.format.showBugInNewWindow);
 			} else if (field == "id") {
 				// do nothing
 			} else {
-				$(field).innerHTML = analysis[field] ? analysis[field] : "";
+				$("#" + field).html(analysis[field] ? analysis[field] : "");
 			}
 		}
 
-		$('anOutputDiv').innerHTML = "Loading... " + getProgressImg();
+		$('#anOutputDiv').html("Loading... " + getProgressImg());
 
 		var processOutput = function(outputItem) {
 			populateOutputField(outputItem.output);
@@ -207,13 +207,13 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 		};
 
 		outputProxy.getOutputForId(analysis.id, processOutput);
-		$('anApply').focus();
+		$('#anApply').focus();
 	}
 
 
 	function primeAnalysesOutputCache(currentItem) {
 		var NUM_TO_PREFETCH = 2;
-		var allOutputIds = analyses['outcomes'].collect(function(anlys) {
+		var allOutputIds = $.map(analyses['outcomes'], function(anlys) {
 			return anlys.id;
 		});
 
@@ -225,7 +225,7 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 
 
 	function populateOutputField(outputText) {
-		$('anOutputDiv').innerHTML = outputText.truncate(1000);
+		$('#anOutputDiv').html(outputText.substr(0, 1000));
 	}
 
 
@@ -257,40 +257,37 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 	
 	function applyAnalysis(e) {
 		var sourceOutcome = analyses['outcomes'][analyses.offset].id;
-		var boxes = $('anData').getInputs('checkbox');
+		var boxes = $(':checked', '#anData');
 		var fields = new Array();
-		boxes.each(function(chkbox) {
-			if (chkbox.checked) {
-				fields.push(chkbox.readAttribute('value'));
-			}
+		$.each(boxes, function(idx, chkbox) {
+			fields.push($(chkbox).attr('value'));
 		});
 
 		startProgressIcon();
 		YAHOO.cuanto.events.bulkAnalysisEvent.fire({'sourceOutcome': sourceOutcome, 'fields': fields});
-		$('anContainer').hide();
+		$('#anContainer').hide();
 		getAnlzPanel().hide();
 		YAHOO.util.Event.preventDefault(e);
 	}
 
 
 	function startProgressIcon() {
-		$('applyStatus').innerHTML = " " + getProgressImg();
+		$('#applyStatus').html(" " + getProgressImg());
 	}
 
 
 	function stopProgressIcon() {
-		$('applyStatus').innerHTML = "";
+		$('#applyStatus').html("");
 	}
 
 
 	function getProgressImg() {
-		var img = YAHOO.cuanto.urls.get('progressImg');
-		return "<img src ='" + img + "'/>";
+		return "<img src ='" + YAHOO.cuanto.urls.get('progressImg') + "'/>";
 	}
 
 
 	function closeAnlzPanel() {
-		$('anPanel').setStyle({'visibility': 'hidden'});
+		$('#anPanel').css('visibility','hidden');
 		getAnlzPanel().hide();
 		clearAnlzFields();
 	}
@@ -299,13 +296,12 @@ YAHOO.cuanto.analysisDialog = function(overlayManager, outputProxy) {
 	function clearAnlzFields() {
 		var fields = ['testRun', 'currentRecord', 'totalRecords', 'testResult', 'analysisState', 'bug', 'owner', 'note',
 			'anOutputDiv'];
-		fields.each(function(item) {
-			var field = $(item);
+		$.each(fields, function(idx, item) {
+			var field = $("#" + item);
 			if (field) {
-				field.innerHTML = "";
+				field.html("");
 			}
 		});
 	}
-
 
 };
