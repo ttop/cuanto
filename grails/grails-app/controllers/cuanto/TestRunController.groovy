@@ -72,8 +72,7 @@ class TestRunController {
 		def testRun = TestRun.get(params.testRun)
 
 		if (linkToDelete && testRun) {
-			testRun.removeFromLinks(linkToDelete)
-			dataService.saveDomainObject testRun
+			testRunService.deleteTestRunLink(linkToDelete)
 			render "OK"
 		} else {
 			response.setStatus(response.SC_NOT_FOUND)

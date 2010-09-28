@@ -711,4 +711,15 @@ class TestRunService {
 			}
 		}
 	}
+
+	def deleteTestRunLink(TestRunLink linkToDelete) throws CuantoException {
+		if (linkToDelete) {
+			TestRun.withTransaction {
+				TestRun testRun = linkToDelete.testRun
+				testRun.removeFromLinks(linkToDelete)
+				dataService.saveDomainObject testRun
+				linkToDelete.delete()
+			}
+		}
+	}
 }
