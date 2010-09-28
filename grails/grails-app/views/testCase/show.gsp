@@ -24,17 +24,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html>
 	<head>
 		<title>Cuanto: Test Cases for ${project?.toString()}</title>
-		<meta name="layout" content="main"/>
-		<g:javascript src="cuanto/url.js"/>
+		<meta name="layout" content="mainBare"/>
 
 		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
 		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
 		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
 
+		<g:render template="/shared/yui26"/>
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
 		<yui:javascript dir="datatable" file="datatable-min.js" version="2.6.0"/>
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
-		
+
+		<g:javascript src="jq/jquery-1.4.2.min.js"/>
+		<g:javascript src="cuanto/url.js"/>
 		<g:javascript src="cuanto/formatBug.js"/>
         <g:javascript src="cuanto/testcases.js"/>
 
