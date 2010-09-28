@@ -28,30 +28,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<title><g:layoutTitle default="Cuanto"/></title>
 		<p:css name='cuanto'/>
 		<p:css name='nav'/>
-		%{--<p:css name='../js/yui/2.6.0/fonts/fonts-min'/>--}%
-		%{--<p:css name='../js/yui/2.6.0/container/assets/skins/sam/container'/>--}%
-
 		<link rel="shortcut icon" href="${resource(dir: 'images', file: 'favicon.ico')}" type="image/x-icon"/>
-
-		%{--<yui:javascript dir="yahoo" file="yahoo-min.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="event" file="event-min.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="yahoo-dom-event" file="yahoo-dom-event.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="connection" file="connection-min.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="dragdrop" file="dragdrop-min.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="container" file="container-min.js" version="2.6.0"/>--}%
-		%{--<yui:javascript dir="element" file="element-beta-min.js" version="2.6.0"/>--}%
-		%{--<g:javascript library="prototype"/>--}%
-
 		<g:layoutHead/>
-
 	</head>
 	<body class=" yui-skin-sam">
 		<div id="nav" class="nav">
 			<ul>
-				<li id="clogo"><g:link controller="project" action="list"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-16.gif')}" alt="Cuanto logo"/>
+				<li id="clogo"><g:link controller="project" action="mason"><img src="${resource(dir: 'images/logos', file:'cuanto-logo-16.gif')}" alt="Cuanto logo"/>
 Cuanto</g:link></li>
 				<li class="first navitem">
-					<g:link controller="project" action="list">Projects</g:link>
+					<g:link controller="project" action="mason">Projects</g:link>
 				</li>
 				<li class="last navitem">
 					<a href="${resource(file: 'help')}">Help</a>
