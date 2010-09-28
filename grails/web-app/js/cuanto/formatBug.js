@@ -54,21 +54,13 @@ YAHOO.cuanto.format = function() {
 
 
 	function getWidthForColumnText(text) {
-		if (!$('#columntester').length > 0) {
-			var elem = createElem("columntester");
-			elem.id = "columntester";
-			document.body.appendChild(elem);
+		if ($("#columntester").length == 0) {
+			var coltester = $("<div id='columntester'/>");
+			document.body.appendChild(coltester[0]);
 			$('#columntester').hide();
 		}
 		$('#columntester').html(text);
-		//return $('#columntester').css("width");
 		return $('#columntester').width();
-	}
-
-	function createElem(elem) {
-		return document.createElementNS ?
-		       document.createElementNS('http://www.w3.org/1999/xhtml', elem) :
-		       document.createElement(elem);
 	}
 
 	function showBugInNewWindow(e) {
@@ -101,7 +93,6 @@ YAHOO.cuanto.format = function() {
 			if (title != null && url != null && url != "") {
 				var cnt = $("<div></div>");
 				cnt.html("<span>" + title + " </span>");
-				
 				var link = $("<a href=''" + url + "'<img src='" + YAHOO.cuanto.urls.get("shortcutImg") +
 					"' style='width:13px; height:13px;'/></a>");
 				cnt.append(link);
