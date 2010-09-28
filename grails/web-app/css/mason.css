@@ -1,4 +1,4 @@
-.box {
+.projBox {
 	margin: 5px;
 	padding: 5px;
 	background: #D8D5D2;
@@ -32,4 +32,13 @@
 
 .proj {
 	margin-left: 30px;
+}
+
+.shown{
+	background:#DBEAFF !important;
+}
+
+#projectBody {
+	margin-left: 30px;
+	margin-right: 30px;
 }

@@ -232,6 +232,14 @@ class ProjectController {
 			formatters: testCaseFormatterRegistry.formatterList]
 	}
 
+	def masonProj = {
+		def group = null
+		if (params.id) {
+			group = ProjectGroup.get(params.id)
+		}
+		render(template:"masonProj", model:[projects: group.projects.sort()])
+	}
+
 
 	def listOnly = {
 		def project = null

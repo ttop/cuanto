@@ -59,10 +59,11 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 	projDialog.cfg.queueProperty("buttons", myButtons);
 
 	projDialog.callback = {
-		success: function () {
+		success: function (o) {
 			this.hide();
 			pub.clear();
-			YAHOO.cuanto.events.projectChangeEvent.fire();
+			var project = YAHOO.lang.JSON.parse(o.responseText);
+			YAHOO.cuanto.events.projectChangeEvent.fire(project);
 		},
 		failure: function() {
 			this.hide();
@@ -171,28 +172,6 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 			data: {'id': projectId, format: 'json', rand: new Date().getTime()},
 			dataType: "json",
 			success: function(project, textStatus, httpReq) {
-				$('#pdProjectId').val(project['id']);
-				$('#pdName').val(project['name']);
-				if (project['projectGroup'] && project['projectGroup']['name']) {
-					$('#pdGroup').val(project['projectGroup']['name']);
-				}
-				$('#pdProjectKey').val(project['projectKey']);
-				if (project['bugUrlPattern']) {
-					$('#pdUrlPattern').val(project['bugUrlPattern']);
-				}
-				$('#pdType').val(project['testType']['name']);
-				$('#pdLoading').hide();
-			}
-		});
-	};
-
-	pub.orig_loadProject = function(projectId) {
-	    $('#pdLoading').show();
-		new Ajax.Request(YAHOO.cuanto.urls.get('projectInfo'), {
-			parameters: {'id': projectId, format: 'json', rand: new Date().getTime()},
-			method: "get",
-			onSuccess: function(transport) {
-				var project = transport.responseJSON;
 				$('#pdProjectId').val(project['id']);
 				$('#pdName').val(project['name']);
 				if (project['projectGroup'] && project['projectGroup']['name']) {

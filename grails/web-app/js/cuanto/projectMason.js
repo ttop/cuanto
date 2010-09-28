@@ -23,89 +23,78 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.ProjectMason = function() {
 	var pub = {};
-	//var projectDialog = new YAHOO.cuanto.ProjectDialog();
-	//var projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
+	var projectDialog = new YAHOO.cuanto.ProjectDialog();
+	var cookieName = "project";
 
 	pub.init = function() {
-		//$('#wrapper').masonry({ singleMode: true });
-		$('#groups').masonry({
-			singleMode: true,
-			itemSelector: '.box'
-		});
-		var bkpt;
-		//initHeight();
-		//initAccordion();
-		//initProjectDialog();
-		//initDeleteProjectDialog();
-		//var initialAccordianMenuWidth = parseInt($('accordionMenu').getStyle('width'));
-		//var scrollBarCompensatedWidth = initialAccordianMenuWidth + 20 + "px";
-		//$('accordionMenu').setStyle({width : scrollBarCompensatedWidth});
-
-		//YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
-		//window.onresize = initHeight;
+		initMasonry();
+		initProjectDialog();
+		YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 	};
-/*
-	function initHeight() {
-		var newHt = document.viewport.getHeight() - 136;
-		$('accordionMenu').setStyle({height: newHt + "px"});
-		$('rightColProjects').clonePosition($('accordionMenu'), {setLeft: false, setWidth: false});
-		$('projColInner').setStyle({height: newHt - 60 + "px", width: $('rightColProjects').getWidth() - 60 + "px"});
-	}
-
-	function initAccordion() {
-		$$('.tog').each(function(toggler) {
-			YAHOO.util.Event.addListener(toggler, 'mouseover', showProjectList);
-		});
-
-		var stretchers = $$(".accordion");
-		var togglers = $$(".inactiveToggler");
-		new fx.Accordion(togglers, stretchers, {
-			trigger: 'hover',
-			triggerThreshold: 0,
-			opacity: true,
-			start: false,
-			duration: 0
-		});
-	}
-
-	function showProjectList() {
-		$('rightColProjects').show();
-		$$('.tog').each(function(toggler) {
-			YAHOO.util.Event.removeListener(toggler, 'mouseover', showProjectList);
-		});
-	}*/
 
 	function initProjectDialog() {
 		YAHOO.util.Event.onAvailable("addProject", function() {
-		 	YAHOO.util.Event.addListener("addProject", "click", showAddProject);
-			$$('.editProj').each(function(lnk) {
-				YAHOO.util.Event.addListener(lnk, "click", showEditProject);
-			});
-		 });
-	}
-
-	function initDeleteProjectDialog() {
-		YAHOO.util.Event.onAvailable("addProject", function() {
-			$$('.deleteProj').each(function(lnk) {
-				YAHOO.util.Event.addListener(lnk, "click", showDeleteProject);
-			});
+			YAHOO.util.Event.addListener("addProject", "click", showAddProject);
 		});
 	}
 
 
-	function onProjectChange(e) {
-		var url = YAHOO.cuanto.urls.get('projectList') + "?rand=" + new Date().getTime();
-		new Ajax.Request(url, {
-			method: 'get',
-			onSuccess: function(o) {
-				$('projectBody').innerHTML = o.responseText;
-				//initAccordion();
-				initProjectDialog();
-				initDeleteProjectDialog();
-				//initHeight();
+	function initMasonry() {
+		openPrevious();
+
+		$('#groups').masonry({
+			singleMode: true,
+			itemSelector: '.projBox',
+			animate: true,
+			animationOptions: {easing: 'linear', duration:200},
+			saveOptions: true
+		});
+
+		$(".projBox").unbind();
+		$(".projBox").click(function(event) {
+			if ($(event.originalTarget).attr("tagName") != 'A') {
+				event.preventDefault();
+				var projList = $(".projList", this);
+				if (projList.css("display") == "none") {
+					var projBox = $(event.target).closest('.projBox');
+					projBox.addClass("shown");
+					$(".projList", this).show();
+					$('#groups').masonry();
+					var grpId = $(".projGroup", projBox).attr("id");
+					storeVisibleGroups();
+				} else {
+					$(".projList", this).hide();
+					$(event.target).closest('.projBox').removeClass("shown");
+					$('#groups').masonry();
+				}
 			}
 		});
-		YAHOO.util.Event.preventDefault(e);
+	}
+
+	function storeVisibleGroups() {
+		var visible = $(".shown").children(".projGroup");
+		var visibleIds = $.map(visible, function(grp) {
+			return grp.id;
+		});
+		var expDate = new Date();
+		expDate.setDate(expDate.getDate() + 30);
+		var text = visibleIds.join(",");
+		YAHOO.util.Cookie.set(cookieName, text, {path:"/", expires: expDate});
+	}
+
+
+	function openPrevious() {
+		var text = YAHOO.util.Cookie.get(cookieName);
+		if (text) {
+			var visibleIds = text.split(",");
+			$.each(visibleIds, function(idx, grp) {
+				var grpId = "#" + grp;
+				var box = $(grpId).closest(".projBox");
+				box.addClass("shown");
+				var projList = $(grpId).nextAll(".projList");
+				projList.show();
+			});
+		}
 	}
 
 	function showAddProject(e) {
@@ -114,21 +103,20 @@ YAHOO.cuanto.ProjectMason = function() {
 		YAHOO.util.Event.preventDefault(e);
 	}
 
-	function showEditProject(e) {
-		projectDialog.setTitle("Edit Project");
-		projectDialog.show();
-		var target = YAHOO.util.Event.getTarget(e);
-		var projectId = target.id.match(/.+?(\d+)/)[1];
-		projectDialog.loadProject(projectId);
+	function onProjectChange(e, proj) {
 		YAHOO.util.Event.preventDefault(e);
-	}
-
-	function showDeleteProject(e) {
-		var target = YAHOO.util.Event.getTarget(e);
-		var projectId = target.id.match(/.+?(\d+)/)[1];
-		var projectName = $('pName' + projectId).innerHTML;
-		projectDeleteDialog.show(projectId, projectName);
-		YAHOO.util.Event.preventDefault(e);
+		var project = proj[0];
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('masonProjList') + "?rand=" + new Date().getTime(),
+			dataType: "html",
+			data: {"id": project.projectGroup.id},
+			success: function(data, status, req) {
+				var grpId = "#grp-" + project.projectGroup.name.replace("\\s+", "");
+				$(grpId).nextAll(".projList").replaceWith(data);
+				$(grpId).nextAll(".projList").show();
+				initMasonry();
+			}
+		});
 	}
 
 

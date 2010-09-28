@@ -1,5 +1,6 @@
-/*
- Copyright (c) 2008 thePlatform, Inc.
+%{--
+
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -16,26 +17,13 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
 
-
-
-class UrlMappings {
-	static mappings = {
-		"/$controller/$action?/$id?"
-			{
-				constraints {
-					// apply constraints here
-				}
-			}
-		"500"(view: '/error')
-		"/"(controller: "project", action: "mason")
-		"/project/new/$id?"(controller: "project", action: "newProject")
-		"/group/$group"(controller: "project", action: "listGroup")
-		"/project/groupHistory/$group"(controller: "project", action: "groupHistory")
-		"/help"(view: '/help/index.gsp')
-		"/testRun/analysis/$id"(controller: "testRun", action: "results")
-		"/testRun/latest/$projectKey"(controller: "testRun", action: "results")
-		"/show/$projectKey"(controller: "project", action: "history")
-	}
-}
+--}%
+<div class="projList" style="display:none">
+	<g:each in="${projects}" var="proj">
+		<div class="proj">
+			<span class="projId" style="display:none">${proj.id}</span>
+			<span class="pName"><g:link controller="project" action="history" params="[projectKey: proj.projectKey]" class="projLink">${proj.name}</g:link></span>
+		</div>
+	</g:each>
+</div>

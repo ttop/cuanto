@@ -28,14 +28,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<meta name="layout" content="mainBare"/>
 
 		<g:render template="/shared/yui26"/>
+		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.6.0/autocomplete/assets/skins/sam/autocomplete'/>
+
+		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
+		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.6.0"/>
+		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
+
 		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="jq/jquery.masonry.min.js"/>
-		%{--<g:javascript src="cuanto/url.js"/>--}%
+
+
+		<g:javascript src="cuanto/url.js"/>
 		<g:javascript src="cuanto/events.js"/>
-		%{--<g:javascript src="cuanto/projectDialog.js"/>--}%
+		<g:javascript src="cuanto/projectDialog.js"/>
 		%{--<g:javascript src="cuanto/deleteProjectDialog.js"/>--}%
 		<g:javascript src="cuanto/projectMason.js"/>
 		<g:javascript>
+			<g:render template="/testRun/urls"/>
+
 			$(function() {
 				var pm = new YAHOO.cuanto.ProjectMason();
 				pm.init();
@@ -46,34 +60,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<body class=" yui-skin-sam">
 		<div class=" ">
 			<div id="projectBody">
-				<g:set var="groupsToProjectsMap" value="${[:]}"/>
-				<g:set var="ungroupedProjects" value="${projects.findAll {!it.projectGroup}}"/>
+				<span class="headone">Projects</span>
+				<span class="smaller hdActions">
+					<a id="addProject" href="#addProject">Add Project</a> 
+				</span>
+				<g:render template="mason"/>
+				<g:render template="projectDialog"/>
 
-				<g:each var="group" in="${groups}">
-					<% groupsToProjectsMap[group] = projects.findAll { it.projectGroup?.name == group } %>
-				</g:each>
-
-				<g:if test="${ungroupedProjects}">
-					<% groupsToProjectsMap["Ungrouped"] = ungroupedProjects %>
-				</g:if>
-
-
-
-				<div id="groups" class="wrap">
-					<g:each var="group" in="${groupsToProjectsMap}">
-						<div class="box pg">
-							<div class="projGroup">${group.key}</div>
-
-							<div>
-								<g:each in="${group.value}" var="proj">
-									<div class="proj">
-										<g:link controller="project" action="history" params="[projectKey: proj.projectKey]"><span class="pName" id="pName${proj.id}">${proj.name}</span></g:link>
-									</div>
-								</g:each>
-							</div>
-						</div>
-					</g:each>
-				</div>
 			</div>
 		</div>
 	</body>
