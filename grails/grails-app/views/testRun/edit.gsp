@@ -22,11 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
+
 		<title>Cuanto: Edit Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</title>
 
 		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<g:render template="/shared/yui26"/>
+
+
 		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="cuanto/url.js"/>
 		<g:javascript src="cuanto/editTestRun.js"/>
 
