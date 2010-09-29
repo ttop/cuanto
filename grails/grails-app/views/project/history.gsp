@@ -30,7 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
+
+		<g:render template="/shared/yui26"/>
+
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
 		<title>Cuanto: Test Run History for ${project?.name?.encodeAsHTML()} (id ${project?.id})</title>
 		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
@@ -44,9 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
 
+		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="cuanto/url.js"/>
 		<g:javascript src="cuanto/timeParser.js"/>
-		<g:javascript src="cuanto/columnDialog.js"/>
+		<g:javascript src="cuanto/jcolumnDialog.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 
 		<script type="text/javascript">

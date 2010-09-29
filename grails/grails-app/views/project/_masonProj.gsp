@@ -1,5 +1,6 @@
-/*
- Copyright (c) 2008 thePlatform, Inc.
+%{--
+
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -16,23 +17,13 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
 
-
-YAHOO.namespace('cuanto');
-
-YAHOO.cuanto.urls = function() {
-	var urls = new Object();
-
-	return { // public methods
-		set: function(attr, url) {
-			var tmp = url;
-			tmp = tmp.replace(/;jsessionid=.*(?=[\/|$])/, ""); // workaround for CUANTO-34
-			urls[attr] = tmp;
-		},
-
-		get: function(attr) {
-			return urls[attr];
-		}
-	};
-}();
+--}%
+<div class="projList" style="display:none">
+	<g:each in="${projects}" var="proj">
+		<div class="proj">
+			<span class="projId" style="display:none">${proj.id}</span>
+			<span class="pName"><g:link controller="project" action="history" params="[projectKey: proj.projectKey]" class="projLink">${proj.name}</g:link></span>
+		</div>
+	</g:each>
+</div>

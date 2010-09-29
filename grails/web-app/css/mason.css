@@ -1,0 +1,50 @@
+.projBox {
+	margin: 5px;
+	padding: 5px;
+	background: #D8D5D2;
+	font-size: 11px;
+
+	float: left;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.pg {
+	width: 300px;
+}
+
+.wrap {
+	background: white;
+	border: 0px solid #456;
+	border-bottom-left-radius: 5px 5px;
+	border-bottom-right-radius: 5px 5px;
+	border-top-left-radius: 5px 5px;
+	border-top-right-radius: 5px 5px;
+	clear: both;
+	margin-bottom: 20px;
+	padding: 10px;
+}
+
+.projGroup {
+	font-size: 15px;
+}
+
+.proj {
+	margin-left: 30px;
+}
+
+.shown{
+	background:#DBEAFF !important;
+}
+
+#projectBody {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+.groupLink {
+	font-size:x-small;
+	float:right;
+	margin-right: 10px;
+}

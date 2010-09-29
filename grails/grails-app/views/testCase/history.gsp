@@ -23,18 +23,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
+
+		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
+		<p:css name='../js/yui/2.6.0/tabview/assets/skins/sam/tabview'/>
+		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
+
+		<g:render template="/shared/yui26"/>
+
+		<g:javascript src="jq/jquery-1.4.2.min.js"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
+		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
+		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
+		<yui:javascript dir="resize" file="resize-min.js" version="2.6.0"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
+		<yui:javascript dir="history" file="history-min.js" version="2.6.0"/>
+
 		<g:javascript src="cuanto/lruCache.js"/>
 		<g:javascript src="cuanto/outputProxy.js"/>
 		<g:javascript src="cuanto/testoutput.js"/>
 
 		<g:render template="history_hdr"/>
-		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
-		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {
-			<g:render template="/testRun/urls"/>
-
+				<g:render template="/testRun/urls"/>
 				YAHOO.cuanto.testCaseHistory.initTcHistoryTable(${testCase?.id});
 			});
 		</script>

@@ -76,28 +76,28 @@ YAHOO.cuanto.groupHistory = function() {
 
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = oData + " %";
+		$(elCell).html(oData + " %");
 	}
 
 
 	function propertyFormatter(elCell, oRecord, oColumn, oData) {
 		var out = "";
-		oData.each(function(item, indx) {
+		$.each(oData, function(indx, item) {
 			out += item["name"] + ": " + item["value"];
 			if (indx < oData.length - 1) {
 				out += ", ";
 			}
 		});
-		elCell.innerHTML = out;
+		$(elCell).html(out);
 	}
 
 
 	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("totalDuration")));
 	}
 
 	function formatAvgDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("averageDuration")));
 	}
 
 

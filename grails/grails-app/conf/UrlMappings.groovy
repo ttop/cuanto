@@ -29,7 +29,7 @@ class UrlMappings {
 				}
 			}
 		"500"(view: '/error')
-		"/"(controller: "project", action: "list")
+		"/"(controller: "project", action: "mason")
 		"/project/new/$id?"(controller: "project", action: "newProject")
 		"/group/$group"(controller: "project", action: "listGroup")
 		"/project/groupHistory/$group"(controller: "project", action: "groupHistory")

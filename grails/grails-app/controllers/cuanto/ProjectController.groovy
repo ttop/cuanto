@@ -219,9 +219,25 @@ class ProjectController {
 		if (params.id) {
 			project = Project.get(params.id)
 		}
-		def groups = projectService.getAllGroupNames()
-		[groups: groups, projects: dataService.getAllProjects(), 'project': project,
+		[groups: projectService.getAllGroupNames(), projects: dataService.getAllProjects(), 'project': project,
 			formatters: testCaseFormatterRegistry.formatterList]
+	}
+
+	def mason = {
+		def project = null
+		if (params.id) {
+			project = Project.get(params.id)
+		}
+		[groups: projectService.getAllGroupNames(), projects: dataService.getAllProjects(), 'project': project,
+			formatters: testCaseFormatterRegistry.formatterList]
+	}
+
+	def masonProj = {
+		def group = null
+		if (params.id) {
+			group = ProjectGroup.get(params.id)
+		}
+		render(template:"masonProj", model:[projects: group.projects.sort()])
 	}
 
 
@@ -230,9 +246,8 @@ class ProjectController {
 		if (params.id) {
 			project = Project.get(params.id)
 		}
-		def groups = projectService.getAllGroupNames()
-		render(template: "projectList", model:[groups: groups, projects: dataService.getAllProjects(),
-			'project': project])
+		render(template: "projectList", model:[groups: projectService.getAllGroupNames(),
+			projects: dataService.getAllProjects(), 'project': project])
 	}
 
 

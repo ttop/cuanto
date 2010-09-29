@@ -1,5 +1,6 @@
-/*
- Copyright (c) 2008 thePlatform, Inc.
+%{--
+
+ Copyright (c) 2010 Todd Wells
 
 This file is part of Cuanto, a test results repository and analysis program.
 
@@ -16,23 +17,16 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
 
+--}%
+		<p:css name='../js/yui/2.6.0/fonts/fonts-min'/>
+		<p:css name='../js/yui/2.6.0/container/assets/skins/sam/container'/>
 
-YAHOO.namespace('cuanto');
+		<yui:javascript dir="yahoo" file="yahoo-min.js" version="2.6.0"/>
+		<yui:javascript dir="event" file="event-min.js" version="2.6.0"/>
+		<yui:javascript dir="yahoo-dom-event" file="yahoo-dom-event.js" version="2.6.0"/>
+		<yui:javascript dir="connection" file="connection-min.js" version="2.6.0"/>
+		<yui:javascript dir="dragdrop" file="dragdrop-min.js" version="2.6.0"/>
+		<yui:javascript dir="container" file="container-min.js" version="2.6.0"/>
+		<yui:javascript dir="element" file="element-beta-min.js" version="2.6.0"/>
 
-YAHOO.cuanto.urls = function() {
-	var urls = new Object();
-
-	return { // public methods
-		set: function(attr, url) {
-			var tmp = url;
-			tmp = tmp.replace(/;jsessionid=.*(?=[\/|$])/, ""); // workaround for CUANTO-34
-			urls[attr] = tmp;
-		},
-
-		get: function(attr) {
-			return urls[attr];
-		}
-	};
-}();

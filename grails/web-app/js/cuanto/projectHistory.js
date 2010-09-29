@@ -141,12 +141,16 @@ YAHOO.cuanto.projectHistory = function() {
 		var out = "";
 		var propName = oColumn.label;
 		if (oRecord && oRecord.getData("testProperties")) {
-			var prop = oRecord.getData("testProperties").find(function(pr) {
-				return pr.name.toLowerCase() == propName.toLowerCase();
+
+			var prop;
+			$.each(oRecord.getData("testProperties"), function(idx, pr) {
+				if (pr.name.toLowerCase() == propName.toLowerCase()) {
+					prop = pr;
+					out = prop["value"];
+					return false;
+				}
 			});
-			if (prop) {
-				out = prop["value"];
-			}
+
 			elCell.innerHTML = out;
 		}
 	}
@@ -169,10 +173,10 @@ YAHOO.cuanto.projectHistory = function() {
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
-			var columns = testRunTable.getColumnSet().keys.collect(function(item) {
+			var columns = $.map(testRunTable.getColumnSet().keys, function(item, idx) {
 				return item.key;
 			});
-			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, "ph-" + $('projectId').getValue());
+			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, "ph-" + $('#projectId').val());
 		}
 		return columnDialog;
 	}
@@ -197,12 +201,12 @@ YAHOO.cuanto.projectHistory = function() {
 				dataSource, tableConfig);
 
 			var hiddenCols = getHiddenColumns();
-			testRunTable.getColumnSet().flat.each(function(column) {
+
+			$.each(testRunTable.getColumnSet().flat, function(idx, column) {
 				if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
 					testRunTable.hideColumn(column.key);
 				}
 			});
-
 
 			testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
 				if (!oPayload) {

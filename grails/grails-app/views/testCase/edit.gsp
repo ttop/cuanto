@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
+		<g:render template="/shared/yui26"/>
 	</head>
 	<body class=" yui-skin-sam">
 		<div class="body yui-skin-sam cuantoBody ">

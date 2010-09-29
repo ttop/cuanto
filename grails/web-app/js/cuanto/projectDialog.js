@@ -34,12 +34,10 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		y: 100
 	});
 
-	$$('.pdInput').each(function(inp) {
-		inp.setStyle({width: "180px"});
-	});
+	$('.pdInput').css("width", "180px");
 
 	if (title) {
-		$('pdHd').innerHTML = title;
+		$('#pdHd').html(title);
 	}
 
 	var handleCancel = function() {
@@ -52,7 +50,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		if (validate()) {
 			this.submit();
 		} else {
-			$('pdErrorDiv').show();
+			$('#pdErrorDiv').show();
 		}
 	};
 
@@ -61,10 +59,11 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 	projDialog.cfg.queueProperty("buttons", myButtons);
 
 	projDialog.callback = {
-		success: function () {
+		success: function (o) {
 			this.hide();
 			pub.clear();
-			YAHOO.cuanto.events.projectChangeEvent.fire();
+			var project = YAHOO.lang.JSON.parse(o.responseText);
+			YAHOO.cuanto.events.projectChangeEvent.fire(project);
 		},
 		failure: function() {
 			this.hide();
@@ -94,7 +93,8 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 			fields: ["name"]
 		};
 
-		$('pdAutoComplete').setStyle({width: $('pdGroup').getStyle('width')});
+		$('#pdAutoComplete').css({width: $('#pdGroup').css('width')});
+
 		var autoComplete = new YAHOO.widget.AutoComplete("pdGroup", "pdAutoComplete", dataSource);
 		autoComplete.minQueryLength = 2;
 		autoComplete.queryDelay = .4;
@@ -109,20 +109,23 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		autoComplete.useIFrame = true;
 	}
 
+	function isBlank(val) {
+		return $.trim(val).length == 0;
+	}
+
 	function validate() {
 		var isValid = true;
 		var error = "";
-		var form = $('pdForm');
+		var form = $('#pdForm');
+		var name = $("#pdName");
 
-		var name = form["name"];
-
-		if ($F(name).blank()) {
+		if (isBlank(name.val())) {
 			isValid = false;
 			error += "Project Name cannot be blank<br/>";
 		}
 
-		var pk = $F(form["projectKey"]);
-		if (pk.blank()) {
+		var pk = $("#pdProjectKey").val();
+		if (isBlank(pk)) {
 			isValid = false;
 			error += "Project Key cannot be blank<br/>";
 		}
@@ -137,12 +140,12 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 			error += "Project Key cannot contain whitespace";
 		}
 
-		$('pdError').innerHTML = error;
+		$('#pdError').innerHTML = error;
 		return isValid;
 	}
 
 	pub.setTitle = function(title) {
-		$('pdHd').innerHTML = title;
+		$('#pdHd').html(title);
 	};
 
 	pub.show = function(title, projectId) {
@@ -151,9 +154,9 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		}
 
 		if (projectId) {
-			$('pdProjectId').setValue(projectId);
+			$('#pdProjectId').val(projectId);
 		} else {
-			$('pdProjectId').setValue("");
+			$('#pdProjectId').val("");
 		}
 
 		projDialog.show();
@@ -161,31 +164,33 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 	};
 
 	pub.loadProject = function(projectId) {
-	    $('pdLoading').show();
-		new Ajax.Request(YAHOO.cuanto.urls.get('projectInfo'), {
-			parameters: {'id': projectId, format: 'json', rand: new Date().getTime()},
-			method: "get",
-			onSuccess: function(transport) {
-				var project = transport.responseJSON;
-				$('pdProjectId').setValue(project['id']);
-				$('pdName').setValue(project['name']);
+	    $('#pdLoading').show();
+
+		var myurl = YAHOO.cuanto.urls.get('projectInfo');
+		$.ajax({
+			url: myurl,
+			data: {'id': projectId, format: 'json', rand: new Date().getTime()},
+			dataType: "json",
+			success: function(project, textStatus, httpReq) {
+				$('#pdProjectId').val(project['id']);
+				$('#pdName').val(project['name']);
 				if (project['projectGroup'] && project['projectGroup']['name']) {
-					$('pdGroup').setValue(project['projectGroup']['name']);
+					$('#pdGroup').val(project['projectGroup']['name']);
 				}
-				$('pdProjectKey').setValue(project['projectKey']);
+				$('#pdProjectKey').val(project['projectKey']);
 				if (project['bugUrlPattern']) {
-					$('pdUrlPattern').setValue(project['bugUrlPattern']);
+					$('#pdUrlPattern').val(project['bugUrlPattern']);
 				}
-				$('pdType').setValue(project['testType']['name']);
-				$('pdLoading').hide();
+				$('#pdType').val(project['testType']['name']);
+				$('#pdLoading').hide();
 			}
 		});
 	};
 
 	pub.clear = function() {
-		$('pdForm').reset();
-		$('pdErrorDiv').hide();
-		$('pdError').innerHTML = "";
+		$('.pdInput').val("");
+		$('#pdErrorDiv').hide();
+		$('#pdError').html("");
 	};
 	return pub;
 };

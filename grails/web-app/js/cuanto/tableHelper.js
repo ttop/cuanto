@@ -52,11 +52,12 @@ YAHOO.cuanto.tables = function() {
 	}
 
 	function getCurrentTcFormat() {
-		return $F('tcFormat', 'value');
+		//return $F('tcFormat', 'value');
+		return $("#tcFormat").val();
 	}
 
 	function onSaveRecordFailure(o) {
-		var failPanel =	new YAHOO.widget.Panel("failPanel", {dragOnly: true, width: document.viewport.getWidth() * .8 + "px",
+		var failPanel =	new YAHOO.widget.Panel("failPanel", {dragOnly: true, width: $(window).width() * .8 + "px",
 				visible: true, xy: [100,100], zIndex: 10,
 				effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.15}});
 		failPanel.setHeader("Failed saving record " + o.argument.getData("id"));
