@@ -34,8 +34,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<div id="groups" class="wrap">
 		<g:each var="group" in="${groupsToProjectsMap}">
 			<div class="projBox pg">
-				<div class="projGroup" id="grp-${group.key.replaceAll("\\s+", "")}">${group.key}</div>
+				<div class="projGroup" id="grp-${group.key.replaceAll("\\s+", "")}">
+					<span>${group.key}</span>
+					<a href="${createLink(controller: 'group') + '/' + group.key.replaceAll(' ', '+')}" class="groupLink" style="display:none">Group View</a>
+				</div>
+
 				<div class="projList" style="display:none">
+
 					<g:each in="${group.value}" var="proj">
 						<div class="proj">
 							<span class="projId" style="display:none">${proj.id}</span>

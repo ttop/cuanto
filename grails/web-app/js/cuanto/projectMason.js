@@ -59,14 +59,17 @@ YAHOO.cuanto.ProjectMason = function() {
 					var projBox = $(event.target).closest('.projBox');
 					projBox.addClass("shown");
 					$(".projList", this).show();
+					$(event.target).closest('.projBox').find(".groupLink").show();
 					$('#groups').masonry();
 					var grpId = $(".projGroup", projBox).attr("id");
-					storeVisibleGroups();
 				} else {
 					$(".projList", this).hide();
 					$(event.target).closest('.projBox').removeClass("shown");
+					$(event.target).closest('.projBox').find(".groupLink").hide();
 					$('#groups').masonry();
 				}
+				storeVisibleGroups()
+
 			}
 		});
 	}
@@ -91,6 +94,7 @@ YAHOO.cuanto.ProjectMason = function() {
 				var grpId = "#" + grp;
 				var box = $(grpId).closest(".projBox");
 				box.addClass("shown");
+				$(grpId).children(".groupLink").show();
 				var projList = $(grpId).nextAll(".projList");
 				projList.show();
 			});
