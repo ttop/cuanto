@@ -40,7 +40,8 @@ YAHOO.cuanto.GroupedOutput = function() {
     function getColumnDefs() {
         return [
             {key:"failures", label: "Failures", resizeable:false, width: 55, sortable: true},
-            {key:"output", label: "Output Summary", resizeable: true, minWidth: 350, sortable: true}    
+            {key:"output", label: "Output Summary", resizeable: true, minWidth: 350, width: 800, sortable: true,
+	            formatter: formatOutput}
         ];
     }
     
@@ -108,4 +109,9 @@ YAHOO.cuanto.GroupedOutput = function() {
         config.offset = offset;
         return new YAHOO.widget.Paginator(config);
     }
+
+	function formatOutput(elCell, oRecord, oColumn, oData) {
+		var output = YAHOO.cuanto.format.breakOnToken(oData, ' ', 800) + " ";
+		$(elCell).html(output);
+	}
 };
