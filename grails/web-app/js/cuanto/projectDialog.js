@@ -158,8 +158,8 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		} else {
 			$('#pdProjectId').val("");
 		}
-
 		projDialog.show();
+		$("#pdType").replaceWith($('#pdType').clone()); // hack for Chrome display issue
 		initAutoComplete();
 	};
 
