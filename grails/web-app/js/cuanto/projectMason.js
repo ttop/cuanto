@@ -85,20 +85,23 @@ YAHOO.cuanto.ProjectMason = function() {
 		YAHOO.util.Cookie.set(cookieName, text, {path:"/", expires: expDate});
 	}
 
-
 	function openPrevious() {
 		var text = YAHOO.util.Cookie.get(cookieName);
 		if (text) {
 			var visibleIds = text.split(",");
 			$.each(visibleIds, function(idx, grp) {
-				var grpId = "#" + grp;
-				var box = $(grpId).closest(".projBox");
-				box.addClass("shown");
-				$(grpId).children(".groupLink").show();
-				var projList = $(grpId).nextAll(".projList");
-				projList.show();
+				showGroup(grp);
 			});
 		}
+	}
+
+	function showGroup(grp) {
+		var grpId = "#" + grp;
+		var box = $(grpId).closest(".projBox");
+		box.addClass("shown");
+		$(grpId).children(".groupLink").show();
+		var projList = $(grpId).nextAll(".projList");
+		projList.show();
 	}
 
 	function showAddProject(e) {
@@ -110,20 +113,35 @@ YAHOO.cuanto.ProjectMason = function() {
 	function onProjectChange(e, proj) {
 		YAHOO.util.Event.preventDefault(e);
 		var project = proj[0];
-		$.ajax({
-			url: YAHOO.cuanto.urls.get('masonProjList') + "?rand=" + new Date().getTime(),
-			dataType: "html",
-			data: {"id": project.projectGroup.id},
-			success: function(data, status, req) {
-				var grpId = "#grp-" + project.projectGroup.name.replace("\\s+", "");
-				$(grpId).nextAll(".projList").replaceWith(data);
-				$(grpId).nextAll(".projList").show();
-				initMasonry();
-			}
-		});
+		var shortGrpName = project.projectGroup.name.replace(/\s/, "");
+		var grpId = "#grp-" + shortGrpName;
+		if ($(grpId).length > 0) {
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('masonProjList') + "?rand=" + new Date().getTime(),
+				dataType: "html",
+				data: {"id": project.projectGroup.id},
+				success: function(data, status, req) {
+					var grpId = "#grp-" + project.projectGroup.name.replace("\\s+", "");
+					$(grpId).nextAll(".projList").replaceWith(data);
+					$(grpId).nextAll(".projList").show();
+					initMasonry();
+				}
+			});
+		} else {
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('mason') + "?rand=" + new Date().getTime(),
+				dataType: "html",
+				data: {"id": project.projectGroup.id, "refresh": "t"},
+				success: function(data, status, req) {
+					$('#projectMason').replaceWith(data);
+					initMasonry();
+					showGroup("grp-" + shortGrpName);
+					storeVisibleGroups();
+					initMasonry();
+				}
+			});
+		}
 	}
-
-
 
 	return pub;
 };

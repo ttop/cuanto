@@ -228,9 +228,17 @@ class ProjectController {
 		if (params.id) {
 			project = Project.get(params.id)
 		}
-		[groups: projectService.getAllGroupNames(), projects: dataService.getAllProjects(), 'project': project,
-			formatters: testCaseFormatterRegistry.formatterList]
+		if (params.refresh) {
+			render(template: "mason", model: [groups: projectService.getAllGroupNames(),
+				projects: dataService.getAllProjects(), 'project': project,
+				formatters: testCaseFormatterRegistry.formatterList])
+		} else {
+			render(view: "mason", model: [groups: projectService.getAllGroupNames(),
+				projects: dataService.getAllProjects(), 'project': project,
+				formatters: testCaseFormatterRegistry.formatterList])
+		}
 	}
+
 
 	def masonProj = {
 		def group = null
