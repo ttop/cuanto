@@ -55,6 +55,7 @@ YAHOO.cuanto.urls.set('testOutputDataSource', "${createLink(controller: 'testOut
 YAHOO.cuanto.urls.set('analysis', "${createLink(controller: 'testCase', action:'analysis')}/");
 YAHOO.cuanto.urls.set('applyAnalysis', "${createLink(controller: 'testOutcome', action:'applyAnalysis')}/");
 YAHOO.cuanto.urls.set('masonProjList', "${createLink(controller: 'project', action:'masonProj')}/");
+YAHOO.cuanto.urls.set('mason', "${createLink(controller: 'project', action:'mason')}/");
 YAHOO.cuanto.urls.set('projectInfo', "${createLink(controller: 'project', action:'get')}/");
 YAHOO.cuanto.urls.set('propertyDelete', "${createLink(controller: 'testRun', action:'deleteProperty')}/");
 YAHOO.cuanto.urls.set('linkDelete', "${createLink(controller: 'testRun', action:'deleteLink')}/");
