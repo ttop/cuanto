@@ -65,7 +65,7 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-1.2.2" level="application" />
+    <orderEntry type="library" name="grails-1.3.4" level="application" />
     <orderEntry type="module" module-name="cuanto-grailsPlugins" />
   </component>
 </module>
