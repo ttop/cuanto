@@ -130,6 +130,20 @@ class ProjectController {
 	}
 
 
+	def projectHeader = {
+		def proj
+		if (params.id) {
+			proj = dataService.getProject(params.id)
+		}
+		if (proj) {
+			render(template: "phHeader", model:[project: proj])
+		} else {
+			response.status = response.SC_NOT_FOUND
+			render "Project ${params.id} not found"
+		}
+	}
+
+
 	def groupHistory = {
 		if (params.group) {
 			def testRuns = testRunService.getTestRunsForGroupName(params.group)

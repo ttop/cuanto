@@ -41,57 +41,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
 		<p:css name='columnDialog'/>
 
+		<p:css name='../js/yui/2.6.0/autocomplete/assets/skins/sam/autocomplete'/>
+
+		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
 		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
+		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.6.0"/>
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
 
 		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="cuanto/url.js"/>
+		<g:javascript src="cuanto/projectDialog.js"/>
+		<g:javascript src="cuanto/deleteProjectDialog.js"/>
+		<g:javascript src="cuanto/events.js"/>
 		<g:javascript src="cuanto/timeParser.js"/>
+
 		<g:javascript src="cuanto/jcolumnDialog.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 
 		<script type="text/javascript">
 
-		YAHOO.util.Event.onDOMReady(function () {
+			YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="/testRun/urls"/>
-			YAHOO.cuanto.projectHistory.initHistoryTable(<%=propNames%>);
-		});
+				YAHOO.cuanto.projectHistory.initHistoryTable(<%=propNames%>);
+			});
 
 		</script>
 	</head>
 
-	<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
-
-	<body class=" yui-skin-sam">
-	<div class="body yui-skin-sam">
-		<div>
-			<span class="head1">Test Run History for
-				<g:if test="${project?.projectGroup}">
-					<g:link controller="project" action="listGroup"
-						params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
-				<g:link controller="project" action="feed" id="${project?.id}">
-					<g:set var="feedTxt" value="RSS feed"/>
-					<img id="feedImg" src="${resource(dir: 'images/feedicons-standard', file: 'feed-icon-14x14.png')}"
-						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
-			</span>
-			<span class="smaller hdActions">
-				<a id="chooseColumns" class="selectCmd smaller" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
-				<span class="smaller">
-					<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
-					<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
-						<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-					</g:if></span>
-
-			</span>
-			<br/>
-			<div class="propsAndLinks">
-			<input type="hidden" name="projectId" id="projectId" value="${project?.id}"/>
-			<span class="heading">Project Key:</span><span class="text">${project?.projectKey}</span>
-			</div>
-		</div>
+	<body>
+		<div class="body yui-skin-sam">
+			<g:render template="phHeader"/>
+			
 			<div id="columnPanel" style="visibility:hidden">
 				<div class="hd">Columns</div>
 				<div id="columnPanel-picker" class="bd">
@@ -110,6 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</div>
 			</g:if>
 		</div>
+		<g:render template="projectDialog"/>
 
 	</body>
 </html>

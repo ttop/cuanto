@@ -25,8 +25,9 @@ YAHOO.cuanto.projectHistory = function() {
 
 	var testRunTable;
 	var columnDialog;
+	var projectDialog;
+
 	var timeParser = new YAHOO.cuanto.TimeParser();
-	YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
 
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
@@ -103,7 +104,7 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 	function chooseColumns(e) {
-		YAHOO.util.Event.preventDefault(e);
+		e.preventDefault();
 		var columnDialog = getColumnDialog();
 		columnDialog.show();
 	}
@@ -133,7 +134,7 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = oData + " %";
+		$(elCell).html(oData + " %");
 	}
 
 
@@ -151,22 +152,22 @@ YAHOO.cuanto.projectHistory = function() {
 				}
 			});
 
-			elCell.innerHTML = out;
+			$(elCell).html(out);
 		}
 	}
 
 
 	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("totalDuration")));
 	}
 
 	function formatAverageDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("averageDuration")));
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
         if (oData && oData.length > 0) {
-            elCell.innerHTML = oData.join(", ");
+            $(elCell).html(oData.join(", "));
         }
     }
     
@@ -191,8 +192,39 @@ YAHOO.cuanto.projectHistory = function() {
 		}
 	}
 
+	function onEditProject(event) {
+		event.preventDefault();
+		projectDialog.setTitle("Edit Project");
+		projectDialog.show();
+		var projectId = event.target.id.match(/.+?(\d+)/)[1];
+		projectDialog.loadProject(projectId);
+	}
+
+	function onProjectChange(e, data) {
+		var project = data[0];
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('projectHeader') + "?rand=" + new Date().getTime(),
+			data: {id: project.id},
+			dataType: "html",
+			success: function(response, textStatus, httpReq) {
+				$('#phHeader').html(response);
+				initHeader();
+			}
+		});
+	}
+
+	function initHeader() {
+		$('.editProj').click(onEditProject);
+		$("#chooseColumns").click(chooseColumns);
+	}
+
 	return {
 		initHistoryTable: function(testRunProps) {
+			projectDialog = new YAHOO.cuanto.ProjectDialog();
+
+			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
+			initHeader();
+
 			var columnDefs = getTestRunTableColumnDefs(testRunProps);
 			var dataSource = getTestRunDataSource();
 			var tableConfig = getTestRunTableConfig();
