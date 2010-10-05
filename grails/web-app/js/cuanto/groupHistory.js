@@ -23,6 +23,7 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.groupHistory = function() {
 
+	var testRunTable;
 	var timeParser = new YAHOO.cuanto.TimeParser();
 
 	var onSelectTestRunRow = function(e) {
@@ -100,6 +101,13 @@ YAHOO.cuanto.groupHistory = function() {
 		$(elCell).html(timeParser.formatMs(oRecord.getData("averageDuration")));
 	}
 
+	function onProjectChange(e, data) {
+		testRunTable.getDataSource().sendRequest("?rand=" + new Date().getTime(), {
+			success: function(oRequest, oResponse, oPayload) {
+				testRunTable.onDataReturnInitializeTable(oRequest, oResponse, oPayload);
+			}
+		});
+	}
 
 	return {
 		initGroupHistoryTable: function() {
@@ -107,7 +115,7 @@ YAHOO.cuanto.groupHistory = function() {
 			var dataSource = getTestRunDataSource();
 			var tableConfig = getTestRunTableConfig();
 
-			var testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
+			testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
 				dataSource, tableConfig);
 
 			testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
@@ -120,6 +128,8 @@ YAHOO.cuanto.groupHistory = function() {
 				}
 				return oPayload;
 			};
+
+			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 
 			testRunTable.set("selectionMode", "single");
 			testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
