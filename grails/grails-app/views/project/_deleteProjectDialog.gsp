@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<div class="bd">
 	<form method="POST" action="${createLink(controller:'project', action:'delete')}">
 		<input id="dpdProjectId" type="hidden" name="id"/>
-		<span class="head1">Are you sure you want to delete the project <b><span id="dpdProjectName"></span></b>?</span><br/>
+		<span class="head1">Are you sure you want to delete the project <b><span id="dpdProjectName"><g:if test="${project}">${project.name}</g:if></span></b>?</span><br/>
 			This will permanently delete the project and any saved test results associated with
 			the project.  If you are sure you want to delete this project, type YES in the box below
 			and click Delete.<br/>

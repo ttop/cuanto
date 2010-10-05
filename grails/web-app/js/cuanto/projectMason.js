@@ -112,7 +112,7 @@ YAHOO.cuanto.ProjectMason = function() {
 
 	function onProjectChange(e, proj) {
 		YAHOO.util.Event.preventDefault(e);
-		var project = proj[0];
+		var project = proj[0].project;
 		var shortGrpName = project.projectGroup.name.replace(/\s/, "");
 		var grpId = "#grp-" + shortGrpName;
 		if ($(grpId).length > 0) {

@@ -95,6 +95,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</g:if>
 		</div>
 		<g:render template="projectDialog"/>
+		<g:render template="deleteProjectDialog"/>
 
 	</body>
 </html>

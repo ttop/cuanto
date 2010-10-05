@@ -26,7 +26,7 @@ YAHOO.cuanto.projectHistory = function() {
 	var testRunTable;
 	var columnDialog;
 	var projectDialog;
-
+	var projectDeleteDialog;
 	var timeParser = new YAHOO.cuanto.TimeParser();
 
 	var onSelectTestRunRow = function(e) {
@@ -200,27 +200,45 @@ YAHOO.cuanto.projectHistory = function() {
 		projectDialog.loadProject(projectId);
 	}
 
+
 	function onProjectChange(e, data) {
-		var project = data[0];
-		$.ajax({
-			url: YAHOO.cuanto.urls.get('projectHeader') + "?rand=" + new Date().getTime(),
-			data: {id: project.id},
-			dataType: "html",
-			success: function(response, textStatus, httpReq) {
-				$('#phHeader').html(response);
-				initHeader();
-			}
-		});
+		var eventData = data[0];
+		if (eventData.action == "edit") {
+			var project = eventData.project;
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('projectHeader') + "?rand=" + new Date().getTime(),
+				data: {id: project.id},
+				dataType: "html",
+				success: function(response, textStatus, httpReq) {
+					$('#phHeader').html(response);
+					initHeader();
+				}
+			});
+		} else if (eventData.action == "delete") {
+			window.location = YAHOO.cuanto.urls.get('mason');
+		}
 	}
+
+
+	function showDeleteProject(e) {
+		var target = YAHOO.util.Event.getTarget(e);
+		YAHOO.util.Event.preventDefault(e);
+		var projectId = target.id.match(/.+?(\d+)/)[1];
+		var projectName = $('#pName' + projectId).html();
+		projectDeleteDialog.show(projectId, projectName);
+	}
+
 
 	function initHeader() {
 		$('.editProj').click(onEditProject);
 		$("#chooseColumns").click(chooseColumns);
+		$('.deleteProj').click(showDeleteProject);
 	}
 
 	return {
 		initHistoryTable: function(testRunProps) {
 			projectDialog = new YAHOO.cuanto.ProjectDialog();
+			projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
 
 			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 			initHeader();
