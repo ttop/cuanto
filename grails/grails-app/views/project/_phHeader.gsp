@@ -34,7 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="smaller hdActions">
 		<a id="chooseColumns" class="selectCmd" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
 		<span >
-			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
+			<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link> ${bullet}
+		    <g:link controller="testCase" action="rename" id="${project.projectKey}">Renaming Tool</g:link>
+		
 			<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
 			</g:if></span>

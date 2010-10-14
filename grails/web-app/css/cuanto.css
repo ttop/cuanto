@@ -338,3 +338,7 @@ form label.dialogLabel {
 	padding: 5px;
 	background-color:lightgray;
 }
+
+#renameForm {
+	margin-top: 20px;
+}

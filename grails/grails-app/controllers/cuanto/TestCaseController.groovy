@@ -28,6 +28,7 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import java.text.SimpleDateFormat
+import javax.servlet.http.HttpServletResponse
 
 class TestCaseController {
 
@@ -283,6 +284,65 @@ class TestCaseController {
 		def myJson = [testCase: [id: currentOutcome.testCase.id, name: currentOutcome.testCase.fullName,
 			'shortName': shortName], 'outcomes': jsonOutcomes, 'count': jsonOutcomes.size(), 'offset': currentIndex]
 		render myJson as JSON
+	}
+
+
+	def rename = {
+		def project = null
+		if (params.id) {
+			project = Project.get(params.id)
+		} else if (params.project) {
+			project = projectService.getProject(params.project)
+		}
+
+		if (!project) {
+			flash.message = "Unknown project"
+			redirect(controller: 'project', action: 'mason')
+		}
+
+		['project': project]
+	}
+
+
+	def renamePreview = {
+		def project = null
+		def error = null
+		if (params.id) {
+			project = Project.get(params.id)
+		}
+
+		if (!project) {
+			response.status = response.SC_NOT_FOUND
+			error = "Project ${params.id} not found"
+		}
+
+		if (!params.searchTerm) {
+			response.status = response.SC_BAD_REQUEST
+			error = "Missing searchTerm parameter"
+		}
+
+		if (!params.replaceName) {
+			response.status = response.SC_BAD_REQUEST
+			error = "Missing replaceName parameter"
+		}
+
+		if (!params.facet) {
+			response.status = response.SC_BAD_REQUEST
+			error = "Missing facet parameter"
+		}
+		
+		if (error) {
+			render error
+		} else {
+			def renameList = []
+			if (params.facet?.toLowerCase() == "packages") {
+				renameList = testOutcomeService.previewPackageRename(project, params.searchTerm, params.replaceName)
+			} else if (params.facet?.toLowerCase() == "test names") {
+				renameList = testOutcomeService.previewTestRename(project, params.searchTerm, params.replaceName)
+			}
+			def myJson = ["renameList": renameList]
+			render myJson as JSON
+		}
 	}
 
 
