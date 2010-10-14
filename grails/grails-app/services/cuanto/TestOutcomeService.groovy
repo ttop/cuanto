@@ -563,6 +563,57 @@ class TestOutcomeService {
     }
 
 
+	List <TestCase> findPackagesMatching(project, packageName) {
+		TestCase.findAllByProjectAndPackageNameLike(project, "%${packageName}%", [sort: "fullName", order: "asc"])
+	}
+
+
+	List <TestCase> findTestCaseNamesMatching(project, testName) {
+		TestCase.findAllByTestNameLike("%${testName}%", [sort: "fullName", order: "asc"])
+	}
+
+
+	List previewPackageRename(project, packageName, newName) {
+		def toReturn = []
+		def testCases = findPackagesMatching(project, packageName)
+		testCases.each {
+			toReturn << [testCase: it, newName: it.fullName.replaceAll(packageName, newName)]
+		}
+		return toReturn
+	}
+
+
+	List previewTestRename(project, testName, newName) {
+		def toReturn = []
+		def testCases = findTestCaseNamesMatching(project, testName)
+		testCases.each {
+			toReturn << [testCase: it, newName: it.fullName.replaceAll(testName, newName)]
+		}
+		return toReturn
+	}
+
+
+	/**
+	 *
+	 * @param toRename A List of Maps that contain "id" and "newName"
+	 */
+	void bulkPackageRename(List toRename) {
+		toRename.each {
+			def testCase = TestCase.get(it.id)
+			testCase.packageName = it.newName
+			dataService.saveDomainObject testCase
+		}
+	}
+
+
+	void bulkTestRename(List toRename) {
+		toRename.each {
+			def testCase = TestCase.get(it.id)
+			testCase.testName = it.newName
+			dataService.saveDomainObject testCase
+		}
+	}
+
 	/**
 	 * Queue the next test outcome for failure status recalculation,
 	 * upon completion of which test run stat recalculation will be queued for the next test run.
