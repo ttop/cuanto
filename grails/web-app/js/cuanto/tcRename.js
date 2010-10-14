@@ -40,6 +40,7 @@ YAHOO.cuanto.testCaseRename = function() {
 			disabled: true
 		});
 
+		enableFind();
 		handleFormChange(null);
 
 		$(".change").keyup(handleFormChange);
@@ -53,8 +54,32 @@ YAHOO.cuanto.testCaseRename = function() {
 
 
 	function handleReplace(e) {
+		var eligibleRecords = $.grep(dataTable.getRecordSet().getRecords(), function (record, idx){
+			return record.getData("checked");
+		});
+
+		var recordsToPost = $.map(eligibleRecords, function(record) {
+			return { id: record.getData("testCase").id, newName: record.getData("newName") };
+		});
+
+		var jsonToPost = YAHOO.lang.JSON.stringify(recordsToPost);
+		var bkpt;
 	}
 
+
+	function disableFind() {
+		//$("#facet").add("#searchTerm").add("#replaceName").attr("disabled", "disabled");
+		$("#searchTerm").add("#replaceName").attr("disabled", "disabled");
+		findBtn.set("disabled", true);
+	}
+
+
+	function enableFind() {
+		//$("#facet").add("#searchTerm").add("#replaceName").removeAttr("disabled");
+		$("#searchTerm").add("#replaceName").removeAttr("disabled");
+		findBtn.set("disabled", false);
+	}
+	
 
 	function getSearchTerm() {
 		return $.trim($('#searchTerm').val());
@@ -70,14 +95,25 @@ YAHOO.cuanto.testCaseRename = function() {
 		if (getSearchTerm() != "" && getReplaceTerm() != "") {
 		    findBtn.set("disabled", false);
 	    } else {
-		    findBtn.set("disabled", true)
+		    findBtn.set("disabled", true);
 	    }
 	}
-	
+
+
+	function handleSelectChange(e) {
+		var record = dataTable.getRecord(e.target);
+		record.setData("checked", $(this).attr("checked"));
+	}
 
 	function initTable() {
 		$("#renameTable").empty();
 		dataTable = new YAHOO.widget.DataTable("renameTable", getColumnDefs(), getDataSource(), getDataTableConfig());
+
+		// todo: make this logic conditional after response is received if records are > 0. Need to know what event to subscribe to
+
+		disableFind();
+		replaceBtn.set('disabled', false);
+
 	}
 
 
@@ -115,7 +151,10 @@ YAHOO.cuanto.testCaseRename = function() {
 
 
 	function formatSelect(elCell, oRecord, oColumn, oData) {
-		$(elCell).html("<input type='checkbox' checked='true'/>");
+		var chk = $("<input type='checkbox' checked='true' class='chk'/>");
+		$(elCell).html(chk);
+		chk.change(handleSelectChange);
+		oRecord.setData("checked", true);
 	}
 
 	function formatCurrentName(elCell, oRecord, oColumn, oData) {

@@ -563,29 +563,15 @@ class TestOutcomeService {
     }
 
 
-	List <TestCase> findPackagesMatching(project, packageName) {
-		TestCase.findAllByProjectAndPackageNameLike(project, "%${packageName}%", [sort: "fullName", order: "asc"])
+	List <TestCase> findTestCaseFullNamesMatching(project, testName) {
+		TestCase.findAllByFullNameLike("%${testName}%", [sort: "fullName", order: "asc"])
 	}
 
-
-	List <TestCase> findTestCaseNamesMatching(project, testName) {
-		TestCase.findAllByTestNameLike("%${testName}%", [sort: "fullName", order: "asc"])
-	}
-
-
-	List previewPackageRename(project, packageName, newName) {
-		def toReturn = []
-		def testCases = findPackagesMatching(project, packageName)
-		testCases.each {
-			toReturn << [testCase: it, newName: it.fullName.replaceAll(packageName, newName)]
-		}
-		return toReturn
-	}
 
 
 	List previewTestRename(project, testName, newName) {
 		def toReturn = []
-		def testCases = findTestCaseNamesMatching(project, testName)
+		def testCases = findTestCaseFullNamesMatching(project, testName)
 		testCases.each {
 			toReturn << [testCase: it, newName: it.fullName.replaceAll(testName, newName)]
 		}
@@ -593,25 +579,29 @@ class TestOutcomeService {
 	}
 
 
-	/**
-	 *
-	 * @param toRename A List of Maps that contain "id" and "newName"
-	 */
-	void bulkPackageRename(List toRename) {
+	void bulkTestCaseRename(List toRename) {
 		toRename.each {
 			def testCase = TestCase.get(it.id)
-			testCase.packageName = it.newName
+			def names = extractTestCaseNames(it.newName)
+			testCase.packageName = names.packageName
+			testCase.testName = names.testName
+			testCase.fullName = testCase.packageName + "." + testCase.testName
 			dataService.saveDomainObject testCase
 		}
 	}
 
 
-	void bulkTestRename(List toRename) {
-		toRename.each {
-			def testCase = TestCase.get(it.id)
-			testCase.testName = it.newName
-			dataService.saveDomainObject testCase
+	Map<String, String> extractTestCaseNames(String fullName) {
+		def tName = null
+		def pkgName = null
+		def lastDot = fullName.lastIndexOf(".")
+		if (lastDot == -1) {
+			tName = fullName
+		} else {
+			tName = fullName.substring(lastDot + 1)
+			pkgName = fullName.substring(0, lastDot)
 		}
+		return [testName: tName, packageName: pkgName]
 	}
 
 	/**

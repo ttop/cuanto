@@ -326,23 +326,18 @@ class TestCaseController {
 			error = "Missing replaceName parameter"
 		}
 
-		if (!params.facet) {
-			response.status = response.SC_BAD_REQUEST
-			error = "Missing facet parameter"
-		}
-		
 		if (error) {
 			render error
 		} else {
-			def renameList = []
-			if (params.facet?.toLowerCase() == "packages") {
-				renameList = testOutcomeService.previewPackageRename(project, params.searchTerm, params.replaceName)
-			} else if (params.facet?.toLowerCase() == "test names") {
-				renameList = testOutcomeService.previewTestRename(project, params.searchTerm, params.replaceName)
-			}
+			def renameList = testOutcomeService.previewTestRename(project, params.searchTerm, params.replaceName)
 			def myJson = ["renameList": renameList]
 			render myJson as JSON
 		}
+	}
+
+
+	def doRename = {
+		
 	}
 
 

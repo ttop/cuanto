@@ -262,13 +262,13 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject it
 		}
 		
-		def results = testOutcomeService.findPackagesMatching(proj, "org.codehaus.cuanto.foo")
+		def results = testOutcomeService.findTestCaseFullNamesMatching(proj, "org.codehaus.cuanto.foo")
 		assertEquals "Wrong number of testCases", 3, results.size()
 		
-		results = testOutcomeService.findPackagesMatching(proj, "org.codehaus.cuanto.bar")
+		results = testOutcomeService.findTestCaseFullNamesMatching(proj, "org.codehaus.cuanto.bar")
 		assertEquals "Wrong number of testCases", 2, results.size()
 
-		results = testOutcomeService.findPackagesMatching(proj, "blah.de.blah")
+		results = testOutcomeService.findTestCaseFullNamesMatching(proj, "blah.de.blah")
 		assertEquals "Wrong number of testCases", 0, results.size()
 	}
 
@@ -309,7 +309,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject it
 		}
 
-		def results = testOutcomeService.previewPackageRename(proj, "org.codehaus.cuanto.foo", "blah.de.blah")
+		def results = testOutcomeService.previewTestRename(proj, "org.codehaus.cuanto.foo", "blah.de.blah")
 		assertEquals "Wrong number of testCases", 3, results.size()
 
 		results.eachWithIndex { it, idx ->
@@ -319,10 +319,10 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		def toRename = []
 		0.upto(2) {
-			toRename << [id: testCases[it].id, newName: testCases[it].packageName.replaceAll("org.codehaus.cuanto.foo", "blah.de.blah")]
+			toRename << [id: testCases[it].id, newName: testCases[it].fullName.replaceAll("org.codehaus.cuanto.foo", "blah.de.blah")]
 		}
 
-		testOutcomeService.bulkPackageRename(toRename)
+		testOutcomeService.bulkTestCaseRename(toRename)
 
 		def found = TestCase.findAllByPackageName("blah.de.blah")
 		assertEquals "Wrong number of renamed packages", 3, found.size()
@@ -365,13 +365,13 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 			dataService.saveDomainObject it
 		}
 
-		def results = testOutcomeService.findTestCaseNamesMatching(proj, "testMatch")
+		def results = testOutcomeService.findTestCaseFullNamesMatching(proj, "testMatch")
 		assertEquals "Wrong number of testCases", 2, results.size()
 
-		results = testOutcomeService.findTestCaseNamesMatching(proj, "testThree")
+		results = testOutcomeService.findTestCaseFullNamesMatching(proj, "testThree")
 		assertEquals "Wrong number of testCases", 1, results.size()
 
-		results = testOutcomeService.findTestCaseNamesMatching(proj, "testFour")
+		results = testOutcomeService.findTestCaseFullNamesMatching(proj, "testFour")
 		assertEquals "Wrong number of testCases", 0, results.size()
 	}
 
@@ -422,15 +422,86 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 		def toRename = []
 		[0,4].each {
-			toRename << [id: testCases[it].id, newName: testCases[it].testName.replaceAll("testMatch", "testRename")]
+			toRename << [id: testCases[it].id, newName: testCases[it].fullName.replaceAll("testMatch", "testRename")]
 		}
 
-		testOutcomeService.bulkTestRename(toRename)
+		testOutcomeService.bulkTestCaseRename(toRename)
 
 		def found = TestCase.findAllByTestName("testRename")
 		assertEquals "Wrong number of renamed tests", 2, found.size()
 	}
 
+	void testPreviewTestRenameAndBulkTestCaseRename() {
+		Project proj = to.project
+		proj.testType = TestType.findByName("TestNG")
+		dataService.saveDomainObject proj
+
+		def testCases = []
+		1.upto(5) {
+			TestCase tc = to.getTestCase(proj)
+			dataService.saveDomainObject tc
+			testCases << tc
+		}
+
+		testCases[0].testName = "testMatch"
+		testCases[0].packageName = "org.codehaus.cuanto.foo"
+		testCases[0].fullName = testCases[0].packageName + "." + testCases[0].testName
+
+		testCases[1].testName = "testOne"
+		testCases[1].packageName = "org.codehaus.cuanto.foo"
+		testCases[1].fullName = testCases[1].packageName + "." + testCases[1].testName
+
+		testCases[2].testName = "testTwo"
+		testCases[2].packageName = "org.codehaus.cuanto.foo"
+		testCases[2].fullName = testCases[2].packageName + "." + testCases[2].testName
+
+		testCases[3].testName = "testThree"
+		testCases[3].packageName = "org.codehaus.cuanto.bar"
+		testCases[3].fullName = testCases[3].packageName + "." + testCases[3].testName
+
+		testCases[4].testName = "testMatch"
+		testCases[4].packageName = "org.codehaus.cuanto.bar"
+		testCases[4].fullName = testCases[4].packageName + "." + testCases[4].testName
+
+		testCases.each {
+			dataService.saveDomainObject it
+		}
+
+		def results = testOutcomeService.previewTestRename(proj, "testMatch", "testRename")
+		assertEquals "Wrong number of testCases", 2, results.size()
+
+		results.eachWithIndex { it, idx ->
+			assertTrue "Doesn't contain name", it.testCase.testName.contains("testMatch")
+			assertEquals "Wrong newName", it.testCase.fullName.replaceAll("testMatch", "testRename"), it.newName
+		}
+
+		def toRename = []
+		[0,4].each {
+			toRename << [id: testCases[it].id, newName: testCases[it].testName.replaceAll("testMatch", "testRename")]
+		}
+
+		testOutcomeService.bulkTestCaseRename(toRename)
+
+		def found = TestCase.findAllByTestName("testRename")
+		assertEquals "Wrong number of renamed tests", 2, found.size()
+	}
+
+
+	void testExtractTestCaseNames() {
+		def pkgName
+		def tName
+		
+		assertTestNamesExtracted "a.b.c", "foo"
+		assertTestNamesExtracted "dude", "chick"
+		assertTestNamesExtracted "", "solo"
+	}
+
+	void assertTestNamesExtracted(pkgName, tName) {
+		def fullName = pkgName? pkgName + "." + tName : tName
+		def extracted = testOutcomeService.extractTestCaseNames(pkgName + "." + tName)
+		assertEquals "Wrong package name for ${fullName}", pkgName, extracted.packageName
+		assertEquals "Wrong test name for ${fullName}", tName, extracted.testName
+	}
 
     private File getFile(filename) {
         File file = new File("test/resources/${filename}")
