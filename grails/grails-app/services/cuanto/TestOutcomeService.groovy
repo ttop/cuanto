@@ -579,7 +579,7 @@ class TestOutcomeService {
 	}
 
 
-	void bulkTestCaseRename(List toRename) {
+	Integer bulkTestCaseRename(List toRename) {
 		toRename.each {
 			def testCase = TestCase.get(it.id)
 			def names = extractTestCaseNames(it.newName)
@@ -588,6 +588,7 @@ class TestOutcomeService {
 			testCase.fullName = testCase.packageName + "." + testCase.testName
 			dataService.saveDomainObject testCase
 		}
+		return toRename.size()
 	}
 
 

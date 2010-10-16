@@ -59,7 +59,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div class="body yui-skin-sam">
 			<div id="findDialog">
 				<div>
-					<span class="head1">Renaming Tool for Project ${project?.toString()}</span>
+					<span class="head1">Renaming Tool for Project
+						<g:link controller="show" action="${project?.projectKey}">${project?.toString()}</g:link>
+					</span>
+					<p id="renameText">Renaming a test case will rename it for the entire history of the test.
+					Cuanto will not retain the previous name of the test case.</p>
 				</div>
 				<div>
 					<form id="renameForm">

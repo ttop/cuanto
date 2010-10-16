@@ -48,7 +48,7 @@ YAHOO.cuanto.testCaseRename = function() {
 
 
 	function handleFind(e) {
-	    var serializedForm = $('#renameForm').find("input").serialize();
+		hideFlashMsg();
 		initTable();
 	}
 
@@ -63,7 +63,26 @@ YAHOO.cuanto.testCaseRename = function() {
 		});
 
 		var jsonToPost = YAHOO.lang.JSON.stringify(recordsToPost);
+
+		$.ajax({
+			url: YAHOO.cuanto.urls.get("rename"),
+			data: jsonToPost,
+			dataType: "json",
+			type: "POST",
+			contentType: "application/json",
+			success: handleSuccessfulRename
+		});
+
 		var bkpt;
+
+	}
+
+
+	function handleSuccessfulRename(data, textStatus, request) {
+		showFlashMsg(data.renamed + " test cases renamed.");
+		$("#renameTable").empty();
+		enableFind();
+		disableReplace();
 	}
 
 
@@ -79,7 +98,10 @@ YAHOO.cuanto.testCaseRename = function() {
 		$("#searchTerm").add("#replaceName").removeAttr("disabled");
 		findBtn.set("disabled", false);
 	}
-	
+
+	function disableReplace() {
+		replaceBtn.set('disabled', true);
+	}
 
 	function getSearchTerm() {
 		return $.trim($('#searchTerm').val());
@@ -113,7 +135,6 @@ YAHOO.cuanto.testCaseRename = function() {
 
 		disableFind();
 		replaceBtn.set('disabled', false);
-
 	}
 
 
@@ -159,5 +180,15 @@ YAHOO.cuanto.testCaseRename = function() {
 
 	function formatCurrentName(elCell, oRecord, oColumn, oData) {
 		$(elCell).html(oData["fullName"]);
+	}
+
+	function showFlashMsg(msg) {
+		$('#flashMsg').html(msg);
+		$('#flashMsg').show();
+	}
+
+	function hideFlashMsg() {
+		$('#flashMsg').html("");
+		$('#flashMsg').hide();
 	}
 };

@@ -29,6 +29,8 @@ import cuanto.TestOutcome
 import grails.converters.JSON
 import java.text.SimpleDateFormat
 import javax.servlet.http.HttpServletResponse
+import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestCaseController {
 
@@ -37,7 +39,7 @@ class TestCaseController {
 	def dataService
 
 	// the delete, save and update actions only accept POST requests
-	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', create: 'POST']
+	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', create: 'POST', doRename: 'POST']
 
 	def index = { redirect(action: list, params: params) }
 
@@ -337,7 +339,15 @@ class TestCaseController {
 
 
 	def doRename = {
-		
+		JSONArray json = request.JSON
+		def renameArray = []
+		json.each { JSONObject jsonObj ->
+			def id = jsonObj.getInt("id")
+			def newName = jsonObj.getString("newName")
+			renameArray << ['id': id, 'newName': newName]
+		}
+		def myJson = [renamed: testOutcomeService.bulkTestCaseRename(renameArray)]
+		render myJson as JSON
 	}
 
 

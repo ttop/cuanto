@@ -52,6 +52,7 @@ YAHOO.cuanto.urls.set('testCaseEdit', "${createLink(controller: 'testCase', acti
 YAHOO.cuanto.urls.set('testCaseDelete', "${createLink(controller: 'testCase', action:'confirmDelete')}/");
 YAHOO.cuanto.urls.set('testCaseUpdate', "${createLink(controller: 'testCase', action:'update')}/");
 YAHOO.cuanto.urls.set('renamePreview', "${createLink(controller: 'testCase', action:'renamePreview')}?");
+YAHOO.cuanto.urls.set('rename', "${createLink(controller: 'testCase', action:'doRename')}?");
 YAHOO.cuanto.urls.set('testOutputDataSource', "${createLink(controller: 'testOutcome', action:'outputData')}/");
 YAHOO.cuanto.urls.set('analysis', "${createLink(controller: 'testCase', action:'analysis')}/");
 YAHOO.cuanto.urls.set('applyAnalysis', "${createLink(controller: 'testOutcome', action:'applyAnalysis')}/");
