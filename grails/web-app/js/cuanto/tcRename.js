@@ -125,18 +125,21 @@ YAHOO.cuanto.testCaseRename = function() {
 	function initTable() {
 		$("#renameTable").empty();
 		dataTable = new YAHOO.widget.DataTable("renameTable", getColumnDefs(), getDataSource(), getDataTableConfig());
-
-		// todo: make this logic conditional after response is received if records are > 0. Need to know what event to subscribe to
-
-		disableFind();
-		replaceBtn.set('disabled', false);
+		dataTable.subscribe("renderEvent", handleTableRender);
 	}
 
+
+	function handleTableRender(e) {
+		if (dataTable.getRecordSet().getLength() > 0) {
+			disableFind();
+			replaceBtn.set('disabled', false);
+		}
+	}
 
 	function getColumnDefs() {
 		return [
 			{label: "Select", resizeable: false, formatter: formatSelect},
-			{key: "testCase", label: "Current Name", resizeable: false, formatter: formatCurrentName},
+			{key: "testCase", label: "Current Name ", resizeable: false, formatter: formatCurrentName, midWidth: 200},
 			{key: "newName", label: "New Name", resizeable: false}
 		];
 	}
