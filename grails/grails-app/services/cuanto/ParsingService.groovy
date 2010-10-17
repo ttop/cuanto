@@ -153,7 +153,7 @@ class ParsingService {
 
 		def testOutput = parseJsonForString(jsonTestOutcome, "testOutput") 
 		if (testOutput) {
-			testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
+			testOutcome.testOutput = processTestOutput(testOutput)
 			setTestOutputSummary(testOutcome);
 		}
 

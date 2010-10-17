@@ -347,3 +347,8 @@ form label.dialogLabel {
 #renameText {
 	margin-top: 20px;
 }
+
+.outputTruncate {
+	margin: 15px 0px;
+	font-weight:bold;
+}

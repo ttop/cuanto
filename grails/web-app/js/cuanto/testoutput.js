@@ -64,6 +64,9 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 		outputPanel.setBody(outDiv[0]);
 		outputPanel.setHeader("Output for " + testName);
 		outDiv.focus();
+		if (output.length >= 9998) {
+			outDiv.append("<p class='outputTruncate'>[Output truncated by Cuanto]</p>");
+		}
 	}
 
 	function prefetchNextOutputs(currentOutputId) {
