@@ -70,7 +70,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<g:hiddenField name="id" value="${project?.id}"/>
 						<table>
 							<tr id="findRow">
-								%{--<td align="right">Find <g:select from="${['packages', 'test names']}" id="facet" name="facet"/> with:</td>--}%
 								<td align="right">Find test names with:</td>
 								<td>
 									<g:textField name="searchTerm" id="searchTerm" class="change"/>

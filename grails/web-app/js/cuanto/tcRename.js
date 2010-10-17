@@ -72,9 +72,6 @@ YAHOO.cuanto.testCaseRename = function() {
 			contentType: "application/json",
 			success: handleSuccessfulRename
 		});
-
-		var bkpt;
-
 	}
 
 
@@ -87,14 +84,12 @@ YAHOO.cuanto.testCaseRename = function() {
 
 
 	function disableFind() {
-		//$("#facet").add("#searchTerm").add("#replaceName").attr("disabled", "disabled");
 		$("#searchTerm").add("#replaceName").attr("disabled", "disabled");
 		findBtn.set("disabled", true);
 	}
 
 
 	function enableFind() {
-		//$("#facet").add("#searchTerm").add("#replaceName").removeAttr("disabled");
 		$("#searchTerm").add("#replaceName").removeAttr("disabled");
 		findBtn.set("disabled", false);
 	}
