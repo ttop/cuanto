@@ -37,7 +37,7 @@ class TestRunController {
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
-	def index = { redirect(action: 'list', controller: 'project', params: params) }
+	def index = { redirect(action: 'mason', controller: 'project', params: params) }
 
 
 	def delete = {
@@ -283,7 +283,7 @@ class TestRunController {
 	def statistics = {
 		def testRun = TestRun.get(params.id)
 		if (!testRun) {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 
 		if (params.calculate) {
@@ -360,7 +360,7 @@ class TestRunController {
 				'bugSummary': bugSummary, 'formatters': tcFormatList,
 				'project': testRun?.project, 'tcFormat': tcFormatList[0].key, 'stats': stats]
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -371,7 +371,7 @@ class TestRunController {
 			def pieChartUrl = testRunService.getGoogleChartUrlForTestRunFailures(testRun)
 			render(template: "pieChart", model: ['pieChartUrl': pieChartUrl])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -381,7 +381,7 @@ class TestRunController {
 			def stats = TestRunStats.findByTestRun(testRun)
 			render(template: "summaryTable", model: ['stats': stats])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -391,7 +391,7 @@ class TestRunController {
 			def bugSummary = testRunService.getBugSummary(testRun)
 			render(template: 'bugSummary', model: ['bugSummary': bugSummary])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -438,7 +438,7 @@ class TestRunController {
 	def createManual = {
 		if (!params.id) {
 			flash.message = "Unable to determine project for Test Case"
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 		def project = dataService.getProject(Long.valueOf(params.id))
 		['project': project]
@@ -447,7 +447,7 @@ class TestRunController {
 	def manual = {
 		if (!params.id) {
 			flash.message = "Unable to determine project"
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 		def run = testRunService.createManualTestRun(params)
 		flash.message = "Created Test Run ${run.id}."

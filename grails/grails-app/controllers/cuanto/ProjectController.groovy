@@ -283,7 +283,7 @@ class ProjectController {
 			return [projects: dataService.getProjectsByGroupName(group), 'group': group,
 				formatters: testCaseFormatterRegistry.formatterList]
 		} else {
-			redirect(controller: 'project', view: 'list')
+			redirect(controller: 'project', view: 'mason')
 		}
 	}
 

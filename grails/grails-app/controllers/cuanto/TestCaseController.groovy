@@ -96,7 +96,7 @@ class TestCaseController {
 			return [project: proj]
 		} else if (!params.id) {
 			flash.message = "Please select a project."
-			redirect(controller: "project", action: "list")
+			redirect(controller: "project", action: "mason")
 		}
 	}
 
