@@ -41,7 +41,7 @@ class ProjectController {
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
 
-	def index = { redirect(action: list, params: params) }
+	def index = { redirect(action: mason, params: params) }
 
 	def delete = {
 		def project = Project.get(params.id)
@@ -94,12 +94,12 @@ class ProjectController {
 
 		if (!proj) {
 			flash.message = "Please select a project."
-			redirect(controller:"project", action:"list")
+			redirect(controller:"project", action:"mason")
 		} else {
 			withFormat {
 				html {
 					if (!proj) {
-						redirect(controller: 'project', view: 'list')
+						redirect(controller: 'project', view: 'mason')
 					} else {
 						def chartUrl = testRunService.getGoogleChartUrlForProject(proj)
 						def propNames = testRunService.getTestRunPropertiesByProject(proj)
