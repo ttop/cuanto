@@ -27,14 +27,16 @@ class FailureStatusCalcJob {
 	def statisticService
 	def transactional = true
 	def concurrent = false
-	static final long INTERVAL = 15000
+
+	static final long INTERVAL = 1000
+	static final int BATCH_SIZE = 100
 
 	static triggers = {
 		simple name: "FailureStatusCalc", startDelay: 10000, repeatInterval: INTERVAL
 	}
 
 	def execute() {
-		def updateTasks = getFailureStatusUpdateTasks(1000)
+		def updateTasks = getFailureStatusUpdateTasks(BATCH_SIZE)
 		def updatedTestOutcomes = []
 
 		updateTasks.each { FailureStatusUpdateTask updateTask ->
@@ -82,7 +84,7 @@ class FailureStatusCalcJob {
 
 	List updateTestOutcomesForTestRun(Long testRunId) {
 		def updatedOutcomes = []
-		def currentBatch = dataService.getTestOutcomesForTestRun(testRunId, 1000, 0)
+		def currentBatch = dataService.getTestOutcomesForTestRun(testRunId, BATCH_SIZE, 0)
 		while (currentBatch) {
 			for (TestOutcome outcome: currentBatch) {
 				outcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(outcome)
@@ -95,11 +97,11 @@ class FailureStatusCalcJob {
 			log.info "sleeping ${INTERVAL}ms before updating more test outcomes for test run $testRunId"
 			sleep(INTERVAL)
 
-			currentBatch = dataService.getTestOutcomesForTestRun(testRunId, 1000, updatedOutcomes.size() - 1)
+			currentBatch = dataService.getTestOutcomesForTestRun(testRunId, BATCH_SIZE, updatedOutcomes.size() - 1)
 		}
 
 		// if there are some outcomes left, save them.
-		// this happens when currentBatch.size() > 0 && currentBatch.size() > 1000
+		// this happens when currentBatch.size() > 0 && currentBatch.size() > BATCH_SIZE
 		if (currentBatch) {
 			log.info "re-initialized isFailureStatusChanged for ${currentBatch.size()} test outcomes"
 			dataService.saveTestOutcomes currentBatch
