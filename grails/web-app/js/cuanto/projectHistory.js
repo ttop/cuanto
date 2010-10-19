@@ -27,7 +27,11 @@ YAHOO.cuanto.projectHistory = function() {
 	var columnDialog;
 	var projectDialog;
 	var projectDeleteDialog;
+	var deleteButton;
+	var moveButton;
 	var timeParser = new YAHOO.cuanto.TimeParser();
+	var testRunProperties;
+	var selected = [];
 
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
@@ -68,6 +72,7 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function getTestRunTableColumnDefs(propertyNames) {
 		var columns = [
+			{key: "checked", label: "Sel.", width: 20, formatter: formatSelect, hidden: true},
 			{key:"dateExecuted", label:"Test Run", sortable:true, width: 125},
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
@@ -105,12 +110,13 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function chooseColumns(e) {
 		e.preventDefault();
+		$("#columnPanel").show();
 		var columnDialog = getColumnDialog();
 		columnDialog.show();
 	}
 	
 
-	function buildTestRunTableQueryString(state, self) {
+	function buildTestRunTableQueryString(state) {
 		if (!state) {
 			state = {
 				startIndex: 0,
@@ -170,7 +176,19 @@ YAHOO.cuanto.projectHistory = function() {
             $(elCell).html(oData.join(", "));
         }
     }
-    
+
+	function formatSelect(elCell, oRecord, oColumn, oData) {
+		var indxInSelected = selected.indexOf(oRecord.getData("id"));
+		if (indxInSelected == -1) {
+			oRecord.setData("checked", false);
+			oData = false;
+		} else {
+			oRecord.setData("checked", true);
+			oData = true;
+		}
+		YAHOO.widget.DataTable.formatCheckbox(elCell, oRecord, oColumn, oData);
+	}
+
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
@@ -220,6 +238,56 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 
+	function onBulkDelete(e) {
+		hideBulkOperations(null);
+
+		var actionTxt = $("#deleteText");
+		actionTxt.show();
+
+		$.ajax({
+			url: YAHOO.cuanto.urls.get("testRunBulkDelete"),
+			data: YAHOO.lang.JSON.stringify(selected),
+			type: "POST",
+			contentType: "application/json",
+			dataType: "json",
+			success: function(response, textStatus, httpReq) {
+				testRunTable.destroy();
+				testRunTable = null;
+				initTable();
+				addTableListeners();
+				actionTxt.hide();
+				$("#selectTrText").show();
+			}
+		});
+	}
+
+	function getSelectedTestRunIds() {
+		var records = testRunTable.getRecordSet().getRecords();
+		return $.map(records, function(rec) {
+			if (rec.getData("checked")) {
+				return rec.getData("id");
+			} else {
+				return null;
+			}
+		});
+	}
+
+	function onSelectChange(oArgs) {
+		var record = this.getRecord(oArgs.target);
+		var id = record.getData("id");
+		var indxInSelected = selected.indexOf(id);
+		if (record.getData("checked")) {
+			record.setData("checked", false);
+			selected.splice(indxInSelected, 1);
+		} else {
+			record.setData("checked", true);
+			if (indxInSelected == -1){
+				selected.push(id);
+			}
+		}
+	}
+
+
 	function showDeleteProject(e) {
 		var target = YAHOO.util.Event.getTarget(e);
 		YAHOO.util.Event.preventDefault(e);
@@ -229,21 +297,62 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 
+	function showBulkOperations(e) {
+		e.preventDefault();
+		testRunTable.showColumn(testRunTable.getColumnSet().getColumn(0));
+
+		$("#bulkButtons").show();
+		$("#selectTrText").hide();
+
+		deleteButton = new YAHOO.widget.Button("deleteBtn", {
+			onclick: {fn: onBulkDelete},
+			disabled: false
+		});
+
+		testRunTable.removeListener("rowClickEvent", onSelectTestRunRow);
+		testRunTable.removeListener("rowMouseoverEvent", testRunTable.onEventHighlightRow);
+		testRunTable.removeListener("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+	}
+
+	function hideBulkOperations(e) {
+		if (e) {
+			e.preventDefault();
+		}
+		$("#bulkButtons").hide();
+	}
+
+	function clearChecks() {
+		selected = [];
+		testRunTable.hideColumn(testRunTable.getColumnSet().getColumn(0));
+		var records = testRunTable.getRecordSet().getRecords();
+		$.each(records, function(idx, record) {
+			record.setData("checked", false);
+			testRunTable.updateRow(record);
+		});
+	}
+
 	function initHeader() {
 		$('.editProj').click(onEditProject);
 		$("#chooseColumns").click(chooseColumns);
 		$('.deleteProj').click(showDeleteProject);
+		$('.bulk').click(showBulkOperations);
+		$('#closeBulk').click(function(e){
+			hideBulkOperations(e);
+			$("#selectTrText").show();
+			addTableListeners();
+			clearChecks();
+		});
 	}
 
-	return {
-		initHistoryTable: function(testRunProps) {
-			projectDialog = new YAHOO.cuanto.ProjectDialog();
-			projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
+	function addTableListeners() {
+		testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
+		testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
+		testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+		testRunTable.subscribe("checkboxClickEvent", onSelectChange);
+	}
 
-			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
-			initHeader();
-
-			var columnDefs = getTestRunTableColumnDefs(testRunProps);
+	function initTable() {
+			var columnDefs = getTestRunTableColumnDefs(testRunProperties);
 			var dataSource = getTestRunDataSource();
 			var tableConfig = getTestRunTableConfig();
 
@@ -270,9 +379,18 @@ YAHOO.cuanto.projectHistory = function() {
 			};
 
 			testRunTable.set("selectionMode", "single");
-			testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
-			testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
-			testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+			addTableListeners();
+	}
+
+	return {
+		initHistoryTable: function(testRunProps) {
+			testRunProperties = testRunProps;
+			projectDialog = new YAHOO.cuanto.ProjectDialog();
+			projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
+			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
+			initHeader();
+			initTable();
 		}
 	};
+
 }();

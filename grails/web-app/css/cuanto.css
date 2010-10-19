@@ -352,3 +352,20 @@ form label.dialogLabel {
 	margin: 15px 0px;
 	font-weight:bold;
 }
+
+#bulkButtons {
+	/*margin: 0 10px 10px 0;*/
+	margin: 10px;
+}
+
+#selectTrText {
+	/*margin: 10px 5px 0 0;*/
+	margin: 10px;
+
+}
+
+#deleteText {
+	/*margin: 0 10px 10px 0;*/
+	margin: 10px;
+	
+}

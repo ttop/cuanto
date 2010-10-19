@@ -76,13 +76,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div class="body yui-skin-sam">
 			<g:render template="phHeader"/>
 			
-			<div id="columnPanel" style="visibility:hidden">
+			<div id="columnPanel" style="display:none">
 				<div class="hd">Columns</div>
 				<div id="columnPanel-picker" class="bd">
 				</div>
 			</div>
 
-			Select a test run to view the detailed results and analysis:<br/>
+			<div id="bulkButtons" style="display:none">
+				<h2>Bulk Operations: <a id="closeBulk" href="#closeBulk" class="smaller">(Close)</a></h2>
+				<button name="delete" id="deleteBtn" type="push" style="display:none">Delete Selected Test Runs</button>
+				<button name="move" id="moveBtn" type="push" style="display:none">Move Selected Test Runs</button>
+			</div>
+			<div id="deleteText" style="display:none">Deleting Test Runs... <img src="${resource(dir:'images', file:'spinner.gif')}" alt="spinner"/></div>
+			<div id="selectTrText">Select a test run to view the detailed results and analysis:</div>
+			
 			<div id="testRunList">
 				<div id="testRunTableDiv"></div>
 				<div id="trTablePaging"></div>

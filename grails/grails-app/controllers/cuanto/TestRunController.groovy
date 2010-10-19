@@ -22,6 +22,7 @@ package cuanto
 
 import grails.converters.*
 import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestRunController {
 	def parsingService
@@ -52,6 +53,11 @@ class TestRunController {
 		render myJson as JSON
 	}
 
+
+	def bulkDelete = {
+		def myJson = [deleted: testRunService.deleteTestRuns(request.JSON)]
+		render myJson as JSON
+	}
 
 	def deleteProperty = {
 		def propToDelete = TestRunProperty.get(params.id)
