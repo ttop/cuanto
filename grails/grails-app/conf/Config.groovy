@@ -87,7 +87,9 @@ uiperformance.determineVersion = { -> appVersion }
 statSleep = 1000
 
 // testOutcomeAndTestRunInitSleep is the time to sleep between initializing TestOutcomes and TestRuns
-testOutcomeAndTestRunInitSleep = 5000
+testOutcomeAndTestRunInitSleepTime = 5000
+failureStatusCalcJobSleepTime = 1000
+failureStatusCalcJobBatchSize = 100
 
 bullet = "&bull;"
 

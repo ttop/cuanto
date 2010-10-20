@@ -38,6 +38,7 @@ class InitializeTestOutcomeAndTestRunJob {
 	static final String JOB_NAME = this.class.simpleName.replace("Job", "")
 	static final String JOB_GROUP = 'GRAILS_JOBS'
 	static final String TEST_RUN_UPDATE_QUERY = "update TestRunStats stats set stats.newFailures = ? where stats.id = ?"
+	static final long DEFAULT_SLEEP_TIME = 5000
 
 	static triggers = {
 		simple name: JOB_NAME, startDelay: 0, repeatInterval: 1000
@@ -49,8 +50,7 @@ class InitializeTestOutcomeAndTestRunJob {
 	static boolean allTestRunsInitialized = false
 
 	def execute() {
-		if (grailsApplication.config.testOutcomeAndTestRunInitSleep)
-			sleep(grailsApplication.config.testOutcomeAndTestRunInitSleep)
+		sleep(getSleepTime())
 
 		if (allTestOutcomesInitialized && allTestRunsInitialized) {
 			// since all test outcomes and test runs have been initialized, unschedule the job
@@ -104,7 +104,6 @@ class InitializeTestOutcomeAndTestRunJob {
 		}
 	}
 
-
 	Integer getNewFailuresCount(TestRun testRun) {
 		return TestOutcome.createCriteria().count {
 			and {
@@ -115,5 +114,10 @@ class InitializeTestOutcomeAndTestRunJob {
 				}
 			}
 		}
+	}
+
+	long getSleepTime()
+	{
+		return grailsApplication.config.testOutcomeAndTestRunInitSleepTime ?: DEFAULT_SLEEP_TIME
 	}
 }
