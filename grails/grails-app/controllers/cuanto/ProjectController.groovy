@@ -237,19 +237,16 @@ class ProjectController {
 			formatters: testCaseFormatterRegistry.formatterList]
 	}
 
+
 	def mason = {
 		def project = null
 		if (params.id) {
 			project = Project.get(params.id)
 		}
 		if (params.refresh) {
-			render(template: "mason", model: [groups: projectService.getAllGroupNames(),
-				projects: dataService.getAllProjects(), 'project': project,
-				formatters: testCaseFormatterRegistry.formatterList])
+			render(template: "mason", model: ['project': project, groupsToProjectsMap: projectService.getProjectMap()])
 		} else {
-			render(view: "mason", model: [groups: projectService.getAllGroupNames(),
-				projects: dataService.getAllProjects(), 'project': project,
-				formatters: testCaseFormatterRegistry.formatterList])
+			render(view: "mason", model: ['project': project, groupsToProjectsMap: projectService.getProjectMap()])
 		}
 	}
 
@@ -307,6 +304,11 @@ class ProjectController {
 		render groupNameJson as JSON
 	}
 
+
+	def projectMap = {
+		def groups = projectService.getProjectMap()
+		render "TBD"
+	}
 
 	def getJsonForTestRun(testRun, graph) {
 		def stats = TestRunStats.findByTestRun(testRun)
