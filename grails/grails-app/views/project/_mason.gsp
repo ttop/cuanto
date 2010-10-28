@@ -20,17 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --}%
 <div id="projectMason">
-	<g:set var="groupsToProjectsMap" value="${[:]}"/>
-	<g:set var="ungroupedProjects" value="${projects.findAll {!it.projectGroup}}"/>
-
-	<g:each var="group" in="${groups}">
-		<% groupsToProjectsMap[group] = projects.findAll { it.projectGroup?.name == group } %>
-	</g:each>
-
-	<g:if test="${ungroupedProjects}">
-		<% groupsToProjectsMap["Ungrouped"] = ungroupedProjects %>
-	</g:if>
-
 	<div id="groups" class="wrap">
 		<g:each var="group" in="${groupsToProjectsMap}">
 			<div class="projBox pg">
