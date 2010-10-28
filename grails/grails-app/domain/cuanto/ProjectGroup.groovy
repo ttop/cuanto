@@ -47,6 +47,6 @@ class ProjectGroup implements Comparable {
 
 
 	public int compareTo(Object t) {
-		return this.id == t.id
+		return this.id.compareTo(t.id)
 	}
 }
