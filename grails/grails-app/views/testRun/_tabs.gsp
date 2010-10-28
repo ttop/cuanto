@@ -50,13 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<br/>
                     <g:render template="tags"/>
 					<a id="showSelectCol" class="selectCmd" alt="Show Select Column" href="#showSelect">Select</a>
-				    <span id="showSelectOptions" class="selectCmd">
-					    <a id="hideSelectCol" alt="Hide Select Column" href="#hideSelect">Hide Select</a> ${bullet}
-					    <a id="selectPage" alt="Select Page" href="#selectPage">Select Page</a> ${bullet}
-					    <a id="deselectPage" alt="Deselect Page" href="#deselectPage">Deselect Page</a> ${bullet}
-					    <a id="deselectAll" alt="Deselect All" href="#selectNone">Deselect All</a> ${bullet}
-					    <span id="currentSelected" alt="Currently Selected">0 Tests Selected</span>
-				    </span>
+					<g:render template="/shared/selectOptions"/>
 					<a id="chooseColumns" class="selectCmd" alt="Choose Columns" href="#chooseColumns">Choose Columns</a>
 				<br/>
 				</div>
