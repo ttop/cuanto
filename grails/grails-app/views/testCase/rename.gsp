@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 									<g:textField name="replaceName" id="replaceName" class="change"/>
 								</td>
 								<td>
-									<button name="replace" id="replaceBtn" type="push">Replace</button>
+									<button name="replace" id="replaceBtn" type="push">Rename Selected</button>
 								</td>
 							</tr>
 						</table>
