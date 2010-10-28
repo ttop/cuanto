@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/timeParser.js"/>
 
 		<g:javascript src="cuanto/jcolumnDialog.js"/>
+		<g:javascript src="cuanto/selectControl.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 
 		<script type="text/javascript">
@@ -91,6 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<div id="selectTrText">Select a test run to view the detailed results and analysis:</div>
 			
 			<div id="testRunList">
+				<g:render template="/shared/selectOptions"/>
 				<div id="testRunTableDiv"></div>
 				<div id="trTablePaging"></div>
 			</div>
@@ -100,9 +102,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<img src="${chartUrl}" alt="Success Rate Trend Chart" class="graph"/>
 				</div>
 			</g:if>
+			<div id="myLogger"></div>
+			
 		</div>
 		<g:render template="projectDialog"/>
 		<g:render template="deleteProjectDialog"/>
-
 	</body>
 </html>

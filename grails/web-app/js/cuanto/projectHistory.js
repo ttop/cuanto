@@ -31,7 +31,8 @@ YAHOO.cuanto.projectHistory = function() {
 	var moveButton;
 	var timeParser = new YAHOO.cuanto.TimeParser();
 	var testRunProperties;
-	var selected = [];
+	var selectControl = new YAHOO.cuanto.SelectControl();
+
 
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
@@ -72,7 +73,7 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function getTestRunTableColumnDefs(propertyNames) {
 		var columns = [
-			{key: "checked", label: "Sel.", width: 20, formatter: formatSelect, hidden: true},
+			{key: "checked", label: "Sel.", width: 20, formatter: selectControl.formatSelect, hidden: true},
 			{key:"dateExecuted", label:"Test Run", sortable:true, width: 125},
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
@@ -177,18 +178,6 @@ YAHOO.cuanto.projectHistory = function() {
         }
     }
 
-	function formatSelect(elCell, oRecord, oColumn, oData) {
-		var indxInSelected = selected.indexOf(oRecord.getData("id"));
-		if (indxInSelected == -1) {
-			oRecord.setData("checked", false);
-			oData = false;
-		} else {
-			oRecord.setData("checked", true);
-			oData = true;
-		}
-		YAHOO.widget.DataTable.formatCheckbox(elCell, oRecord, oColumn, oData);
-	}
-
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
@@ -239,51 +228,28 @@ YAHOO.cuanto.projectHistory = function() {
 
 
 	function onBulkDelete(e) {
-		hideBulkOperations(null);
+		if (confirm("Are you sure you wish to delete all of the selected test runs?")) {
+			hideBulkOperations(null);
 
-		var actionTxt = $("#deleteText");
-		actionTxt.show();
+			var actionTxt = $("#deleteText");
+			actionTxt.show();
 
-		$.ajax({
-			url: YAHOO.cuanto.urls.get("testRunBulkDelete"),
-			data: YAHOO.lang.JSON.stringify(selected),
-			type: "POST",
-			contentType: "application/json",
-			dataType: "json",
-			success: function(response, textStatus, httpReq) {
-				testRunTable.destroy();
-				testRunTable = null;
-				initTable();
-				addTableListeners();
-				actionTxt.hide();
-				$("#selectTrText").show();
-			}
-		});
-	}
-
-	function getSelectedTestRunIds() {
-		var records = testRunTable.getRecordSet().getRecords();
-		return $.map(records, function(rec) {
-			if (rec.getData("checked")) {
-				return rec.getData("id");
-			} else {
-				return null;
-			}
-		});
-	}
-
-	function onSelectChange(oArgs) {
-		var record = this.getRecord(oArgs.target);
-		var id = record.getData("id");
-		var indxInSelected = selected.indexOf(id);
-		if (record.getData("checked")) {
-			record.setData("checked", false);
-			selected.splice(indxInSelected, 1);
-		} else {
-			record.setData("checked", true);
-			if (indxInSelected == -1){
-				selected.push(id);
-			}
+			$.ajax({
+				url: YAHOO.cuanto.urls.get("testRunBulkDelete"),
+				data: YAHOO.lang.JSON.stringify(selectControl.getSelected()),
+				type: "POST",
+				contentType: "application/json",
+				dataType: "json",
+				success: function(response, textStatus, httpReq) {
+					testRunTable.destroy();
+					testRunTable = null;
+					initTable();
+					addTableListeners();
+					actionTxt.hide();
+					$("#selectTrText").show();
+				}
+			});
+			selectControl.deselectAllRecords();
 		}
 	}
 
@@ -299,6 +265,9 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function showBulkOperations(e) {
 		e.preventDefault();
+		$("#showSelectOptions").show();
+
+		selectControl.showColumn();
 		testRunTable.showColumn(testRunTable.getColumnSet().getColumn(0));
 
 		$("#bulkButtons").show();
@@ -319,16 +288,8 @@ YAHOO.cuanto.projectHistory = function() {
 			e.preventDefault();
 		}
 		$("#bulkButtons").hide();
-	}
-
-	function clearChecks() {
-		selected = [];
-		testRunTable.hideColumn(testRunTable.getColumnSet().getColumn(0));
-		var records = testRunTable.getRecordSet().getRecords();
-		$.each(records, function(idx, record) {
-			record.setData("checked", false);
-			testRunTable.updateRow(record);
-		});
+		$("#showSelectOptions").hide();
+		selectControl.hideColumn();
 	}
 
 	function initHeader() {
@@ -338,9 +299,9 @@ YAHOO.cuanto.projectHistory = function() {
 		$('.bulk').click(showBulkOperations);
 		$('#closeBulk').click(function(e){
 			hideBulkOperations(e);
+			selectControl.deselectAllRecords();
 			$("#selectTrText").show();
 			addTableListeners();
-			clearChecks();
 		});
 	}
 
@@ -348,48 +309,51 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
 		testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
 		testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
-		testRunTable.subscribe("checkboxClickEvent", onSelectChange);
 	}
 
+
 	function initTable() {
-			var columnDefs = getTestRunTableColumnDefs(testRunProperties);
-			var dataSource = getTestRunDataSource();
-			var tableConfig = getTestRunTableConfig();
+		var columnDefs = getTestRunTableColumnDefs(testRunProperties);
+		var dataSource = getTestRunDataSource();
+		var tableConfig = getTestRunTableConfig();
 
-			testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
-				dataSource, tableConfig);
+		testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
+			dataSource, tableConfig);
 
-			var hiddenCols = getHiddenColumns();
+		var hiddenCols = getHiddenColumns();
 
-			$.each(testRunTable.getColumnSet().flat, function(idx, column) {
-				if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
-					testRunTable.hideColumn(column.key);
-				}
-			});
+		$.each(testRunTable.getColumnSet().flat, function(idx, column) {
+			if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
+				testRunTable.hideColumn(column.key);
+			}
+		});
 
-			testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-				if (!oPayload) {
-					oPayload = {};
-				}
-				oPayload.totalRecords = oResponse.meta.totalCount;
-				if (oResponse.meta.offset) {
-					oPayload.pagination.totalRecords = oResponse.meta.totalCount;
-				}
-				return oPayload;
-			};
+		testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+			if (!oPayload) {
+				oPayload = {};
+			}
+			oPayload.totalRecords = oResponse.meta.totalCount;
+			if (oResponse.meta.offset) {
+				oPayload.pagination.totalRecords = oResponse.meta.totalCount;
+			}
+			return oPayload;
+		};
 
-			testRunTable.set("selectionMode", "single");
-			addTableListeners();
+		testRunTable.set("selectionMode", "single");
+		addTableListeners();
 	}
 
 	return {
 		initHistoryTable: function(testRunProps) {
 			testRunProperties = testRunProps;
+			$("#showSelectOptions").hide();
+			$("#hideSelectCol").hide();
 			projectDialog = new YAHOO.cuanto.ProjectDialog();
 			projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
 			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 			initHeader();
 			initTable();
+			selectControl.initTable(testRunTable, 0);
 		}
 	};
 

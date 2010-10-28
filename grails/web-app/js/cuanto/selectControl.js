@@ -166,5 +166,9 @@ YAHOO.cuanto.SelectControl = function() {
 	pub.hideColumn = hideColumn;
 	pub.deselectAllRecords = deselectAllRecords;
 	pub.initTable = initTable;
+
+	pub.getSelected = function() {
+		return selected;
+	};
 	return pub;
 };
