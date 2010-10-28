@@ -115,32 +115,6 @@ class ProjectTests extends GroovyTestCase {
 		}
 	}
 
-	void testGetAllGroups() {
-		def groupNames = ["b", "aa", "a", "e", "c", "d"]
-		Collections.shuffle(groupNames)
-
-		def projectsPerGroup = 3
-		groupNames.each { groupName ->
-			def group = fakes.getProjectGroup(groupName)
-			dataService.saveDomainObject(group)
-			1.upto(projectsPerGroup) {
-				Project proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
-					projectGroup: group, 'testType': testType)
-				dataService.saveDomainObject(proj)
-			}
-		}
-
-		groupNames.sort()
-
-		def fetchedGroups = dataService.getAllGroups()
-		assertEquals groupNames.size(), fetchedGroups.size()
-
-		0.upto(fetchedGroups.size() - 1) {
-			assertEquals groupNames[it], fetchedGroups[it].name
-		}
-
-	}
-
 
 	void testGetProjectByGroupAndName() {
 		def groupNames = ["a", "b", "c"]

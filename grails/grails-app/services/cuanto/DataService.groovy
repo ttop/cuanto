@@ -516,11 +516,6 @@ class DataService {
 	}
 
 
-	def getAllGroups() {
-		ProjectGroup.listOrderByName()
-	}
-
-
 	def findProjectGroupByName(name) {
 		if (name) {
 			return ProjectGroup.findByNameIlike(name)
