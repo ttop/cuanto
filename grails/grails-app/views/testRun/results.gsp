@@ -33,26 +33,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<title>Cuanto: Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</title>
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
 
-		<g:render template="/shared/yui26"/>
+		<g:render template="/shared/yui282r1"/>
 
 		<p:css name='analysis'/>
 		<p:css name='columnDialog'/>
-		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
-		<p:css name='../js/yui/2.6.0/tabview/assets/skins/sam/tabview'/>
-		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<p:css name='../js/yui/2.6.0/assets/skins/sam/resize'/>
+		<p:css name='../js/yui/2.8.2r1/datatable/assets/skins/sam/datatable'/>
+		<p:css name='../js/yui/2.8.2r1/tabview/assets/skins/sam/tabview'/>
+		<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.8.2r1/assets/skins/sam/resize'/>
 
-		<yui:javascript dir="tabview" file="tabview-min.js" version="2.6.0"/>
-		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
-		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
-		<yui:javascript dir="resize" file="resize-min.js" version="2.6.0"/>
-		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
-		<yui:javascript dir="history" file="history-min.js" version="2.6.0"/>
-		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
+		<yui:javascript dir="tabview" file="tabview-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="resize" file="resize-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="history" file="history-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
 
 		<g:javascript src="jq/jquery-1.4.2.min.js"/>
 		<g:javascript src="cuanto/events.js"/>
@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/analysisTable.js"/>
 		<g:javascript src="cuanto/summaryTab.js"/>
 		<g:javascript src="cuanto/analysisDialog.js"/>
-		<g:javascript src="cuanto/jcolumnDialog.js"/>
+		<g:javascript src="cuanto/columnDialog.js"/>
 		<g:javascript src="cuanto/groupedOutput.js"/>
 
 		<script type="text/javascript">
