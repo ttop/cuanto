@@ -60,7 +60,8 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 
 		var colHidden = [];
 		$.each(datatable.getColumnSet().flat, function(idx, column) {
-			if (!column.key.startsWith("yui-")) {
+			var isYuiCol = column.key.match(/^yui/);
+			if (!isYuiCol) {
 				colHidden.push(column.key + ":" + column.hidden);
 			}
 		});
