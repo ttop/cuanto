@@ -28,6 +28,7 @@ YAHOO.cuanto.projectHistory = function() {
 	var projectDialog;
 	var projectDeleteDialog;
 	var deleteButton;
+	var deleteCancelButton;
 	var timeParser = new YAHOO.cuanto.TimeParser();
 	var testRunProperties;
 	var selectControl = new YAHOO.cuanto.SelectControl();
@@ -244,14 +245,17 @@ YAHOO.cuanto.projectHistory = function() {
 					testRunTable = null;
 					initTable();
 					addTableListeners();
-					actionTxt.hide();
-					$("#selectTrText").show();
+					hideTestRunDelete();
 				}
 			});
 			selectControl.deselectAllRecords();
 		}
 	}
 
+	function hideTestRunDelete() {
+		$("#deleteText").hide();
+		$("#selectTrText").show();
+	}
 
 	function showDeleteProject(e) {
 		var target = YAHOO.util.Event.getTarget(e);
@@ -277,6 +281,12 @@ YAHOO.cuanto.projectHistory = function() {
 			disabled: false
 		});
 
+		deleteCancelButton = new YAHOO.widget.Button("cancelDeleteBtn", {
+			onclick: {fn: closeBulk},
+			disabled: false
+		});
+
+
 		testRunTable.removeListener("rowClickEvent", onSelectTestRunRow);
 		testRunTable.removeListener("rowMouseoverEvent", testRunTable.onEventHighlightRow);
 		testRunTable.removeListener("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
@@ -296,13 +306,16 @@ YAHOO.cuanto.projectHistory = function() {
 		$("#chooseColumns").click(chooseColumns);
 		$('.deleteProj').click(showDeleteProject);
 		$('.bulk').click(showBulkOperations);
-		$('#closeBulk').click(function(e){
+		$('#closeBulk').click(closeBulk);
+	}
+
+	function closeBulk(e){
 			hideBulkOperations(e);
 			selectControl.deselectAllRecords();
 			$("#selectTrText").show();
 			addTableListeners();
-		});
-	}
+		}
+
 
 	function addTableListeners() {
 		testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);

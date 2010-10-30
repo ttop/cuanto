@@ -84,8 +84,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 
 			<div id="bulkButtons" style="display:none">
-				<h2>Bulk Delete: <a id="closeBulk" href="#closeBulk" class="smaller">(Close)</a></h2>
 				<button name="delete" id="deleteBtn" type="push" style="display:none">Delete Selected Test Runs</button>
+				<button name="cancelDelete" id="cancelDeleteBtn" type="push" style="display:none">Cancel Deletion</button>
 			</div>
 			<div id="deleteText" style="display:none">Deleting Test Runs... <img src="${resource(dir:'images', file:'spinner.gif')}" alt="spinner"/></div>
 			<div id="selectTrText">Select a test run to view the detailed results and analysis:</div>
