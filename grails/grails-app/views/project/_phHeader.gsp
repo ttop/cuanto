@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
 			</g:if></span>
 		${bullet}
-		<a href="#bulk" id="bulk${project?.id}" class="bulk">Bulk Ops</a>
+		<a href="#bulk" id="bulk${project?.id}" class="bulk">Delete Runs</a>
 		${bullet}
 		<a href="#deleteProject" id="delete${project?.id}" class="deleteProj">Delete Project</a>
 		${bullet}

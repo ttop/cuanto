@@ -28,7 +28,6 @@ YAHOO.cuanto.projectHistory = function() {
 	var projectDialog;
 	var projectDeleteDialog;
 	var deleteButton;
-	var moveButton;
 	var timeParser = new YAHOO.cuanto.TimeParser();
 	var testRunProperties;
 	var selectControl = new YAHOO.cuanto.SelectControl();
