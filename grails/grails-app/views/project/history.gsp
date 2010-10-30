@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<g:javascript src="cuanto/events.js"/>
 		<g:javascript src="cuanto/timeParser.js"/>
 
-		<g:javascript src="cuanto/jcolumnDialog.js"/>
+		<g:javascript src="cuanto/columnDialog.js"/>
 		<g:javascript src="cuanto/selectControl.js"/>
 		<g:javascript src="cuanto/projectHistory.js"/>
 

@@ -59,8 +59,9 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 		expDate.setDate(expDate.getDate() + 30);
 
 		var colHidden = [];
-		datatable.getColumnSet().flat.each(function(column) {
-			if (!column.key.startsWith("yui-")) {
+		$.each(datatable.getColumnSet().flat, function(idx, column) {
+			var isYuiCol = column.key.match(/^yui/);
+			if (!isYuiCol) {
 				colHidden.push(column.key + ":" + column.hidden);
 			}
 		});
@@ -76,19 +77,15 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 			YAHOO.util.Event.stopEvent(e);
 		}
 
-		var elPicker = YAHOO.util.Dom.get("columnPanel-picker");
-		$(elPicker).childElements().each(function(el) {
-			$(el).remove();
-		});
+		var elPicker = $("#columnPanel-picker");
+		$(elPicker.children()).remove();
 
-
-		var columnKeys = datatable.getColumnSet().keys.collect(function(item) {
+		var columnKeys = $.map(datatable.getColumnSet().keys, function(item, idx) {
 			return item.key;
 		});
-		var allColumns = [];
-		columnKeys.each(function(colKey) {
-			var col = datatable.getColumn(colKey);
-			allColumns.push(col);
+
+		var allColumns = $.map(columnKeys, function(colKey, idx) {
+			return datatable.getColumn(colKey);
 		});
 
 		var elTemplateCol = document.createElement("div");
@@ -126,7 +123,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 				}
 			]);
 
-			elPicker.appendChild(elColumn);
+			elPicker[0].appendChild(elColumn);
 		}
 	};
 	
@@ -135,7 +132,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName) 
 		if (cookie) {
 			var cols = {};
 			var pairs = cookie.split(",");
-			pairs.each(function(pair) {
+			$.each(pairs, function(idx, pair) {
 				var items = pair.split(":");
 				cols[items[0]] = (/^true$/i).test(items[1]);
 			});
