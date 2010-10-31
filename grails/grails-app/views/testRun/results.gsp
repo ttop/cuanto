@@ -45,7 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<yui:javascript dir="tabview" file="tabview-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
-		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="cuanto-datatable-overrides.js" version="2.8.2r1"/>
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="animation" file="animation-min.js" version="2.8.2r1"/>
@@ -76,10 +77,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var newWidth = $(window).width() * .95;
             $('#tabContainer').width(newWidth);
             tabView = new YAHOO.widget.TabView("tabContainer");
+			/*YAHOO.widget.DropdownCellEditor.focus = function() {
+			    this.getDataTable()._focusEl(this.dropdown);
+				this.dropdown.size = this.dropdown.length;
+			};*/
             
 			new YAHOO.cuanto.SummaryTab();
 			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
             new YAHOO.cuanto.GroupedOutput();
+
 		});
 		</script>
 	</head>
