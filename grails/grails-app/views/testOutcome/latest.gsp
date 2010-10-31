@@ -27,10 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<title>Cuanto: Test Outcome ${testOutcome?.testCase?.fullName} for Test Run ${testOutcome.testRun?.dateExecuted.encodeAsHTML()} of Project ${testRun?.project?.name}</title>
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
 
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
 		
-		<yui:javascript dir="button" file="button-min.js"/>
-		<yui:javascript dir="get" file="get-min.js"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="get" file="get-min.js" version="2.8.2r1"/>
 		<g:javascript src="cuanto/events.js"/>
 		<g:javascript src="cuanto/formatBug.js"/>
 		<g:javascript src="cuanto/url.js"/>

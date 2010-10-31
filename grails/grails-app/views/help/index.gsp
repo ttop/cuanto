@@ -241,7 +241,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  <img src="images/lgplv3-147x51.png" alt="LGPLv3"/>
 
 		  <h1>Additional licenses used</h1>
-		  <p><a href="js/yui/2.6.0/LICENSE">YUI License</a></p>
+		  <p><a href="js/yui/2.8.2r1/LICENSE">YUI License</a></p>
 
 		  <p>Additional license information can be found in the <a href="http://github.com/ttop/cuanto">source 
 		  distribution.</a></p>
