@@ -76,12 +76,17 @@ log4j = {
 }
 
 // UI Performance configurations
-uiperformance.enabled = false
+uiperformance.enabled = true
 uiperformance.processCSS = true
 uiperformance.processJS = false
 uiperformance.processImages = false
-uiperformance.html.compress = false                                                 
+uiperformance.html.compress = false
 uiperformance.determineVersion = { -> appVersion }
+uiperformance.exclusions = [
+   "**/yui/**",
+	"**/jq/**",
+	"**/prototype/**"
+]
 
 // statSleep is the time to sleep between calculating test run stats
 statSleep = 1000
