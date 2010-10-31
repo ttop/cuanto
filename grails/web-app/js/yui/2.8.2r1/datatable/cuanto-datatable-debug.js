@@ -9190,25 +9190,13 @@ updateRow : function(row, oData) {
                 this._oChainRender.add({
                     method: function() {
                         if((this instanceof DT) && this._sId) {
-                            // Paginated
-                            var oPaginator = this.get('paginator');
-                            if (oPaginator) {
-                                var pageStartIndex = (oPaginator.getPageRecords())[0],
-                                    pageLastIndex = (oPaginator.getPageRecords())[1];
-        
-                                // At least one of the new records affects the view
-                                if ((index >= pageStartIndex) || (index <= pageLastIndex)) {
-                                    this.render();
-                                }
-                            }
-                            else {
-                                if(elRow) {
-                                    this._updateTrEl(elRow, updatedRecord);
-                                }
-                                else {
-                                    this.getTbodyEl().appendChild(this._addTrEl(updatedRecord));
-                                }
-                            }
+                            // code replacement here per Satyam at http://yuilibrary.com/forum/viewtopic.php?f=90&t=5437&start=0
+	                        if (elRow) {
+		                        this._updateTrEl(elRow, updatedRecord);
+	                        }
+	                        else if (!this.get('paginator')) {
+		                        this.getTbodyEl().appendChild(this._addTrEl(updatedRecord));
+	                        }
                             this.fireEvent("rowUpdateEvent", {record:updatedRecord, oldData:oldData});
                             YAHOO.log("DataTable row updated: Record ID = " + updatedRecord.getId() +
                                     ", Record index = " + this.getRecordIndex(updatedRecord) +
