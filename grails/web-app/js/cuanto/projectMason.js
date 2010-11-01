@@ -52,7 +52,7 @@ YAHOO.cuanto.ProjectMason = function() {
 
 		$(".projBox").unbind();
 		$(".projBox").click(function(event) {
-			if ($(event.originalTarget).attr("tagName") != 'A') {
+			if ($(event.target).attr("tagName") != 'A') {
 				event.preventDefault();
 				var projList = $(".projList", this);
 				if (projList.css("display") == "none") {
@@ -69,7 +69,6 @@ YAHOO.cuanto.ProjectMason = function() {
 					$('#groups').masonry();
 				}
 				storeVisibleGroups()
-
 			}
 		});
 	}
