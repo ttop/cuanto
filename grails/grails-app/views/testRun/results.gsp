@@ -55,20 +55,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="history" file="history-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/formatBug.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/tableHelper.js"/>
-		<g:javascript src="cuanto/lruCache.js"/>
-		<g:javascript src="cuanto/outputProxy.js"/>
-		<g:javascript src="cuanto/testoutput.js"/>
-		<g:javascript src="cuanto/timeParser.js"/>
-		<g:javascript src="cuanto/analysisTable.js"/>
-		<g:javascript src="cuanto/summaryTab.js"/>
-		<g:javascript src="cuanto/analysisDialog.js"/>
-		<g:javascript src="cuanto/columnDialog.js"/>
-		<g:javascript src="cuanto/groupedOutput.js"/>
+		<p:javascript src="jq/jquery-1.4.2"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/formatBug"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/tableHelper"/>
+		<p:javascript src="cuanto/lruCache"/>
+		<p:javascript src="cuanto/outputProxy"/>
+		<p:javascript src="cuanto/testoutput"/>
+		<p:javascript src="cuanto/timeParser"/>
+		<p:javascript src="cuanto/analysisTable"/>
+		<p:javascript src="cuanto/summaryTab"/>
+		<p:javascript src="cuanto/analysisDialog"/>
+		<p:javascript src="cuanto/columnDialog"/>
+		<p:javascript src="cuanto/groupedOutput"/>
 
 		<script type="text/javascript">
 
@@ -77,11 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var newWidth = $(window).width() * .95;
             $('#tabContainer').width(newWidth);
             tabView = new YAHOO.widget.TabView("tabContainer");
-			/*YAHOO.widget.DropdownCellEditor.focus = function() {
-			    this.getDataTable()._focusEl(this.dropdown);
-				this.dropdown.size = this.dropdown.length;
-			};*/
-            
+
 			new YAHOO.cuanto.SummaryTab();
 			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
             new YAHOO.cuanto.GroupedOutput();

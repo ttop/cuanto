@@ -78,7 +78,7 @@ log4j = {
 // UI Performance configurations
 uiperformance.enabled = true
 uiperformance.processCSS = true
-uiperformance.processJS = false
+uiperformance.processJS = true
 uiperformance.processImages = false
 uiperformance.html.compress = false
 uiperformance.determineVersion = { -> appVersion }
