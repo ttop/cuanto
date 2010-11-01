@@ -54,16 +54,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/projectDialog.js"/>
-		<g:javascript src="cuanto/deleteProjectDialog.js"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/timeParser.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/projectDialog"/>
+		<p:javascript src="cuanto/deleteProjectDialog"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/timeParser"/>
 
-		<g:javascript src="cuanto/columnDialog.js"/>
-		<g:javascript src="cuanto/selectControl.js"/>
-		<g:javascript src="cuanto/projectHistory.js"/>
+		<p:javascript src="cuanto/columnDialog"/>
+		<p:javascript src="cuanto/selectControl"/>
+		<p:javascript src="cuanto/projectHistory"/>
 
 		<script type="text/javascript">
 
