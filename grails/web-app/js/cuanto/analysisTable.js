@@ -287,6 +287,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				alert("Failed loading table data");
 			}
 		});
+		YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({results:getCurrentFilter(), context: 'analysisTable'});
+	// getCurrentFilter()
 	}
 
 
@@ -314,44 +316,46 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
     function onFilterChangeEvent(e, arg) {
-        var filter = arg[0];
+	    var filter = arg[0];
 
-        var resultFilterNode = $('#trDetailsFilter')[0];
-        var resultsFilter = resultFilterNode.length - 1;
-        if (filter.results) {
-            var targResult = filter.results.toUpperCase();
-            for (var i = 0; i < resultFilterNode.options.length; i++) {
-                var item = resultFilterNode.options[i];
-                if (item.text.toUpperCase() == targResult || $(item).val().toUpperCase() == targResult) {
-                    resultsFilter = i;
-                    break;
-                }
-            }
-        }
+	    if (filter.context != 'analysisTable') {
+		    var resultFilterNode = $('#trDetailsFilter')[0];
+		    var resultsFilter = resultFilterNode.length - 1;
+		    if (filter.results) {
+			    var targResult = filter.results.toUpperCase();
+			    for (var i = 0; i < resultFilterNode.options.length; i++) {
+				    var item = resultFilterNode.options[i];
+				    if (item.text.toUpperCase() == targResult || $(item).val().toUpperCase() == targResult) {
+					    resultsFilter = i;
+					    break;
+				    }
+			    }
+		    }
 
-        resultFilterNode.selectedIndex = resultsFilter;
+		    resultFilterNode.selectedIndex = resultsFilter;
 
-        if (filter.search) {
-            var searchIndex;
-            var searchTermNode = $('#searchTerm')[0];
-            var targSearch = filter.search.toUpperCase();
-            for (var s = 0; s < searchTermNode.options.length; s++) {
-                var st = searchTermNode.options[s];
-                if (st.text.toUpperCase() == targSearch || $(item).val().toUpperCase() == targSearch) {
-                    searchIndex = s;
-                    break;
-                }
-            }
-            if (!(searchIndex == undefined)) {
-                searchTermNode.selectedIndex = searchIndex;
-            }
-        }
+		    if (filter.search) {
+			    var searchIndex;
+			    var searchTermNode = $('#searchTerm')[0];
+			    var targSearch = filter.search.toUpperCase();
+			    for (var s = 0; s < searchTermNode.options.length; s++) {
+				    var st = searchTermNode.options[s];
+				    if (st.text.toUpperCase() == targSearch || $(item).val().toUpperCase() == targSearch) {
+					    searchIndex = s;
+					    break;
+				    }
+			    }
+			    if (!(searchIndex == undefined)) {
+				    searchTermNode.selectedIndex = searchIndex;
+			    }
+		    }
 
-        if (filter.qry) {
-            $('#searchQry').val(filter.qry);
-        }
-        onFilterChange(null);
-        showCurrentSearchSpan();
+		    if (filter.qry) {
+			    $('#searchQry').val(filter.qry);
+		    }
+		    onFilterChange(null);
+		    showCurrentSearchSpan();
+	    }
     }
 
 

@@ -35,6 +35,7 @@ YAHOO.cuanto.GroupedOutput = function() {
         goTable.subscribe("rowMouseoutEvent", goTable.onEventUnhighlightRow);
         goTable.render();
 	    $("#trOutputFilter").change(onFilterChange);
+	    YAHOO.cuanto.events.outcomeFilterChangeEvent.subscribe(onFilterChangeEvent);
     }
 
     function getColumnDefs() {
@@ -103,7 +104,8 @@ YAHOO.cuanto.GroupedOutput = function() {
         var record = this.getRecord(e.target);
         var output = record.getData("output");
         tabView.set('activeIndex', 0);
-        YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({search: "Output", qry: output, results: "allfailures"});
+        YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({search: "Output", qry: output,
+	        results: $('#trOutputFilter').val(), context: "groupedOutput"});
     }
 
 
@@ -122,7 +124,7 @@ YAHOO.cuanto.GroupedOutput = function() {
     }
 
 
-	function onFilterChange(e) {
+	function sendNewRequest() {
 		var newRequest = buildGroupedOutputQuery(null);
 
 		goTable.getDataSource().sendRequest(newRequest, {
@@ -131,6 +133,22 @@ YAHOO.cuanto.GroupedOutput = function() {
 				alert("Failed loading table data");
 			}
 		});
+	}
+
+
+	function onFilterChange(e) {
+		sendNewRequest();
+		YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({results: $('#trOutputFilter').val(), context: 'groupedOutput'});
+	}
+
+	function onFilterChangeEvent(e, arg) {
+		var filter = arg[0];
+		if (filter.context != 'groupedOutput') {
+			if (filter.results) {
+				$('#trOutputFilter').val(filter.results);
+			}
+			sendNewRequest();
+		}
 	}
 
 	function initDataTablePageOne(oRequest, oResponse, oPayload) {
