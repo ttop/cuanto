@@ -179,34 +179,32 @@ YAHOO.cuanto.format = function() {
 		return false;
 	};
 
-	pub.breakOnToken = function(str, token, maxLinePxls)
-	{
+	pub.breakOnToken = function(str, token, maxLinePxls) {
 		var dispStrs = new Array();
-		var splitPoint;
-		do {
-			splitPoint = getSplitPoint(str, maxLinePxls, token);
-			if (splitPoint > 0)
-			{
-				dispStrs.push(str.slice(0, splitPoint));
+		var displayStr = str;
+		if (str) {
+			var splitPoint;
+			do {
+				splitPoint = getSplitPoint(str, maxLinePxls, token);
+				if (splitPoint > 0) {
+					dispStrs.push(str.slice(0, splitPoint));
+				}
+				else {
+					splitPoint = getSplitPoint(str, maxLinePxls, token, "");
+				}
+				str = str.substr(splitPoint);
+
 			}
-			else
-			{
-				splitPoint = getSplitPoint(str, maxLinePxls, token, "");
-			}
-			str = str.substr(splitPoint);
+			while (getWidthForColumnText(str) > maxLinePxls && splitPoint > 0);
 
-		}
-		while (getWidthForColumnText(str) > maxLinePxls && splitPoint > 0);
+			dispStrs.push(str);
 
-		dispStrs.push(str);
-
-		var displayStr = new String();
-		for (var x = 0; x < dispStrs.length; x++)
-		{
-			displayStr += dispStrs[x];
-			if (x < dispStrs.length - 1)
-			{
-				displayStr += "<br/>";
+			displayStr = new String();
+			for (var x = 0; x < dispStrs.length; x++) {
+				displayStr += dispStrs[x];
+				if (x < dispStrs.length - 1) {
+					displayStr += "<br/>";
+				}
 			}
 		}
 		return displayStr;
