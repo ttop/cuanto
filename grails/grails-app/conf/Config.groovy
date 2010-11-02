@@ -37,6 +37,9 @@ environments {
     production {
         grails.serverURL = "http://www.changeme.com" //todo: change
     }
+	development {
+		uiperformance.enabled = false
+	}
 }
 
 // log4j configuration
