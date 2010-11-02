@@ -65,7 +65,7 @@ class TestOutcomeController {
 		render "OK"
 	}
 
-	def latest = {
+	def latest = { // todo: is this used anymore? possibly delete
 		def tc = TestCase.get(params.id)
 		List outs = dataService.getTestOutcomeHistory(tc, 0, 1, "testRun.dateExecuted", "desc")
 		['testOutcome': outs[0], 'testRun': outs[0].testRun, 'project': outs[0].testRun.project]
