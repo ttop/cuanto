@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<p:css name='../js/yui/2.8.2r1/tabview/assets/skins/sam/tabview'/>
 		<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
 
-		<g:render template="/shared/yui26"/>
+		<g:render template="/shared/yui282r1"/>
 
 		<p:javascript src="jq/jquery-1.4.2.min"/>
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>

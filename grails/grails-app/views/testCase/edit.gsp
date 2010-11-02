@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html>
 	<head>
 		<meta name="layout" content="mainBare"/>
-		<g:render template="/shared/yui26"/>
+		<g:render template="/shared/yui282r1"/>
 	</head>
 	<body class=" yui-skin-sam">
 		<div class="body yui-skin-sam cuantoBody ">
