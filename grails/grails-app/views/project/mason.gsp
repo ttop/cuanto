@@ -38,14 +38,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="jq/jquery.masonry.min.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="jq/jquery.masonry.min"/>
 
 
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/projectDialog.js"/>
-		<g:javascript src="cuanto/projectMason.js"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/projectDialog"/>
+		<p:javascript src="cuanto/projectMason"/>
 		<g:javascript>
 			<g:render template="/testRun/urls"/>
 

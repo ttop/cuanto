@@ -31,9 +31,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
 
 <yui:javascript dir="get" file="get-min.js" version="2.8.2r1"/>
-<g:javascript src="cuanto/events.js"/>
-<g:javascript src="cuanto/formatBug.js"/>
-<g:javascript src="cuanto/url.js"/>
-<g:javascript src="cuanto/tableHelper.js"/>
-<g:javascript src="cuanto/timeParser.js"/>
-<g:javascript src="cuanto/tcHistory.js"/>
+<p:javascript src="cuanto/events"/>
+<p:javascript src="cuanto/formatBug"/>
+<p:javascript src="cuanto/url"/>
+<p:javascript src="cuanto/tableHelper"/>
+<p:javascript src="cuanto/timeParser"/>
+<p:javascript src="cuanto/tcHistory"/>

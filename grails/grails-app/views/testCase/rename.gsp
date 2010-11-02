@@ -43,13 +43,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="resize" file="resize-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/tcRename.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/tcRename"/>
 
 		<script type="text/javascript">
-
 			$(function() {
 			<g:render template="/testRun/urls"/>
 				new YAHOO.cuanto.testCaseRename();

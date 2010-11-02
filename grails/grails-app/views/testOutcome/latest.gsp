@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --}%
 
+
+%{-- todo: is this used anymore? possibly delete --}%
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
@@ -31,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		
 		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="get" file="get-min.js" version="2.8.2r1"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/formatBug.js"/>
-		<g:javascript src="cuanto/url.js"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/formatBug"/>
+		<p:javascript src="cuanto/url"/>
 
 		<script type="text/javascript">
 

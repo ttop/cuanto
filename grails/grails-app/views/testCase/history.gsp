@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<g:render template="/shared/yui26"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
 		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="datatable" file="cuanto-datatable-overrides.js" version="2.8.2r1"/>
@@ -41,9 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="history" file="history-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="cuanto/lruCache.js"/>
-		<g:javascript src="cuanto/outputProxy.js"/>
-		<g:javascript src="cuanto/testoutput.js"/>
+		<p:javascript src="cuanto/lruCache"/>
+		<p:javascript src="cuanto/outputProxy"/>
+		<p:javascript src="cuanto/testoutput"/>
 
 		<g:render template="history_hdr"/>
 		<script type="text/javascript">

@@ -49,14 +49,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
 	<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.8.2r1"/>
 
-	<g:javascript src="jq/jquery-1.4.2.min.js"/>
-	<g:javascript src="cuanto/url.js"/>
-	<g:javascript src="cuanto/projectDialog.js"/>
-	<g:javascript src="cuanto/deleteProjectDialog.js"/>
-	<g:javascript src="cuanto/events.js"/>
-	<g:javascript src="cuanto/timeParser.js"/>
-	<g:javascript src="cuanto/listGroup.js"/>
-	<g:javascript src="cuanto/groupHistory.js"/>
+	<p:javascript src="jq/jquery-1.4.2.min"/>
+	<p:javascript src="cuanto/url"/>
+	<p:javascript src="cuanto/projectDialog"/>
+	<p:javascript src="cuanto/deleteProjectDialog"/>
+	<p:javascript src="cuanto/events"/>
+	<p:javascript src="cuanto/timeParser"/>
+	<p:javascript src="cuanto/listGroup"/>
+	<p:javascript src="cuanto/groupHistory"/>
 
 	<script type="text/javascript">
 

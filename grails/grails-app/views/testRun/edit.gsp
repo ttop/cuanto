@@ -31,9 +31,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/editTestRun.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/editTestRun"/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {

@@ -35,16 +35,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/formatBug.js"/>
-        <g:javascript src="cuanto/testcases.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/formatBug"/>
+        <p:javascript src="cuanto/testcases"/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {
-
 				<g:render template="/testRun/urls"/>
-
 				YAHOO.cuanto.testCases.initTestCaseTable(${project?.id});
 			});
 	</script>

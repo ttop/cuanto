@@ -43,10 +43,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<yui:javascript dir="yahoo-dom-event" file="yahoo-dom-event.js" version="2.8.2r1"/>
 		<yui:javascript dir="logger" file="logger-min.js" version="2.8.2r1"/>
 		<yui:javascript dir="yuitest" file="yuitest-min.js" version="2.8.2r1"/>
-		<g:javascript src="cuanto/lruCache.js"/>
-		<g:javascript src="cuanto/test/lruCacheTest.js"/>
-		<g:javascript src="cuanto/timeParser.js"/>
-		<g:javascript src="cuanto/test/timeParserTest.js"/>
+		<p:javascript src="cuanto/lruCache"/>
+		<p:javascript src="cuanto/test/lruCacheTest"/>
+		<p:javascript src="cuanto/timeParser"/>
+		<p:javascript src="cuanto/test/timeParserTest"/>
 	</head>
 	<body class=" yui-skin-sam">
 		<div id="testConsole">
