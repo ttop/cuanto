@@ -522,11 +522,11 @@ class TestOutcomeService {
 
 		def qry
 		if (filter.equalsIgnoreCase("AllFailures")) {
-			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
 		} else if (filter.equalsIgnoreCase("NewFailures")) {
-			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.isFailureStatusChanged = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and to.isFailureStatusChanged = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
 		} else if (filter.equalsIgnoreCase("UnanalyzedFailures")) {
-			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.analysisState.isAnalyzed = false and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and to.analysisState.isAnalyzed = false and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
 		}
 
 		// returns a List where each item is a List with index 0 the count and index 1 the output summary text
