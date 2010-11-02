@@ -369,3 +369,12 @@ form label.dialogLabel {
 	margin: 10px;
 	
 }
+
+#tcConfirmDelete {
+	margin-left:15%;
+	width:40px
+}
+
+#tcDeleteBtn {
+	margin-left:15%;
+}

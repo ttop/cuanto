@@ -23,8 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
 		<title>Cuanto: Confirm Test Case deletion</title>
+
+		<g:render template="/shared/yui282r1"/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<p:javascript src="jq/jquery-1.4.2"/>
+
+		<g:javascript>
+		    $(function() {
+			    new YAHOO.widget.Button('tcDeleteBtn');
+		    });
+		</g:javascript>
 	</head>
 	<body class=" yui-skin-sam">
 		<div class="cuantoBody yui-skin-sam">
@@ -35,11 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			runs.  If you are sure you want to delete this test case, type YES in the box below
 			and click Delete.</p>
 			<g:form controller="testCase" action="delete" id="${testCase?.id}">
-				<input id="confirmDelete" type="text" name="confirmDelete" style="margin-left:15%; width:40px"/><br/>
-				<div class="buttons">
-					<span class="button">
-						<input id="delete" class="delete" type="submit" value="Delete" style="margin-left:15%"/>
-					</span>
+				
+				<input id="tcConfirmDelete" type="text" name="confirmDelete" /><br/>
+				<input id="tcDeleteBtn" type="submit" value="Delete" />
+
 					<div class="clear"></div>
 				</div>
 			</g:form>
