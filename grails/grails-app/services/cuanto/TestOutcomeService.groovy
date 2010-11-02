@@ -504,7 +504,7 @@ class TestOutcomeService {
 		}
 	}
 
-	List getGroupedOutputSummaries(TestRun testRun, Integer offset, Integer max, sort = "failures", order = "desc") {
+	List getGroupedOutputSummaries(TestRun testRun, String filter, Integer offset, Integer max, sort = "failures", order = "desc") {
 		if (order != "asc" && order != "desc") {
 			throw new IllegalArgumentException("Unknown order for grouped output summary sort")
 		}
@@ -520,20 +520,38 @@ class TestOutcomeService {
 			secondarySort = "to.testOutputSummary asc"
 		}
 
-		def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		def qry
+		if (filter.equalsIgnoreCase("AllFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		} else if (filter.equalsIgnoreCase("NewFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.isFailureStatusChanged = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		} else if (filter.equalsIgnoreCase("UnanalyzedFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.analysisState.isAnalyzed = false and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		}
+
 		// returns a List where each item is a List with index 0 the count and index 1 the output summary text
 		TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
 	}
 
 
-    Long countGroupedOutputSummaries(TestRun testRun) {
-        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
-                [testRun])
-        return result[0]
-    }
+	Long countGroupedOutputSummaries(TestRun testRun, String filter) {
+		def result
+		if (filter.equalsIgnoreCase("AllFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
+				[testRun])
+		} else if (filter.equalsIgnoreCase("NewFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.isFailureStatusChanged = true and (not to.testResult.name like 'Skip')",
+				[testRun])
+		} else if (filter.equalsIgnoreCase("UnanalyzedFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.analysisState.isAnalyzed = false and (not to.testResult.name like 'Skip')",
+				[testRun])
+		}
+
+		return result[0]
+	}
 
 
-    TestOutcome addTestOutcome(request) {
+	TestOutcome addTestOutcome(request) {
         TestOutcome testOutcome = null
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)

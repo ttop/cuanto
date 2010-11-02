@@ -62,8 +62,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</div>
 
         <div id="outputTab">
+	        <span>Filter Results: <g:select id="trOutputFilter" value="${outputFilter}" optionKey="id" optionValue="value"
+		        from="${outputFilterList}"/> </span>
             <div id='trOutputTable'>Loading...</div>
             <div id='trOutputPaging'></div>
+	        <span id="grpOutputTotalRows">0</span> total rows
         </div>
 
 		<div id="summaryTab">

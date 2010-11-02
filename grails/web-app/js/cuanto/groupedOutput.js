@@ -34,7 +34,7 @@ YAHOO.cuanto.GroupedOutput = function() {
         goTable.subscribe("rowMouseoverEvent", goTable.onEventHighlightRow);
         goTable.subscribe("rowMouseoutEvent", goTable.onEventUnhighlightRow);
         goTable.render();
-
+	    $("#trOutputFilter").change(onFilterChange);
     }
 
     function getColumnDefs() {
@@ -73,19 +73,30 @@ YAHOO.cuanto.GroupedOutput = function() {
     }
 
     function buildGroupedOutputQuery(state){
+	    if (!state) {
+		    state = goTable.getState()
+	    }
         var order = state.sortedBy.dir == YAHOO.widget.DataTable.CLASS_ASC ? "asc" : "desc";
         var qry = "offset=" + state.pagination.recordOffset +
                   "&max=" + state.pagination.rowsPerPage +
                   "&sort=" + state.sortedBy.key +
                   "&order=" + order +
+	              "&filter=" + $('#trOutputFilter').val() +
                   "&cb=" + new Date().getTime(); // cache buster
         return qry;
     }
 
+
     function processPayload(oRequest, oResponse, oPayload) {
+	    if (!oPayload) {
+			    oPayload = {};
+	    }
+
         oPayload.totalRecords = oResponse.meta.totalCount;
+	    $("#grpOutputTotalRows").html(oPayload.totalRecords)
         return oPayload;
     }
+
 
     function handleRowClick(e) {
         this.onEventSelectRow(e);
@@ -109,6 +120,25 @@ YAHOO.cuanto.GroupedOutput = function() {
         config.offset = offset;
         return new YAHOO.widget.Paginator(config);
     }
+
+
+	function onFilterChange(e) {
+		var newRequest = buildGroupedOutputQuery(null);
+
+		goTable.getDataSource().sendRequest(newRequest, {
+			success : initDataTablePageOne,
+			failure : function() {
+				alert("Failed loading table data");
+			}
+		});
+	}
+
+	function initDataTablePageOne(oRequest, oResponse, oPayload) {
+		var origSort = goTable.get('sortedBy');  // keep the sort indicator
+		goTable.onDataReturnInitializeTable(oRequest, oResponse, oPayload);
+		goTable.set('sortedBy', origSort);
+		goTable.get('paginator').setPage(1);
+	}
 
 	function formatOutput(elCell, oRecord, oColumn, oData) {
 		var output = YAHOO.cuanto.format.breakOnToken(oData, ' ', 800) + " ";

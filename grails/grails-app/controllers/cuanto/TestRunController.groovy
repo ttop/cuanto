@@ -22,7 +22,6 @@ package cuanto
 
 import grails.converters.*
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestRunController {
 	def parsingService
@@ -196,8 +195,11 @@ class TestRunController {
 				response.status = response.SC_NOT_FOUND
 				render "TestRun ${params.id} was not found"
 			} else {
-
-				def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
+				def filter = "AllFailures"
+				if (params.filter) {
+					filter = params.filter.replaceAll(" ", "")
+				}
+				def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun, filter)
 				def offset = 0
 				def max = 20
 				def sort = "failures"
@@ -216,12 +218,17 @@ class TestRunController {
 					order = params.order
 				}
 
-				def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
+				def groupedResults = testOutcomeService.getGroupedOutputSummaries(testRun, filter, offset, max, sort, order)
 
-				def jsonArray = results.collect {
-					return [failures: it[0], output: it[1].encodeAsHTML()]
+				def jsonArray = groupedResults.collect {
+					def output
+					if (it[1]) {
+						output = it[1].encodeAsHTML()
+					} else {
+						output = ""
+					}
+					return [failures: it[0], output: output]
 				}
-
 
 				def jsonMap = [groupedOutput: jsonArray, totalCount: totalCount, offset: offset]
 				render jsonMap as JSON
@@ -361,6 +368,7 @@ class TestRunController {
 			def tcFormatList = testCaseFormatterRegistry.formatterList
 			def stats = TestRunStats.findByTestRun(testRun)
 			return ['testRun': testRun, 'filter': getDefaultFilter(testRun), 'filterList': getFilterList(),
+				'outputFilter': "All Failures", 'outputFilterList': getOutputFilterList(),
 				'testResultList': getJavascriptList(TestResult.listOrderByName()),
 				'analysisStateList': getJavascriptList(analysisStates), 'pieChartUrl': pieChartUrl,
 				'bugSummary': bugSummary, 'formatters': tcFormatList,
@@ -421,6 +429,15 @@ class TestRunController {
 		filterList += [id: "allskipped", value: "All Skipped"]
 		filterList += [id: "newpasses", value: "New Passes"]
 		filterList += [id: "allresults", value: "All Results"]
+		return filterList
+	}
+
+
+	private getOutputFilterList() {
+		def filterList = []
+		filterList += [id: "allfailures", value: "All Failures"]
+		filterList += [id: "newfailures", value: "New Failures"]
+		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
 		return filterList
 	}
 
