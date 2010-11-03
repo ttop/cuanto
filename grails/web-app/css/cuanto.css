@@ -378,3 +378,11 @@ form label.dialogLabel {
 #tcDeleteBtn {
 	margin-left:15%;
 }
+
+.colLabel {
+	display: block;
+	float: right;
+	width: 80%;
+	clear: none;
+}
+

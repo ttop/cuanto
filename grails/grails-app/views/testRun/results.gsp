@@ -106,7 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 		</div>
 		<div id="columnPanel" style="visibility:hidden">
-			<div class="hd">Columns</div>
+			<div class="hd">Choose Columns</div>
 			<div id="columnPanel-picker" class="bd"></div>
 		</div>
 		<div id="failContainer"></div>
