@@ -29,6 +29,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<p:css name='cuanto'/>
 		<p:css name='nav'/>
 		<link rel="shortcut icon" href="${resource(dir: 'images', file: 'favicon.ico')}" type="image/x-icon"/>
+		<g:javascript>
+			if (!Array.indexOf) {
+				Array.prototype.indexOf = function(obj) {
+					for (var i = 0; i < this.length; i++) {
+						if (this[i] == obj) {
+							return i;
+						}
+					}
+					return -1;
+				}
+			}
+		</g:javascript>
 		<g:layoutHead/>
 	</head>
 	<body class=" yui-skin-sam">
