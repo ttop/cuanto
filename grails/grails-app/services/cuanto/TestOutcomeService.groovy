@@ -582,7 +582,7 @@ class TestOutcomeService {
 
 
 	List <TestCase> findTestCaseFullNamesMatching(project, testName) {
-		TestCase.findAllByFullNameLike("%${testName}%", [sort: "fullName", order: "asc"])
+		TestCase.findAllByFullNameLikeAndProject("%${testName}%", project, [sort: "fullName", order: "asc"])
 	}
 
 
