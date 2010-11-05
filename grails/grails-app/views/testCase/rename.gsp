@@ -88,6 +88,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<td>
 									<button name="replace" id="replaceBtn" type="push">Rename Selected</button>
 								</td>
+								<td id="cancelCell" style="display:none">
+									<button name="replaceCancel" id="cancelBtn" type="push" >Cancel</button>
+								</td>
 							</tr>
 						</table>
 					</form>

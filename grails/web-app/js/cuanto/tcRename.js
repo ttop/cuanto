@@ -23,6 +23,7 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.testCaseRename = function() {
 	var findBtn;
 	var replaceBtn;
+	var cancelBtn;
 	var dataTable;
 
 	initialize();
@@ -40,6 +41,10 @@ YAHOO.cuanto.testCaseRename = function() {
 			disabled: true
 		});
 
+		cancelBtn = new YAHOO.widget.Button("cancelBtn", {
+			onclick: {fn:handleCancel}
+		});
+
 		enableFind();
 		handleFormChange(null);
 
@@ -50,6 +55,7 @@ YAHOO.cuanto.testCaseRename = function() {
 	function handleFind(e) {
 		hideFlashMsg();
 		initTable();
+		$("#cancelCell").show();
 	}
 
 
@@ -82,6 +88,13 @@ YAHOO.cuanto.testCaseRename = function() {
 		disableReplace();
 	}
 
+
+	function handleCancel(e) {
+		$("#cancelCell").hide();
+		$("#renameTable").empty();
+		enableFind();
+		disableReplace();
+	}
 
 	function disableFind() {
 		$("#searchTerm").add("#replaceName").attr("disabled", "disabled");
