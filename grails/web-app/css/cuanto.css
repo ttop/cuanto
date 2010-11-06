@@ -336,7 +336,7 @@ form label.dialogLabel {
 .propsAndLinks {
 	margin: 6px 0;
 	padding: 5px;
-	background-color:lightgray;
+	background-color:#d3d3d3;
 }
 
 #renameForm {
