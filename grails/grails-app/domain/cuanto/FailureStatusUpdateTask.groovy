@@ -6,18 +6,16 @@ class FailureStatusUpdateTask {
 		targetId(nullable: false)
 	}
 
+	// the id of the domain object for which to recalculate the failure status
 	Long targetId
-	Class type
 
-	FailureStatusUpdateTask() {}
+	// the Class.getName() value of the domain object for which to recalculate the failure status
+	String type
+
+	private FailureStatusUpdateTask() {}
 
 	FailureStatusUpdateTask(testRunOrOutcome) {
 		this.targetId = testRunOrOutcome.id
-		this.type = testRunOrOutcome.class
-	}
-
-	FailureStatusUpdateTask(Long targetId, Class type) {
-		this.targetId = targetId
-		this.type = type
+		this.type = testRunOrOutcome.class.name
 	}
 }

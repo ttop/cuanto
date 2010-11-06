@@ -32,7 +32,8 @@ class FailureStatusService
 			def notNullOutcomes = affectedOutcomes.findAll { it != null && it.id != null }
 			def updateTasksForAffectedOutcomes = []
 			notNullOutcomes.each { affectedOutcome ->
-				def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(affectedOutcome.id, TestOutcome.class)
+				def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(
+					affectedOutcome.id, TestOutcome.class.name)
 				if (existingTask)
 					return
 
@@ -50,7 +51,7 @@ class FailureStatusService
 
 	def queueFailureStatusUpdateForRun(affectedTestRun) {
 		if (affectedTestRun && affectedTestRun.id) {
-			def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(affectedTestRun.id, TestRun.class)
+			def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(affectedTestRun.id, TestRun.class.name)
 			if (existingTask)
 				return
 
