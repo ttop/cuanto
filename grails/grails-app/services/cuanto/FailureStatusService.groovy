@@ -27,34 +27,39 @@ class FailureStatusService
 	def dataService
 	boolean transactional = false
 
-	def queueFailureStatusUpdateForOutcomes(affectedOutcomes)
-	{
-		if (affectedOutcomes)
-		{
-			def notNullOutcomes = affectedOutcomes.findAll { it != null }
-			log.info "adding affected test outcomes ${notNullOutcomes*.id} to failure status update queue"
-			def updateTasksForAffectedOutcomes = notNullOutcomes.collect { affectedOutcome ->
-				new FailureStatusUpdateTask(affectedOutcome)
+	def queueFailureStatusUpdateForOutcomes(affectedOutcomes) {
+		if (affectedOutcomes) {
+			def notNullOutcomes = affectedOutcomes.findAll { it != null && it.id != null }
+			def updateTasksForAffectedOutcomes = []
+			notNullOutcomes.each { affectedOutcome ->
+				def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(
+					affectedOutcome.id, TestOutcome.class.name)
+				if (existingTask)
+					return
+
+				log.info "adding affected test outcomes ${notNullOutcomes*.id} to failure status update queue"
+				updateTasksForAffectedOutcomes << new FailureStatusUpdateTask(affectedOutcome)
 			}
 			dataService.saveTestOutcomes(updateTasksForAffectedOutcomes)
 		}
 	}
 
-	def queueFailureStatusUpdateForOutcome(affectedOutcome)
-	{
+	def queueFailureStatusUpdateForOutcome(affectedOutcome) {
 		queueFailureStatusUpdateForOutcomes([affectedOutcome])
 	}
 
 
 	def queueFailureStatusUpdateForRun(affectedTestRun) {
-		if (affectedTestRun) {
-			TestRun.withTransaction {
-				try {
-					log.info "adding test run ${affectedTestRun.id} to failure status update queue"
-					dataService.saveDomainObject(new FailureStatusUpdateTask(affectedTestRun))
-				} catch (StaleObjectStateException e) {
-					log.info "StaleObjectStateException for test run ${affectedTestRun.testRunId}"
-				}
+		if (affectedTestRun && affectedTestRun.id) {
+			def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(affectedTestRun.id, TestRun.class.name)
+			if (existingTask)
+				return
+
+			try {
+				log.info "adding test run ${affectedTestRun.id} to failure status update queue"
+				dataService.saveDomainObject(new FailureStatusUpdateTask(affectedTestRun))
+			} catch (StaleObjectStateException e) {
+				log.info "StaleObjectStateException for test run ${affectedTestRun.testRunId}"
 			}
 		}
 	}
