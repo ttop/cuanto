@@ -3,8 +3,6 @@ package cuanto.adapter.listener.testng;
 import cuanto.adapter.CuantoAdapterException;
 import cuanto.adapter.objects.TestNgListenerArguments;
 import cuanto.adapter.util.ArgumentParser;
-import cuanto.adapter.util.DualOutputStream;
-import cuanto.adapter.util.StringOutputStream;
 import cuanto.api.CuantoConnector;
 import cuanto.api.TestOutcome;
 import cuanto.api.TestResult;
@@ -16,7 +14,6 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -24,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -34,9 +30,6 @@ import java.util.Map;
  */
 public class TestNgListener implements ITestListener {
 	private static final Logger logger = LoggerFactory.getLogger(TestNgListener.class);
-
-	private StringOutputStream cuantoOutputStream;
-	private DualOutputStream dualOutputStream;
 
 	private static TestNgListenerArguments failoverTestNgListenerArguments;
 
@@ -66,22 +59,13 @@ public class TestNgListener implements ITestListener {
 	 * @throws java.net.URISyntaxException if cuantoUrl is not a valid URI
 	 */
 	public TestNgListener() throws CuantoAdapterException, URISyntaxException {
-		// set System.out to be a DualOutputStream that redirects the stdout to both System.out and cuantoOutputStream
-		cuantoOutputStream = new StringOutputStream();
-		dualOutputStream = new DualOutputStream(System.out, cuantoOutputStream);
-		System.setOut(new PrintStream(dualOutputStream));
 		failoverTestNgListenerArguments = getFailoverTestNgListenerArguments();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * Re-initialize the cuantoOutputStream (stream2 on dualOutputStream),
-	 * so that the stdout written by the following test will be isolated and usable for the test output.
 	 */
 	public void onTestStart(ITestResult iTestResult) {
-		cuantoOutputStream = new StringOutputStream();
-		dualOutputStream.setSecondStream(cuantoOutputStream);
 	}
 
 	/**
@@ -223,8 +207,6 @@ public class TestNgListener implements ITestListener {
 
 		Long testRunId = getTestRunId();
 
-		System.out.println("I'm " + Thread.currentThread().getName() + " and my testRunId is " + testRunId);
-
 		if (testRunId == null && isCreateTestRun()) {
 			logger.info("TestRun id was not provided. Creating a new TestRun...");
 			testRunId = createTestRun(cuanto, getProjectKey());
@@ -239,20 +221,16 @@ public class TestNgListener implements ITestListener {
 			return null;
 
 		TestRun testRun = cuanto.getTestRun(testRunId);
-		Map<String, String> testProperties = getTestProperties();
 
-		// todo: TestRun.toJSON() sets "testProperties": null if testProperties is null. Bug?
-		if (testProperties == null)
-			testRun.setTestProperties(new LinkedHashMap<String, String>());
-		else
-			testRun.setTestProperties(testProperties);
+		Map<String, String> testProperties = getTestProperties();
+		if (testProperties != null)
+			for (Map.Entry<String, String> testPropertyEntry : testProperties.entrySet())
+				testRun.addTestProperty(testPropertyEntry.getKey(), testPropertyEntry.getValue());
 
 		Map<String, String> links = getLinks();
-		if (links != null) {
-			for (Map.Entry<String, String> entry : links.entrySet()) {
-				testRun.addLink(entry.getValue(), entry.getKey());
-			}
-		}
+		if (links != null)
+			for (Map.Entry<String, String> linkEntry : links.entrySet())
+				testRun.addLink(linkEntry.getValue(), linkEntry.getKey());
 
 		cuanto.updateTestRun(testRun);
 
@@ -317,19 +295,13 @@ public class TestNgListener implements ITestListener {
 
 	/**
 	 * Get the test output to store in the test outcome.
-	 * <p/>
-	 * The stderr must show first in order for the grouped output feature to work as expected.
 	 *
 	 * @param testCaseResult result of the current test case
-	 * @return the stderr appended with the stdout
+	 * @return the stacktrace of the resulting exception
 	 */
 	@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 	private String getTestOutput(ITestResult testCaseResult) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(getStackTrace(testCaseResult.getThrowable()));
-		sb.append("\r\n---\r\n\r\n");
-		sb.append(cuantoOutputStream.toString());
-		return sb.toString();
+		return getStackTrace(testCaseResult.getThrowable());
 	}
 
 	/**
