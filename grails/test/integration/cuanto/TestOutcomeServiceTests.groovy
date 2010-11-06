@@ -179,7 +179,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
         def offset = 0
         def max = 5
-        def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max)
+        def outputGroups = testOutcomeService.getGroupedOutputSummaries(testRun, "AllFailures", offset, max)
         assertNotNull outputGroups
         assertEquals "Wrong number of groups returned", 4, outputGroups.size()
 
