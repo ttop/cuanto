@@ -25,16 +25,18 @@ class FailureStatusCalcJob {
 	def dataService
 	def testOutcomeService
 	def statisticService
-	def transactional = true
+	def grailsApplication
 	def concurrent = false
-	static final long INTERVAL = 15000
+
+	static final long DEFAULT_SLEEP_TIME = 1000
+	static final int DEFAULT_BATCH_SIZE = 100
 
 	static triggers = {
-		simple name: "FailureStatusCalc", startDelay: 10000, repeatInterval: INTERVAL
+		simple name: "FailureStatusCalc", startDelay: 10000, repeatInterval: 15000
 	}
 
 	def execute() {
-		def updateTasks = getFailureStatusUpdateTasks(1000)
+		def updateTasks = getFailureStatusUpdateTasks(getBatchSize())
 		def updatedTestOutcomes = []
 
 		updateTasks.each { FailureStatusUpdateTask updateTask ->
@@ -82,7 +84,7 @@ class FailureStatusCalcJob {
 
 	List updateTestOutcomesForTestRun(Long testRunId) {
 		def updatedOutcomes = []
-		def currentBatch = dataService.getTestOutcomesForTestRun(testRunId, 1000, 0)
+		def currentBatch = dataService.getTestOutcomesForTestRun(testRunId, getBatchSize(), 0)
 		while (currentBatch) {
 			for (TestOutcome outcome: currentBatch) {
 				outcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(outcome)
@@ -92,14 +94,14 @@ class FailureStatusCalcJob {
 			dataService.saveTestOutcomes currentBatch
 
 			log.info "re-initialized isFailureStatusChanged for ${currentBatch.size()} test outcomes"
-			log.info "sleeping ${INTERVAL}ms before updating more test outcomes for test run $testRunId"
-			sleep(INTERVAL)
+			log.info "sleeping ${getSleepTime()}ms before updating more test outcomes for test run $testRunId"
+			sleep(getSleepTime())
 
-			currentBatch = dataService.getTestOutcomesForTestRun(testRunId, 1000, updatedOutcomes.size() - 1)
+			currentBatch = dataService.getTestOutcomesForTestRun(testRunId, getBatchSize(), updatedOutcomes.size() - 1)
 		}
 
 		// if there are some outcomes left, save them.
-		// this happens when currentBatch.size() > 0 && currentBatch.size() > 1000
+		// this happens when currentBatch.size() > 0 && currentBatch.size() > BATCH_SIZE
 		if (currentBatch) {
 			log.info "re-initialized isFailureStatusChanged for ${currentBatch.size()} test outcomes"
 			dataService.saveTestOutcomes currentBatch
@@ -110,5 +112,15 @@ class FailureStatusCalcJob {
 
 	List<FailureStatusUpdateTask> getFailureStatusUpdateTasks(int numToGet) {
 		return FailureStatusUpdateTask.list(max: numToGet)
+	}
+
+	long getSleepTime()
+	{
+		return grailsApplication.config.failureStatusCalcJobSleepTime ?: DEFAULT_SLEEP_TIME
+	}
+
+	int getBatchSize()
+	{
+		return grailsApplication.config.failureStatusCalcJobBatchSize ?: DEFAULT_BATCH_SIZE
 	}
 }
