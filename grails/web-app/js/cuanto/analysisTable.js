@@ -239,7 +239,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			});
 			for (var p = 0; p < propNames.length; p++) {
 				var prop = propNames[p];
-				var matchingNames = colNames.grep(colNames, function(name) {
+				var matchingNames = $.grep(colNames, function(name) {
 					return name.toLowerCase() == prop.toLowerCase();
 				});
 				if (matchingNames.length == 0) {
