@@ -199,9 +199,23 @@ class ProjectService {
 
 
 	def getAllGroupNames() {
-		def groupNames = dataService.getAllGroups().collect { grp ->
+		def groupNames = ProjectGroup.listOrderByName().collect { grp ->
 			grp.name
 		}
 		return groupNames
+	}
+
+	Map getProjectMap() {
+		def pMap = new TreeMap()
+		ProjectGroup.listOrderByName().each { group ->
+			pMap[group.name] = Project.findAllByProjectGroup(group, [sort: "name"])
+		}
+
+		def unGrouped = Project.findAllByProjectGroupIsNull([sort: "name"])
+		if (unGrouped) {
+			pMap["Ungrouped"] = unGrouped
+		}
+
+		return pMap
 	}
 }

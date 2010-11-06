@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<title>Cuanto: Edit Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</title>
 
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<g:render template="/shared/yui26"/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+		<g:render template="/shared/yui282r1"/>
 
 
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/editTestRun.js"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/editTestRun"/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {

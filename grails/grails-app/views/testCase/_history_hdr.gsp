@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <title>Cuanto: History of Test Case ${testCase?.id?.encodeAsHTML()}: ${testCase?.fullName?.encodeAsHTML()}</title>
 
 <p:css name='analysis'/>
-<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
-<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
+<p:css name='../js/yui/2.8.2r1/datatable/assets/skins/sam/datatable'/>
+<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
 
-<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-<yui:javascript dir="datatable" file="datatable-min.js" version="2.6.0"/>
-<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
+<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
 
-<yui:javascript dir="get" file="get-min.js" version="2.6.0"/>
-<g:javascript src="cuanto/events.js"/>
-<g:javascript src="cuanto/formatBug.js"/>
-<g:javascript src="cuanto/url.js"/>
-<g:javascript src="cuanto/tableHelper.js"/>
-<g:javascript src="cuanto/timeParser.js"/>
-<g:javascript src="cuanto/tcHistory.js"/>
+<yui:javascript dir="get" file="get-min.js" version="2.8.2r1"/>
+<p:javascript src="cuanto/events"/>
+<p:javascript src="cuanto/formatBug"/>
+<p:javascript src="cuanto/url"/>
+<p:javascript src="cuanto/tableHelper"/>
+<p:javascript src="cuanto/timeParser"/>
+<p:javascript src="cuanto/tcHistory"/>

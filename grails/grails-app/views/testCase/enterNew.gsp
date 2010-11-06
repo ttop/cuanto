@@ -23,9 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
-		<g:javascript src="cuanto/url.js"/>
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<meta name="layout" content="mainBare"/>
+		<g:render template="/shared/yui282r1"/>
+
+		<p:javascript src="cuanto/url"/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {

@@ -24,6 +24,7 @@ class ApiController {
 		TestRun testRun = parsingService.parseTestRun(request.JSON)
 		dataService.saveTestRun(testRun)
 		statisticService.queueTestRunStats(testRun)
+		// todo: wait for stats to be calculated before returning?
 		response.status = response.SC_CREATED
 		render testRun.toJSONMap() as JSON
 	}

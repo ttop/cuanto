@@ -99,7 +99,7 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 				}
 				toCall();
 			}
-			YAHOO.cuanto.events.projectChangeEvent.fire();
+			YAHOO.cuanto.events.projectChangeEvent.fire({action: "delete"});
 		}}];
 		deleteDoneDialog.cfg.queueProperty("buttons", myButtons);
 		deleteDoneDialog.render(document.body);
@@ -110,7 +110,9 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 	pub.show = function(projectId, projectName) {
 		$('#dpdConfirmDelete').val("");
 		$('#dpdProjectId').val(projectId);
-		$('#dpdProjectName').html(projectName);
+		if (projectName) {
+			$('#dpdProjectName').html(projectName);
+		}
 
 		$.each(dpDialog.getButtons(), function(idx, b) {
 			b.set('disabled', false);

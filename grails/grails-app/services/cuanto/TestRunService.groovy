@@ -649,7 +649,6 @@ class TestRunService {
 	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
 	 * for all TestOutcomes in the next TestRun.
 	 */
-
 	def deleteTestRun(TestRun run) {
 		TestRun.withTransaction {
 			try {
@@ -698,6 +697,16 @@ class TestRunService {
 				log.error "StaleObjectStateException for test run ${run.id}"
 			}
 		}
+	}
+
+
+	Integer deleteTestRuns(testRunIds) {
+		TestRun.withTransaction {
+			testRunIds.each { runId ->
+				deleteTestRun TestRun.get(runId)
+			}
+		}
+		return testRunIds.size()
 	}
 
 

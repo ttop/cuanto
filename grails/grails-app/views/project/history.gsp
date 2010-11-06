@@ -32,74 +32,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<head>
 		<meta name="layout" content="mainBare"/>
 
-		<g:render template="/shared/yui26"/>
+		<g:render template="/shared/yui282r1"/>
 
 		<feed:meta kind="rss" version="2.0" controller="project" action="feed" id="${project?.id}"/>
 		<title>Cuanto: Test Run History for ${project?.name?.encodeAsHTML()} (id ${project?.id})</title>
-		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
-		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.8.2r1/datatable/assets/skins/sam/datatable'/>
+		<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
 		<p:css name='columnDialog'/>
 
-		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-		<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
-		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
+		<p:css name='../js/yui/2.8.2r1/autocomplete/assets/skins/sam/autocomplete'/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/timeParser.js"/>
-		<g:javascript src="cuanto/jcolumnDialog.js"/>
-		<g:javascript src="cuanto/projectHistory.js"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="cuanto-datatable-overrides.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
+
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/projectDialog"/>
+		<p:javascript src="cuanto/deleteProjectDialog"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/timeParser"/>
+
+		<p:javascript src="cuanto/columnDialog"/>
+		<p:javascript src="cuanto/selectControl"/>
+		<p:javascript src="cuanto/projectHistory"/>
 
 		<script type="text/javascript">
 
-		YAHOO.util.Event.onDOMReady(function () {
+			YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="/testRun/urls"/>
-			YAHOO.cuanto.projectHistory.initHistoryTable(<%=propNames%>);
-		});
+				YAHOO.cuanto.projectHistory.initHistoryTable(<%=propNames%>);
+			});
 
 		</script>
 	</head>
 
-	<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
-
-	<body class=" yui-skin-sam">
-	<div class="body yui-skin-sam">
-		<div>
-			<span class="head1">Test Run History for
-				<g:if test="${project?.projectGroup}">
-					<g:link controller="project" action="listGroup"
-						params="['group': project?.projectGroup]">${project?.projectGroup?.name?.encodeAsHTML()}</g:link>/</g:if><g:link controller="project" action="history" params="[projectKey: project?.projectKey]">${project?.name?.encodeAsHTML()}</g:link>
-				<g:link controller="project" action="feed" id="${project?.id}">
-					<g:set var="feedTxt" value="RSS feed"/>
-					<img id="feedImg" src="${resource(dir: 'images/feedicons-standard', file: 'feed-icon-14x14.png')}"
-						alt="RSS Feed" title="Subscribe to the RSS feed for ${project?.toString()?.encodeAsHTML()}"/></g:link>
-			</span>
-			<span class="smaller hdActions">
-				<a id="chooseColumns" class="selectCmd smaller" alt="Choose Columns" href="#chooseColumns">Choose Columns</a> ${bullet}
-				<span class="smaller">
-					<g:link controller="testCase" action="show" id="${project?.id}">Show Test Cases</g:link>
-					<g:if test="${project?.testType?.name == 'Manual'}">${bullet}
-						<g:link controller="testRun" action="createManual" id="${project?.id}">Create Manual Test Run</g:link>
-					</g:if></span>
-
-			</span>
-			<br/>
-			<div class="propsAndLinks">
-			<input type="hidden" name="projectId" id="projectId" value="${project?.id}"/>
-			<span class="heading">Project Key:</span><span class="text">${project?.projectKey}</span>
-			</div>
-		</div>
-			<div id="columnPanel" style="visibility:hidden">
+	<body>
+		<div class="body yui-skin-sam">
+			<g:render template="phHeader"/>
+			
+			<div id="columnPanel" style="display:none">
 				<div class="hd">Columns</div>
 				<div id="columnPanel-picker" class="bd">
 				</div>
 			</div>
 
-			Select a test run to view the detailed results and analysis:<br/>
+			<div id="bulkButtons" style="display:none">
+				<button name="delete" id="deleteBtn" type="push" style="display:none">Delete Selected Test Runs</button>
+				<button name="cancelDelete" id="cancelDeleteBtn" type="push" style="display:none">Cancel Deletion</button>
+			</div>
+			<div id="deleteText" style="display:none">Deleting Test Runs... <img src="${resource(dir:'images', file:'spinner.gif')}" alt="spinner"/></div>
+			<div id="selectTrText">Select a test run to view the detailed results and analysis:</div>
+			
 			<div id="testRunList">
+				<g:render template="/shared/selectOptions"/>
 				<div id="testRunTableDiv"></div>
 				<div id="trTablePaging"></div>
 			</div>
@@ -109,7 +103,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<img src="${chartUrl}" alt="Success Rate Trend Chart" class="graph"/>
 				</div>
 			</g:if>
+			<div id="myLogger"></div>
+			
 		</div>
-
+		<g:render template="projectDialog"/>
+		<g:render template="deleteProjectDialog"/>
 	</body>
 </html>

@@ -27,26 +27,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<p:css name='mason'/>
 		<meta name="layout" content="mainBare"/>
 
-		<g:render template="/shared/yui26"/>
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<p:css name='../js/yui/2.6.0/autocomplete/assets/skins/sam/autocomplete'/>
+		<g:render template="/shared/yui282r1"/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.8.2r1/autocomplete/assets/skins/sam/autocomplete'/>
 
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-		<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
-		<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
-		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.6.0"/>
-		<yui:javascript dir="cookie" file="cookie-min.js" version="2.6.0"/>
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="animation" file="animation-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="cookie" file="cookie-min.js" version="2.8.2r1"/>
 
-		<g:javascript src="jq/jquery-1.4.2.min.js"/>
-		<g:javascript src="jq/jquery.masonry.min.js"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="jq/jquery.masonry.min"/>
 
 
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/events.js"/>
-		<g:javascript src="cuanto/projectDialog.js"/>
-		%{--<g:javascript src="cuanto/deleteProjectDialog.js"/>--}%
-		<g:javascript src="cuanto/projectMason.js"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/events"/>
+		<p:javascript src="cuanto/projectDialog"/>
+		<p:javascript src="cuanto/projectMason"/>
 		<g:javascript>
 			<g:render template="/testRun/urls"/>
 

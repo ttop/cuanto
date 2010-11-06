@@ -43,6 +43,7 @@ YAHOO.cuanto.urls.set('testRunInfo', "${createLink(controller: 'testRun', action
 YAHOO.cuanto.urls.set('testRunUpdate', "${createLink(controller: 'testRun', action:'update')}/");
 YAHOO.cuanto.urls.set('testRunUpdateNote', "${createLink(controller: 'testRun', action:'updateNote')}/");
 YAHOO.cuanto.urls.set('testRunDelete', "${createLink(controller: 'testRun', action:'delete')}/");
+YAHOO.cuanto.urls.set('testRunBulkDelete', "${createLink(controller: 'testRun', action:'bulkDelete')}/");
 YAHOO.cuanto.urls.set('testRunRecalcStats', "${createLink(controller: 'testRun', action:'recalc')}/");
 YAHOO.cuanto.urls.set('singleOutcome', "${createLink(controller: 'testOutcome', action: 'get')}/");
 YAHOO.cuanto.urls.set('saveOutcome',"${createLink(controller: 'testOutcome', action: 'saveDetails')}/");
@@ -51,11 +52,15 @@ YAHOO.cuanto.urls.set('testCaseList', "${createLink(controller: 'testCase', acti
 YAHOO.cuanto.urls.set('testCaseEdit', "${createLink(controller: 'testCase', action:'edit')}/");
 YAHOO.cuanto.urls.set('testCaseDelete', "${createLink(controller: 'testCase', action:'confirmDelete')}/");
 YAHOO.cuanto.urls.set('testCaseUpdate', "${createLink(controller: 'testCase', action:'update')}/");
+YAHOO.cuanto.urls.set('renamePreview', "${createLink(controller: 'testCase', action:'renamePreview')}?");
+YAHOO.cuanto.urls.set('rename', "${createLink(controller: 'testCase', action:'doRename')}?");
 YAHOO.cuanto.urls.set('testOutputDataSource', "${createLink(controller: 'testOutcome', action:'outputData')}/");
 YAHOO.cuanto.urls.set('analysis', "${createLink(controller: 'testCase', action:'analysis')}/");
 YAHOO.cuanto.urls.set('applyAnalysis', "${createLink(controller: 'testOutcome', action:'applyAnalysis')}/");
 YAHOO.cuanto.urls.set('masonProjList', "${createLink(controller: 'project', action:'masonProj')}/");
+YAHOO.cuanto.urls.set('mason', "${createLink(controller: 'project', action:'mason')}/");
 YAHOO.cuanto.urls.set('projectInfo', "${createLink(controller: 'project', action:'get')}/");
+YAHOO.cuanto.urls.set('projectHeader', "${createLink(controller: 'project', action:'projectHeader')}/");
 YAHOO.cuanto.urls.set('propertyDelete', "${createLink(controller: 'testRun', action:'deleteProperty')}/");
 YAHOO.cuanto.urls.set('linkDelete', "${createLink(controller: 'testRun', action:'deleteLink')}/");
 YAHOO.cuanto.urls.set('groupedOutput', "${createLink(controller: 'testRun', action:'groupedOutput')}/${testRun?.id}?");

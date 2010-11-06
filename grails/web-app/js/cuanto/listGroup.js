@@ -48,16 +48,17 @@ YAHOO.cuanto.ListGroup = function() {
 		YAHOO.util.Event.preventDefault(e);
 	}
 
-	function onProjectChange(e) {
-		new Ajax.Request(YAHOO.cuanto.urls.get('groupTable'), {
-			method: 'get',
-			parameters: {id: $('#groupId').val()},
-			onSuccess: function(transport){
-				$('#listGroupTableDiv').html(transport.responseText);
+	function onProjectChange(e, data) {
+		var eventData = data[0];
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('groupTable') + "?rand=" + new Date().getTime(),
+			data: {id: $('#groupId').val()},
+			dataType: "html",
+			success: function(response, textStatus, httpReq) {
+				$('#listGroupTable').replaceWith(response);
 				initListeners();
 			}
 		});
-		YAHOO.util.Event.preventDefault(e);
 	}
 
 	function showDeleteProject(e) {

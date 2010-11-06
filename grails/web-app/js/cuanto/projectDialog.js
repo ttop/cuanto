@@ -63,7 +63,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 			this.hide();
 			pub.clear();
 			var project = YAHOO.lang.JSON.parse(o.responseText);
-			YAHOO.cuanto.events.projectChangeEvent.fire(project);
+			YAHOO.cuanto.events.projectChangeEvent.fire({action: "edit", "project": project});
 		},
 		failure: function() {
 			this.hide();
@@ -158,8 +158,8 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 		} else {
 			$('#pdProjectId').val("");
 		}
-
 		projDialog.show();
+		$("#pdType").replaceWith($('#pdType').clone()); // hack for Chrome display issue
 		initAutoComplete();
 	};
 

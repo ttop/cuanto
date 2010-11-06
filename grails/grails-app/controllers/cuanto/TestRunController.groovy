@@ -37,7 +37,7 @@ class TestRunController {
 
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 
-	def index = { redirect(action: 'list', controller: 'project', params: params) }
+	def index = { redirect(action: 'mason', controller: 'project', params: params) }
 
 
 	def delete = {
@@ -52,6 +52,11 @@ class TestRunController {
 		render myJson as JSON
 	}
 
+
+	def bulkDelete = {
+		def myJson = [deleted: testRunService.deleteTestRuns(request.JSON)]
+		render myJson as JSON
+	}
 
 	def deleteProperty = {
 		def propToDelete = TestRunProperty.get(params.id)
@@ -190,8 +195,11 @@ class TestRunController {
 				response.status = response.SC_NOT_FOUND
 				render "TestRun ${params.id} was not found"
 			} else {
-
-				def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun)
+				def filter = "AllFailures"
+				if (params.filter) {
+					filter = params.filter.replaceAll(" ", "")
+				}
+				def totalCount = testOutcomeService.countGroupedOutputSummaries(testRun, filter)
 				def offset = 0
 				def max = 20
 				def sort = "failures"
@@ -210,12 +218,17 @@ class TestRunController {
 					order = params.order
 				}
 
-				def results = testOutcomeService.getGroupedOutputSummaries(testRun, offset, max, sort, order)
+				def groupedResults = testOutcomeService.getGroupedOutputSummaries(testRun, filter, offset, max, sort, order)
 
-				def jsonArray = results.collect {
-					return [failures: it[0], output: it[1].encodeAsHTML()]
+				def jsonArray = groupedResults.collect {
+					def output
+					if (it[1]) {
+						output = it[1].encodeAsHTML()
+					} else {
+						output = ""
+					}
+					return [failures: it[0], output: output]
 				}
-
 
 				def jsonMap = [groupedOutput: jsonArray, totalCount: totalCount, offset: offset]
 				render jsonMap as JSON
@@ -283,7 +296,7 @@ class TestRunController {
 	def statistics = {
 		def testRun = TestRun.get(params.id)
 		if (!testRun) {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 
 		if (params.calculate) {
@@ -355,12 +368,13 @@ class TestRunController {
 			def tcFormatList = testCaseFormatterRegistry.formatterList
 			def stats = TestRunStats.findByTestRun(testRun)
 			return ['testRun': testRun, 'filter': getDefaultFilter(testRun), 'filterList': getFilterList(),
+				'outputFilter': "All Failures", 'outputFilterList': getOutputFilterList(),
 				'testResultList': getJavascriptList(TestResult.listOrderByName()),
 				'analysisStateList': getJavascriptList(analysisStates), 'pieChartUrl': pieChartUrl,
 				'bugSummary': bugSummary, 'formatters': tcFormatList,
 				'project': testRun?.project, 'tcFormat': tcFormatList[0].key, 'stats': stats]
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -371,7 +385,7 @@ class TestRunController {
 			def pieChartUrl = testRunService.getGoogleChartUrlForTestRunFailures(testRun)
 			render(template: "pieChart", model: ['pieChartUrl': pieChartUrl])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -381,7 +395,7 @@ class TestRunController {
 			def stats = TestRunStats.findByTestRun(testRun)
 			render(template: "summaryTable", model: ['stats': stats])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -391,7 +405,7 @@ class TestRunController {
 			def bugSummary = testRunService.getBugSummary(testRun)
 			render(template: 'bugSummary', model: ['bugSummary': bugSummary])
 		} else {
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 	}
 
@@ -419,6 +433,15 @@ class TestRunController {
 	}
 
 
+	private getOutputFilterList() {
+		def filterList = []
+		filterList += [id: "allfailures", value: "All Failures"]
+		filterList += [id: "newfailures", value: "New Failures"]
+		filterList += [id: "unanalyzedfailures", value: "Unanalyzed Failures"]
+		return filterList
+	}
+
+
 	def create = {
 		if (!params.project) {
 			response.status = response.SC_NOT_FOUND // todo is this the right response code? how about invalid request?
@@ -438,7 +461,7 @@ class TestRunController {
 	def createManual = {
 		if (!params.id) {
 			flash.message = "Unable to determine project for Test Case"
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 		def project = dataService.getProject(Long.valueOf(params.id))
 		['project': project]
@@ -447,7 +470,7 @@ class TestRunController {
 	def manual = {
 		if (!params.id) {
 			flash.message = "Unable to determine project"
-			redirect(controller: 'project', action: 'list')
+			redirect(controller: 'project', action: 'mason')
 		}
 		def run = testRunService.createManualTestRun(params)
 		flash.message = "Created Test Run ${run.id}."
