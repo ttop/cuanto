@@ -41,7 +41,7 @@ class ProjectController {
 	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 	SimpleDateFormat chartDateFormat = new SimpleDateFormat(Defaults.chartDateFormat)
 
-	def index = { redirect(action: list, params: params) }
+	def index = { redirect(action: mason, params: params) }
 
 	def delete = {
 		def project = Project.get(params.id)
@@ -94,12 +94,12 @@ class ProjectController {
 
 		if (!proj) {
 			flash.message = "Please select a project."
-			redirect(controller:"project", action:"list")
+			redirect(controller:"project", action:"mason")
 		} else {
 			withFormat {
 				html {
 					if (!proj) {
-						redirect(controller: 'project', view: 'list')
+						redirect(controller: 'project', view: 'mason')
 					} else {
 						def chartUrl = testRunService.getGoogleChartUrlForProject(proj)
 						def propNames = testRunService.getTestRunPropertiesByProject(proj)
@@ -126,6 +126,20 @@ class ProjectController {
 					render myJson as JSON
 				}
 			}
+		}
+	}
+
+
+	def projectHeader = {
+		def proj
+		if (params.id) {
+			proj = dataService.getProject(params.id)
+		}
+		if (proj) {
+			render(template: "phHeader", model:[project: proj])
+		} else {
+			response.status = response.SC_NOT_FOUND
+			render "Project ${params.id} not found"
 		}
 	}
 
@@ -219,9 +233,30 @@ class ProjectController {
 		if (params.id) {
 			project = Project.get(params.id)
 		}
-		def groups = projectService.getAllGroupNames()
-		[groups: groups, projects: dataService.getAllProjects(), 'project': project,
+		[groups: projectService.getAllGroupNames(), projects: dataService.getAllProjects(), 'project': project,
 			formatters: testCaseFormatterRegistry.formatterList]
+	}
+
+
+	def mason = {
+		def project = null
+		if (params.id) {
+			project = Project.get(params.id)
+		}
+		if (params.refresh) {
+			render(template: "mason", model: ['project': project, groupsToProjectsMap: projectService.getProjectMap()])
+		} else {
+			render(view: "mason", model: ['project': project, groupsToProjectsMap: projectService.getProjectMap()])
+		}
+	}
+
+
+	def masonProj = {
+		def group = null
+		if (params.id) {
+			group = ProjectGroup.get(params.id)
+		}
+		render(template:"masonProj", model:[projects: group.projects.sort()])
 	}
 
 
@@ -230,9 +265,8 @@ class ProjectController {
 		if (params.id) {
 			project = Project.get(params.id)
 		}
-		def groups = projectService.getAllGroupNames()
-		render(template: "projectList", model:[groups: groups, projects: dataService.getAllProjects(),
-			'project': project])
+		render(template: "projectList", model:[groups: projectService.getAllGroupNames(),
+			projects: dataService.getAllProjects(), 'project': project])
 	}
 
 
@@ -246,7 +280,7 @@ class ProjectController {
 			return [projects: dataService.getProjectsByGroupName(group), 'group': group,
 				formatters: testCaseFormatterRegistry.formatterList]
 		} else {
-			redirect(controller: 'project', view: 'list')
+			redirect(controller: 'project', view: 'mason')
 		}
 	}
 
@@ -270,6 +304,11 @@ class ProjectController {
 		render groupNameJson as JSON
 	}
 
+
+	def projectMap = {
+		def groups = projectService.getProjectMap()
+		render "TBD"
+	}
 
 	def getJsonForTestRun(testRun, graph) {
 		def stats = TestRunStats.findByTestRun(testRun)

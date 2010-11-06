@@ -42,6 +42,7 @@ class ApiTestBase extends GroovyTestCase {
 		testRunsToCleanUp.each {
 			client.deleteTestRun it
 		}
+		testRunsToCleanUp.clear()
 		super.tearDown()
 	}
 

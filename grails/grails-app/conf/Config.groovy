@@ -37,6 +37,9 @@ environments {
     production {
         grails.serverURL = "http://www.changeme.com" //todo: change
     }
+	development {
+		uiperformance.enabled = false
+	}
 }
 
 // log4j configuration
@@ -76,18 +79,25 @@ log4j = {
 }
 
 // UI Performance configurations
-uiperformance.enabled = false
+uiperformance.enabled = true
 uiperformance.processCSS = true
-uiperformance.processJS = false
+uiperformance.processJS = true
 uiperformance.processImages = false
-uiperformance.html.compress = false                                                 
+uiperformance.html.compress = false
 uiperformance.determineVersion = { -> appVersion }
+uiperformance.exclusions = [
+   "**/yui/**",
+	"**/jq/**",
+	"**/prototype/**"
+]
 
 // statSleep is the time to sleep between calculating test run stats
 statSleep = 1000
 
 // testOutcomeAndTestRunInitSleep is the time to sleep between initializing TestOutcomes and TestRuns
-testOutcomeAndTestRunInitSleep = 5000
+testOutcomeAndTestRunInitSleepTime = 5000
+failureStatusCalcJobSleepTime = 1000
+failureStatusCalcJobBatchSize = 100
 
 bullet = "&bull;"
 

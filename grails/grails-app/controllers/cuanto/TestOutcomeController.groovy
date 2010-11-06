@@ -65,13 +65,6 @@ class TestOutcomeController {
 		render "OK"
 	}
 
-	def latest = {
-		def tc = TestCase.get(params.id)
-		List outs = dataService.getTestOutcomeHistory(tc, 0, 1, "testRun.dateExecuted", "desc")
-		['testOutcome': outs[0], 'testRun': outs[0].testRun, 'project': outs[0].testRun.project]
-	}
-
-
 	def applyAnalysis = {
 		def targets = []
 		if (params.target) {
@@ -98,7 +91,11 @@ class TestOutcomeController {
 			}
 
 			fields.each {myField ->
-				fieldUpdateMap[myField] = source.getProperty(myField)
+				if (myField == "analysisState") {
+					fieldUpdateMap[myField] = source.analysisState.toString()
+				} else {
+					fieldUpdateMap[myField] = source.getProperty(myField)
+				}
 			}
 			testOutcomeService.applyAnalysis(source, targets, fields)
 		}

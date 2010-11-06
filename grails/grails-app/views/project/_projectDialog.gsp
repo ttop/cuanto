@@ -68,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</form>
 			<div id="pdLoading" style="display:none"><img src="${resource(dir: 'images/progress', file: 'mozilla_blu.gif')}"
 				alt="Loading icon">Loading project info from server...</div>
-			<div id="pdErrorDiv" style="display:none"><img src="${resource(dir: 'js/yui/2.6.0/container/assets', file:'warn16_1.gif')}" 
+			<div id="pdErrorDiv" style="display:none"><img src="${resource(dir: 'js/yui/2.8.2r1/container/assets', file:'warn16_1.gif')}" 
 				alt="Warning icon"/> <span id="pdError"></span></div>
 		</div>
 	</div>

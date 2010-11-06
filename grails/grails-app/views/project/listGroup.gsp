@@ -29,29 +29,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 	%>
   <head>
-	  <title>Cuanto: Projects: ${grp?.name?.encodeAsHTML()}</title>
-	  <meta name="layout" content="main" />
-	<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-	<p:css name='../js/yui/2.6.0/autocomplete/assets/skins/sam/autocomplete'/>
-	<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
-	<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
+	<title>Cuanto: Projects: ${grp?.name?.encodeAsHTML()}</title>
 
-	<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
+	<meta name="layout" content="mainBare"/>
+	<g:render template="/shared/yui282r1"/>
 
-	<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-	<yui:javascript dir="datatable" file="cuanto-datatable-min.js" version="2.6.0"/>
+	<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+	<p:css name='../js/yui/2.8.2r1/autocomplete/assets/skins/sam/autocomplete'/>
+	<p:css name='../js/yui/2.8.2r1/datatable/assets/skins/sam/datatable'/>
+	<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
 
-	<yui:javascript dir="animation" file="animation-min.js" version="2.6.0"/>
-	<yui:javascript dir="json" file="json-min.js" version="2.6.0"/>
-	<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.6.0"/>
+	<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
 
-	<g:javascript src="cuanto/url.js"/>
-	<g:javascript src="cuanto/projectDialog.js"/>
-	<g:javascript src="cuanto/deleteProjectDialog.js"/>
-	<g:javascript src="cuanto/events.js"/>
-	<g:javascript src="cuanto/timeParser.js"/>
-	<g:javascript src="cuanto/listGroup.js"/>
-	<g:javascript src="cuanto/groupHistory.js"/>
+	<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+	<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+	<yui:javascript dir="datatable" file="cuanto-datatable-overrides.js" version="2.8.2r1"/>
+
+	<yui:javascript dir="animation" file="animation-min.js" version="2.8.2r1"/>
+	<yui:javascript dir="json" file="json-min.js" version="2.8.2r1"/>
+	<yui:javascript dir="autocomplete" file="autocomplete-min.js" version="2.8.2r1"/>
+
+	<p:javascript src="jq/jquery-1.4.2.min"/>
+	<p:javascript src="cuanto/url"/>
+	<p:javascript src="cuanto/projectDialog"/>
+	<p:javascript src="cuanto/deleteProjectDialog"/>
+	<p:javascript src="cuanto/events"/>
+	<p:javascript src="cuanto/timeParser"/>
+	<p:javascript src="cuanto/listGroup"/>
+	<p:javascript src="cuanto/groupHistory"/>
 
 	<script type="text/javascript">
 

@@ -26,11 +26,12 @@ YAHOO.cuanto.testCaseHistory = function() {
 
 	var tcHistoryDataTable;
 	var tcHistoryId;
-	var outputPanel = new YAHOO.cuanto.OutputPanel();
 	var cacheOutputTimer;
+	var outputPanel = new YAHOO.cuanto.OutputPanel();
+	var timeParser = new YAHOO.cuanto.TimeParser();
 
 	function getCurrentFilter() {
-		return  $F('tcHistoryFilter', "value");
+		return  $('#tcHistoryFilter').val();
 	}
 
 	function getTcHistoryColumnDefs() {
@@ -39,8 +40,8 @@ YAHOO.cuanto.testCaseHistory = function() {
 			{key:"date", label:"Date", width:130, sortable:true},
 			{key:"result", label:"Result", width: 70, sortable:true},
 			{key:"analysisState", label:"Reason", width: 100, sortable:true},
-			{key:"duration", label:"Duration", sortable:true},
-			{key:"bug", label:"Bug",formatter:YAHOO.cuanto.format.formatBug, sortable:false},
+			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
+			{key:"bug", label:"Bug", formatter: YAHOO.cuanto.format.formatBug, sortable:false},
 			{key:"owner", label:"Owner", sortable:true},
 			{key:"note", label:"Note", width:250, resizeable:true, sortable:true}
 		];
@@ -185,15 +186,20 @@ YAHOO.cuanto.testCaseHistory = function() {
 	}
 
 	function formatActionCol(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = "";
-		var outLinkDiv = new Element('div', {'class': 'outputLink'});
+		$(elCell).html("");
+		var outLinkDiv = $('<div class="outputLink"/>');
 		var toId = oRecord.getData('id');
+		var outputImg = $('<img alt="Test Output" title="Test Output" class="outLink"/>');
 		var outputLinkId = 'to' + toId;
-		var outputImg = new Element('img', { alt: 'Test Output', title: 'Test Output',
-			id: outputLinkId, 'class': 'outLink', src: YAHOO.cuanto.urls.get('outputImg')});
-		outLinkDiv.appendChild(outputImg);
-		elCell.appendChild(outLinkDiv);
+		outputImg.attr("id", outputLinkId);
+		outputImg.attr("src", YAHOO.cuanto.urls.get('outputImg'));
+		outLinkDiv[0].appendChild(outputImg[0]);
+		elCell.appendChild(outLinkDiv[0]);
 		YAHOO.util.Event.addListener(outputLinkId, "click", outputPanel.showOutputForLink);
+	}
+
+	function formatDuration(elCell, oRecord, oColumn, oData) {
+		$(elCell).html(timeParser.formatMs(oRecord.getData("duration")));
 	}
 
 	function cacheOutput(){
@@ -209,7 +215,8 @@ YAHOO.cuanto.testCaseHistory = function() {
 			tcHistoryId = testCaseId;
 
 			if (!tcHistoryDataTable) {
-				$('tcHistoryFilter').onchange = onTcHistoryFilterChange;
+				YAHOO.util.Event.addListener('tcHistoryFilter', "change", onTcHistoryFilterChange);
+
 				var columnDefs = getTcHistoryColumnDefs();
 				var dataSrc = getTcHistoryDataSource();
 				var tableConfig = getTcHistoryTableConfig();

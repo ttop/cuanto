@@ -24,25 +24,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html>
 	<head>
 		<title>Cuanto: Test Cases for ${project?.toString()}</title>
-		<meta name="layout" content="main"/>
-		<g:javascript src="cuanto/url.js"/>
+		<meta name="layout" content="mainBare"/>
 
-		<p:css name='../js/yui/2.6.0/datatable/assets/skins/sam/datatable'/>
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<p:css name='../js/yui/2.6.0/paginator/assets/skins/sam/paginator'/>
+		<p:css name='../js/yui/2.8.2r1/datatable/assets/skins/sam/datatable'/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+		<p:css name='../js/yui/2.8.2r1/paginator/assets/skins/sam/paginator'/>
 
-		<yui:javascript dir="datasource" file="datasource-min.js" version="2.6.0"/>
-		<yui:javascript dir="datatable" file="datatable-min.js" version="2.6.0"/>
-		<yui:javascript dir="paginator" file="paginator-min.js" version="2.6.0"/>
-		
-		<g:javascript src="cuanto/formatBug.js"/>
-        <g:javascript src="cuanto/testcases.js"/>
+		<g:render template="/shared/yui282r1"/>
+		<yui:javascript dir="datasource" file="datasource-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="datatable" file="datatable-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="paginator" file="paginator-min.js" version="2.8.2r1"/>
+
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/formatBug"/>
+        <p:javascript src="cuanto/testcases"/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {
-
 				<g:render template="/testRun/urls"/>
-
 				YAHOO.cuanto.testCases.initTestCaseTable(${project?.id});
 			});
 	</script>

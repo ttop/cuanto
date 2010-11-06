@@ -70,7 +70,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
     YAHOO.cuanto.events.outcomeFilterChangeEvent.subscribe(onFilterChangeEvent);
 
 	hideCurrentSearchSpan();
-	$("searchQry").clear();
+	$("#searchQry").val("");
 
 	if (!dataTable) {
 		YAHOO.util.Event.addListener('trDetailsFilter', "change", onFilterChange);
@@ -81,7 +81,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			getAnalysisDataSource(), getDataTableConfig());
 
 		var hiddenCols = getHiddenColumns();
-		dataTable.getColumnSet().flat.each(function(column) {
+
+		$.each(dataTable.getColumnSet().flat, function(idx, column) {
 			if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
 				dataTable.hideColumn(column.key);
 			}
@@ -129,7 +130,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
         initTagButtons();
 
 		YAHOO.util.Event.addListener("showSelectCol", "click", showSelectColumn);
-		$('showSelectOptions').hide();
+		$('#showSelectOptions').hide();
 		YAHOO.util.Event.addListener("hideSelectCol", "click", hideSelectColumn);
 		YAHOO.util.Event.addListener("selectPage", "click", selectPageRecords);
 		YAHOO.util.Event.addListener("deselectPage", "click", deselectPageRecords);
@@ -172,8 +173,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	function getDataTableConfig() {
 		var tableWidth;
 		var minWidth = 1024;
-		if (document.viewport.getWidth() > minWidth) {
-			tableWidth = document.viewport.getWidth() * .95;
+		if ($(window).width() > minWidth) {
+			tableWidth = $(window).width() * .95;
 		} else {
 			tableWidth = minWidth;
 		}
@@ -224,23 +225,24 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 	function processProperties(oResponse) {
 		var propNames = [];
-		oResponse.results.each(function(item) {
+		$.each(oResponse.results, function(idx, item) {
 			for (var key in item.testProperties) {
-				propNames.push(key);
+				if ($.inArray(key, propNames) == -1) {
+					propNames.push(key);
+				}
 			}
 		});
-		propNames = propNames.uniq().sort();
+
 		if (propNames.length > 0) {
-			var colNames = dataTable.getColumnSet().keys.collect(function(k) {
+			var colNames = $.map(dataTable.getColumnSet().keys, function(k, i) {
 				return k.key;
 			});
 			for (var p = 0; p < propNames.length; p++) {
 				var prop = propNames[p];
-				var hasColumn = colNames.any(function(name) {
-					var match = name.toLowerCase() == prop.toLowerCase();
-					return match;
+				var matchingNames = colNames.grep(colNames, function(name) {
+					return name.toLowerCase() == prop.toLowerCase();
 				});
-				if (!hasColumn) {
+				if (matchingNames.length == 0) {
 					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
 						formatter: propertyFormatter});
 					var hiddenCols = getHiddenColumns();
@@ -255,11 +257,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function updateTotalRows(oResponse) {
-		$('trTotalRows').update(oResponse.meta.totalCount);
+		$('#trTotalRows').html(oResponse.meta.totalCount);
 	}
 
 	function hasColumnNamed(dt, colName) {
-		dt.getColumnSet().keys.each(function(col) {
+		$.each(dt.getColumnSet().keys, function(idx, col) {
 			if (col.key == colName) {
 				return true;
 			}
@@ -285,6 +287,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				alert("Failed loading table data");
 			}
 		});
+		YAHOO.cuanto.events.outcomeFilterChangeEvent.fire({results:getCurrentFilter(), context: 'analysisTable'});
+	// getCurrentFilter()
 	}
 
 
@@ -312,54 +316,56 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
     function onFilterChangeEvent(e, arg) {
-        var filter = arg[0];
+	    var filter = arg[0];
 
-        var resultFilterNode = $('trDetailsFilter');
-        var resultsFilter = resultFilterNode.length - 1;;
-        if (filter.results) {
-            var targResult = filter.results.toUpperCase();
-            for (var i = 0; i < resultFilterNode.options.length; i++) {
-                var item = resultFilterNode.options[i];
-                if (item.text.toUpperCase() == targResult || item.readAttribute("value").toUpperCase() == targResult) {
-                    resultsFilter = i;
-                    break;
-                }
-            }
-        }
+	    if (filter.context != 'analysisTable') {
+		    var resultFilterNode = $('#trDetailsFilter')[0];
+		    var resultsFilter = resultFilterNode.length - 1;
+		    if (filter.results) {
+			    var targResult = filter.results.toUpperCase();
+			    for (var i = 0; i < resultFilterNode.options.length; i++) {
+				    var item = resultFilterNode.options[i];
+				    if (item.text.toUpperCase() == targResult || $(item).val().toUpperCase() == targResult) {
+					    resultsFilter = i;
+					    break;
+				    }
+			    }
+		    }
 
-        resultFilterNode.selectedIndex = resultsFilter;
+		    resultFilterNode.selectedIndex = resultsFilter;
 
-        if (filter.search) {
-            var searchIndex;
-            var searchTermNode = $('searchTerm');
-            var targSearch = filter.search.toUpperCase();
-            for (var s = 0; s < searchTermNode.options.length; s++) {
-                var st = searchTermNode.options[s];
-                if (st.text.toUpperCase() == targSearch || item.readAttribute("value").toUpperCase() == targSearch) {
-                    searchIndex = s;
-                    break;
-                }
-            }
-            if (!(searchIndex == undefined)) {
-                searchTermNode.selectedIndex = searchIndex;
-            }
-        }
+		    if (filter.search) {
+			    var searchIndex;
+			    var searchTermNode = $('#searchTerm')[0];
+			    var targSearch = filter.search.toUpperCase();
+			    for (var s = 0; s < searchTermNode.options.length; s++) {
+				    var st = searchTermNode.options[s];
+				    if (st.text.toUpperCase() == targSearch || $(item).val().toUpperCase() == targSearch) {
+					    searchIndex = s;
+					    break;
+				    }
+			    }
+			    if (!(searchIndex == undefined)) {
+				    searchTermNode.selectedIndex = searchIndex;
+			    }
+		    }
 
-        if (filter.qry) {
-            $('searchQry').value = filter.qry;
-        }
-        onFilterChange(null);
-        showCurrentSearchSpan();
+		    if (filter.qry) {
+			    $('#searchQry').val(filter.qry);
+		    }
+		    onFilterChange(null);
+		    showCurrentSearchSpan();
+	    }
     }
 
 
 	function getSearchQuery() {
 		if (searchQueryIsSpecified()) {
-			var term = $F("searchTerm");
+			var term = $("#searchTerm").val();
 			if (term == "Properties") {
-				return "&qry=" + term + "|" + $F("propName") + "|" + $F("searchQry");
+				return "&qry=" + term + "|" + $("#propName").val() + "|" + $("#searchQry").val();
 			} else {
-				return "&qry=" + term + "|" + $F("searchQry");
+				return "&qry=" + term + "|" + $("#searchQry").val();
 			}
 		} else {
 			return "";
@@ -367,7 +373,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function searchQueryIsSpecified() {
-		return $F("searchQry").search(/\S/) != -1;
+		return $("#searchQry").val().search(/\S/) != -1;
 	}
 
 
@@ -391,7 +397,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
     }
 
 	function getEventTargetTagname(e) {
-		if (Prototype.Browser.IE) {
+		if ($.browser.msie) {
 			return e.srcElement.tagName;
 		} else {
 			return e.target.tagName;
@@ -407,7 +413,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	function getDefaultTableState() {
 		var tcFormat = YAHOO.util.Cookie.getSub(analysisCookieName, prefTcFormat);
 		if (tcFormat) {
-			$('tcFormat').setValue(tcFormat);
+			$('#tcFormat').val(tcFormat);
 		} else {
 			setTcFormatPref();
 		}
@@ -434,12 +440,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function getCurrentFilter() {
-		return $F('trDetailsFilter', "value");
+		return $('#trDetailsFilter').val();
 	}
 
 
 	function getCurrentTcFormat() {
-		return $F('tcFormat', 'value');
+		return $('#tcFormat').val();
 	}
 
 
@@ -450,7 +456,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var noteEditor = new YAHOO.widget.TextareaCellEditor();
 		noteEditor.subscribe("showEvent", showNoteEditor);
 
-		var toolWidth = Prototype.Browser.IE ? 70 : 50;
+		var toolWidth = $.browser.msie ? 70 : 50;
 
 		var columns = [
 			{label:"Sel.", resizeable:false, formatter: formatSelect, hidden:true},
@@ -458,12 +464,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			{key:"testCase", label:"Name", resizeable:true, className:"wrapColumn",
 				formatter: formatTestCase, sortable:true},
 			{key:"parameters", label:"Parameters", resizeable:true, formatter:formatParameters, sortable: false},
-            {key:"tags", label:"Tags", resizeable:true, formatter: formatTags, sortable: false, hidden: ($$('.tagspan').length == 0)},
+            {key:"tags", label:"Tags", resizeable:true, formatter: formatTags, sortable: false, hidden: ($('.tagspan').length == 0)},
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
 			{key:"analysisState", label:"Reason", sortable:true,
-				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true}),
-				formatter: formatAnalysis},
+				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
 			{key:"startedAt", label: "Started At", sortable:true},
 			{key:"finishedAt", label: "Finished At", sortable:true},
 			{key:"duration", label:"Duration", sortable:true, formatter: formatDuration},
@@ -508,19 +513,19 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		elCell.innerHTML = "";
 		var rid = oRecord.getData("id");
 		var boxid = "chk" + rid;
-		var div = document.createElement('div');
-		var chkbox = new Element('input', {'type': 'checkbox', 'value': rid, 'className': 'batch', 'id':boxid});
-		elCell.appendChild(div).appendChild(chkbox);
+		var div = $("<div></div>");
+		var chkbox = $("<input type='checkbox' value='" + rid + "' class='batch' id='" + boxid + "'/>");
+		elCell.appendChild(div[0]).appendChild(chkbox[0]);
 
 		if (targetOutcomes.indexOf(boxid) > -1) {
-			chkbox.setAttribute("checked", true);
+			chkbox.attr("checked", true);
 		}
 		YAHOO.util.Event.addListener(boxid, "click", selectRecord);
 	}
 
 
 	function formatTestCase(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = "";
+		$(elCell).html("");
 
 		var result = oRecord.getData().result.toLowerCase();
 		var isNewFailure = oRecord.getData().isFailureStatusChanged && (result == "fail" || result == "error");
@@ -528,12 +533,16 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var testCaseString = YAHOO.cuanto.format.breakOnToken(oData.name, '.', 400) + " ";
 		if (isNewFailure)
 		{
-			var alertImg = new Element('img', {src: alertImgUrl});
+			var alertImg = $("<img src='" + alertImgUrl +"'/>");
 			setImgTitleAndAlt(alertImg, "New Failure");
-			elCell.appendChild(alertImg);
-			elCell.innerHTML += " ";
+			elCell.appendChild(alertImg[0]);
+			$(elCell).html($(elCell).html() + " ");
 		}
-		elCell.innerHTML +=  testCaseString;
+
+		var oldHtml = $(elCell).html();
+
+		var newHtml = oldHtml += testCaseString;
+		$(elCell).html(newHtml);
 	}
 
 	function formatParameters(elCell, oRecord, oColumn, oData) {
@@ -542,56 +551,43 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		if (tc && tc.parameters) {
 			out = tc.parameters;
 		}
-		elCell.innerHTML = out;
+		$(elCell).html(out);
 	}
 
 	function formatActionCol(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = "";
+		$(elCell).html("");
 		var toId = oRecord.getData('id');
 		var tcId = oRecord.getData("testCase").id;
 
 		var historyLinkId = 'history' + tcId;
-		var historyLink = new Element('a', {'id': historyLinkId});
-		var historyImg = new Element('img', {src: historyImgUrl});
-		historyLink.appendChild(historyImg);
-		elCell.appendChild(historyLink);
+		$(elCell).html("<a id='" + historyLinkId + "'><img src='" + historyImgUrl + "'/></a>");
 
 		var outputLinkId = 'to' + toId;
-		var outputImg = new Element('img', { id: outputLinkId, 'class': 'outLink', src: outputImgUrl});
-		elCell.appendChild(outputImg);
+		$(elCell).append("<img src='" + outputImgUrl + "' id='" + outputLinkId + "' class='outLink'/>");
 
 		var anlzLinkId = 'an' + toId;
-		var anlzLink = new Element('a', {'id': anlzLinkId, 'class': 'anlzLink'});
-		var anlzImg = new Element('img', {src: anlzImgUrl});
-		anlzLink.appendChild(anlzImg);
-		elCell.appendChild(anlzLink);
+		$(elCell).append("<a id='" + anlzLinkId + "' class='anlzLink'><img src='" + anlzImgUrl + "'/></a>");
 
 		YAHOO.util.Event.addListener(outputLinkId, "click", handleOutputIcon);
 		YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
-		YAHOO.util.Event.addListener(anlzLink, "click", showAnalysisDialog, null,
+		YAHOO.util.Event.addListener(anlzLinkId, "click", showAnalysisDialog, null,
 			analysisDialog);
 		setTimeout(function() {
-			setImgTitleAndAlt(historyImg, "Test History (new window)");
-			setImgTitleAndAlt(outputImg, 'Test Output');
-			setImgTitleAndAlt(anlzImg, 'Batch Analysis');
+			setImgTitleAndAlt($("img", $('#' + historyLinkId)), "Test History (new window)");
+			setImgTitleAndAlt($("#" + outputLinkId), 'Test Output');
+			setImgTitleAndAlt($("img", $("#" + anlzLinkId)), 'Batch Analysis');
 		}, 2000);
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
         if (oData && oData.length > 0) {
-            elCell.innerHTML = oData.join(", ");
+            $(elCell).html(oData.join(", "));
         }
     }
 
-	function formatAnalysis(elCell, oRecord, oColumn, oData) {
-		if (oData && oData.name) {
-			elCell.innerHTML = oData.name;
-		}
-	}
-
 	function setImgTitleAndAlt(imgElem, title) {
-		imgElem.setAttribute('title', title);
-		imgElem.setAttribute('alt', title);
+		imgElem.attr('title', title);
+		imgElem.attr('alt', title);
 	}
 
 	function showAnalysisDialog(e) {
@@ -633,19 +629,20 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	function updateTable(e, data) {
 		var updatedData = data[0];
 		if (updatedData.updatedRecords.length > 0) {
-			var recordsToUpdate = dataTable.getRecordSet().getRecords().findAll(function(record) {
-				return updatedData.updatedRecords.find(function(id) {
+			var recordsToUpdate = $.grep(dataTable.getRecordSet().getRecords(), function(record, idx) {
+				var found = $.grep(updatedData.updatedRecords, function(id) {
 					return record.getData('id') == id;
 				});
+				return found[0];
 			});
 
-			recordsToUpdate.each(function(record) {
+			$.each(recordsToUpdate, function(idx, record) {
 				if (updatedData.fields.hasOwnProperty("testResult")) {
 					record.setData('result', updatedData.fields.testResult.name);
 				}
 
 				if (updatedData.fields.hasOwnProperty("analysisState")) {
-					record.setData('analysisState', updatedData.fields.analysisState.name);
+					record.setData('analysisState', updatedData.fields.analysisState);
 				}
 
 				if (updatedData.fields.hasOwnProperty("bug")) {
@@ -692,7 +689,10 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function removeRecord(recordId) {
-		targetOutcomes = targetOutcomes.without(recordId);
+		//targetOutcomes = targetOutcomes.without(recordId);
+		targetOutcomes = $.grep(targetOutcomes, function(item) {
+			return item != recordId;
+		});
 		updateSelectedTotal();
 	}
 
@@ -700,8 +700,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var selCol = dataTable.getColumn(0);
 		if (selCol.hidden) {
 			dataTable.showColumn(selCol);
-			$('showSelectCol').hide();
-			$('showSelectOptions').show();
+			$('#showSelectCol').hide();
+			$('#showSelectOptions').show();
 		}
 		if (e) {
 			YAHOO.util.Event.preventDefault(e);
@@ -713,8 +713,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var selCol = dataTable.getColumn(0);
 		if (!selCol.hidden) {
 			dataTable.hideColumn(selCol);
-			$('showSelectOptions').hide();
-			$('showSelectCol').show();
+			$('#showSelectOptions').hide();
+			$('#showSelectCol').show();
 		}
 		if (e) {
 			YAHOO.util.Event.preventDefault(e);
@@ -723,7 +723,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function selectPageRecords(e) {
-		$$('.batch').each(function(box) {
+		$.each($('.batch'), function(idx, box) {
 			box.checked = true;
 			if (targetOutcomes.indexOf(box.id) == -1) {
 				targetOutcomes.push(box.id);
@@ -736,7 +736,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function deselectPageRecords(e) {
-		$$('.batch').each(function(box) {
+		$.each($('.batch'), function(idx, box) {
 			box.checked = false;
 			targetOutcomes = targetOutcomes.without(box.id);
 		});
@@ -748,8 +748,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function deselectAllRecords(e) {
-		targetOutcomes.clear();
-		$$('.batch').each(function(box) {
+		targetOutcomes.length = 0;
+		$.each($('.batch'), function(idx, box) {
 			box.checked = false;
 		});
 		updateSelectedTotal();
@@ -760,7 +760,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function updateSelectedTotal() {
-		$('currentSelected').innerHTML = targetOutcomes.length + " Tests Selected";
+		$('#currentSelected').html(targetOutcomes.length + " Tests Selected");
 	}
 
 
@@ -770,14 +770,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var fieldStr = "";
 
 		if (args[0].fields) {
-			args[0].fields.each(function(field) {
+			$.each(args[0].fields, function(idx, field) {
 				fieldStr += "&field=" + field;
 			});
 			postBdy += fieldStr;
 		}
 
 		var idRegEx = /\d+/;
-		targetOutcomes.each(function(outc) {
+		$.each(targetOutcomes, function(idx, outc) {
 			var oid = idRegEx.exec(outc);
 			if (oid && parseInt(oid[0]) != sourceOutcome) {
 				postBdy += "&target=" + oid;
@@ -787,7 +787,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 		var callback = {
 			success: function(o) {
-				var updatedData = o.responseText.evalJSON();
+				var updatedData = YAHOO.lang.JSON.parse(o.responseText);
 				YAHOO.cuanto.events.recordsUpdatedEvent.fire(updatedData);
 				deselectAllRecords();
 				YAHOO.cuanto.events.analysisAppliedEvent.fire();
@@ -798,21 +798,20 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			}
 		};
 
-		var url = YAHOO.cuanto.urls.get('applyAnalysis');
-		YAHOO.util.Connect.asyncRequest('POST', url, callback, postBdy);
+		YAHOO.util.Connect.asyncRequest('POST', YAHOO.cuanto.urls.get('applyAnalysis'), callback, postBdy);
 		YAHOO.util.Event.preventDefault(e);
 	}
 
 
 	function hideCurrentSearchSpan() {
-		$('currentSearchSpan').hide();
+		$('#currentSearchSpan').hide();
 	}
 
 
 	function showCurrentSearchSpan() {
 		if (searchQueryIsSpecified()) {
-			$('currentSearchSpan').show();
-			$('currentSearch').innerHTML = "By " + $F("searchTerm") + ":  " + $F("searchQry");
+			$('#currentSearchSpan').show();
+			$('#currentSearch').html("By " + $("#searchTerm").val() + ":  " + $("#searchQry").val());
 		} else {
 			hideCurrentSearchSpan();
 		}
@@ -855,15 +854,15 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function onEditNote(e) {
-		var editField = new Element('input', {'id': 'editNoteField', 'type': 'text', 'size': 100,
-			'value': $('trhNote').innerHTML});
-		$('editNote').hide();
-		$('noteOps').show();
-		$('trhNote').hide();
-		$('noteContainer').appendChild(editField);
-		var kl = new YAHOO.util.KeyListener(editField, {keys: 13}, onSaveNote);
+		var editField = $("<input id='editNoteField' type='text' size='100'/>");
+		editField.val($('#trhNote').html());
+		$('#editNote').hide();
+		$('#noteOps').show();
+		$('#trhNote').hide();
+		$('#noteContainer')[0].appendChild(editField[0]);
+		var kl = new YAHOO.util.KeyListener(editField[0], {keys: 13}, onSaveNote);
 		kl.enable();
-		editField.activate();
+		editField.focus().select();
 		YAHOO.util.Event.preventDefault(e);
 		return false;
 	}
@@ -873,32 +872,32 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var testRun = args[0];
 		if (testRun["testProperties"]) {
 			var out = "";
-			testRun["testProperties"].each(function(item, indx) {
+			$.each(testRun["testProperties"], function(indx, item) {
 				out += item["name"] + ": " + item["value"];
 				if (indx < oData.length - 1) {
 					out += ", ";
 				}
 			});
-			$('trhTestProperties').innerHTML = out;
+			$('#trhTestProperties').innerHTML = out;
 		}
 		if (testRun["note"]) {
-			$('trhNote').innerHTML = testRun["note"];
+			$('#trhNote').innerHTML = testRun["note"];
 		}
 		if (testRun["valid"]) {
-			$('trhIsInvalid').hide();
+			$('#trhIsInvalid').hide();
 		} else {
-			$('trhIsInvalid').show();
+			$('#trhIsInvalid').show();
 		}
 	}
 
 
 	function clearEditNoteField(){
-		var editLink = $('editNoteField');
+		var editLink = $('#editNoteField');
         if (editLink) {
 	        editLink.remove();
-	        $('noteOps').hide();
-	        $('editNote').show();
-	        $('trhNote').show();
+	        $('#noteOps').hide();
+	        $('#editNote').show();
+	        $('#trhNote').show();
         }
 	}
 
@@ -910,31 +909,34 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function onSaveNote(e) {
-		var editLink = $('editNoteField');
-		var note = editLink.getValue();
-		$('trhNote').innerHTML = note;
+		var editLink = $('#editNoteField');
+		var note = editLink.val();
+		$('#trhNote').html(note);
 		clearEditNoteField();
 
-		new Ajax.Request(YAHOO.cuanto.urls.get('testRunUpdateNote'), {
-			parameters: {'id':$('testRunId').getValue(), 'note': note, 'format': 'json'},
-			onFailure: function(o) {
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('testRunUpdateNote'),
+			data: {'id': $('#testRunId').val(), 'note': note, 'format': 'json'},
+			dataType: "json",
+			error: function(req, textStatus, errorThrown) {
 				var msg;
-				if (o.responseJSON.error) {
-					msg = o.responseJSON.error;
+				if (errorThrown) {
+					msg = errorThrown;
 				} else {
 					msg = "Unknown error while updating note";
 				}
 				showFlashMsg(msg);
 			}
 		});
+
 		YAHOO.util.Event.preventDefault(e);
 		return false;
 	}
 
 
 	function showFlashMsg(msg) {
-		$('flashMsg').innerHTML = msg;
-		$('flashMsg').show();
+		$('#flashMsg').html(msg);
+		$('#flashMsg').show();
 	}
 
 	function cacheOutput() {
@@ -971,15 +973,16 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		delDialog.setBody("Are you sure you want to permanently delete this test run?");
 		delDialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
 		var handleYes = function() {
-			delDialog.getButtons().each(function(b){
+			$.each(delDialog.getButtons(), function(idx, b){
 				b.destroy();
 			});
 			delDialog.setBody("Deleting...");
-			new Ajax.Request(YAHOO.cuanto.urls.get('testRunDelete'),
-			{
-				parameters: {'id': $('testRunId').getValue()},
-				onSuccess: function(o) {
-					var response = o.responseJSON;
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('testRunDelete'),
+				type: "POST",
+				data: {'id': $('#testRunId').val()},
+				dataType: "json",
+				success: function(response, textStatus, req) {
 					if (response.error) {
 						delDialog.setBody("Failed deleting: " + response.error);
 					} else {
@@ -987,7 +990,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 						setTimeout(function(){
 							window.location = YAHOO.cuanto.urls.get('projectHistory');
 						}, 3000);
-					}
+					}					
+				},
+				error: function(req, status, error) {
+					alert("Error: " + req.statusText);
+					delDialog.hide();
 				}
 			});
 		};
@@ -1007,11 +1014,11 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 	function recalcStats(e) {
 		YAHOO.util.Event.preventDefault(e);
-		new Ajax.Request(YAHOO.cuanto.urls.get('testRunRecalcStats'),
-		{
-			parameters: {'id': $('testRunId').getValue()},
-			onSuccess: function(o) {
-				showFlashMsg("Queued for recalculating statistics.");
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('testRunRecalcStats'),
+			data: {'id': $('#testRunId').val()},
+			success: function(o) {
+				showFlashMsg("Queued for recalculating statistics.")
 			}
 		});
 	}
@@ -1027,7 +1034,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			return hiddenCols;
 		} else {
 			var cols = {};
-			["startedAt", "finishedAt", "output", "parameters"].each(function(item)
+			$.each(["startedAt", "finishedAt", "output", "parameters"], function(idx, item)
 			{
 				cols[item] = true;
 			});
@@ -1036,7 +1043,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	}
 
 	function formatDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("duration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("duration")));
 	}
 
 	function propertyFormatter(elCell, oRecord, oColumn, oData) {
@@ -1049,7 +1056,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 					out = props[prop];
 				}
 			}
-			elCell.innerHTML = out;
+			$(elCell).html(out);
 		}
 	}
 
@@ -1073,13 +1080,12 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			}
 		}
 		
-		elCell.innerHTML = output;
+		$(elCell).html(output);
 	}
 
 
     function initTagButtons() {
-        
-        $$('.tagspan').each(function(tagspan) {
+        $.each($('.tagspan'), function(idx, tagspan) {
             tagButtons.push(new YAHOO.widget.Button(tagspan.id, {type: "checkbox", checked: false, onclick: { fn: onTagClick } }));
         });
     }
@@ -1120,14 +1126,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
     }
 
 	function onSearchTermChange(e) {
-		var searchTerm = $('searchTerm');
-		if ($F('searchTerm') == "Properties") {
-			$$('.propSearch').each(function(item) {
-				item.show();
+		var searchTerm = $('#searchTerm');
+		if ($('#searchTerm').val() == "Properties") {
+			$.each($('.propSearch'), function(idx, item) {
+				$(item).show();
 			});
 		} else {
-			$$('.propSearch').each(function(item) {
-				item.hide();
+			$.each($('.propSearch'), function(idx, item) {
+				$(item).hide();
 			});
 		}
 	}

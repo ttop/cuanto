@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --}%
 <g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
-<table class="cuanto ">
+<table id="listGroupTable" class="cuanto ">
 	<g:if test="${projects}">
 		<tr>
 			<th>Name</th>

@@ -464,9 +464,8 @@ public class TestOutcome {
 			testOutcome.setLastUpdated(parseJsonDate(jsonOutcome.getString("lastUpdated")));
 		}
 
-		if (!jsonOutcome.getJSONObject("analysisState").isNullObject()) {
-			JSONObject jsonAnalysis = jsonOutcome.getJSONObject("analysisState");
-			testOutcome.setAnalysisState(AnalysisState.forState(jsonAnalysis.getString("name")));
+		if (!(jsonOutcome.get("analysisState") instanceof JSONNull)) {
+			testOutcome.setAnalysisState(AnalysisState.forState(jsonOutcome.getString("analysisState")));
 		}
 
 		if (!(jsonOutcome.get("owner") instanceof JSONNull)) {

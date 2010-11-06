@@ -504,7 +504,7 @@ class TestOutcomeService {
 		}
 	}
 
-	List getGroupedOutputSummaries(TestRun testRun, Integer offset, Integer max, sort = "failures", order = "desc") {
+	List getGroupedOutputSummaries(TestRun testRun, String filter, Integer offset, Integer max, sort = "failures", order = "desc") {
 		if (order != "asc" && order != "desc") {
 			throw new IllegalArgumentException("Unknown order for grouped output summary sort")
 		}
@@ -520,20 +520,38 @@ class TestOutcomeService {
 			secondarySort = "to.testOutputSummary asc"
 		}
 
-		def qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		def qry
+		if (filter.equalsIgnoreCase("AllFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		} else if (filter.equalsIgnoreCase("NewFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and to.isFailureStatusChanged = true and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		} else if (filter.equalsIgnoreCase("UnanalyzedFailures")) {
+			qry = "select count(*), to.testOutputSummary from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.testOutputSummary is not null and to.analysisState.isAnalyzed = false and not(to.testResult.name like 'Skip') group by to.testOutputSummary order by ${primarySort}, ${secondarySort}".toString()
+		}
+
 		// returns a List where each item is a List with index 0 the count and index 1 the output summary text
 		TestOutcome.executeQuery(qry, [testRun], ['max': max, 'offset': offset])
 	}
 
 
-    Long countGroupedOutputSummaries(TestRun testRun) {
-        def result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
-                [testRun])
-        return result[0]
-    }
+	Long countGroupedOutputSummaries(TestRun testRun, String filter) {
+		def result
+		if (filter.equalsIgnoreCase("AllFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and (not to.testResult.name like 'Skip')",
+				[testRun])
+		} else if (filter.equalsIgnoreCase("NewFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.isFailureStatusChanged = true and (not to.testResult.name like 'Skip')",
+				[testRun])
+		} else if (filter.equalsIgnoreCase("UnanalyzedFailures")) {
+			result = TestOutcome.executeQuery("select count(distinct to.testOutputSummary) from TestOutcome to where to.testRun = ? and to.testResult.isFailure = true and to.analysisState.isAnalyzed = false and (not to.testResult.name like 'Skip')",
+				[testRun])
+		}
+
+		return result[0]
+	}
 
 
-    TestOutcome addTestOutcome(request) {
+	TestOutcome addTestOutcome(request) {
         TestOutcome testOutcome = null
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
@@ -562,6 +580,48 @@ class TestOutcomeService {
         return testOutcome
     }
 
+
+	List <TestCase> findTestCaseFullNamesMatching(project, testName) {
+		TestCase.findAllByFullNameLikeAndProject("%${testName}%", project, [sort: "fullName", order: "asc"])
+	}
+
+
+
+	List previewTestRename(project, testName, newName) {
+		def toReturn = []
+		def testCases = findTestCaseFullNamesMatching(project, testName)
+		testCases.each {
+			toReturn << [testCase: it, newName: it.fullName.replaceAll(testName, newName)]
+		}
+		return toReturn
+	}
+
+
+	Integer bulkTestCaseRename(List toRename) {
+		toRename.each {
+			def testCase = TestCase.get(it.id)
+			def names = extractTestCaseNames(it.newName)
+			testCase.packageName = names.packageName
+			testCase.testName = names.testName
+			testCase.fullName = testCase.packageName + "." + testCase.testName
+			dataService.saveDomainObject testCase
+		}
+		return toRename.size()
+	}
+
+
+	Map<String, String> extractTestCaseNames(String fullName) {
+		def tName = null
+		def pkgName = null
+		def lastDot = fullName.lastIndexOf(".")
+		if (lastDot == -1) {
+			tName = fullName
+		} else {
+			tName = fullName.substring(lastDot + 1)
+			pkgName = fullName.substring(0, lastDot)
+		}
+		return [testName: tName, packageName: pkgName]
+	}
 
 	/**
 	 * Queue the next test outcome for failure status recalculation,

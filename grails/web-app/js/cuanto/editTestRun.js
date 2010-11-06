@@ -2,34 +2,34 @@ YAHOO.namespace('cuanto');
 
 YAHOO.cuanto.EditTestRun = function(testRunId) {
 
-	$$('.deleteProp').each(function(link) {
+	$.each($('.deleteProp'), function(idx, link) {
 		 YAHOO.util.Event.addListener(link, "click", deleteProperty);
 		}
 	);
 
-	$$('.deleteLink').each(function(link) {
+	$.each($('.deleteLink'), function(idx, link) {
 		 YAHOO.util.Event.addListener(link, "click", deleteLink);
 		}
 	);
 
-	YAHOO.util.Event.addListener($('addProperty'), "click", addProperty);
-	YAHOO.util.Event.addListener($('addLink'), "click", addLink);
+	YAHOO.util.Event.addListener('addProperty', "click", addProperty);
+	YAHOO.util.Event.addListener('addLink', "click", addLink);
 
 	function deleteProperty(e) {
 		YAHOO.util.Event.preventDefault(e);
-		var nameNode = $(e.target).previous('.propName');
-		var name = nameNode.readAttribute('value');
+		var name = $(e.target).prevAll('.propName').val();
 		if (confirm("Delete property '" + name + "'?")) {
-			var id = $(e.target).previous('.propId').readAttribute("value");
-			new Ajax.Request(YAHOO.cuanto.urls.get('propertyDelete') + id + "?testRun=" + testRunId, {
-				method:'post',
-				onSuccess: function(){
-					$(e.target).up('.property').remove();
-					$('flashMsg').innerHTML = "Property " + name + " deleted."
-					$('flashMsg').show();
+			var id = $(e.target).prevAll('.propId').attr("value");
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('propertyDelete') + id + "?testRun=" + testRunId,
+				type: "POST",
+				success: function(data, status, req) {
+					$(e.target).closest(".property").remove();
+					$("#flashMsg").html("Property " + name + " deleted.");
+					$("#flashMsg").show();
 				},
-				onFailure: function(transport) {
-					alert(transport.responseText);
+				error: function(req, status, error) {
+					alert("Error: " + status);
 				}
 			});
 		}
@@ -37,19 +37,19 @@ YAHOO.cuanto.EditTestRun = function(testRunId) {
 
 	function deleteLink(e) {
 		YAHOO.util.Event.preventDefault(e);
-		var descrNode = $(e.target).previous('.linkDescr');
-		var descr = descrNode.readAttribute('value');
+		var descr = $(e.target).prevAll('.linkDescr').attr('value');
 		if (confirm("Delete link '" + descr + "'?")) {
-			var id = $(e.target).previous('.linkId').readAttribute("value");
-			new Ajax.Request(YAHOO.cuanto.urls.get('linkDelete') + id + "?testRun=" + testRunId, {
-				method:'post',
-				onSuccess: function(){
-					$(e.target).up('.link').remove();
-					$('flashMsg').innerHTML = "Link " + descr + " deleted."
-					$('flashMsg').show();
+			var id = $(e.target).prevAll('.linkId').attr("value");
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('linkDelete') + id + "?testRun=" + testRunId,
+				type: "POST",
+				success: function(data, status, req) {
+					$(e.target).closest('.link').remove();
+					$("#flashMsg").html("Link " + descr + " deleted.");
+					$("#flashMsg").show();
 				},
-				onFailure: function(transport) {
-					alert(transport.responseText);
+				error: function(req, status, error) {
+					alert("Error: " + status);
 				}
 			});
 		}
@@ -58,42 +58,36 @@ YAHOO.cuanto.EditTestRun = function(testRunId) {
 
 	function addProperty(e) {
 		YAHOO.util.Event.preventDefault(e);
-		var propIndex = $$('.newProp').length;
-		var newPropsNode = $('newProps');
-		var propDiv = new Element('div', {'class': 'property newProp'});
-		var propNameLabel = new Element('label', {'class':"narrowLabel"});
-		propNameLabel.innerHTML = "Property name:";
-		propDiv.appendChild(propNameLabel);
-		var propName = new Element('input', {'class': '', name: 'newPropName[' + propIndex + "]", type: 'text'});
-		propDiv.appendChild(propName);
-		var propValueLabel = new Element('label', {'class':"nonClearLabel"});
-		propValueLabel.innerHTML = "Property value:";
-		propDiv.appendChild(propValueLabel);
-		var propValue = new Element('input', {name: 'newPropValue[' + propIndex + ']', type:'text', size: "40"});
-		newPropsNode.appendChild(propDiv);
-		propDiv.appendChild(propValue);
-		propDiv.appendChild(new Element('br'));
-
+		var propIndex = $('.newProp').length;
+		var newPropsNode = $('#newProps');
+		var propDiv = $("<div class='property newProp'><label class='narrowLabel'>Property name:</div>");
+		var propName = $("<input type='text'/>");
+		propName.attr(name, 'newPropName[' + propIndex + ']');
+		propDiv[0].appendChild(propName[0]);
+		var propValueLabel = $("<label class='nonClearLabel'>Property value:</label>");
+		propDiv[0].appendChild(propValueLabel[0]);
+		var propValue = $("<input type='text' size='40'/>");
+		propValue.attr("name", 'newPropValue[' + propIndex + ']');
+		newPropsNode[0].appendChild(propDiv[0]);
+		propDiv[0].appendChild(propValue[0]);
+		propDiv.append($("<br/>"));
 	}
 
 	function addLink(e) {
 		YAHOO.util.Event.preventDefault(e);
-		var linkIndex = $$('.newLink').length;
-		var newLinksNode = $('newLinks');
-		var linkDiv = new Element('div', {'class': 'link newLink'});
-		var linkDescrLabel = new Element('label', {'class':"narrowLabel"});
-		linkDescrLabel.innerHTML = "Link description:";
-		linkDiv.appendChild(linkDescrLabel);
-		var linkDescr = new Element('input', {'class': '', name: 'newLinkDescr[' + linkIndex + "]", type: 'text'});
-		linkDiv.appendChild(linkDescr);
-		var linkUrlLabel = new Element('label', {'class':"nonClearLabel"});
-		linkUrlLabel.innerHTML = "Link URL:";
-		linkDiv.appendChild(linkUrlLabel);
-		var propValue = new Element('input', {name: 'newLinkUrl[' + linkIndex + ']', type:'text', size: "40"});
-		newLinksNode.appendChild(linkDiv);
-		linkDiv.appendChild(propValue);
-		linkDiv.appendChild(new Element('br'));
-
+		var linkIndex = $('.newLink').length;
+		var newLinksNode = $('#newLinks');
+		var linkDiv = $("<div class='link newLink'><label class='narrowLabel'>Link description:</label></div>");
+		var linkDescr = $("<input type='text'/>");
+		linkDescr.attr("name", 'newLinkDescr[' + linkIndex + "]");
+		linkDiv.append(linkDescr);
+		var linkUrlLabel = $("<label class='nonClearLabel'>Link URL:</label>");
+		linkDiv.append(linkUrlLabel);
+		var propValue = $("<input type='text' size='40'/>");
+		propValue.attr("name", 'newLinkUrl[' + linkIndex + ']');
+		newLinksNode.append(linkDiv);
+		linkDiv.append(propValue);
+		linkDiv.append($("<br/>"));
 	}
 
 };

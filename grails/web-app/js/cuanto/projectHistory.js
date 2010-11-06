@@ -25,8 +25,14 @@ YAHOO.cuanto.projectHistory = function() {
 
 	var testRunTable;
 	var columnDialog;
+	var projectDialog;
+	var projectDeleteDialog;
+	var deleteButton;
+	var deleteCancelButton;
 	var timeParser = new YAHOO.cuanto.TimeParser();
-	YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
+	var testRunProperties;
+	var selectControl = new YAHOO.cuanto.SelectControl();
+
 
 	var onSelectTestRunRow = function(e) {
 		this.onEventSelectRow(e);
@@ -67,6 +73,7 @@ YAHOO.cuanto.projectHistory = function() {
 
 	function getTestRunTableColumnDefs(propertyNames) {
 		var columns = [
+			{key: "checked", label: "Sel.", width: 20, formatter: selectControl.formatSelect, hidden: true},
 			{key:"dateExecuted", label:"Test Run", sortable:true, width: 125},
 			{key:"tests", label:"Tests", sortable:true},
 			{key:"passed", label:"Passed", sortable:true},
@@ -103,13 +110,14 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 	function chooseColumns(e) {
-		YAHOO.util.Event.preventDefault(e);
+		e.preventDefault();
+		$("#columnPanel").show();
 		var columnDialog = getColumnDialog();
 		columnDialog.show();
 	}
 	
 
-	function buildTestRunTableQueryString(state, self) {
+	function buildTestRunTableQueryString(state) {
 		if (!state) {
 			state = {
 				startIndex: 0,
@@ -133,7 +141,7 @@ YAHOO.cuanto.projectHistory = function() {
 	}
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = oData + " %";
+		$(elCell).html(oData + " %");
 	}
 
 
@@ -141,38 +149,42 @@ YAHOO.cuanto.projectHistory = function() {
 		var out = "";
 		var propName = oColumn.label;
 		if (oRecord && oRecord.getData("testProperties")) {
-			var prop = oRecord.getData("testProperties").find(function(pr) {
-				return pr.name.toLowerCase() == propName.toLowerCase();
+
+			var prop;
+			$.each(oRecord.getData("testProperties"), function(idx, pr) {
+				if (pr.name.toLowerCase() == propName.toLowerCase()) {
+					prop = pr;
+					out = prop["value"];
+					return false;
+				}
 			});
-			if (prop) {
-				out = prop["value"];
-			}
-			elCell.innerHTML = out;
+
+			$(elCell).html(out);
 		}
 	}
 
 
 	function formatTotalDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("totalDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("totalDuration")));
 	}
 
 	function formatAverageDuration(elCell, oRecord, oColumn, oData) {
-		elCell.innerHTML = timeParser.formatMs(oRecord.getData("averageDuration"));
+		$(elCell).html(timeParser.formatMs(oRecord.getData("averageDuration")));
 	}
 
     function formatTags(elCell, oRecord, oColumn, oData) {
         if (oData && oData.length > 0) {
-            elCell.innerHTML = oData.join(", ");
+            $(elCell).html(oData.join(", "));
         }
     }
-    
+
 	function getColumnDialog() {
 		if (!columnDialog)
 		{
-			var columns = testRunTable.getColumnSet().keys.collect(function(item) {
+			var columns = $.map(testRunTable.getColumnSet().keys, function(item, idx) {
 				return item.key;
 			});
-			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, "ph-" + $('projectId').getValue());
+			columnDialog = new YAHOO.cuanto.ColumnDialog(testRunTable, null, "ph-" + $('#projectId').val(), ["checked"]);
 		}
 		return columnDialog;
 	}
@@ -187,38 +199,174 @@ YAHOO.cuanto.projectHistory = function() {
 		}
 	}
 
-	return {
-		initHistoryTable: function(testRunProps) {
-			var columnDefs = getTestRunTableColumnDefs(testRunProps);
-			var dataSource = getTestRunDataSource();
-			var tableConfig = getTestRunTableConfig();
+	function onEditProject(event) {
+		event.preventDefault();
+		projectDialog.setTitle("Edit Project");
+		projectDialog.show();
+		var projectId = event.target.id.match(/.+?(\d+)/)[1];
+		projectDialog.loadProject(projectId);
+	}
 
-			testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
-				dataSource, tableConfig);
 
-			var hiddenCols = getHiddenColumns();
-			testRunTable.getColumnSet().flat.each(function(column) {
-				if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
-					testRunTable.hideColumn(column.key);
+	function onProjectChange(e, data) {
+		var eventData = data[0];
+		if (eventData.action == "edit") {
+			var project = eventData.project;
+			$.ajax({
+				url: YAHOO.cuanto.urls.get('projectHeader') + "?rand=" + new Date().getTime(),
+				data: {id: project.id},
+				dataType: "html",
+				success: function(response, textStatus, httpReq) {
+					$('#phHeader').html(response);
+					initHeader();
 				}
 			});
+		} else if (eventData.action == "delete") {
+			window.location = YAHOO.cuanto.urls.get('mason');
+		}
+	}
 
 
-			testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-				if (!oPayload) {
-					oPayload = {};
+	function onBulkDelete(e) {
+		if (confirm("Are you sure you wish to delete all of the selected test runs?")) {
+			hideBulkOperations(null);
+
+			var actionTxt = $("#deleteText");
+			actionTxt.show();
+
+			$.ajax({
+				url: YAHOO.cuanto.urls.get("testRunBulkDelete"),
+				data: YAHOO.lang.JSON.stringify(selectControl.getSelected()),
+				type: "POST",
+				contentType: "application/json",
+				dataType: "json",
+				success: function(response, textStatus, httpReq) {
+					testRunTable.destroy();
+					testRunTable = null;
+					initTable();
+					addTableListeners();
+					hideTestRunDelete();
 				}
-				oPayload.totalRecords = oResponse.meta.totalCount;
-				if (oResponse.meta.offset) {
-					oPayload.pagination.totalRecords = oResponse.meta.totalCount;
-				}
-				return oPayload;
-			};
+			});
+			selectControl.deselectAllRecords();
+		}
+	}
 
-			testRunTable.set("selectionMode", "single");
-			testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
-			testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
-			testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+	function hideTestRunDelete() {
+		$("#deleteText").hide();
+		$("#selectTrText").show();
+	}
+
+	function showDeleteProject(e) {
+		var target = YAHOO.util.Event.getTarget(e);
+		YAHOO.util.Event.preventDefault(e);
+		var projectId = target.id.match(/.+?(\d+)/)[1];
+		var projectName = $('#pName' + projectId).html();
+		projectDeleteDialog.show(projectId, projectName);
+	}
+
+
+	function showBulkOperations(e) {
+		e.preventDefault();
+		$("#showSelectOptions").show();
+
+		selectControl.showColumn();
+		testRunTable.showColumn(testRunTable.getColumnSet().getColumn(0));
+
+		$("#bulkButtons").show();
+		$("#selectTrText").hide();
+
+		deleteButton = new YAHOO.widget.Button("deleteBtn", {
+			onclick: {fn: onBulkDelete},
+			disabled: false
+		});
+
+		deleteCancelButton = new YAHOO.widget.Button("cancelDeleteBtn", {
+			onclick: {fn: closeBulk},
+			disabled: false
+		});
+
+
+		testRunTable.removeListener("rowClickEvent", onSelectTestRunRow);
+		testRunTable.removeListener("rowMouseoverEvent", testRunTable.onEventHighlightRow);
+		testRunTable.removeListener("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+	}
+
+	function hideBulkOperations(e) {
+		if (e) {
+			e.preventDefault();
+		}
+		$("#bulkButtons").hide();
+		$("#showSelectOptions").hide();
+		selectControl.hideColumn();
+	}
+
+	function initHeader() {
+		$('.editProj').click(onEditProject);
+		$("#chooseColumns").click(chooseColumns);
+		$('.deleteProj').click(showDeleteProject);
+		$('.bulk').click(showBulkOperations);
+		$('#closeBulk').click(closeBulk);
+	}
+
+	function closeBulk(e){
+			hideBulkOperations(e);
+			selectControl.deselectAllRecords();
+			$("#selectTrText").show();
+			addTableListeners();
+		}
+
+
+	function addTableListeners() {
+		testRunTable.subscribe("rowClickEvent", onSelectTestRunRow);
+		testRunTable.subscribe("rowMouseoverEvent", testRunTable.onEventHighlightRow);
+		testRunTable.subscribe("rowMouseoutEvent", testRunTable.onEventUnhighlightRow);
+	}
+
+
+	function initTable() {
+		var columnDefs = getTestRunTableColumnDefs(testRunProperties);
+		var dataSource = getTestRunDataSource();
+		var tableConfig = getTestRunTableConfig();
+
+		testRunTable = new YAHOO.widget.DataTable("testRunTableDiv", columnDefs,
+			dataSource, tableConfig);
+
+		var hiddenCols = getHiddenColumns();
+
+		$.each(testRunTable.getColumnSet().flat, function(idx, column) {
+			if (hiddenCols[column.key] != undefined && hiddenCols[column.key]) {
+				testRunTable.hideColumn(column.key);
+			}
+		});
+
+		testRunTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+			if (!oPayload) {
+				oPayload = {};
+			}
+			oPayload.totalRecords = oResponse.meta.totalCount;
+			if (oResponse.meta.offset) {
+				oPayload.pagination.totalRecords = oResponse.meta.totalCount;
+			}
+			return oPayload;
+		};
+
+		testRunTable.set("selectionMode", "single");
+		addTableListeners();
+	}
+
+	return {
+		initHistoryTable: function(testRunProps) {
+			testRunProperties = testRunProps;
+			$("#showSelectOptions").hide();
+			$("#hideSelectCol").hide();
+			projectDialog = new YAHOO.cuanto.ProjectDialog();
+			projectDeleteDialog = new YAHOO.cuanto.DeleteProjectDialog();
+			YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
+			initHeader();
+			initTable();
+			selectControl.initTable(testRunTable, 0);
 		}
 	};
+
 }();

@@ -23,8 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
 <div id="testRunHeader">
-	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
-	<span id="trActions" class="smaller">
+	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span> 
+	<g:render template="/project/header" model="[project:testRun.project]"/>
+	<span id="trActions" class="smaller hdActions">
 		<span><g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
 		<g:link controller="testRun" action="export" id="${testRun?.id}">Export</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
@@ -32,16 +33,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span> ${bullet}
 		<span><a alt="Recalculate Stats" id="recalcStats" href="#recalcStats">Recalc</a></span>
 	</span>
-	<br/>
-	<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
-	<span class="heading">Test Run ID: </span><span class="text" id="trhId">${testRun?.id}</span>
-	<br/>
-	<g:if test="${testRun?.testProperties || testRun?.links}">
-		<div id="trPropsAndLinks">
+	<div id="trPropsAndLinks" class="propsAndLinks">
+		<span class="heading">Test Run ID:</span><span class="text" id="trhId">${testRun?.id}</span>
+		<g:if test="${testRun?.testProperties || testRun?.links}">
 			<span id="trhTestProps">
 				<g:if test="${testRun?.testProperties}">
+					${bullet}
 					<g:each in="${testRun?.testProperties}" var="testProp" status="idx">
-						<span class="heading">${testProp.name}: </span><span class="text">${testProp.value}</span>
+						<span class="heading">${testProp.name}:</span><span class="text">${testProp.value}</span>
 						<g:if test="${idx < testRun.testProperties.size() - 1}">${bullet}</g:if>
 					</g:each>
 				</g:if>
@@ -56,8 +55,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</g:each>
 				</div>
 			</g:if>
-		</div>
-	</g:if>
+		</g:if>
+	</div>
 	<span class="heading">Note </span>
 	<a id="editNote" href="#editNote" class="smaller">(Edit)</a>
 	<span id="noteOps" class="smaller" style="display:none">

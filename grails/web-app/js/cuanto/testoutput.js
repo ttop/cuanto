@@ -43,9 +43,8 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 	}
 
 	function getDesiredOutPanelXY() {
-		var vp = document.viewport.getScrollOffsets();
-		var pX = vp[0] + PANEL_X_POSITION;
-		var pY = vp[1] + PANEL_Y_POSITION;
+		var pX = $(window).scrollLeft() + PANEL_X_POSITION;
+		var pY = $(window).scrollTop() + PANEL_Y_POSITION;
 		return [pX, pY];
 	}
 
@@ -54,22 +53,24 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 	}
 
 	function getProgressImg() {
-		var img = YAHOO.cuanto.urls.get('progressImg');
-		return "<img src ='" + img + "'/>";
+		return "<img src ='" + YAHOO.cuanto.urls.get('progressImg') + "'/>";
 	}
 
 	function populateContents(output, testName) {
-		var outDiv = new Element('div', {'class':"testOutput", 'readOnly': true});
-		outDiv.innerHTML = output;
-		var wdth = ($('outPanel').getWidth() * .98) + "px";
-		outDiv.setStyle({'width': wdth});
-		outputPanel.setBody(outDiv);
+		var outDiv = $("<div class='testOutput' readOnly='true'/>");
+		outDiv.html(output);
+		var wdth = ($('#outPanel').width() * .98) + "px";
+		outDiv.width(wdth);
+		outputPanel.setBody(outDiv[0]);
 		outputPanel.setHeader("Output for " + testName);
 		outDiv.focus();
+		if (output.length >= 9998) {
+			outDiv.append("<p class='outputTruncate'>[Output truncated by Cuanto]</p>");
+		}
 	}
 
 	function prefetchNextOutputs(currentOutputId) {
-		var allOutputIds = $$('.outLink').collect(function(link) {
+		var allOutputIds = $.map($('.outLink'), function(link, idx) {
 			return link.id.match(/.+?(\d+)/)[1];
 		});
 
@@ -87,7 +88,7 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 		currentTargetId = YAHOO.util.Event.getTarget(e).id
 		if (outputPanel == null || outputPanel == undefined) {
 			outputPanel = new YAHOO.widget.Panel("outPanel", {
-				width: document.viewport.getWidth() * .95 - PANEL_X_POSITION + "px",
+				width: $(window).width() * .95 - PANEL_X_POSITION + "px",
 				visible: true, xy: getDesiredOutPanelXY(), zIndex: 100, underlay: "none", autofillheight: "body"});
 			if (overlayMgr) {
 				overlayMgr.register(outputPanel);
@@ -105,12 +106,12 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 		outputPanel.cfg.setProperty('xy', getDesiredOutPanelXY());
 		outputPanel.render("outContainer");
 
-		var escapeKey = new YAHOO.util.KeyListener($('outPanel'), { keys:27 }, { fn:closeOutPanel});
+		var escapeKey = new YAHOO.util.KeyListener($('#outPanel')[0], { keys:27 }, { fn:closeOutPanel});
 		escapeKey.enable();
 		outputPanel.cfg.queueProperty('keylisteners', escapeKey);
 
 
-		var closeElm = $$("#outPanel > .container-close");
+		var closeElm = $('.container-close', "#outPanel");
 		YAHOO.util.Event.purgeElement(closeElm);
 		YAHOO.util.Event.addListener(closeElm, "click", closeOutPanel);
 

@@ -28,6 +28,9 @@ import cuanto.TestCase
 import cuanto.TestOutcome
 import grails.converters.JSON
 import java.text.SimpleDateFormat
+import javax.servlet.http.HttpServletResponse
+import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class TestCaseController {
 
@@ -36,7 +39,7 @@ class TestCaseController {
 	def dataService
 
 	// the delete, save and update actions only accept POST requests
-	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', create: 'POST']
+	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', create: 'POST', doRename: 'POST']
 
 	def index = { redirect(action: list, params: params) }
 
@@ -93,7 +96,7 @@ class TestCaseController {
 			return [project: proj]
 		} else if (!params.id) {
 			flash.message = "Please select a project."
-			redirect(controller: "project", action: "list")
+			redirect(controller: "project", action: "mason")
 		}
 	}
 
@@ -282,6 +285,68 @@ class TestCaseController {
 		def shortName = formatter.getTestName(currentOutcome.testCase)
 		def myJson = [testCase: [id: currentOutcome.testCase.id, name: currentOutcome.testCase.fullName,
 			'shortName': shortName], 'outcomes': jsonOutcomes, 'count': jsonOutcomes.size(), 'offset': currentIndex]
+		render myJson as JSON
+	}
+
+
+	def rename = {
+		def project = null
+		if (params.id) {
+			project = Project.get(params.id)
+		} else if (params.project) {
+			project = projectService.getProject(params.project)
+		}
+
+		if (!project) {
+			flash.message = "Unknown project"
+			redirect(controller: 'project', action: 'mason')
+		}
+
+		['project': project]
+	}
+
+
+	def renamePreview = {
+		def project = null
+		def error = null
+		if (params.id) {
+			project = Project.get(params.id)
+		}
+
+		if (!project) {
+			response.status = response.SC_NOT_FOUND
+			error = "Project ${params.id} not found"
+		}
+
+		if (!params.searchTerm) {
+			response.status = response.SC_BAD_REQUEST
+			error = "Missing searchTerm parameter"
+		}
+
+		if (!params.replaceName) {
+			response.status = response.SC_BAD_REQUEST
+			error = "Missing replaceName parameter"
+		}
+
+		if (error) {
+			render error
+		} else {
+			def renameList = testOutcomeService.previewTestRename(project, params.searchTerm, params.replaceName)
+			def myJson = ["renameList": renameList]
+			render myJson as JSON
+		}
+	}
+
+
+	def doRename = {
+		JSONArray json = request.JSON
+		def renameArray = []
+		json.each { JSONObject jsonObj ->
+			def id = jsonObj.getInt("id")
+			def newName = jsonObj.getString("newName")
+			renameArray << ['id': id, 'newName': newName]
+		}
+		def myJson = [renamed: testOutcomeService.bulkTestCaseRename(renameArray)]
 		render myJson as JSON
 	}
 

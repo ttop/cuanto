@@ -22,13 +22,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
+		<meta name="layout" content="mainBare"/>
+
 		<title>Cuanto: Edit Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</title>
 
-		<p:css name='../js/yui/2.6.0/button/assets/skins/sam/button'/>
-		<yui:javascript dir="button" file="button-min.js" version="2.6.0"/>
-		<g:javascript src="cuanto/url.js"/>
-		<g:javascript src="cuanto/editTestRun.js"/>
+		<p:css name='../js/yui/2.8.2r1/button/assets/skins/sam/button'/>
+		<g:render template="/shared/yui282r1"/>
+
+
+		<yui:javascript dir="button" file="button-min.js" version="2.8.2r1"/>
+		<p:javascript src="jq/jquery-1.4.2.min"/>
+		<p:javascript src="cuanto/url"/>
+		<p:javascript src="cuanto/editTestRun"/>
 
 		<script type="text/javascript">
 			YAHOO.util.Event.onDOMReady(function () {
@@ -41,9 +46,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<div id="trEditBody" class="body yui-skin-sam">
 			<div>
 				<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span>
-				<g:link action="results" id="${testRun?.id}" class="smaller">(Analysis)</g:link><br/>
 				<g:render template="/project/header" model="[project:testRun.project]"/> ${bullet}
+				<span class="hdActions">
+					<g:link action="results" id="${testRun?.id}" class="smaller">Analysis</g:link><br/>
+				</span>
+				<div class="propsAndLinks">
 				<span class="heading">Test Run ID:</span><span class="text" id="trhId">${testRun?.id}</span>
+				</div>
 			</div>
 			<div id="testRunForm">
 				<g:form name="editTestRun" action="update" id="${testRun?.id}">

@@ -9,6 +9,7 @@ class DataServiceTests extends GroovyTestCase {
 	def testRunService
 	def testOutcomeService
 	def initializationService
+	def statisticService
 
 	TestObjects to
 
@@ -532,16 +533,18 @@ class DataServiceTests extends GroovyTestCase {
 		1.upto(4) {
 			def tr = to.getTestRun(targetProject)
 			dataService.saveDomainObject(tr)
+			statisticService.queueTestRunStats(tr)
 			targetTestRuns << tr
 		}
 
 		1.upto(4) {
 			def tr = to.getTestRun(otherProject)
 			dataService.saveDomainObject(tr)
+			statisticService.queueTestRunStats(tr)
 		}
 
 		def fetchedTestRuns = dataService.getTestRunsByProject(targetProject,
-			[sort: "dateExecuted", order: "asc", max: 3, offset: 0])
+			[sort: "t.dateExecuted", order: "asc", max: 3, offset: 0])
 
 		assertEquals "Wrong number of test runs returned", 3, fetchedTestRuns.size()
 

@@ -24,6 +24,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import java.text.SimpleDateFormat
 import cuanto.parsers.ParsableTestOutcome
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.hibernate.StaleObjectStateException
 
 class ParsingService {
 	static transactional = false
@@ -53,27 +54,56 @@ class ParsingService {
 		def parser = getParser(project.testType)
 		def outcomes = parser.parseStream(stream)
 
+		def attempts = 0
+		def testRunToReturn = null
+
+		while (attempts < 4) {
+			attempts++
+			try {
+				testRunToReturn = saveParsedOutcomes(outcomes, testRun, project)
+				break;
+			} catch (StaleObjectStateException e) {
+				log.info "StaleObjectStateException during saveParsedOutcomes()"
+				if (attempts < 4) {
+					sleep 2000
+				} else {
+					throw e
+				}
+			}
+		}
+
+		return testRunToReturn
+	}
+
+	TestRun saveParsedOutcomes(outcomes, testRun, project) {
+		def localTestRun = null
+		if (testRun) {
+			localTestRun = TestRun.get(testRun.id)
+		}
+
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
 
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
-			def testOutcome = processParsableOutcome(parsableTestOutcome, testRun, project)
+			def testOutcome = processParsableOutcome(parsableTestOutcome, localTestRun, project)
 			testOutcomesToSave.add(testOutcome)
 		}
 
 		dataService.saveTestOutcomes(testOutcomesToSave)
-		log.info "${numberOfOutcomes} outcomes parsed from file for project ${testRun.project}"
-		if (testRun) {
+		log.info "${numberOfOutcomes} outcomes parsed from file for project ${localTestRun.project}"
+
+		if (localTestRun) {
+			localTestRun = TestRun.get(localTestRun.id)
 			testOutcomesToSave.each { outcome ->
 				outcome.tags?.each { tag ->
-					testRun.addToTags(tag)
+					localTestRun.addToTags(tag)
 				}
 			}
-			dataService.saveTestRun(testRun)
-			statisticService.queueTestRunStats(testRun)			
+			dataService.saveTestRun(localTestRun)
+			statisticService.queueTestRunStats(localTestRun)
 		}
-		return testRun
+		return localTestRun
 	}
 
 
@@ -123,7 +153,7 @@ class ParsingService {
 
 		def testOutput = parseJsonForString(jsonTestOutcome, "testOutput") 
 		if (testOutput) {
-			testOutcome.testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
+			testOutcome.testOutput = processTestOutput(testOutput)
 			setTestOutputSummary(testOutcome);
 		}
 

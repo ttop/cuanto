@@ -56,12 +56,13 @@ class TestRunService {
 
 		if (params.containsKey("sort")) {
 			def sortMap = [:]
-			sortMap["tests"] = "testRunStatistics.tests"
-			sortMap["passed"] = "testRunStatistics.passed"
-			sortMap["failed"] = "testRunStatistics.failed"
-			sortMap["totalDuration"] = "testRunStatistics.totalDuration"
-			sortMap["averageDuration"] = "testRunStatistics.averageDuration"
-			sortMap["successRate"] = "testRunStatistics.successRate"
+			sortMap["tests"] = "trs.tests"
+			sortMap["passed"] = "trs.passed"
+			sortMap["failed"] = "trs.failed"
+			sortMap["totalDuration"] = "trs.totalDuration"
+			sortMap["averageDuration"] = "trs.averageDuration"
+			sortMap["successRate"] = "trs.successRate"
+			sortMap["dateExecuted"] = "t.dateExecuted"
 
 			if (sortMap.containsKey(params.sort)) {
 				queryParams.sort = sortMap[params.sort]
@@ -69,7 +70,7 @@ class TestRunService {
 				queryParams.sort = params.sort
 			}
 		} else {
-			queryParams.sort = "dateExecuted"
+			queryParams.sort = "t.dateExecuted"
 		}
 
 
@@ -87,7 +88,7 @@ class TestRunService {
 		def testRuns = []
 		def projects = dataService.getProjectsByGroupName(group)
 		projects.each { project ->
-			testRuns += dataService.getTestRunsByProject(project, [max: 1, order: 'desc', offset: 0, sort: 'dateExecuted'])
+			testRuns += dataService.getTestRunsByProject(project, [max: 1, order: 'desc', offset: 0, sort: 't.dateExecuted'])
 		}
 		return testRuns.flatten()
 	}
@@ -506,6 +507,7 @@ class TestRunService {
 		}
 
 		dataService.saveTestRun(testRun)
+		statisticService.queueTestRunStats testRun
 		return testRun
 	}
 
@@ -647,7 +649,6 @@ class TestRunService {
 	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
 	 * for all TestOutcomes in the next TestRun.
 	 */
-
 	def deleteTestRun(TestRun run) {
 		TestRun.withTransaction {
 			try {
@@ -699,6 +700,16 @@ class TestRunService {
 	}
 
 
+	Integer deleteTestRuns(testRunIds) {
+		TestRun.withTransaction {
+			testRunIds.each { runId ->
+				deleteTestRun TestRun.get(runId)
+			}
+		}
+		return testRunIds.size()
+	}
+
+
 	def deleteTestRunProperty(TestRunProperty propToDelete) throws CuantoException {
 		if (propToDelete) {
 			TestRun.withTransaction {
@@ -706,6 +717,17 @@ class TestRunService {
 				testRun.removeFromTestProperties(propToDelete)
 				dataService.saveDomainObject testRun
 				propToDelete.delete()
+			}
+		}
+	}
+
+	def deleteTestRunLink(TestRunLink linkToDelete) throws CuantoException {
+		if (linkToDelete) {
+			TestRun.withTransaction {
+				TestRun testRun = linkToDelete.testRun
+				testRun.removeFromLinks(linkToDelete)
+				dataService.saveDomainObject testRun
+				linkToDelete.delete()
 			}
 		}
 	}

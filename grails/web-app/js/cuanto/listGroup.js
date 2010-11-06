@@ -29,11 +29,12 @@ YAHOO.cuanto.ListGroup = function() {
 	initListeners();
 
 	function initListeners() {
-		$$('.editProj').each(function(lnk) {
+		$.each($(".editProj"), function(idx, lnk){
 			YAHOO.util.Event.addListener(lnk, "click", showEditProject);
+
 		});
 
-		$$('.deleteProj').each(function(lnk) {
+		$.each($(".deleteProj"), function(idx, lnk) {
 			YAHOO.util.Event.addListener(lnk, "click", showDeleteProject);
 		});
 	}
@@ -47,22 +48,23 @@ YAHOO.cuanto.ListGroup = function() {
 		YAHOO.util.Event.preventDefault(e);
 	}
 
-	function onProjectChange(e) {
-		new Ajax.Request(YAHOO.cuanto.urls.get('groupTable'), {
-			method: 'get',
-			parameters: {id: $('groupId').getValue()},
-			onSuccess: function(transport){
-				$('listGroupTableDiv').innerHTML = transport.responseText;
+	function onProjectChange(e, data) {
+		var eventData = data[0];
+		$.ajax({
+			url: YAHOO.cuanto.urls.get('groupTable') + "?rand=" + new Date().getTime(),
+			data: {id: $('#groupId').val()},
+			dataType: "html",
+			success: function(response, textStatus, httpReq) {
+				$('#listGroupTable').replaceWith(response);
 				initListeners();
 			}
 		});
-		YAHOO.util.Event.preventDefault(e);
 	}
 
 	function showDeleteProject(e) {
 		var target = YAHOO.util.Event.getTarget(e);
 		var projectId = target.id.match(/.+?(\d+)/)[1];
-		var projectName = $('pName' + projectId).innerHTML;
+		var projectName = $('#pName' + projectId).html();
 		projectDeleteDialog.show(projectId, projectName);
 		YAHOO.util.Event.preventDefault(e);
 	}

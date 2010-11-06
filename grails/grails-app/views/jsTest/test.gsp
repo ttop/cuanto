@@ -36,17 +36,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		</style>
 
-		<p:css name='../js/yui/2.6.0/logger/assets/skins/sam/logger'/>
-		<p:css name='../js/yui/2.6.0/fonts/fonts-min'/>
-		<p:css name='../js/yui/2.6.0/yuitest/assets/skins/sam/yuitest'/>
+		<p:css name='../js/yui/2.8.2r1/logger/assets/skins/sam/logger'/>
+		<p:css name='../js/yui/2.8.2r1/fonts/fonts-min'/>
+		<p:css name='../js/yui/2.8.2r1/yuitest/assets/skins/sam/yuitest'/>
 
-		<yui:javascript dir="yahoo-dom-event" file="yahoo-dom-event.js" version="2.6.0"/>
-		<yui:javascript dir="logger" file="logger-min.js" version="2.6.0"/>
-		<yui:javascript dir="yuitest" file="yuitest-min.js" version="2.6.0"/>
-		<g:javascript src="cuanto/lruCache.js"/>
-		<g:javascript src="cuanto/test/lruCacheTest.js"/>
-		<g:javascript src="cuanto/timeParser.js"/>
-		<g:javascript src="cuanto/test/timeParserTest.js"/>
+		<yui:javascript dir="yahoo-dom-event" file="yahoo-dom-event.js" version="2.8.2r1"/>
+		<yui:javascript dir="logger" file="logger-min.js" version="2.8.2r1"/>
+		<yui:javascript dir="yuitest" file="yuitest-min.js" version="2.8.2r1"/>
+		<p:javascript src="cuanto/lruCache"/>
+		<p:javascript src="cuanto/test/lruCacheTest"/>
+		<p:javascript src="cuanto/timeParser"/>
+		<p:javascript src="cuanto/test/timeParserTest"/>
 	</head>
 	<body class=" yui-skin-sam">
 		<div id="testConsole">

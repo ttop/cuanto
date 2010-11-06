@@ -47,7 +47,7 @@ class TestOutcome {
 	}
 
 	static mapping = {
-		cache true
+		cache usage: 'read-write'
 		analysisState lazy: false
         tags fetch: "join", lazy: false
 		isFailureStatusChanged lazy: false, index: 'is_failure_status_changed_idx'
@@ -83,7 +83,7 @@ class TestOutcome {
 
 		def myJson = [
 			id: outcome.id,
-			analysisState: [name: outcome.analysisState?.name, 'id': outcome.analysisState?.id],
+			analysisState: outcome.analysisState?.name,
 			result: outcome.testResult?.name,
 			owner: outcome.owner,
 			note: outcome.note,
@@ -117,8 +117,8 @@ class TestOutcome {
 		}
 
 		if (includeTestOutput) {
-		    if (truncateOutput) {
-			    def maxChars = outcome.testOutput.size() > truncateOutput ? truncateOutput : outcome.testOutput.size()
+		    if (truncateOutput && outcome.testOutput) {
+			    def maxChars = outcome.testOutput?.size() > truncateOutput ? truncateOutput : outcome.testOutput?.size() 
 			    myJson.testOutput = outcome.testOutput[0..maxChars - 1]
 		    } else {
 			    myJson.testOutput = outcome.testOutput

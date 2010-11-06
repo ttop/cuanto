@@ -29,7 +29,7 @@ class UrlMappings {
 				}
 			}
 		"500"(view: '/error')
-		"/"(controller: "project", action: "list")
+		"/"(controller: "project", action: "mason")
 		"/project/new/$id?"(controller: "project", action: "newProject")
 		"/group/$group"(controller: "project", action: "listGroup")
 		"/project/groupHistory/$group"(controller: "project", action: "groupHistory")
@@ -37,5 +37,6 @@ class UrlMappings {
 		"/testRun/analysis/$id"(controller: "testRun", action: "results")
 		"/testRun/latest/$projectKey"(controller: "testRun", action: "results")
 		"/show/$projectKey"(controller: "project", action: "history")
+		"/testCase/rename/$project"(controller: "testCase", action: "rename")
 	}
 }

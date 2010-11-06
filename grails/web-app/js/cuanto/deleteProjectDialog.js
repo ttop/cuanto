@@ -24,6 +24,19 @@ YAHOO.namespace('cuanto');
 YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 	var pub = {}; // public methods
 
+	Function.prototype.bindFunc = function(){
+		// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Functions:arguments
+		var _$A = function(a){return Array.prototype.slice.call(a);};
+
+		if(arguments.length < 2 && (typeof arguments[0] == "undefined")) return this;
+
+		var __method = this, args = _$A(arguments), object = args.shift();
+
+		return function() {
+		  return __method.apply(object, args.concat(_$A(arguments)));
+		}
+	};
+
 	var dpDialog = new YAHOO.widget.Dialog('deleteProjectDialog', {
 		width: "400px",
 		visible: false,
@@ -36,14 +49,14 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 		this.cancel();
 	};
 	var handleDelete = function() {
-		if ($('dpdConfirmDelete').getValue() == "YES") {
-			dpDialog.getButtons().each(function(b) {
+		if ($('#dpdConfirmDelete').val() == "YES") {
+			$.each(dpDialog.getButtons(), function(idx, b) {
 				b.set('disabled', true);
 			});
-			$('dpdMessage').innerHTML = "";
+			$('#dpdMessage').html("");
 			this.submit();
 		} else {
-			$('dpdMessage').innerHTML = "Deletion is <b>not</b> confirmed.";
+			$('#dpdMessage').html("Deletion is <b>not</b> confirmed.");
 		}
 	};
 
@@ -65,7 +78,7 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 	dpDialog.render();
 
 	function onDeleteSuccessfulLocal() {
-		var bd = "Deleted " + $('dpdProjectName').innerHTML + "!";
+		var bd = "Deleted " + $('#dpdProjectName').html() + "!";
 		var deleteDoneDialog = new YAHOO.widget.SimpleDialog("dlg", {
 			width: "20em",
 			context: ['deleteProjectDialog', 'br', 'br'],
@@ -80,13 +93,13 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 			if (onDeleteSuccessful) {
 				var toCall;
 				if (scope) {
-					toCall = onDeleteSuccessful.bind(scope);
+					toCall = onDeleteSuccessful.bindFunc(scope);
 				} else {
 					toCall = onDeleteSuccessful;
 				}
 				toCall();
 			}
-			YAHOO.cuanto.events.projectChangeEvent.fire();
+			YAHOO.cuanto.events.projectChangeEvent.fire({action: "delete"});
 		}}];
 		deleteDoneDialog.cfg.queueProperty("buttons", myButtons);
 		deleteDoneDialog.render(document.body);
@@ -95,12 +108,16 @@ YAHOO.cuanto.DeleteProjectDialog = function(onDeleteSuccessful, scope) {
 
 
 	pub.show = function(projectId, projectName) {
-		$('dpdConfirmDelete').value = "";
-		$('dpdProjectId').value = projectId;
-		$('dpdProjectName').innerHTML = projectName;
-		dpDialog.getButtons().each(function(b) {
+		$('#dpdConfirmDelete').val("");
+		$('#dpdProjectId').val(projectId);
+		if (projectName) {
+			$('#dpdProjectName').html(projectName);
+		}
+
+		$.each(dpDialog.getButtons(), function(idx, b) {
 			b.set('disabled', false);
 		});
+
 		dpDialog.show();
 	};
 
