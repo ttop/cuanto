@@ -61,7 +61,7 @@
 		<h3>Caution</h3>
 		<p>Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production
 		instance using this method.</p>
-		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.2.2 installed. Copy
+		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.3.4 installed. Copy
 		<span class="mono">cuanto-db.groovy</span> file to the
 		<span class="mono">~/.grails</span> directory (or the Windows equivalent) and modify as described below. Copy your JDBC driver to the
 			<span class="mono">grails/lib</span> directory. Then in the
@@ -74,7 +74,7 @@
 		<p>You are probably fine just using the downloaded distributable and WAR file, but if you wish to build from scratch,
 		here are the instructions:</p>
 
-		<p>With Grails 1.2.2, Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
+		<p>With Grails 1.3.4, Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
 			<span class="mono">cuanto/grails</span> directory and
 		type "<span class="mono">grails build-cuanto</span>". This will create a
 			<span class="mono">cuanto-&lt;version&gt;.zip</span>
@@ -119,12 +119,61 @@
 		And then submit your results to Cuanto like this:
 				  <pre class="code">&lt;cuanto url="http://cuantourl" testProject="Sample/CuantoProd""&gt;
 	&lt;fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/&gt;
-					  &lt;property name="milestone" value="1.0"/>
-					  &lt;property name="build" value="3423"/>
+	&lt;property name="milestone" value="1.0"/>
+	&lt;property name="build" value="3423"/>
 &lt;/cuanto&gt;</pre>
-		
+
 		<p>Where the <span class="mono">testProject</span> property is the project key of an existing
 			Cuanto project.</p>
 		  <br/>
+		
+		<h1>Using Cuanto Adapters</h1>
+
+		<h2>TestNgListener</h2>
+
+		<p>The <span class="mono">TestNgListener</span> is an <span class="mono">ITestListener</span>
+			implementation for TestNG that submits test results to Cuanto on the fly.
+			<span class="mono">TestNgListener</span> can either submit
+			<span class="mono">TestOutcomes</span> to the specified <span class="mono">TestRun</span>
+			or to a <span class="mono">TestRun</span> automatically created by it.
+			It is also thread-safe in that concurrent test threads may submit results to
+			different <span class="mono">Projects</span> or <span class="mono">TestRuns</span>.</p>
+		<p>To use <span class="mono">TestNgListener</span>, define it as a TestNG listener.
+			See the <a href="http://testng.org/doc/documentation-main.html#testng-listeners">TestNG documentation</a>
+			for details. </p>
+		<p><span class="mono">TestNgListener</span> may be configured using environment variables or programmatically.</p>
+		<p>Using environment variables:</p>
+		<pre class="code">
+-Dcuanto.url=http://localhost:8080/cuanto
+-Dcuanto.projectKey=CNG
+-Dcuanto.testrun.create=true
+// -Dcuanto.testrun=123
+-Dcuanto.testrun.properties=milestone:1.0.0-SNAPSHOT,changelist:12345
+-Dcuanto.testrun.links=specs:http://localhost/specs,test_plan:http://localhost/plans</pre>
+		<p>Programmatically:</p>
+		<pre class="code">
+TestNgListenerArguments arguments = new TestNgListenerArguments();
+
+arguments.setCuantoUrl(new URI("http://localhost:8080/cuanto"));
+arguments.setProjectKey("CNG");
+arguments.setCreateTestRun(true);
+// arguments.setTestRunId(123L);
+
+Map<String, String> testProperties = new HashMap<String, String>();
+testProperties.put("milestone", "1.0.0-SNAPSHOT");
+testProperties.put("changelist", "12345");
+arguments.setTestProperties(testProperties);
+
+Map<String, String> links = new HashMap<String, String>();
+links.put("specs", "http://localhost/specs");
+links.put("test_plan", "http://localhost/plans");
+arguments.setLinks(links);
+
+TestNgListener.setTestNgListenerArguments(arguments);</pre>
+		<p>Note that <span class="mono">TestNgListener</span> keeps track of
+			<span class="mono">TestNgListenerArguments</span> per thread. If a new test thread does not
+			set its own <span class="mono">TestNgListenerArguments</span>,
+			<span class="mono">TestNgListener</span> will use the configuration
+			defined by the environment variables as failover configuration.</p>
 	</body>
 </html>
