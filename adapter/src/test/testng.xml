@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Custom suite" parallel="methods" thread-count="1">
+	<listeners>
+		<listener class-name="cuanto.adapter.listener.testng.TestNgListener" />
+	</listeners>
+	<test verbose="1" name="cuanto" annotations="JDK">
+		<classes>
+			<class name="cuanto.adapter.listener.testng.adhoc.TestNgListenerAdHocTests" />
+		</classes>
+	</test>
+</suite>

@@ -1,0 +1,151 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.codehaus.cuanto</groupId>
+	<artifactId>cuanto-adapter</artifactId>
+	<version>2.7.1</version>
+	<packaging>jar</packaging>
+
+	<name>Cuanto Adapter</name>
+	<description>Cuanto adapters for 3rd party software</description>
+	<url>http://cuanto.codehaus.org/</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.version>2.0.9</maven.version>
+	</properties>
+
+	<issueManagement>
+		<system>jira</system>
+		<url>http://test.jira.codehaus.org/browse/CUANTO</url>
+	</issueManagement>
+	<ciManagement>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<configuration>
+					<address>dev@cuanto.codehaus.org</address>
+				</configuration>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+
+	<mailingLists>
+		<mailingList>
+			<name>Cuanto announcements</name>
+			<subscribe>http://xircles.codehaus.org/manage_email/announce@cuanto.codehaus.org</subscribe>
+			<unsubscribe>http://xircles.codehaus.org/manage_email/announce@cuanto.codehaus.org</unsubscribe>
+			<archive>http://archive.codehaus.org/lists/haus.codehaus.cuanto.announce</archive>
+		</mailingList>
+		<mailingList>
+			<name>For those wanting to contribute to the development of Cuanto.</name>
+			<subscribe>http://xircles.codehaus.org/manage_email/dev@cuanto.codehaus.org</subscribe>
+			<unsubscribe>http://xircles.codehaus.org/manage_email/dev@cuanto.codehaus.org</unsubscribe>
+			<archive>http://archive.codehaus.org/lists/haus.codehaus.cuanto.dev</archive>
+		</mailingList>
+		<mailingList>
+			<name>For users and administrators of Cuanto.</name>
+			<subscribe>http://xircles.codehaus.org/manage_email/user@cuanto.codehaus.org</subscribe>
+			<unsubscribe>http://xircles.codehaus.org/manage_email/user@cuanto.codehaus.org</unsubscribe>
+			<archive>http://archive.codehaus.org/lists/haus.codehaus.cuanto.user</archive>
+		</mailingList>
+	</mailingLists>
+
+	<repositories>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<id>codehaus-snapshots</id>
+			<name>Codehaus Snapshot Development Repository</name>
+			<url>http://snapshots.repository.codehaus.org/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.14</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.cuanto</groupId>
+			<artifactId>cuanto-api</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>5.12.1</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>codehaus.org</id>
+			<name>Cuanto Repository</name>
+			<url>dav:https://dav.codehaus.org/repository/cuanto/</url>
+		</repository>
+		<snapshotRepository>
+			<id>codehaus.org</id>
+			<name>Cuanto Development Repository</name>
+			<url>dav:https://dav.codehaus.org/snapshots.repository/cuanto/</url>
+		</snapshotRepository>
+		<site>
+			<id>codehaus.org</id>
+			<url>dav:https://dav.codehaus.org/cuanto</url>
+		</site>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*AdHoc*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<doctitle>Cuanto Adapter ${version}</doctitle>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</reporting>
+</project>
