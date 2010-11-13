@@ -60,9 +60,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		  <h3>Test run summary</h3>
 
-		  <h2>Searching</h2>
+		  <h2><a href="#searching">Searching</a></h2>
 
-		  <h2>Manual test case management</h2>
+		  <h2><a href="#manual_test_case_mgmt">Manual test case management</a></h2>
+
+          <h2><a href="#using_cuanto_adapters">Using Cuanto Adapters</a></h2>
+          <h3>TestNgListener</h3>
 
 		  <h2><a href="#about">About Cuanto</a></h2>
 
@@ -159,7 +162,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  can result in hard-to-predict paging behavior (missing tests while paging), as you are changing the size of the selected result set by analyzing
 		  tests.</p>
 
-		  <h2>Searching test results</h2>
+		  <h2><a name="searching">Searching test results</a></h2>
 		  <img src="${resource(dir:'images/help', file:'search.png')}" alt="search screenshot"/><br/><br/>
 		  <p>The Name, Notes, Owner and Test Output fields are searchable. Query terms are case-insensitive and ANDed.  The search
 		  results will be persisted across column sorts and paging until a blank search term is submitted.</p>
@@ -224,6 +227,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  no test results have actually been entered. Proceed to the analysis page for the test run, and change the
 		  view filter to "All Results." Now you can see all of the tests have a result of "Unexecuted".  You can
 		  record the results of your manual test cases by changing the result to Pass, Fail, etc.</p>
+
+          <h1><a name="using_cuanto_adapters">Using Cuanto Adapters</a></h1>
+
+          <h2>TestNgListener</h2>
+
+          <p>The <span class="mono">TestNgListener</span> is an <span class="mono">ITestListener</span>
+              implementation for TestNG that submits test results to Cuanto on the fly.
+              <span class="mono">TestNgListener</span> can either submit
+              <span class="mono">TestOutcomes</span> to the specified <span class="mono">TestRun</span>
+              or to a <span class="mono">TestRun</span> automatically created by it.
+              It is also thread-safe in that concurrent test threads may submit results to
+              different <span class="mono">Projects</span> or <span class="mono">TestRuns</span>.</p>
+          <p>To use <span class="mono">TestNgListener</span>, define it as a TestNG listener.
+              See the <a href="http://testng.org/doc/documentation-main.html#testng-listeners">TestNG documentation</a>
+              for details. </p>
+          <p><span class="mono">TestNgListener</span> may be configured using environment variables or programmatically.</p>
+          <p>Using environment variables:</p>
+          <pre class="code">
+-Dcuanto.url=http://localhost:8080/cuanto
+-Dcuanto.projectKey=CNG
+-Dcuanto.testrun.create=true
+// -Dcuanto.testrun=123
+-Dcuanto.testrun.properties=milestone:1.0.0-SNAPSHOT,changelist:12345
+-Dcuanto.testrun.links=specs:http://localhost/specs,test_plan:http://localhost/plans</pre>
+          <p/>
+          <p>Programmatically:</p>
+          <pre class="code">
+TestNgListenerArguments arguments = new TestNgListenerArguments();
+
+arguments.setCuantoUrl(new URI("http://localhost:8080/cuanto"));
+arguments.setProjectKey("CNG");
+arguments.setCreateTestRun(true);
+// arguments.setTestRunId(123L);
+
+Map<String, String> testProperties = new HashMap<String, String>();
+testProperties.put("milestone", "1.0.0-SNAPSHOT");
+testProperties.put("changelist", "12345");
+arguments.setTestProperties(testProperties);
+
+Map<String, String> links = new HashMap<String, String>();
+links.put("specs", "http://localhost/specs");
+links.put("test_plan", "http://localhost/plans");
+arguments.setLinks(links);
+
+TestNgListener.setTestNgListenerArguments(arguments);</pre>
+          <p/>
+          <p>Note that <span class="mono">TestNgListener</span> keeps track of
+              <span class="mono">TestNgListenerArguments</span> per thread. If a new test thread does not
+              set its own <span class="mono">TestNgListenerArguments</span>,
+              <span class="mono">TestNgListener</span> will use the configuration
+              defined by the environment variables as failover configuration.</p>
 
 		  <h1><a name="about">About Cuanto</a></h1>
 

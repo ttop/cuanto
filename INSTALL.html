@@ -126,54 +126,5 @@
 		<p>Where the <span class="mono">testProject</span> property is the project key of an existing
 			Cuanto project.</p>
 		  <br/>
-		
-		<h1>Using Cuanto Adapters</h1>
-
-		<h2>TestNgListener</h2>
-
-		<p>The <span class="mono">TestNgListener</span> is an <span class="mono">ITestListener</span>
-			implementation for TestNG that submits test results to Cuanto on the fly.
-			<span class="mono">TestNgListener</span> can either submit
-			<span class="mono">TestOutcomes</span> to the specified <span class="mono">TestRun</span>
-			or to a <span class="mono">TestRun</span> automatically created by it.
-			It is also thread-safe in that concurrent test threads may submit results to
-			different <span class="mono">Projects</span> or <span class="mono">TestRuns</span>.</p>
-		<p>To use <span class="mono">TestNgListener</span>, define it as a TestNG listener.
-			See the <a href="http://testng.org/doc/documentation-main.html#testng-listeners">TestNG documentation</a>
-			for details. </p>
-		<p><span class="mono">TestNgListener</span> may be configured using environment variables or programmatically.</p>
-		<p>Using environment variables:</p>
-		<pre class="code">
--Dcuanto.url=http://localhost:8080/cuanto
--Dcuanto.projectKey=CNG
--Dcuanto.testrun.create=true
-// -Dcuanto.testrun=123
--Dcuanto.testrun.properties=milestone:1.0.0-SNAPSHOT,changelist:12345
--Dcuanto.testrun.links=specs:http://localhost/specs,test_plan:http://localhost/plans</pre>
-		<p>Programmatically:</p>
-		<pre class="code">
-TestNgListenerArguments arguments = new TestNgListenerArguments();
-
-arguments.setCuantoUrl(new URI("http://localhost:8080/cuanto"));
-arguments.setProjectKey("CNG");
-arguments.setCreateTestRun(true);
-// arguments.setTestRunId(123L);
-
-Map<String, String> testProperties = new HashMap<String, String>();
-testProperties.put("milestone", "1.0.0-SNAPSHOT");
-testProperties.put("changelist", "12345");
-arguments.setTestProperties(testProperties);
-
-Map<String, String> links = new HashMap<String, String>();
-links.put("specs", "http://localhost/specs");
-links.put("test_plan", "http://localhost/plans");
-arguments.setLinks(links);
-
-TestNgListener.setTestNgListenerArguments(arguments);</pre>
-		<p>Note that <span class="mono">TestNgListener</span> keeps track of
-			<span class="mono">TestNgListenerArguments</span> per thread. If a new test thread does not
-			set its own <span class="mono">TestNgListenerArguments</span>,
-			<span class="mono">TestNgListener</span> will use the configuration
-			defined by the environment variables as failover configuration.</p>
 	</body>
 </html>
