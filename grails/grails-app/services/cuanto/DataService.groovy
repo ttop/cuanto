@@ -506,8 +506,9 @@ class DataService {
 
 
 	def getProjectsByGroupName(groupName) {
+		def gname = groupName.replaceAll("%20", " ").replaceAll(/\+/, " ")
 		Project.findAll("from cuanto.Project as proj WHERE proj.projectGroup.name = ? order by proj.name asc",
-			[groupName], [sort: 'name'])
+			[gname], [sort: 'name'])
 	}
 
 
