@@ -4,9 +4,7 @@ import cuanto.adapter.listener.testng.TestNgListener;
 import cuanto.adapter.listener.testng.TestNgListenerArguments;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,15 +16,30 @@ import java.net.URISyntaxException;
  */
 public class TestNgListenerAdHocTests
 {
-
 	@BeforeClass
-	public void beforeMethod() throws URISyntaxException
-	{
+	public void beforeClass() throws URISyntaxException, InterruptedException {
+		Thread.sleep(500);
 		TestNgListenerArguments arguments = new TestNgListenerArguments();
 		arguments.setCuantoUrl(new URI("http://localhost:8080/cuanto"));
 		arguments.setProjectKey("CNG");
 		arguments.setCreateTestRun(true);
+		arguments.setIncludeConfigDuration(true);
 		TestNgListener.setTestNgListenerArguments(arguments);
+	}
+
+	@BeforeMethod
+	public void beforeMethod() throws InterruptedException {
+		Thread.sleep(500);
+	}
+
+	@AfterMethod
+	public void afterMethod() throws InterruptedException {
+		Thread.sleep(500);
+	}
+
+	@AfterMethod
+	public void afterMethod2() throws InterruptedException {
+		Thread.sleep(500);
 	}
 
 	@Test(groups = "Happy")
