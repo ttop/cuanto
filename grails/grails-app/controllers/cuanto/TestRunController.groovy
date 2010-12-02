@@ -497,10 +497,11 @@ class TestRunController {
 	}
 
 
-	private def getTestRunIdFromFilename(filename) {
-		def matcher = filename =~ /.+(\d+).*/
+	def getTestRunIdFromFilename(filename) {
+		def matcher = filename =~/.+_(\d+).*/
 		if (matcher.matches()) {
-			return matcher[0][1]
+			def match = matcher[0][1]
+			return new Integer(match)
 		} else {
 			return null
 		}
