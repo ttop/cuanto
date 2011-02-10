@@ -1,7 +1,6 @@
 package cuanto.adapter.listener.testng;
 
 import cuanto.adapter.CuantoAdapterException;
-import cuanto.adapter.objects.TestNgListenerArguments;
 import cuanto.adapter.util.ArgumentParser;
 import cuanto.api.CuantoConnector;
 import cuanto.api.TestOutcome;
@@ -11,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.IClass;
 import org.testng.ITestContext;
-import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.internal.IResultListener;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,7 +27,7 @@ import java.util.Map;
  *
  * @author Suk-Hyun Cho
  */
-public class TestNgListener implements ITestListener {
+public class TestNgListener implements IResultListener {
 	private static final Logger logger = LoggerFactory.getLogger(TestNgListener.class);
 
 	private static TestNgListenerArguments failoverTestNgListenerArguments;
@@ -38,6 +37,14 @@ public class TestNgListener implements ITestListener {
 			@Override
 			protected TestNgListenerArguments initialValue() {
 				return new TestNgListenerArguments();
+			}
+		};
+
+	private static final ThreadLocal<Long> configDuration =
+		new ThreadLocal<Long>() {
+			@Override
+			protected Long initialValue() {
+				return new Long(0l);
 			}
 		};
 
@@ -106,6 +113,27 @@ public class TestNgListener implements ITestListener {
 	 * {@inheritDoc}
 	 */
 	public void onFinish(ITestContext iTestContext) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onConfigurationSkip(ITestResult iTestResult) {
+		incrementTotalDuration(iTestResult);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onConfigurationFailure(ITestResult iTestResult) {
+		incrementTotalDuration(iTestResult);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void onConfigurationSuccess(ITestResult iTestResult) {
+		incrementTotalDuration(iTestResult);
 	}
 
 	/**
@@ -181,17 +209,26 @@ public class TestNgListener implements ITestListener {
 	}
 
 	/**
-	 * @return the testNgListenerArguments for the current thread
+	 * @return the cloned testNgListenerArguments for the current thread
 	 */
 	public static TestNgListenerArguments getTestNgListenerArguments() {
-		return new TestNgListenerArguments(testNgListenerArguments.get());
+		synchronized (adapterModificationLock) {
+			return new TestNgListenerArguments(testNgListenerArguments.get());
+		}
 	}
 
 	/**
 	 * @param testNgListenerArguments to set for the current thread
 	 */
 	public static void setTestNgListenerArguments(TestNgListenerArguments testNgListenerArguments) {
-		TestNgListener.testNgListenerArguments.set(testNgListenerArguments);
+		synchronized (adapterModificationLock) {
+			TestNgListener.testNgListenerArguments.set(testNgListenerArguments);
+		}
+	}
+
+	private void incrementTotalDuration(ITestResult iTestResult) {
+		Long elapsedTime = iTestResult.getEndMillis() - iTestResult.getStartMillis();
+		configDuration.set(configDuration.get() + elapsedTime);
 	}
 
 	/**
@@ -212,8 +249,6 @@ public class TestNgListener implements ITestListener {
 			testRunId = createTestRun(cuanto, getProjectKey());
 			logger.info("Created TestRun #" + testRunId);
 			arguments.setTestRunId(testRunId);
-			if (failoverTestNgListenerArguments.getTestRunId() == null)
-				failoverTestNgListenerArguments.setTestRunId(testRunId);
 			setTestNgListenerArguments(arguments);
 		}
 
@@ -274,6 +309,13 @@ public class TestNgListener implements ITestListener {
 			packageName, testCaseName, testCaseParameters, cuantoTestResult);
 		String[] tags = testCaseResult.getMethod().getGroups();
 		long duration = testCaseResult.getEndMillis() - testCaseResult.getStartMillis();
+
+		TestNgListenerArguments arguments = testNgListenerArguments.get();
+		if (arguments.getIncludeConfigDuration()) {
+			duration += configDuration.get();
+			configDuration.set(0l);
+		}
+
 		if (cuantoTestResult != TestResult.Pass)
 			testOutcome.setTestOutput(getTestOutput(testCaseResult));
 		testOutcome.addTags(Arrays.asList(tags));
@@ -287,7 +329,7 @@ public class TestNgListener implements ITestListener {
 			String projectKey = getProjectKey();
 			String cuantoUrl = getCuantoUrl().toString();
 			cuanto = CuantoConnector.newInstance(cuantoUrl, projectKey);
-			testRun = determineTestRunId(cuanto, TestNgListener.testNgListenerArguments.get());
+			testRun = determineTestRunId(cuanto, arguments);
 		}
 
 		cuanto.addTestOutcome(testOutcome, testRun);
@@ -336,6 +378,7 @@ public class TestNgListener implements ITestListener {
 		String testRunPropertiesString = System.getenv("cuanto.testrun.properties");
 		String testRunLinksString = System.getenv("cuanto.testrun.links");
 		String cuantoCreateTestRun = System.getenv("cuanto.testrun.create");
+		String includeConfigDuration = System.getenv("cuanto.includeConfigDuration");
 
 		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
 		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
@@ -350,6 +393,8 @@ public class TestNgListener implements ITestListener {
 		arguments.setLinks(testRunLinks);
 		arguments.setCreateTestRun(false);
 		arguments.setCreateTestRun(Boolean.valueOf(cuantoCreateTestRun));
+		arguments.setIncludeConfigDuration(Boolean.valueOf(includeConfigDuration));
+
 		return arguments;
 	}
 }
