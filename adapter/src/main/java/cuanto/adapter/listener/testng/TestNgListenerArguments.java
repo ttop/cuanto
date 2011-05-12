@@ -35,10 +35,16 @@ public class TestNgListenerArguments {
 		cuantoUrl = arguments.getCuantoUrl();
 		testRunId = arguments.getTestRunId();
 		projectKey = arguments.getProjectKey();
-		links = new LinkedHashMap<String, String>(arguments.getLinks());
-		testProperties = new LinkedHashMap<String, String>(arguments.getTestProperties());
 		createTestRun = arguments.isCreateTestRun();
 		includeConfigDuration = arguments.getIncludeConfigDuration();
+
+		Map<String, String> originalLinks = arguments.getLinks();
+		if (originalLinks != null)
+			links = new LinkedHashMap<String, String>(originalLinks);
+
+		Map<String, String> originalTestProperties = arguments.getTestProperties();
+		if (originalTestProperties != null)
+			testProperties = new LinkedHashMap<String, String>(originalTestProperties);
 	}
 
 	public URI getCuantoUrl() {
