@@ -485,6 +485,10 @@ class DataService {
 		TestCase.findAllByFullNameIlikeAndProject("%${name}%", project)
 	}
 
+	List<TestCase> findExactTestCaseByName(String name, Project project) {
+		TestCase.findAllByFullNameAndProject("${name}", project)
+	}
+
 
 	TestType createTestType(testTypeName) {
 		def testType = getTestType(testTypeName)
