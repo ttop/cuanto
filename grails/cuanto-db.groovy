@@ -6,6 +6,7 @@
 environments {
 	production {
 		dataSource {
+			pooled = true
 			username = "my_sql_user"
 			password = "my_sql_password"
 			driverClassName = "com.mysql.jdbc.Driver"
@@ -15,6 +16,7 @@ environments {
 	}
 	development {
 		dataSource {
+			pooled = true
 			username = "root"
 			password = ""
 			driverClassName = "com.mysql.jdbc.Driver"

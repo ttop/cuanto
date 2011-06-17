@@ -32,7 +32,7 @@ environments {
 	production {
 		dataSource {
 			dbCreate = "update"
-			boolean pooling = true
+			pooled = true
 			driverClassName = application.config.dataSource.driverClassName
 			url = application.config.dataSource.url
 			username = application.config.dataSource.username
