@@ -146,7 +146,7 @@ public class TestNgListener implements IResultListener {
 				? failoverTestNgListenerArguments.getCuantoUrl()
 				: currentThreadCuantoUrl;
 
-			if (!isPropertyDefined(resolvedCuantoUrl))
+			if (!isDefined(resolvedCuantoUrl))
 				throw new IllegalArgumentException("The Cuanto URL must be defined.");
 
 			return resolvedCuantoUrl;
@@ -175,7 +175,7 @@ public class TestNgListener implements IResultListener {
 				? failoverTestNgListenerArguments.getProjectKey()
 				: currentThreadProjectKey;
 
-			if (!isPropertyDefined(resolvedProjectKey))
+			if (!isDefined(resolvedProjectKey))
 				throw new IllegalArgumentException("The Project key must be defined.");
 
 			return resolvedProjectKey;
@@ -246,7 +246,7 @@ public class TestNgListener implements IResultListener {
 	 * <p/>
 	 * If cuanto.testrun is provided, attempt to parse that to Long. If not, create a new TestRun and use its id.
 	 *
-	 * @param cuanto    cuanto connector
+	 * @param cuanto    Cuanto connector
 	 * @param args      to use to determine the current test run
 	 * @return          the determined TestRun
 	 */
@@ -285,7 +285,7 @@ public class TestNgListener implements IResultListener {
 	/**
 	 * Create a new TestRun for the given project key.
 	 *
-	 * @param cuanto           the cuanto connector to use to either retrieve the test run, if applicable, or create a new one
+	 * @param cuanto           the Cuanto connector to use to either retrieve the test run, if applicable, or create a new one
 	 * @param cuantoProjectKey for which to create a new TestRun
 	 * @return the id of the created TestRun
 	 */
@@ -331,7 +331,7 @@ public class TestNgListener implements IResultListener {
 		testOutcome.addTags(Arrays.asList(tags));
 		testOutcome.setDuration(duration);
 
-		// because the user may have modified the cuanto url or the test run arguments,
+		// because the user may have modified the Cuanto url or the test run arguments,
 		// lazily create the cuanto connector and determine the test run to which to submit this test outcome
 		TestRun testRun = null;
 		CuantoConnector cuanto = null;
@@ -379,7 +379,7 @@ public class TestNgListener implements IResultListener {
 	 * @throws URISyntaxException if cuanto.url is a malformed URI
 	 */
 	private static TestNgListenerArguments getFailoverTestNgListenerArguments() throws URISyntaxException {
-		TestNgListenerArguments arguments = new TestNgListenerArguments();
+		TestNgListenerArguments args = new TestNgListenerArguments();
 
 		// parse environment variables
 		String cuantoUrl = System.getProperty("cuanto.url");
@@ -393,22 +393,19 @@ public class TestNgListener implements IResultListener {
 		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
 		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
 
-		if (isPropertyDefined(cuantoUrl))
-			arguments.setCuantoUrl(new URI(cuantoUrl));
-		if (isPropertyDefined(cuantoTestRun))
-			arguments.setTestRunId(Long.valueOf(cuantoTestRun));
+		args.setCuantoUrl(isDefined(cuantoUrl) ? new URI(cuantoUrl) : null);
+        args.setTestRunId(isDefined(cuantoTestRun) ? Long.valueOf(cuantoTestRun) : null);
+        args.setCreateTestRun(isDefined(cuantoCreateTestRun) ? Boolean.valueOf(cuantoCreateTestRun) : null);
+		args.setIncludeConfigDuration(isDefined(includeConfigDuration) ? Boolean.valueOf(includeConfigDuration) : null);
+		args.setProjectKey(isDefined(cuantoProjectKey) ? cuantoProjectKey : null);
+		args.setTestProperties(isDefined(testRunProperties) ? testRunProperties : null);
+		args.setLinks(isDefined(testRunLinks) ? testRunLinks : null);
 
-		arguments.setProjectKey(cuantoProjectKey);
-		arguments.setTestProperties(testRunProperties);
-		arguments.setLinks(testRunLinks);
-		arguments.setCreateTestRun(Boolean.valueOf(cuantoCreateTestRun));
-		arguments.setIncludeConfigDuration(Boolean.valueOf(includeConfigDuration));
-
-		return arguments;
+		return args;
 	}
 
 	/**
-	 * Determine whether the given cuanto property is defined.
+	 * Determine whether the given Cuanto property is defined.
 	 *
 	 * If the property is null or its string representation trims to an empty string, it is not defined.
 	 * Otherwise, it is defined.
@@ -416,7 +413,7 @@ public class TestNgListener implements IResultListener {
 	 * @param property to determine whether it is defined.
 	 * @return         whether the given property is defined.
 	 */
-	private static boolean isPropertyDefined(Object property)
+	private static boolean isDefined(Object property)
 	{
 		return property != null && !property.toString().trim().equals("");
 	}

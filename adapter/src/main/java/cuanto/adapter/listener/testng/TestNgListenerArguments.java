@@ -24,9 +24,10 @@ public class TestNgListenerArguments {
 	private Map<String, String> testProperties;
 
 	// whether to create a new TestRun if testRunId is null
-	private boolean createTestRun;
+	private Boolean createTestRun;
 
-	private boolean includeConfigDuration;
+	// whether to consider configuration methods when calculating test run time
+	private Boolean includeConfigDuration;
 
 	public TestNgListenerArguments() {
 	}
@@ -87,19 +88,19 @@ public class TestNgListenerArguments {
 		this.testProperties = testProperties;
 	}
 
-	public boolean isCreateTestRun() {
+	public Boolean isCreateTestRun() {
 		return createTestRun;
 	}
 
-	public void setCreateTestRun(boolean createTestRun) {
+	public void setCreateTestRun(Boolean createTestRun) {
 		this.createTestRun = createTestRun;
 	}
 
-	public boolean getIncludeConfigDuration() {
+	public Boolean getIncludeConfigDuration() {
 		return includeConfigDuration;
 	}
 
-	public void setIncludeConfigDuration(boolean includeConfigDuration) {
+	public void setIncludeConfigDuration(Boolean includeConfigDuration) {
 		this.includeConfigDuration = includeConfigDuration;
 	}
 }
