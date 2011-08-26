@@ -44,7 +44,7 @@ public class TestNgListener implements IResultListener {
 		new ThreadLocal<Long>() {
 			@Override
 			protected Long initialValue() {
-				return new Long(0l);
+				return 0L;
 			}
 		};
 
@@ -119,21 +119,24 @@ public class TestNgListener implements IResultListener {
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationSkip(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+        if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationFailure(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+		if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationSuccess(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+		if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
@@ -215,6 +218,18 @@ public class TestNgListener implements IResultListener {
 			return (currentThreadCreateTestRun == null)
 				? failoverTestNgListenerArguments.isCreateTestRun()
 				: currentThreadCreateTestRun;
+		}
+	}
+
+    /**
+	 * @return isIncludeConfigDuration for the current thread
+	 */
+	public static Boolean isIncludeConfigDuration() {
+		synchronized (adapterModificationLock) {
+			Boolean currentThreadIncludeConfigDuration = getTestNgListenerArguments().isIncludeConfigDuration();
+			return (currentThreadIncludeConfigDuration == null)
+				? failoverTestNgListenerArguments.isIncludeConfigDuration()
+				: currentThreadIncludeConfigDuration;
 		}
 	}
 
@@ -321,10 +336,8 @@ public class TestNgListener implements IResultListener {
 		long duration = testCaseResult.getEndMillis() - testCaseResult.getStartMillis();
 
 		TestNgListenerArguments arguments = getTestNgListenerArguments();
-		if (arguments.getIncludeConfigDuration()) {
-			duration += configDuration.get();
-			configDuration.set(0l);
-		}
+		duration += configDuration.get();
+		configDuration.set(0l);
 
 		if (cuantoTestResult != TestResult.Pass)
 			testOutcome.setTestOutput(getTestOutput(testCaseResult));

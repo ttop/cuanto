@@ -37,7 +37,7 @@ public class TestNgListenerArguments {
 		testRunId = arguments.getTestRunId();
 		projectKey = arguments.getProjectKey();
 		createTestRun = arguments.isCreateTestRun();
-		includeConfigDuration = arguments.getIncludeConfigDuration();
+		includeConfigDuration = arguments.isIncludeConfigDuration();
 
 		Map<String, String> originalLinks = arguments.getLinks();
 		if (originalLinks != null)
@@ -96,7 +96,7 @@ public class TestNgListenerArguments {
 		this.createTestRun = createTestRun;
 	}
 
-	public Boolean getIncludeConfigDuration() {
+	public Boolean isIncludeConfigDuration() {
 		return includeConfigDuration;
 	}
 
