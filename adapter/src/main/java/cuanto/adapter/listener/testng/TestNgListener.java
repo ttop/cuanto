@@ -44,7 +44,7 @@ public class TestNgListener implements IResultListener {
 		new ThreadLocal<Long>() {
 			@Override
 			protected Long initialValue() {
-				return new Long(0l);
+				return 0L;
 			}
 		};
 
@@ -119,21 +119,24 @@ public class TestNgListener implements IResultListener {
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationSkip(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+        if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationFailure(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+		if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void onConfigurationSuccess(ITestResult iTestResult) {
-		incrementTotalDuration(iTestResult);
+		if (isIncludeConfigDuration())
+		    incrementTotalDuration(iTestResult);
 	}
 
 	/**
@@ -141,10 +144,15 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static URI getCuantoUrl() {
 		synchronized (adapterModificationLock) {
-			URI currentThreadCuantoUrl = testNgListenerArguments.get().getCuantoUrl();
-			return (currentThreadCuantoUrl == null)
+			URI currentThreadCuantoUrl = getTestNgListenerArguments().getCuantoUrl();
+			URI resolvedCuantoUrl = (currentThreadCuantoUrl == null)
 				? failoverTestNgListenerArguments.getCuantoUrl()
 				: currentThreadCuantoUrl;
+
+			if (!isDefined(resolvedCuantoUrl))
+				throw new IllegalArgumentException("The Cuanto URL must be defined.");
+
+			return resolvedCuantoUrl;
 		}
 	}
 
@@ -153,7 +161,7 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static Long getTestRunId() {
 		synchronized (adapterModificationLock) {
-			Long currentThreadTestRunId = testNgListenerArguments.get().getTestRunId();
+			Long currentThreadTestRunId = getTestNgListenerArguments().getTestRunId();
 			return (currentThreadTestRunId == null)
 				? failoverTestNgListenerArguments.getTestRunId()
 				: currentThreadTestRunId;
@@ -165,10 +173,15 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static String getProjectKey() {
 		synchronized (adapterModificationLock) {
-			String currentThreadProjectKey = testNgListenerArguments.get().getProjectKey();
-			return (currentThreadProjectKey == null)
+			String currentThreadProjectKey = getTestNgListenerArguments().getProjectKey();
+			String resolvedProjectKey = (currentThreadProjectKey == null)
 				? failoverTestNgListenerArguments.getProjectKey()
 				: currentThreadProjectKey;
+
+			if (!isDefined(resolvedProjectKey))
+				throw new IllegalArgumentException("The Project key must be defined.");
+
+			return resolvedProjectKey;
 		}
 	}
 
@@ -177,7 +190,7 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static Map<String, String> getLinks() {
 		synchronized (adapterModificationLock) {
-			Map<String, String> currentThreadLinks = testNgListenerArguments.get().getLinks();
+			Map<String, String> currentThreadLinks = getTestNgListenerArguments().getLinks();
 			return (currentThreadLinks == null)
 				? failoverTestNgListenerArguments.getLinks()
 				: currentThreadLinks;
@@ -189,7 +202,7 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static Map<String, String> getTestProperties() {
 		synchronized (adapterModificationLock) {
-			Map<String, String> currentThreadTestProperties = testNgListenerArguments.get().getTestProperties();
+			Map<String, String> currentThreadTestProperties = getTestNgListenerArguments().getTestProperties();
 			return (currentThreadTestProperties == null)
 				? failoverTestNgListenerArguments.getTestProperties()
 				: currentThreadTestProperties;
@@ -201,10 +214,22 @@ public class TestNgListener implements IResultListener {
 	 */
 	public static Boolean isCreateTestRun() {
 		synchronized (adapterModificationLock) {
-			Boolean currentThreadCreateTestRun = testNgListenerArguments.get().isCreateTestRun();
+			Boolean currentThreadCreateTestRun = getTestNgListenerArguments().isCreateTestRun();
 			return (currentThreadCreateTestRun == null)
 				? failoverTestNgListenerArguments.isCreateTestRun()
 				: currentThreadCreateTestRun;
+		}
+	}
+
+    /**
+	 * @return isIncludeConfigDuration for the current thread
+	 */
+	public static Boolean isIncludeConfigDuration() {
+		synchronized (adapterModificationLock) {
+			Boolean currentThreadIncludeConfigDuration = getTestNgListenerArguments().isIncludeConfigDuration();
+			return (currentThreadIncludeConfigDuration == null)
+				? failoverTestNgListenerArguments.isIncludeConfigDuration()
+				: currentThreadIncludeConfigDuration;
 		}
 	}
 
@@ -218,11 +243,11 @@ public class TestNgListener implements IResultListener {
 	}
 
 	/**
-	 * @param testNgListenerArguments to set for the current thread
+	 * @param args to set for the current thread
 	 */
-	public static void setTestNgListenerArguments(TestNgListenerArguments testNgListenerArguments) {
+	public static void setTestNgListenerArguments(TestNgListenerArguments args) {
 		synchronized (adapterModificationLock) {
-			TestNgListener.testNgListenerArguments.set(testNgListenerArguments);
+			TestNgListener.testNgListenerArguments.set(args);
 		}
 	}
 
@@ -236,11 +261,11 @@ public class TestNgListener implements IResultListener {
 	 * <p/>
 	 * If cuanto.testrun is provided, attempt to parse that to Long. If not, create a new TestRun and use its id.
 	 *
-	 * @param cuanto    cuanto connector
-	 * @param arguments to use to determine the current test run
-	 * @return the determined TestRun
+	 * @param cuanto    Cuanto connector
+	 * @param args      to use to determine the current test run
+	 * @return          the determined TestRun
 	 */
-	private TestRun determineTestRunId(CuantoConnector cuanto, TestNgListenerArguments arguments) {
+	private TestRun determineTestRunId(CuantoConnector cuanto, TestNgListenerArguments args) {
 
 		Long testRunId = getTestRunId();
 
@@ -248,8 +273,8 @@ public class TestNgListener implements IResultListener {
 			logger.info("TestRun id was not provided. Creating a new TestRun...");
 			testRunId = createTestRun(cuanto, getProjectKey());
 			logger.info("Created TestRun #" + testRunId);
-			arguments.setTestRunId(testRunId);
-			setTestNgListenerArguments(arguments);
+			args.setTestRunId(testRunId);
+			setTestNgListenerArguments(args);
 		}
 
 		if (testRunId == null)
@@ -275,7 +300,7 @@ public class TestNgListener implements IResultListener {
 	/**
 	 * Create a new TestRun for the given project key.
 	 *
-	 * @param cuanto           the cuanto connector to use to either retrieve the test run, if applicable, or create a new one
+	 * @param cuanto           the Cuanto connector to use to either retrieve the test run, if applicable, or create a new one
 	 * @param cuantoProjectKey for which to create a new TestRun
 	 * @return the id of the created TestRun
 	 */
@@ -310,18 +335,16 @@ public class TestNgListener implements IResultListener {
 		String[] tags = testCaseResult.getMethod().getGroups();
 		long duration = testCaseResult.getEndMillis() - testCaseResult.getStartMillis();
 
-		TestNgListenerArguments arguments = testNgListenerArguments.get();
-		if (arguments.getIncludeConfigDuration()) {
-			duration += configDuration.get();
-			configDuration.set(0l);
-		}
+		TestNgListenerArguments arguments = getTestNgListenerArguments();
+		duration += configDuration.get();
+		configDuration.set(0l);
 
 		if (cuantoTestResult != TestResult.Pass)
 			testOutcome.setTestOutput(getTestOutput(testCaseResult));
 		testOutcome.addTags(Arrays.asList(tags));
 		testOutcome.setDuration(duration);
 
-		// because the user may have modified the cuanto url or the test run arguments,
+		// because the user may have modified the Cuanto url or the test run arguments,
 		// lazily create the cuanto connector and determine the test run to which to submit this test outcome
 		TestRun testRun = null;
 		CuantoConnector cuanto = null;
@@ -369,32 +392,42 @@ public class TestNgListener implements IResultListener {
 	 * @throws URISyntaxException if cuanto.url is a malformed URI
 	 */
 	private static TestNgListenerArguments getFailoverTestNgListenerArguments() throws URISyntaxException {
-		TestNgListenerArguments arguments = new TestNgListenerArguments();
+		TestNgListenerArguments args = new TestNgListenerArguments();
 
 		// parse environment variables
-		String cuantoUrl = System.getenv("cuanto.url");
-		String cuantoProjectKey = System.getenv("cuanto.projectkey");
-		String cuantoTestRun = System.getenv("cuanto.testrun");
-		String testRunPropertiesString = System.getenv("cuanto.testrun.properties");
-		String testRunLinksString = System.getenv("cuanto.testrun.links");
-		String cuantoCreateTestRun = System.getenv("cuanto.testrun.create");
-		String includeConfigDuration = System.getenv("cuanto.includeConfigDuration");
+		String cuantoUrl = System.getProperty("cuanto.url");
+		String cuantoProjectKey = System.getProperty("cuanto.projectkey");
+		String cuantoTestRun = System.getProperty("cuanto.testrun");
+		String testRunPropertiesString = System.getProperty("cuanto.testrun.properties");
+		String testRunLinksString = System.getProperty("cuanto.testrun.links");
+		String cuantoCreateTestRun = System.getProperty("cuanto.testrun.create");
+		String includeConfigDuration = System.getProperty("cuanto.includeConfigDuration");
 
 		Map<String, String> testRunProperties = ArgumentParser.parseMap(testRunPropertiesString);
 		Map<String, String> testRunLinks = ArgumentParser.parseMap(testRunLinksString);
 
-		if (cuantoUrl != null)
-			arguments.setCuantoUrl(new URI(cuantoUrl));
-		if (cuantoTestRun != null)
-			arguments.setTestRunId(Long.valueOf(cuantoTestRun));
+		args.setCuantoUrl(isDefined(cuantoUrl) ? new URI(cuantoUrl) : null);
+        args.setTestRunId(isDefined(cuantoTestRun) ? Long.valueOf(cuantoTestRun) : null);
+        args.setCreateTestRun(isDefined(cuantoCreateTestRun) ? Boolean.valueOf(cuantoCreateTestRun) : null);
+		args.setIncludeConfigDuration(isDefined(includeConfigDuration) ? Boolean.valueOf(includeConfigDuration) : null);
+		args.setProjectKey(isDefined(cuantoProjectKey) ? cuantoProjectKey : null);
+		args.setTestProperties(isDefined(testRunProperties) ? testRunProperties : null);
+		args.setLinks(isDefined(testRunLinks) ? testRunLinks : null);
 
-		arguments.setProjectKey(cuantoProjectKey);
-		arguments.setTestProperties(testRunProperties);
-		arguments.setLinks(testRunLinks);
-		arguments.setCreateTestRun(false);
-		arguments.setCreateTestRun(Boolean.valueOf(cuantoCreateTestRun));
-		arguments.setIncludeConfigDuration(Boolean.valueOf(includeConfigDuration));
+		return args;
+	}
 
-		return arguments;
+	/**
+	 * Determine whether the given Cuanto property is defined.
+	 *
+	 * If the property is null or its string representation trims to an empty string, it is not defined.
+	 * Otherwise, it is defined.
+	 *
+	 * @param property to determine whether it is defined.
+	 * @return         whether the given property is defined.
+	 */
+	private static boolean isDefined(Object property)
+	{
+		return property != null && !property.toString().trim().equals("");
 	}
 }

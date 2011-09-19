@@ -24,9 +24,10 @@ public class TestNgListenerArguments {
 	private Map<String, String> testProperties;
 
 	// whether to create a new TestRun if testRunId is null
-	private boolean createTestRun;
+	private Boolean createTestRun;
 
-	private boolean includeConfigDuration;
+	// whether to consider configuration methods when calculating test run time
+	private Boolean includeConfigDuration;
 
 	public TestNgListenerArguments() {
 	}
@@ -35,10 +36,16 @@ public class TestNgListenerArguments {
 		cuantoUrl = arguments.getCuantoUrl();
 		testRunId = arguments.getTestRunId();
 		projectKey = arguments.getProjectKey();
-		links = new LinkedHashMap<String, String>(arguments.getLinks());
-		testProperties = new LinkedHashMap<String, String>(arguments.getTestProperties());
 		createTestRun = arguments.isCreateTestRun();
-		includeConfigDuration = arguments.getIncludeConfigDuration();
+		includeConfigDuration = arguments.isIncludeConfigDuration();
+
+		Map<String, String> originalLinks = arguments.getLinks();
+		if (originalLinks != null)
+			links = new LinkedHashMap<String, String>(originalLinks);
+
+		Map<String, String> originalTestProperties = arguments.getTestProperties();
+		if (originalTestProperties != null)
+			testProperties = new LinkedHashMap<String, String>(originalTestProperties);
 	}
 
 	public URI getCuantoUrl() {
@@ -81,19 +88,19 @@ public class TestNgListenerArguments {
 		this.testProperties = testProperties;
 	}
 
-	public boolean isCreateTestRun() {
+	public Boolean isCreateTestRun() {
 		return createTestRun;
 	}
 
-	public void setCreateTestRun(boolean createTestRun) {
+	public void setCreateTestRun(Boolean createTestRun) {
 		this.createTestRun = createTestRun;
 	}
 
-	public boolean getIncludeConfigDuration() {
+	public Boolean isIncludeConfigDuration() {
 		return includeConfigDuration;
 	}
 
-	public void setIncludeConfigDuration(boolean includeConfigDuration) {
+	public void setIncludeConfigDuration(Boolean includeConfigDuration) {
 		this.includeConfigDuration = includeConfigDuration;
 	}
 }
