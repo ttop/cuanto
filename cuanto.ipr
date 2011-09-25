@@ -452,11 +452,14 @@
       <module fileurl="file://$PROJECT_DIR$/adapter/adapter.iml" filepath="$PROJECT_DIR$/adapter/adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails/cuanto.iml" filepath="$PROJECT_DIR$/grails/cuanto.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/cuanto-api.iml" filepath="$PROJECT_DIR$/api/cuanto-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grails/cuanto-grailsPlugins.iml" filepath="$PROJECT_DIR$/grails/cuanto-grailsPlugins.iml" />
       <module fileurl="file://$PROJECT_DIR$/testdata/testng/cuanto-testng-data.iml" filepath="$PROJECT_DIR$/testdata/testng/cuanto-testng-data.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dist/dist.iml" filepath="$PROJECT_DIR$/dist/dist.iml" />
       <module fileurl="file://$PROJECT_DIR$/doc/doc.iml" filepath="$PROJECT_DIR$/doc/doc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails/grails.iml" filepath="$PROJECT_DIR$/grails/grails.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails/grails-grailsPlugins.iml" filepath="$PROJECT_DIR$/grails/grails-grailsPlugins.iml" />
     </modules>
+  </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />

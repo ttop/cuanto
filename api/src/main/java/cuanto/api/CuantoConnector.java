@@ -69,6 +69,18 @@ public class CuantoConnector {
 
 
 	/**
+	 * Creates a new instance of CuantoConnector that connects to the specified URL.
+	 *
+	 * @param cuantoServerUrl The URL of the Cuanto server instance.
+	 * @return The new CuantoConnector instance.
+	 */
+	public static CuantoConnector newInstance(String cuantoServerUrl) {
+		return newInstance(cuantoServerUrl, null, null, null);
+	}
+
+
+
+	/**
 	 * Creates a new instance of CuantoConnector that connects to the specified URL and Cuanto project.
 	 *
 	 * @param cuantoServerUrl The URL of the Cuanto server instance.
@@ -582,7 +594,11 @@ public class CuantoConnector {
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/getTestRunsWithProperties");
 		try {
 			Map jsonMap = new HashMap();
-			jsonMap.put("projectKey", getProjectKey());
+
+			String pk = getProjectKey();
+			if (pk != null && pk.trim() != "") {
+				jsonMap.put("projectKey", getProjectKey());
+			}
 			jsonMap.put("testProperties", JSONObject.fromObject(testProperties));
 			JSONObject jsonToPost = JSONObject.fromObject(jsonMap);
 			post.setRequestEntity(new StringRequestEntity(jsonToPost.toString(), "application/json", null));

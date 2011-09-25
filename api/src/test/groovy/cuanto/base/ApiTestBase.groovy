@@ -29,13 +29,16 @@ class ApiTestBase extends GroovyTestCase {
 	CuantoConnector client
 	List<TestRun> testRunsToCleanUp
 	static WordGenerator wordGen = new WordGenerator()
+	public static CUANTO_URL = "http://localhost:8080/cuanto"
+
 
 	@Override
 	void setUp() {
 		super.setUp()
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
+		client = CuantoConnector.newInstance(CUANTO_URL, "ClientTest")
 		testRunsToCleanUp = []
 	}
+
 
 	@Override
 	void tearDown() {

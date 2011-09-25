@@ -5,6 +5,7 @@ import cuanto.TestRun
 import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
+import cuanto.parsers.ParsableProject
 
 class ApiController {
 
@@ -19,14 +20,24 @@ class ApiController {
 
     def index = { }
 
-	
+
 	def addTestRun = {
-		TestRun testRun = parsingService.parseTestRun(request.JSON)
-		dataService.saveTestRun(testRun)
-		statisticService.queueTestRunStats(testRun)
-		// todo: wait for stats to be calculated before returning?
-		response.status = response.SC_CREATED
-		render testRun.toJSONMap() as JSON
+		try {
+
+			TestRun testRun = parsingService.parseTestRun(request.JSON)
+			dataService.saveTestRun(testRun)
+			statisticService.queueTestRunStats(testRun)
+			// todo: wait for stats to be calculated before returning?
+			response.status = response.SC_CREATED
+			render testRun.toJSONMap() as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "${e.getClass().canonicalName}: ${e.getMessage()}"
+
+		} catch (Exception e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unknown error: ${e.getMessage()}"
+		}
 	}
 
 
@@ -61,8 +72,14 @@ class ApiController {
 
 	def getTestRunsWithProperties = {
 		JSONObject incomingJson = request.JSON
+
+		if (!incomingJson.containsKey("projectKey")) {
+			throw new CuantoException("No projectKey parameter was specified.")
+		}
+
 		Project project = projectService.getProject(incomingJson.getString("projectKey"))
 		JSONObject jsonTestProperties = incomingJson.getJSONObject("testProperties")
+
 		def testProperties = []
 		jsonTestProperties.each { key, value ->
 			testProperties << new TestRunProperty(key, value)
@@ -83,21 +100,21 @@ class ApiController {
 		if (!params.projectKey) {
 			response.status = response.SC_BAD_REQUEST
 			render "No projectKey parameter was specified"
-		}
-
-		Project project = projectService.getProject(params.projectKey)
-		if (project) {
-			def testRuns = dataService.getTestRunsByProject(project)
-			def jsonMap = [:]
-			def testRunsToRender = []
-			testRuns.each {
-				testRunsToRender << it.toJSONMap()
-			}
-			jsonMap["testRuns"] = testRunsToRender
-			render jsonMap as JSON
 		} else {
-			response.status = response.SC_NOT_FOUND
-			render "Project was not found for projectKey ${params.projectKey}"
+			Project project = projectService.getProject(params.projectKey)
+			if (project) {
+				def testRuns = dataService.getTestRunsByProject(project)
+				def jsonMap = [:]
+				def testRunsToRender = []
+				testRuns.each {
+					testRunsToRender << it.toJSONMap()
+				}
+				jsonMap["testRuns"] = testRunsToRender
+				render jsonMap as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "Project was not found for projectKey ${params.projectKey}"
+			}
 		}
 	}
     
@@ -252,4 +269,22 @@ class ApiController {
 			render "Deleted TestRun ${params.id}"
 		}
 	}
+
+  	def createProject(Map params) {
+		def parsedProject = new ParsableProject()
+		parsedProject.bugUrlPattern = params?.bugUrlPattern
+		parsedProject.projectGroup = getProjectGroupByName(params?.group)
+		parsedProject.name = params?.name
+		parsedProject.projectKey = params?.projectKey
+		parsedProject.testType = params?.testType
+		return projectService.createProject(parsedProject)
+	}
+
+  	def delete = {
+		def project = Project.get(params.id)
+		def projectName = project.name
+		projectService.deleteProject(project)
+		render "Deleted Project ${params.id}, ${projectName}."
+	}
+
 }

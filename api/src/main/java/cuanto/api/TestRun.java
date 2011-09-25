@@ -143,7 +143,9 @@ public class TestRun {
 
 	Map toJsonMap() {
 		Map jsonMap = new HashMap();
-		jsonMap.put("projectKey", this.projectKey);
+		if (this.projectKey != null) {
+			jsonMap.put("projectKey", this.projectKey);
+		}
 		
 		if (this.id != null) {
 			jsonMap.put("id", this.id);

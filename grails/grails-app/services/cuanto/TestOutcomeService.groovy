@@ -553,6 +553,11 @@ class TestOutcomeService {
 
 	TestOutcome addTestOutcome(request) {
         TestOutcome testOutcome = null
+
+		if (!request.JSON.containsKey("projectKey")) {
+			throw new CuantoException("No projectKey parameter was specified.")
+		}
+
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             dataService.saveTestOutcomes([testOutcome])

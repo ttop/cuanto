@@ -603,6 +603,31 @@ public class TestOutcomeTests extends ApiTestBase {
 	}
 
 
+	void testCreateTestOutcomeWithoutProject() {
+			TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+				TestResult.valueOf("Fail"))
+			outcome.bug = new Bug("MyBug", "http://jira.codehaus.org/CUANTO-1")
+			outcome.analysisState = AnalysisState.Bug
+			outcome.startedAt = new Date()
+			outcome.finishedAt = new Date() + 1
+			outcome.duration = outcome.finishedAt.time - outcome.startedAt.time
+			outcome.owner = "Cuanto"
+			outcome.note = "Cuanto note"
+			outcome.testOutput = "Fantastic test output"
+
+		CuantoConnector projectLessClient = CuantoConnector.newInstance(CUANTO_URL)
+
+		try {
+			projectLessClient.addTestOutcome(outcome)
+			fail "Expected exception not thrown"
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("No projectKey parameter was specified"))
+		}
+	}
+
+
+
 	TestOutcome createTestOutcome(TestResult result, String testName = "test${wordGen.getCamelWords(3)}") {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", testName, wordGen.getSentence(2), result)
 		outcome.startedAt = new Date(System.currentTimeMillis() + 1000 * testCaseCounter)
