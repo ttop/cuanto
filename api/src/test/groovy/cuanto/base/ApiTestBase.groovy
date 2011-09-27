@@ -23,14 +23,10 @@ package cuanto.base
 
 import cuanto.api.CuantoConnector
 import cuanto.api.TestRun
-import cuanto.api.WordGenerator
 
-class ApiTestBase extends GroovyTestCase {
+class ApiTestBase extends TestBase {
 	CuantoConnector client
 	List<TestRun> testRunsToCleanUp
-	static WordGenerator wordGen = new WordGenerator()
-	public static CUANTO_URL = "http://localhost:8080/cuanto"
-
 
 	@Override
 	void setUp() {
