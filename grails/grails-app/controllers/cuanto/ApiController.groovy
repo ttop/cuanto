@@ -16,7 +16,7 @@ class ApiController {
 	def projectService
 	def statisticService
 
-	static def allowedMethods = [deleteTestRun: 'POST']
+	static def allowedMethods = [deleteTestRun: 'POST', addProject: 'POST', deleteProject: 'POST']
 
     def index = { }
 
@@ -270,21 +270,92 @@ class ApiController {
 		}
 	}
 
-  	def createProject(Map params) {
-		def parsedProject = new ParsableProject()
-		parsedProject.bugUrlPattern = params?.bugUrlPattern
-		parsedProject.projectGroup = getProjectGroupByName(params?.group)
-		parsedProject.name = params?.name
-		parsedProject.projectKey = params?.projectKey
-		parsedProject.testType = params?.testType
-		return projectService.createProject(parsedProject)
+
+	def addProject = {
+		try {
+			Project project = projectService.createProject(params)
+			response.status = response.SC_CREATED
+			render project.toJSONMap() as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
 	}
 
-  	def delete = {
-		def project = Project.get(params.id)
-		def projectName = project.name
-		projectService.deleteProject(project)
-		render "Deleted Project ${params.id}, ${projectName}."
+
+	def getProject = {
+		if (!(params.projectKey || params.id)) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey or id parameter was provided on the request."
+		} else {
+			Project project
+
+			if (params.projectKey) {
+				project = projectService.getProject(params.projectKey)
+			} else {
+				project = Project.get(params.id)
+			}
+
+			if (project) {
+				render project.toJSONMap() as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "A Project matching the projectkey or id was not found."
+			}
+		}
+	}
+
+
+	def getAllProjects = {
+		def allProjects = dataService.getAllProjects()
+		def allJsonProjects = allProjects.collect {
+			it.toJSONMap()
+		}
+		render allJsonProjects as JSON
+	}
+
+
+	def getProjectsForGroup = {
+		if (params.name) {
+			def projects = dataService.getProjectsByGroupName(params.name)
+			if (projects) {
+				def allJsonProjects = projects.collect {
+					it.toJSONMap()
+				}
+				render allJsonProjects as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "No group by the name ${params.name} was found."
+			}
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "No name parameter was provided on the request."
+		}
+	}
+
+
+	def deleteProject = {
+		if (!(params.projectKey || params.id)) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey or id parameter was provided on the request."
+		} else {
+			Project project
+
+			if (params.projectKey) {
+				project = projectService.getProject(params.projectKey)
+			} else {
+				project = Project.get(params.id)
+			}
+
+			if (project) {
+				def projectName = project.name
+				projectService.deleteProject(project)
+				render "Deleted Project ${params.id}, ${projectName}."
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "A Project matching the projectkey or id was not found."
+			}
+		}
 	}
 
 }

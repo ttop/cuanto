@@ -23,15 +23,18 @@ package cuanto.base
 
 import cuanto.api.CuantoConnector
 import cuanto.api.TestRun
+import cuanto.api.Project
 
 class ApiTestBase extends TestBase {
 	CuantoConnector client
 	List<TestRun> testRunsToCleanUp
+	protected Project testProject
 
 	@Override
 	void setUp() {
 		super.setUp()
-		client = CuantoConnector.newInstance(CUANTO_URL, "ClientTest")
+		testProject = addProject()
+		client = CuantoConnector.newInstance(CUANTO_URL, testProject.projectKey)
 		testRunsToCleanUp = []
 	}
 
@@ -42,7 +45,20 @@ class ApiTestBase extends TestBase {
 			client.deleteTestRun it
 		}
 		testRunsToCleanUp.clear()
+		client.deleteProject(testProject.projectKey)
 		super.tearDown()
 	}
 
+
+	Project addProject() {
+		CuantoConnector projectClient = CuantoConnector.newInstance(CUANTO_URL)
+		String projectKey = wordGen.getSentence(3)
+		if (projectKey.size() > 25) {
+			projectKey = projectKey.substring(0, 24)
+		}
+		Project project = new Project(projectKey, "CuantoConnector Tests", wordGen.getCamelWords(3),
+			"http://sample/{BUG}", "JUnit")
+		projectClient.addProject(project)
+		return project
+	}
 }

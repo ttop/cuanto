@@ -1,15 +1,44 @@
+/*
+
+ Copyright (c) 2011 Todd Wells
+
+ This file is part of Cuanto, a test results repository and analysis program.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 package cuanto.api;
 
+import net.sf.json.JSONObject;
+
+import java.text.ParseException;
+
 /**
- * User: Todd Wells Date: 9/19/11 Time: 1:34 PM
+ * A class that represents a server-side Cuanto project.
  */
-public class Project
-{
+public class Project {
 	String name;
+	Long id;
 	String projectGroup;
 	String projectKey;
 	String bugUrlPattern;
 	String testType;
+
+
+	Project() {
+	}
 
 
 	/**
@@ -29,8 +58,7 @@ public class Project
 	 * @param testType      At present, JUnit, TestNG, NUnit and Manual are valid values.
 	 */
 
-	Project(String name, String projectGroup, String projectKey, String bugUrlPattern, String testType)
-	{
+	public Project(String name, String projectGroup, String projectKey, String bugUrlPattern, String testType) {
 		this.name = name;
 		this.projectGroup = projectGroup;
 		this.projectKey = projectKey;
@@ -47,69 +75,140 @@ public class Project
 	 * @param projectKey   The unique projectKey of the project.
 	 * @param testType     At present, JUnit, TestNG, NUnit and Manual are valid values.
 	 */
-	Project(String name, String projectGroup, String projectKey, String testType)
-	{
+	public Project(String name, String projectGroup, String projectKey, String testType) {
 		this(name, projectGroup, projectKey, null, testType);
 	}
 
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
 
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 
 
-	public String getProjectGroup()
-	{
+	public String getProjectGroup() {
 		return projectGroup;
 	}
 
 
-	public void setProjectGroup(String projectGroup)
-	{
+	public void setProjectGroup(String projectGroup) {
 		this.projectGroup = projectGroup;
 	}
 
 
-	public String getProjectKey()
-	{
+	public String getProjectKey() {
 		return projectKey;
 	}
 
 
-	public void setProjectKey(String projectKey)
-	{
+	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
 
 
-	public String getBugUrlPattern()
-	{
+	public String getBugUrlPattern() {
 		return bugUrlPattern;
 	}
 
 
-	public void setBugUrlPattern(String bugUrlPattern)
-	{
+	public void setBugUrlPattern(String bugUrlPattern) {
 		this.bugUrlPattern = bugUrlPattern;
 	}
 
 
-	public String getTestType()
-	{
+	public String getTestType() {
 		return testType;
 	}
 
 
-	public void setTestType(String testType)
-	{
+	public void setTestType(String testType) {
 		this.testType = testType;
 	}
 
+
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	static Project fromJSON(String json) throws ParseException {
+		JSONObject jsonProject = JSONObject.fromObject(json);
+		return fromJSON(jsonProject);
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Project project = (Project) o;
+
+		if (bugUrlPattern != null ? !bugUrlPattern.equals(project.bugUrlPattern) : project.bugUrlPattern != null)
+			return false;
+		if (id != null ? !id.equals(project.id) : project.id != null) return false;
+		if (name != null ? !name.equals(project.name) : project.name != null) return false;
+		if (projectGroup != null ? !projectGroup.equals(project.projectGroup) : project.projectGroup != null)
+			return false;
+		if (projectKey != null ? !projectKey.equals(project.projectKey) : project.projectKey != null) return false;
+		if (testType != null ? !testType.equals(project.testType) : project.testType != null) return false;
+
+		return true;
+	}
+
+
+	@Override
+	public int hashCode() {
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (id != null ? id.hashCode() : 0);
+		result = 31 * result + (projectGroup != null ? projectGroup.hashCode() : 0);
+		result = 31 * result + (projectKey != null ? projectKey.hashCode() : 0);
+		result = 31 * result + (bugUrlPattern != null ? bugUrlPattern.hashCode() : 0);
+		result = 31 * result + (testType != null ? testType.hashCode() : 0);
+		return result;
+	}
+
+
+	static Project fromJSON(JSONObject jsonProject) throws ParseException {
+		Project project = new Project();
+
+		if (jsonProject.has("id"))  {
+			project.setId(jsonProject.getLong("id"));
+		}
+
+		if (jsonProject.has("name")) {
+			project.setName(jsonProject.getString("name"));
+		}
+
+		if (jsonProject.has("projectGroup")) {
+			JSONObject jsonProjectGroup = jsonProject.getJSONObject("projectGroup");
+			if (jsonProjectGroup.size() > 0) {
+				project.setProjectGroup(jsonProjectGroup.getString("name"));
+			}
+		}
+
+		if (jsonProject.has("projectKey")) {
+			project.setProjectKey(jsonProject.getString("projectKey"));
+		}
+
+		if (jsonProject.has("bugUrlPattern")) {
+			project.setBugUrlPattern(jsonProject.getString("bugUrlPattern"));
+		}
+
+		if (jsonProject.has("testType")) {
+			JSONObject jsonTestType = jsonProject.getJSONObject("testType");
+			project.setTestType(jsonTestType.getString("name"));
+		}
+
+		return project;
+	}
 }
