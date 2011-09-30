@@ -182,11 +182,21 @@ class StatisticService {
 			}
 
 			dataService.saveDomainObject(calculatedStats)
+
 			calculateAnalysisStats(testRun)
 			dataService.saveDomainObject(calculatedStats)
 
-			def tagStats = getTagStatistics(testRun)
 			def testRunStatistics = TestRunStats.findByTestRun(testRun)
+			if (testRunStatistics.tagStatistics.size() > 0) {
+				def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
+				statsToRemove.each {
+					testRunStatistics.removeFromTagStatistics(it).save()
+					it.delete(flush:true)
+				}
+			}
+			dataService.saveDomainObject(testRunStatistics)
+
+			def tagStats = getTagStatistics(testRun)
 			tagStats.each {
 				testRunStatistics.addToTagStatistics(it)
 			}

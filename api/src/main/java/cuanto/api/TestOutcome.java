@@ -518,7 +518,9 @@ public class TestOutcome {
 	 */
 	public String toJSON() {
 		Map jsonMap = new HashMap();
-		jsonMap.put("projectKey", this.getProjectKey());
+		if (this.getProjectKey() != null) {
+			jsonMap.put("projectKey", this.getProjectKey());
+		}
 
 		if (this.getId() != null) {
 			jsonMap.put("id", this.getId());

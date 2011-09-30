@@ -6,10 +6,6 @@
 	margin-left: 15px
 }
 
-#helpRegion span {
-	margin-left: 15px
-}
-
 #helpRegion a {
 	text-decoration: none;
 }
@@ -23,4 +19,9 @@
 	margin-right: 40%;
 	padding: 1%;
 	background-color: lightskyblue;
+}
+
+.mono {
+	font-family:monospace;
+	margin-left: 0;
 }

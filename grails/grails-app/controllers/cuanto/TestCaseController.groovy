@@ -197,7 +197,7 @@ class TestCaseController {
 		}
 		fullName += params.testName
 
-		def existingTestCase = dataService.findTestCaseByName(fullName, project)
+		def existingTestCase = dataService.findExactTestCaseByName(fullName, project)
 		if (existingTestCase) {
 			flash.message = "A Test Case with that name already exists"
 			params.testCase = existingTestCase.id

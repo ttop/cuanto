@@ -5,6 +5,7 @@ import cuanto.TestRun
 import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
+import cuanto.parsers.ParsableProject
 
 class ApiController {
 
@@ -15,18 +16,28 @@ class ApiController {
 	def projectService
 	def statisticService
 
-	static def allowedMethods = [deleteTestRun: 'POST']
+	static def allowedMethods = [deleteTestRun: 'POST', addProject: 'POST', deleteProject: 'POST']
 
     def index = { }
 
-	
+
 	def addTestRun = {
-		TestRun testRun = parsingService.parseTestRun(request.JSON)
-		dataService.saveTestRun(testRun)
-		statisticService.queueTestRunStats(testRun)
-		// todo: wait for stats to be calculated before returning?
-		response.status = response.SC_CREATED
-		render testRun.toJSONMap() as JSON
+		try {
+
+			TestRun testRun = parsingService.parseTestRun(request.JSON)
+			dataService.saveTestRun(testRun)
+			statisticService.queueTestRunStats(testRun)
+			// todo: wait for stats to be calculated before returning?
+			response.status = response.SC_CREATED
+			render testRun.toJSONMap() as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "${e.getClass().canonicalName}: ${e.getMessage()}"
+
+		} catch (Exception e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render "Unknown error: ${e.getMessage()}"
+		}
 	}
 
 
@@ -61,8 +72,14 @@ class ApiController {
 
 	def getTestRunsWithProperties = {
 		JSONObject incomingJson = request.JSON
+
+		if (!incomingJson.containsKey("projectKey")) {
+			throw new CuantoException("No projectKey parameter was specified.")
+		}
+
 		Project project = projectService.getProject(incomingJson.getString("projectKey"))
 		JSONObject jsonTestProperties = incomingJson.getJSONObject("testProperties")
+
 		def testProperties = []
 		jsonTestProperties.each { key, value ->
 			testProperties << new TestRunProperty(key, value)
@@ -83,21 +100,21 @@ class ApiController {
 		if (!params.projectKey) {
 			response.status = response.SC_BAD_REQUEST
 			render "No projectKey parameter was specified"
-		}
-
-		Project project = projectService.getProject(params.projectKey)
-		if (project) {
-			def testRuns = dataService.getTestRunsByProject(project)
-			def jsonMap = [:]
-			def testRunsToRender = []
-			testRuns.each {
-				testRunsToRender << it.toJSONMap()
-			}
-			jsonMap["testRuns"] = testRunsToRender
-			render jsonMap as JSON
 		} else {
-			response.status = response.SC_NOT_FOUND
-			render "Project was not found for projectKey ${params.projectKey}"
+			Project project = projectService.getProject(params.projectKey)
+			if (project) {
+				def testRuns = dataService.getTestRunsByProject(project)
+				def jsonMap = [:]
+				def testRunsToRender = []
+				testRuns.each {
+					testRunsToRender << it.toJSONMap()
+				}
+				jsonMap["testRuns"] = testRunsToRender
+				render jsonMap as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "Project was not found for projectKey ${params.projectKey}"
+			}
 		}
 	}
     
@@ -252,4 +269,93 @@ class ApiController {
 			render "Deleted TestRun ${params.id}"
 		}
 	}
+
+
+	def addProject = {
+		try {
+			Project project = projectService.createProject(params)
+			response.status = response.SC_CREATED
+			render project.toJSONMap() as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
+	}
+
+
+	def getProject = {
+		if (!(params.projectKey || params.id)) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey or id parameter was provided on the request."
+		} else {
+			Project project
+
+			if (params.projectKey) {
+				project = projectService.getProject(params.projectKey)
+			} else {
+				project = Project.get(params.id)
+			}
+
+			if (project) {
+				render project.toJSONMap() as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "A Project matching the projectkey or id was not found."
+			}
+		}
+	}
+
+
+	def getAllProjects = {
+		def allProjects = dataService.getAllProjects()
+		def allJsonProjects = allProjects.collect {
+			it.toJSONMap()
+		}
+		render allJsonProjects as JSON
+	}
+
+
+	def getProjectsForGroup = {
+		if (params.name) {
+			def projects = dataService.getProjectsByGroupName(params.name)
+			if (projects) {
+				def allJsonProjects = projects.collect {
+					it.toJSONMap()
+				}
+				render allJsonProjects as JSON
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "No group by the name ${params.name} was found."
+			}
+		} else {
+			response.status = response.SC_BAD_REQUEST
+			render "No name parameter was provided on the request."
+		}
+	}
+
+
+	def deleteProject = {
+		if (!(params.projectKey || params.id)) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey or id parameter was provided on the request."
+		} else {
+			Project project
+
+			if (params.projectKey) {
+				project = projectService.getProject(params.projectKey)
+			} else {
+				project = Project.get(params.id)
+			}
+
+			if (project) {
+				def projectName = project.name
+				projectService.deleteProject(project)
+				render "Deleted Project ${params.id}, ${projectName}."
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "A Project matching the projectkey or id was not found."
+			}
+		}
+	}
+
 }

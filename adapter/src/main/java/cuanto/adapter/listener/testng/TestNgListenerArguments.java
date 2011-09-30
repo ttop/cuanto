@@ -1,4 +1,4 @@
-package cuanto.adapter.objects;
+package cuanto.adapter.listener.testng;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
  * Encapsulate necessary information to interact with CuantoConnector.
  */
 public class TestNgListenerArguments {
-
 	// Cuanto url
 	private URI cuantoUrl;
 
@@ -27,6 +26,9 @@ public class TestNgListenerArguments {
 	// whether to create a new TestRun if testRunId is null
 	private Boolean createTestRun;
 
+	// whether to consider configuration methods when calculating test run time
+	private Boolean includeConfigDuration;
+
 	public TestNgListenerArguments() {
 	}
 
@@ -34,9 +36,16 @@ public class TestNgListenerArguments {
 		cuantoUrl = arguments.getCuantoUrl();
 		testRunId = arguments.getTestRunId();
 		projectKey = arguments.getProjectKey();
-		links = new LinkedHashMap<String, String>(arguments.getLinks());
-		testProperties = new LinkedHashMap<String, String>(arguments.getTestProperties());
 		createTestRun = arguments.isCreateTestRun();
+		includeConfigDuration = arguments.isIncludeConfigDuration();
+
+		Map<String, String> originalLinks = arguments.getLinks();
+		if (originalLinks != null)
+			links = new LinkedHashMap<String, String>(originalLinks);
+
+		Map<String, String> originalTestProperties = arguments.getTestProperties();
+		if (originalTestProperties != null)
+			testProperties = new LinkedHashMap<String, String>(originalTestProperties);
 	}
 
 	public URI getCuantoUrl() {
@@ -85,5 +94,13 @@ public class TestNgListenerArguments {
 
 	public void setCreateTestRun(Boolean createTestRun) {
 		this.createTestRun = createTestRun;
+	}
+
+	public Boolean isIncludeConfigDuration() {
+		return includeConfigDuration;
+	}
+
+	public void setIncludeConfigDuration(Boolean includeConfigDuration) {
+		this.includeConfigDuration = includeConfigDuration;
 	}
 }

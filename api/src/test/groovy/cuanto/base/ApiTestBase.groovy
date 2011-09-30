@@ -23,19 +23,21 @@ package cuanto.base
 
 import cuanto.api.CuantoConnector
 import cuanto.api.TestRun
-import cuanto.api.WordGenerator
+import cuanto.api.Project
 
-class ApiTestBase extends GroovyTestCase {
+class ApiTestBase extends TestBase {
 	CuantoConnector client
 	List<TestRun> testRunsToCleanUp
-	static WordGenerator wordGen = new WordGenerator()
+	protected Project testProject
 
 	@Override
 	void setUp() {
 		super.setUp()
-		client = CuantoConnector.newInstance("http://localhost:8080/cuanto", "ClientTest")
+		testProject = addProject()
+		client = CuantoConnector.newInstance(CUANTO_URL, testProject.projectKey)
 		testRunsToCleanUp = []
 	}
+
 
 	@Override
 	void tearDown() {
@@ -43,7 +45,20 @@ class ApiTestBase extends GroovyTestCase {
 			client.deleteTestRun it
 		}
 		testRunsToCleanUp.clear()
+		client.deleteProject(testProject.projectKey)
 		super.tearDown()
 	}
 
+
+	Project addProject() {
+		CuantoConnector projectClient = CuantoConnector.newInstance(CUANTO_URL)
+		String projectKey = wordGen.getSentence(3)
+		if (projectKey.size() > 25) {
+			projectKey = projectKey.substring(0, 24)
+		}
+		Project project = new Project(projectKey, "CuantoConnector Tests", wordGen.getCamelWords(3),
+			"http://sample/{BUG}", "JUnit")
+		projectClient.addProject(project)
+		return project
+	}
 }

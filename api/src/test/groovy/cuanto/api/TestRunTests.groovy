@@ -175,6 +175,84 @@ public class TestRunTests extends ApiTestBase {
 	}
 
 
+	void testCreateTestRunWithoutProject() {
+		CuantoConnector projectLessClient = CuantoConnector.newInstance(CUANTO_URL)
+
+		TestRun testRun = new TestRun(new Date())
+		testRun.note = "My note"
+		testRun.addLink("http://foo", "FOO")
+		testRun.addLink("http://bar", "BAR")
+		testRun.addTestProperty("Radio", "KEXP")
+		testRun.addTestProperty("Computer", "Apple")
+
+		try {
+			projectLessClient.addTestRun(testRun)
+			fail "Expected exception not thrown"
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("No projectKey parameter was specified"))
+		}
+	}
+
+
+	void testUpdateTestRunWithoutProject() {
+		CuantoConnector projectLessClient = CuantoConnector.newInstance(CUANTO_URL)
+
+		TestRun testRun = new TestRun(new Date())
+		testRun.note = "My note"
+		testRun.addLink("http://foo", "FOO")
+		testRun.addLink("http://bar", "BAR")
+		testRun.addTestProperty("Radio", "KEXP")
+		testRun.addTestProperty("Computer", "Apple")
+
+		try {
+			projectLessClient.updateTestRun(testRun)
+			fail "Expected exception not thrown"
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("No projectKey parameter was specified"))
+		}
+	}
+
+
+	void testGetInvalidTestRun() {
+		def INVALID_TEST_RUN_ID = 999993425
+		try {
+			client.getTestRun(INVALID_TEST_RUN_ID)
+			fail("Expected exception not thrown")
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("TestRun ${INVALID_TEST_RUN_ID} not found."))
+		}
+	}
+
+
+	void testGetAllTestRunsWithoutProject() {
+		CuantoConnector projectLessClient = CuantoConnector.newInstance(CUANTO_URL)
+
+		try {
+			projectLessClient.getAllTestRuns()
+			fail("Expected exception not thrown")
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("No projectKey parameter was specified"))
+		}
+	}
+
+
+	void testGetTestRunsWithPropertiesWithNoProject() {
+		CuantoConnector projectLessClient = CuantoConnector.newInstance(CUANTO_URL)
+
+		try {
+			projectLessClient.getTestRunsWithProperties(["foo": "bar"])
+			fail("Expected Exception not thrown")
+		} catch (RuntimeException e) {
+			assertTrue("Wrong error message returned by client: ${e.message}",
+				e.message.contains("No projectKey parameter was specified"))
+		}
+	}
+
+
 	void assertEquals(String message, Date expected, Date actual) {
 		// Date should be within one second
 		assertTrue message + ". Expected time ${expected.time}, actual time ${actual.time}",

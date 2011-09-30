@@ -33,10 +33,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
@@ -52,7 +49,7 @@ public class CuantoConnector {
 	 * deserialization.
 	 */
 	public final static String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.7.1; Jakarta Commons-HttpClient/3.1";
+	private final static String HTTP_USER_AGENT = "Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1";
 
 	private static final String HTTP_GET = "get";
 	private static final String HTTP_POST = "post";
@@ -66,6 +63,18 @@ public class CuantoConnector {
 	private CuantoConnector() {
 		// must use factory method to instantiate
 	}
+
+
+	/**
+	 * Creates a new instance of CuantoConnector that connects to the specified URL.
+	 *
+	 * @param cuantoServerUrl The URL of the Cuanto server instance.
+	 * @return The new CuantoConnector instance.
+	 */
+	public static CuantoConnector newInstance(String cuantoServerUrl) {
+		return newInstance(cuantoServerUrl, null, null, null);
+	}
+
 
 
 	/**
@@ -158,6 +167,49 @@ public class CuantoConnector {
 		}
 	}
 
+
+	public Long addProject(Project project) {
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/addProject");
+		try {
+			/*
+			if (project.name == null || project.name.trim() == "") {
+				throw new RuntimeException("A project must have a name specified");
+			}
+			*/
+
+			if (project.name != null) {
+				post.setParameter("name", project.name);
+			}
+			if (project.projectKey != null) {
+				post.setParameter("projectKey", project.projectKey);
+			}
+			if (project.projectGroup != null) {
+				post.setParameter("group", project.projectGroup);
+			}
+			if (project.bugUrlPattern != null) {
+				post.setParameter("bugUrlPattern", project.bugUrlPattern);
+			}
+			if (project.testType != null) {
+				post.setParameter("testType", project.testType);
+			}
+
+			int httpStatus = getHttpClient().executeMethod(post);
+			if (httpStatus == HttpStatus.SC_CREATED) {
+				Project created = Project.fromJSON(getResponseBodyAsString(post));
+				project.setId(created.getId());
+				return created.getId();
+			} else {
+				throw new RuntimeException("Adding the Project failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Error parsing server response", e);
+		}
+	}
 
 	/**
 	 * @return An HTTP client, optionally configured to use a proxy.
@@ -582,7 +634,11 @@ public class CuantoConnector {
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/getTestRunsWithProperties");
 		try {
 			Map jsonMap = new HashMap();
-			jsonMap.put("projectKey", getProjectKey());
+
+			String pk = getProjectKey();
+			if (pk != null && pk.trim() != "") {
+				jsonMap.put("projectKey", getProjectKey());
+			}
 			jsonMap.put("testProperties", JSONObject.fromObject(testProperties));
 			JSONObject jsonToPost = JSONObject.fromObject(jsonMap);
 			post.setRequestEntity(new StringRequestEntity(jsonToPost.toString(), "application/json", null));
@@ -724,6 +780,142 @@ public class CuantoConnector {
 
 
 	/**
+	 * Gets a Project by the Project's ID value.
+	 * @param projectId The ID of the Project.
+	 * @return The Project corresponding to the specified ID.
+	 */
+	public Project getProject(Long projectId) {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getProject/" + projectId.toString());
+
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return Project.fromJSON(getResponseBodyAsString(get));
+			} else {
+				throw new RuntimeException("Getting the Project failed with HTTP status code " + httpStatus + ":\n" +
+					getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response", e);
+		}
+	}
+
+
+	/**
+	 * Gets a Project by the project's projectKey value.
+	 * @param projectKey The projectKey of the Project.
+	 * @return The Project corresponding to the specified projectKey.
+	 */
+	public Project getProject(String projectKey) {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getProject/?projectKey=" + projectKey.toString());
+
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				return Project.fromJSON(getResponseBodyAsString(get));
+			} else {
+				throw new RuntimeException("Getting the Project failed with HTTP status code " + httpStatus + ":\n" +
+					getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response", e);
+		}
+	}
+
+
+	/**
+	 * Gets a list of all projects ordered by project group and project name.
+	 *
+	 * @return A List of Projects.
+	 */
+	public List<Project> getAllProjects() {
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getAllProjects");
+		return getProjects(get);
+	}
+
+	/**
+	 * Gets a list of all projects corresponding to the specified project group, ordered by project name.
+	 * @param projectGroup The unique String identifying the project's group.
+	 * @return A List of Projects.
+	 */
+	public List<Project> getProjectsForGroup(String projectGroup) {
+		String escapedGroup = projectGroup.replaceAll(" ", "+");
+		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getProjectsForGroup?name=" + escapedGroup);
+		return getProjects(get);
+	}
+
+
+	private List<Project> getProjects(GetMethod get) {
+		try {
+			int httpStatus = getHttpClient().executeMethod(get);
+			if (httpStatus == HttpStatus.SC_OK) {
+				JSONArray jsonProjects = JSONArray.fromObject(getResponseBodyAsString(get));
+
+				List<Project> allProjects = new ArrayList<Project>();
+
+				for (int i = 0; i < jsonProjects.size(); i++)
+				{
+					JSONObject jsonObject = jsonProjects.getJSONObject(i);
+					Project proj = Project.fromJSON(jsonObject);
+					allProjects.add(proj);
+				}
+				return allProjects;
+			} else {
+				throw new RuntimeException("Getting the Project failed with HTTP status code " + httpStatus + ":\n" +
+					getResponseBodyAsString(get));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException("Unable to parse JSON response", e);
+		}
+	}
+
+
+
+	/**
+	 * Delete a Project by its ID value.
+	 * @param projectId The ID of the Project to delete.
+	 */
+	public void deleteProject(Long projectId) {
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/deleteProject/" + projectId);
+		deleteProject(post);
+	}
+
+
+	/**
+	 * Delete a Project by its projectKey value.
+	 * @param projectKey The projectKey of the Project to delete.
+	 */
+	public void deleteProject(String projectKey) {
+		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/deleteProject?projectKey=" + projectKey);
+		deleteProject(post);
+	}
+
+
+	protected void deleteProject(PostMethod post) {
+		try {
+			int httpStatus = getHttpClient().executeMethod(post);
+			if (httpStatus != HttpStatus.SC_OK) {
+				throw new RuntimeException("Deleting the Project failed with HTTP status code " + httpStatus + ": \n" +
+					getResponseBodyAsString(post));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+
+
+
+	/**
 	 * Gets the URL of the Cuanto server that this instance was configured to communicate with.
 	 *
 	 * @return The URL of the Cuanto server
@@ -806,7 +998,7 @@ public class CuantoConnector {
 	}
 
 
-	void deleteTestRun(TestRun testRun) {
+	public void deleteTestRun(TestRun testRun) {
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/deleteTestRun/" + testRun.id);
 		try {
 			int httpStatus = getHttpClient().executeMethod(post);

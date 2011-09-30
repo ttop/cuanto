@@ -151,7 +151,7 @@ class ParsingService {
 			testOutcome.duration = testOutcome.finishedAt.time - testOutcome.startedAt.time
 		}
 
-		def testOutput = parseJsonForString(jsonTestOutcome, "testOutput") 
+		def testOutput = parseJsonForString(jsonTestOutcome, "testOutput")
 		if (testOutput) {
 			testOutcome.testOutput = processTestOutput(testOutput)
 			setTestOutputSummary(testOutcome);
@@ -166,7 +166,7 @@ class ParsingService {
 		if (owner) {
 			testOutcome.owner = owner
 		}
-		
+
 		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
 
 		if (!jsonTestOutcome.isNull("bug")) {
@@ -209,8 +209,13 @@ class ParsingService {
 	 * Parse a TestRun from the JSONObject.
 	 */
 	TestRun parseTestRun(JSONObject jsonObj) {
-		String projectKey = jsonObj.getString("projectKey")
+		if (!jsonObj.containsKey("projectKey")) {
+			throw new CuantoException("No projectKey parameter was specified.")
+		}
+
+		def projectKey = jsonObj.getString("projectKey")
 		def project = projectService.getProject(projectKey)
+
 		if (!project) {
 			throw new CuantoException("Unable to locate project with the project key or full title of '${projectKey}'")
 		}

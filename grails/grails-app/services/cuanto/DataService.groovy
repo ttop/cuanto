@@ -485,6 +485,10 @@ class DataService {
 		TestCase.findAllByFullNameIlikeAndProject("%${name}%", project)
 	}
 
+	List<TestCase> findExactTestCaseByName(String name, Project project) {
+		TestCase.findAllByFullNameAndProject("${name}", project)
+	}
+
 
 	TestType createTestType(testTypeName) {
 		def testType = getTestType(testTypeName)
@@ -506,7 +510,7 @@ class DataService {
 
 
 	def getProjectsByGroupName(groupName) {
-		def gname = groupName.replaceAll("%20", " ").replaceAll(/\+/, " ")
+		def gname = groupName?.replaceAll("%20", " ")?.replaceAll(/\+/, " ")
 		Project.findAll("from cuanto.Project as proj WHERE proj.projectGroup.name = ? order by proj.name asc",
 			[gname], [sort: 'name'])
 	}

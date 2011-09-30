@@ -25,7 +25,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONNull;
 
 /**
- * An class that represents a Cuanto server-side TestCase.
+ * A class that represents a Cuanto server-side TestCase.
  */
 public class TestCase {
 	String projectKey;
