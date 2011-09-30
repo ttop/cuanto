@@ -132,6 +132,12 @@ class InitializationService {
 			if (grailsApplication.config.dataSource.lotsOfExtraProjects)
 				createLotsOfExtraProjects()
 		}
+
+		def projectsWithoutDeleteInitialized = Project.findByDeletedIsNull()
+		projectsWithoutDeleteInitialized.each {
+			it.deleted = false
+			dataService.saveDomainObject(it, true)
+		}
 	}
 
 	void createLotsOfExtraProjects() {

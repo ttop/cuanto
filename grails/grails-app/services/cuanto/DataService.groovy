@@ -59,20 +59,33 @@ class DataService {
 
 	
 	def getProject(id) {
-		Project.get(id)
+		def project = Project.get(id)
+		if (project?.deleted) {
+			return null
+		} else {
+			return project
+		}
 	}
 
 
-	def getProject(groupName, projectName) throws CuantoException {  //todo: optimize
-		def project = null
-		def group = findProjectGroupByName(groupName)
-		project = Project.findByProjectGroupAndName(group, projectName)
-		return project
-	}
+	def getProject(groupName, projectName, includeDeleted = false) throws CuantoException {
+		def queryString = "from cuanto.Project p where "
+		def queryArgs = []
 
+		if (groupName) {
+			queryString += "p.projectGroup.name = ? and p.name = ? "
+			queryArgs << groupName
+		} else {
+			queryString += "p.projectGroup is null and p.name = ? "
+		}
 
-	def getProjectByKey(projectKey) {
-		Project.findByProjectKey(projectKey)
+		if (!includeDeleted) {
+			queryString += "and p.deleted = false"
+		}
+
+		queryArgs << projectName
+		def proj = Project.find(queryString, queryArgs)
+		return proj
 	}
 
 
@@ -503,21 +516,21 @@ class DataService {
 	def getAllProjects() {
 		// have to do this in two queries because hibernate does include results without a projectGroup if
 		// ordering by proj.projectGroup.name
-		def allWithGroup = Project.findAll("from cuanto.Project as proj where proj.projectGroup is not null order by proj.projectGroup.name asc, proj.name asc")
-		def allWithoutGroup = Project.findAll("from cuanto.Project as proj where proj.projectGroup is null order by proj.name asc")
+		def allWithGroup = Project.findAll("from cuanto.Project as proj where proj.projectGroup is not null and proj.deleted = false order by proj.projectGroup.name asc, proj.name asc")
+		def allWithoutGroup = Project.findAll("from cuanto.Project as proj where proj.projectGroup is null and proj.deleted = false order by proj.name asc")
 		return [allWithGroup, allWithoutGroup].flatten()
 	}
 
 
 	def getProjectsByGroupName(groupName) {
 		def gname = groupName?.replaceAll("%20", " ")?.replaceAll(/\+/, " ")
-		Project.findAll("from cuanto.Project as proj WHERE proj.projectGroup.name = ? order by proj.name asc",
+		Project.findAll("from cuanto.Project as proj WHERE proj.projectGroup.name = ? and proj.deleted = false order by proj.name asc",
 			[gname], [sort: 'name'])
 	}
 
 
 	def getProjectsByGroup(group) {
-		Project.findAllByProjectGroup(group, [sort: 'name'])
+		Project.findAllByProjectGroupAndDeleted(group, false, [sort: 'name'])
 	}
 
 

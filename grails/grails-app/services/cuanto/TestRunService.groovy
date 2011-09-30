@@ -73,12 +73,11 @@ class TestRunService {
 			queryParams.sort = "t.dateExecuted"
 		}
 
-
 		Project proj = null
 		if (params.id) {
 			proj = dataService.getProject(params.id)
 		} else if (params.projectKey) {
-			proj = dataService.getProjectByKey(params.projectKey)
+			proj = projectService.getProject(params.projectKey)
 		}
 		List<TestRun> testRuns = dataService.getTestRunsByProject(proj, queryParams)
 		return testRuns

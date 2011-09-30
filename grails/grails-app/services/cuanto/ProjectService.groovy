@@ -29,17 +29,21 @@ class ProjectService {
 	def dataService
 	def testRunService
 
-	def getProject(projectString) {
-		def project = Project.findByProjectKey(projectString)
-		if (!project) {
-			project = getProjectByFullName(projectString)
+	def getProject(projectString, includeDeleted = false) {
+		def project
+		if (includeDeleted) {
+			project = Project.findByProjectKey(projectString)
+		} else {
+			project = Project.findByProjectKeyAndDeleted(projectString, false)
 		}
-		//todo: fall back to ID?
+		if (!project) {
+			project = getProjectByFullName(projectString, includeDeleted)
+		}
 		return project
 	}
 
 
-	def getProjectByFullName(String fullName) throws CuantoException {
+	def getProjectByFullName(String fullName, includeDeleted = false) throws CuantoException {
 		def groupName = null
 		def projectName = null
 		if (fullName) {
@@ -52,22 +56,20 @@ class ProjectService {
 				projectName = parts[0]
 			}
 		}
-		dataService.getProject(groupName, projectName)
+		dataService.getProject(groupName, projectName, includeDeleted)
 	}
 
 
 	void deleteProject(Project project) {
 		if (project) {
-			Project.withTransaction {
-				def origGroup = project.projectGroup
-				def testRuns = dataService.getTestRunsByProject(project)
-				dataService.deleteTestCasesForProject(project)
-				testRuns.each { testRun ->
-					testRunService.deleteTestRun(testRun)
-				}
-				project.delete(flush: true)
-				deleteProjectGroupIfUnused(origGroup)
+			def origGroup = project.projectGroup
+			def testRuns = dataService.getTestRunsByProject(project)
+			dataService.deleteTestCasesForProject(project)
+			testRuns.each { testRun ->
+				testRunService.deleteTestRun(testRun)
 			}
+			project.delete(flush: true)
+			deleteProjectGroupIfUnused(origGroup)
 		}
 	}
 
@@ -208,10 +210,10 @@ class ProjectService {
 	Map getProjectMap() {
 		def pMap = new TreeMap()
 		ProjectGroup.listOrderByName().each { group ->
-			pMap[group.name] = Project.findAllByProjectGroup(group, [sort: "name"])
+			pMap[group.name] = Project.findAllByProjectGroupAndDeleted(group, false, [sort: "name"])
 		}
 
-		def unGrouped = Project.findAllByProjectGroupIsNull([sort: "name"])
+		def unGrouped = Project.findAllByProjectGroupIsNullAndDeleted(false, [sort: "name"])
 		if (unGrouped) {
 			pMap["Ungrouped"] = unGrouped
 		}

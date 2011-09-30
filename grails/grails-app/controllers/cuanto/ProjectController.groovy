@@ -89,7 +89,7 @@ class ProjectController {
 		if (params.id) {
 			proj = dataService.getProject(params.id)
 		} else if (params.projectKey) {
-			proj = dataService.getProjectByKey(params.projectKey)
+			proj = projectService.getProject(params.projectKey)
 		}
 
 		if (!proj) {

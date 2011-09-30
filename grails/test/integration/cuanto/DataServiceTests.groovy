@@ -512,17 +512,6 @@ class DataServiceTests extends GroovyTestCase {
 	}
 
 
-	void testGetProjectByKey() {
-		def projects = []
-		1.upto(3) {
-			projects << to.project.save()
-		}
-		projects.each { proj ->
-			assertEquals "Wrong project", proj.id, dataService.getProjectByKey(proj.projectKey).id
-		}
-	}
-
-
 	void testGetTestRunsByProject() {
 		Project targetProject = to.project
 		dataService.saveDomainObject(targetProject)

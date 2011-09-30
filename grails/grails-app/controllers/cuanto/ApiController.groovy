@@ -344,7 +344,7 @@ class ApiController {
 			if (params.projectKey) {
 				project = projectService.getProject(params.projectKey)
 			} else {
-				project = Project.get(params.id)
+				project = dataService.getProject(params.id)
 			}
 
 			if (project) {

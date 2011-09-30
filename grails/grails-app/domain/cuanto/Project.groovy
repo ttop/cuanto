@@ -30,6 +30,7 @@ class Project implements Comparable {
 	String projectKey
 	String bugUrlPattern
 	TestType testType
+	Boolean deleted = false
 
 	static constraints = {
 		name(nullable: false, blank: false)
@@ -45,6 +46,7 @@ class Project implements Comparable {
 		)
 		bugUrlPattern(nullable: true)
 		testType(nullable: false)
+		deleted(nullable: true)
 	}
 
 	Project(){}
