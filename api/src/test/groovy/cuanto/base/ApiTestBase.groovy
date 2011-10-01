@@ -52,11 +52,11 @@ class ApiTestBase extends TestBase {
 
 	Project addProject() {
 		CuantoConnector projectClient = CuantoConnector.newInstance(CUANTO_URL)
-		String projectKey = wordGen.getSentence(3)
-		if (projectKey.size() > 25) {
-			projectKey = projectKey.substring(0, 24)
+		String projectKey = wordGen.getCamelWords(3)
+		if (projectKey.size() > 23) {
+			projectKey = projectKey.substring(0, 23)
 		}
-		Project project = new Project(projectKey, "CuantoConnector Tests", wordGen.getCamelWords(3),
+		Project project = new Project(wordGen.getSentence(3), "CuantoConnector Tests", projectKey,
 			"http://sample/{BUG}", "JUnit")
 		projectClient.addProject(project)
 		return project
