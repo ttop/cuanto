@@ -133,7 +133,7 @@ class InitializationService {
 				createLotsOfExtraProjects()
 		}
 
-		def projectsWithoutDeleteInitialized = Project.findByDeletedIsNull()
+		def projectsWithoutDeleteInitialized = Project.findAllByDeletedIsNull()
 		projectsWithoutDeleteInitialized.each {
 			it.deleted = false
 			dataService.saveDomainObject(it, true)
