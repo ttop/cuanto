@@ -504,11 +504,7 @@ class DataServiceTests extends GroovyTestCase {
 		proj.save()
 		assertNotNull proj.id
 		assertEquals proj.id, dataService.getProject(proj.id).id
-
-		def msg = shouldFail(HibernateSystemException) {
-			dataService.getProject("foo")
-		}
-		assertTrue "Wrong error message", msg.contains("Provided id of the wrong type")
+		assertNull dataService.getProject("foo")
 	}
 
 
