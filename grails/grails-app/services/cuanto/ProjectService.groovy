@@ -29,21 +29,17 @@ class ProjectService {
 	def dataService
 	def testRunService
 
-	def getProject(projectString, includeDeleted = false) {
-		def project
-		if (includeDeleted) {
-			project = Project.findByProjectKey(projectString)
+	def getProject(projectString) {
+		def project = Project.findByProjectKeyAndDeleted(projectString, false)
+		if (project) {
 		} else {
-			project = Project.findByProjectKeyAndDeleted(projectString, false)
-		}
-		if (!project) {
-			project = getProjectByFullName(projectString, includeDeleted)
+			project = getProjectByFullName(projectString)
 		}
 		return project
 	}
 
 
-	def getProjectByFullName(String fullName, includeDeleted = false) throws CuantoException {
+	def getProjectByFullName(String fullName) throws CuantoException {
 		def groupName = null
 		def projectName = null
 		if (fullName) {
@@ -56,7 +52,7 @@ class ProjectService {
 				projectName = parts[0]
 			}
 		}
-		dataService.getProject(groupName, projectName, includeDeleted)
+		dataService.getProject(groupName, projectName)
 	}
 
 
@@ -219,5 +215,17 @@ class ProjectService {
 		}
 
 		return pMap
+	}
+
+	void queueForDeletion(Project project) {
+		def groupId = project?.projectGroup?.id
+		project.deleted = true
+		project.projectGroup = null
+		project.projectKey = String.valueOf(System.currentTimeMillis()).reverse()
+		dataService.saveDomainObject(project, true)
+		ProjectGroup group = ProjectGroup.get(groupId)
+		if (group) {
+			deleteProjectGroupIfUnused(group)
+		}
 	}
 }
