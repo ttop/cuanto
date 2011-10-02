@@ -32,8 +32,10 @@ class ProjectDeletionJob {
 		log.debug "executing ${this.class.simpleName}"
 		def toDelete = Project.findAllByDeleted(true)
 		toDelete.each {
-			log.info("Deleting ${it.name}")
+			def pg = it.projectGroup?.name
+			log.info("Deleting ${it.name} from ProjectGroup ${pg}")
 			projectService.deleteProject(it)
+			log.info("${it.name} from ProjectGroup ${pg} deleted")
 		}
 	}
 
