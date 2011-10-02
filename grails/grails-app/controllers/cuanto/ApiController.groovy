@@ -1,3 +1,24 @@
+
+/*
+ Copyright (c) 2010 Todd Wells.
+
+This file is part of Cuanto, a test results repository and analysis program.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 package cuanto
 
 import cuanto.TestOutcome
@@ -6,6 +27,7 @@ import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import cuanto.parsers.ParsableProject
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class ApiController {
 
@@ -288,13 +310,7 @@ class ApiController {
 			response.status = response.SC_BAD_REQUEST
 			render "No projectKey or id parameter was provided on the request."
 		} else {
-			Project project
-
-			if (params.projectKey) {
-				project = projectService.getProject(params.projectKey)
-			} else {
-				project = Project.get(params.id)
-			}
+			Project project = getProjectFromParams(params)
 
 			if (project) {
 				render project.toJSONMap() as JSON
@@ -303,6 +319,17 @@ class ApiController {
 				render "A Project matching the projectkey or id was not found."
 			}
 		}
+	}
+
+
+	Project getProjectFromParams(params) {
+		def project = null
+		if (params?.projectKey) {
+			project = projectService.getProject(params.projectKey)
+		} else if (params?.id) {
+			project = dataService.getProject(params.id)
+		}
+		return project
 	}
 
 
@@ -349,8 +376,8 @@ class ApiController {
 
 			if (project) {
 				def projectName = project.name
-				projectService.deleteProject(project)
-				render "Deleted Project ${params.id}, ${projectName}."
+				projectService.queueForDeletion(project)
+				render "Queued Project ${params.id}, ${projectName} for deletion."
 			} else {
 				response.status = response.SC_NOT_FOUND
 				render "A Project matching the projectkey or id was not found."
