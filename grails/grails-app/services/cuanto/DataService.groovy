@@ -59,33 +59,27 @@ class DataService {
 
 	
 	def getProject(id) {
-		def project = Project.get(id)
-		if (project?.deleted) {
+		try {
+			return Project.find("from Project p where p.id = ? and p.deleted = false", [Long.valueOf(id)])
+		} catch (NumberFormatException e) {
 			return null
-		} else {
-			return project
 		}
 	}
 
 
-	def getProject(groupName, projectName, includeDeleted = false) throws CuantoException {
-		def queryString = "from cuanto.Project p where "
+	def getProject(groupName, projectName) throws CuantoException {
+		def queryString
 		def queryArgs = []
 
 		if (groupName) {
-			queryString += "p.projectGroup.name = ? and p.name = ? "
+			queryString = "from cuanto.Project p where p.projectGroup.name = ? and p.name = ? and p.deleted = false"
 			queryArgs << groupName
 		} else {
-			queryString += "p.projectGroup is null and p.name = ? "
-		}
-
-		if (!includeDeleted) {
-			queryString += "and p.deleted = false"
+			queryString = "from cuanto.Project p where p.projectGroup is null and p.name = ? and p.deleted = false"
 		}
 
 		queryArgs << projectName
-		def proj = Project.find(queryString, queryArgs)
-		return proj
+		return Project.find(queryString, queryArgs)
 	}
 
 
