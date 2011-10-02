@@ -134,10 +134,14 @@ class ProjectTests extends GroovyTestCase {
 
 		projects.each { proj ->
 			def foundProj = dataService.getProject(proj.projectGroup.name, proj.name)
-			assertNotNull proj
 			assertNotNull foundProj
 			assertEquals proj, foundProj
 		}
+
+		Project projectQueuedForDeletion = projects[0]
+		projectQueuedForDeletion.deleted = true
+		assertNull("Project queued for deletion shouldn't be returned",
+			dataService.getProject(projectQueuedForDeletion.projectGroup?.name, projectQueuedForDeletion.name))
 
 		def proj = new Project(name: fakes.wordGen.getSentence(3), projectKey: fakes.getProjectKey(),
 			'testType': testType)
@@ -311,13 +315,7 @@ class ProjectTests extends GroovyTestCase {
 		assertNull "No test case should've been returned", projectService.createTestCase([:])
 		assertEquals "No test case should've been created", 0, TestCase.list().size()
 
-		def msg = shouldFail(HibernateSystemException) {
-			def params = [project: "foo"]
-			projectService.createTestCase(params)
-		}
-		assertTrue "Wrong error message", msg.contains("Provided id of the wrong type")
-
-		msg = shouldFail(CuantoException) {
+		def msg = shouldFail(CuantoException) {
 			def params = [project: 12345]
 			projectService.createTestCase(params)
 		}
