@@ -45,8 +45,9 @@ class ProjectController {
 
 	def delete = {
 		def project = Project.get(params.id)
-		projectService.deleteProject(project)
-		render "OK"
+		String projectName = project.name
+		projectService.queueForDeletion(project)
+		render "Project ${projectName} queued for deletion."
 	}
 
 
