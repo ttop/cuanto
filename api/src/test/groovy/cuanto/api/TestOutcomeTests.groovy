@@ -406,7 +406,12 @@ public class TestOutcomeTests extends ApiTestBase {
 		outcome.owner = "Cuanto"
 		outcome.note = "Cuanto note"
 		outcome.testOutput = "Fantastic test output"
-		outcome.addTag(wordGen.getWord())
+		final tagOne = wordGen.getWord()
+		outcome.addTag(tagOne)
+		def tagTwo = wordGen.getWord()
+		while (tagTwo == tagOne) {
+			tagTwo = wordGen.getWord()
+		}
 		outcome.addTag(wordGen.getWord())
 		assertEquals "tags", 2, outcome.tags?.size()
 
