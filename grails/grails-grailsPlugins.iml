@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="GrailsWeb">
+      <configuration>
+        <webroots>
+          <root url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/plugins/feeds-1.4/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/web-app" relative="/" />
+        </webroots>
+        <sourceRoots />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6">
+      <excludeFolder url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/feeds-1.4">
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/grails-app/taglib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/unit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/integration" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/hibernate-1.3.4">
+      <excludeFolder url="file://$MODULE_DIR$/plugins/hibernate-1.3.4/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/hibernate-1.3.4/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/hibernate-1.3.4/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/quartz-0.4.1">
+      <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/grails-app/services" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/tomcat-1.3.4">
+      <sourceFolder url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/src/groovy" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2">
+      <sourceFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/grails-app/taglib" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/web-app/plugins" />
+    </content>
+    <content url="file://$MODULE_DIR$/plugins/yui-2.6.0">
+      <sourceFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/grails-app/taglib" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/yui-2.6.0/web-app/plugins" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-1.3.4" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="Grails User Library (grails-grailsPlugins)">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/lib" />
+          <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1/lib" />
+          <root url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/lib" />
+          <root url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" />
+          <root url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/code-coverage-1.1.6/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/quartz-0.4.1/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/tomcat-1.3.4/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/ui-performance-1.2.2/lib" recursive="false" />
+      </library>
+    </orderEntry>
+  </component>
+</module>
+
