@@ -60,10 +60,12 @@ class ProjectService {
 		if (project) {
 			def origGroup = project.projectGroup
 			def testRuns = dataService.getTestRunsByProject(project)
-			dataService.deleteTestCasesForProject(project)
 			testRuns.each { testRun ->
-				testRunService.deleteTestRun(testRun)
+				testRunService.deleteTestRun(testRun, false)
 			}
+
+			TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
+
 			project.delete(flush: true)
 			deleteProjectGroupIfUnused(origGroup)
 		}
@@ -219,6 +221,7 @@ class ProjectService {
 
 	void queueForDeletion(Project project) {
 		def groupId = project?.projectGroup?.id
+		log.info "Queuing ${project.name} for deletion"
 		project.deleted = true
 		project.projectGroup = null
 		project.projectKey = String.valueOf(System.currentTimeMillis()).reverse()

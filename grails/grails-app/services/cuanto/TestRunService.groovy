@@ -648,11 +648,15 @@ class TestRunService {
 	 * after which FailureStatusUpdateTasks are queued for re-initialization of the isFailureStatusChanged field
 	 * for all TestOutcomes in the next TestRun.
 	 */
-	def deleteTestRun(TestRun run) {
-		TestRun.withTransaction {
+	def deleteTestRun(TestRun run, recalc = true) {
 			try {
-				TestRun testRun = TestRun.lock(run.id)
-				TestRun nextRun = dataService.getNextTestRun(run)
+				TestRun testRun = TestRun.get(run.id)
+				TestRun nextRun = null
+
+				 if (recalc) {
+					 nextRun = dataService.getNextTestRun(run)
+				 }
+
 				statisticService.dequeueTestRunStats(run.id)
 				statisticService.deleteStatsForTestRun(run)
 
@@ -684,7 +688,8 @@ class TestRunService {
 
 				testRun.save()
 				testRun.delete()
-				if (nextRun) {
+
+				if (recalc && nextRun) {
 					failureStatusService.queueFailureStatusUpdateForRun(nextRun)
 					nextRun?.discard()
 				}
@@ -695,15 +700,12 @@ class TestRunService {
 			} catch (StaleObjectStateException e) {
 				log.error "StaleObjectStateException for test run ${run.id}"
 			}
-		}
 	}
 
 
-	Integer deleteTestRuns(testRunIds) {
-		TestRun.withTransaction {
-			testRunIds.each { runId ->
-				deleteTestRun TestRun.get(runId)
-			}
+	Integer deleteTestRuns(testRunIds, recalc = true) {
+		testRunIds.each { runId ->
+			deleteTestRun(TestRun.get(runId), recalc)
 		}
 		return testRunIds.size()
 	}

@@ -154,20 +154,4 @@ class TestCaseTests extends GroovyTestCase {
 		assertEquals "Wrong number of test cases", 1, dataService.getTestCases(fetchedProj).size()
 	}
 
-
-	void testDeleteTestCasesForProject() {
-		def project = to.project
-		dataService.saveDomainObject project
-
-		def testCases = 10
-		1.upto(testCases) {
-			def testCase = to.getTestCase(project)
-			dataService.saveDomainObject testCase
-		}
-
-		assertEquals "Wrong number of test cases", testCases, TestCase.list().size()
-		dataService.deleteTestCasesForProject(project)
-		assertEquals "Wrong number of test cases", 0, TestCase.list().size()
-		assertEquals "Wrong number of test outcomes", 0, TestOutcome.list().size()
-	}
 }

@@ -33,10 +33,11 @@ class ProjectDeletionJob {
 		def toDelete = Project.findAllByDeleted(true)
 		toDelete.each {
 			def pg = it.projectGroup?.name
-			log.info("Deleting ${it.name} from ProjectGroup ${pg}")
+			def startTime = new Date().time
+			log.info("Deleting project ${it.name}")
 			projectService.deleteProject(it)
-			log.info("${it.name} from ProjectGroup ${pg} deleted")
+			def elapsed = new Date().time - startTime
+			log.info("Project ${it.name} deleted, ${elapsed} ms elapsed.")
 		}
 	}
-
 }
