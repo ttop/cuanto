@@ -21,6 +21,7 @@
 def cuantoBase = grailsSettings.baseDir.toString() + "/.."
 def releaseDir = "${cuantoBase}/dist/release"
 def apiDir = "${cuantoBase}/api"
+def adapterDir = "${cuantoBase}/adapter"
 def sqlDir = "${cuantoBase}/grails/sql"
 def javadocDir = "${apiDir}/target/site/apidocs"
 
@@ -32,65 +33,68 @@ println "Grails app version is $cuantoVersion"
 def targetDir = "${cuantoBase}/dist/target"
 def zipDir = "${targetDir}/cuanto-${cuantoVersion}"
 def targetApiDir = "${zipDir}/api"
+def targetAdapterDir = "${zipDir}/adapter"
 def targetSqlDir = "${zipDir}/sql"
 
 def sqlFileCount;
 
-def pomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
-println "API pom version is ${pomXml.version}"
+def apiPomXml = new XmlSlurper().parse(new File("${apiDir}/pom.xml"))
+def adapterPomXml = new XmlSlurper().parse(new File("${adapterDir}/pom.xml"))
+println "API pom version is ${apiPomXml.version}"
+println "Adapter pom version is ${adapterPomXml.version}"
 
-if (cuantoVersion.toString() != pomXml.version.toString()) {
+
+if (cuantoVersion.toString() != apiPomXml.version.toString()) {
 	println "\nWARNING: Grails application version and API pom version are mismatched!\n"
 }
 
+Closure getModulePackager(moduleName, moduleDir, pomXml, targetDir)
+{
+	return {
+		println "Packaging the $moduleName"
 
-target(cuantoapi: "Build the Cuanto test API") {
-	println "Packaging the Cuanto test API"
-
-	// Update the Cuanto Java Client version to match the grails application version.
-	String userAgent = "final static String HTTP_USER_AGENT = \"Java CuantoConnector ${cuantoVersion.toString()}; Jakarta Commons-HttpClient/3.1\";"
-	ant.replaceregexp(file: "${apiDir}/src/main/java/cuanto/api/CuantoConnector.java",
-		match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
-
-	println "beginning packaging"
-	def packageProcess = "mvn -f ${apiDir}/pom.xml clean package".execute()
-	packageProcess.waitFor()
-	println "clean package done"
-	if (packageProcess.exitValue() != 0) {
-		ant.fail(message: "Packaging API failed:\n " + packageProcess.text)
-	}
-	"mvn -f ${apiDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
-
-	println "creating javadocs"
-	def javadocProcess = "mvn -f ${apiDir}/pom.xml javadoc:javadoc".execute()
-	println "waiting for javadocs"
-	javadocProcess.waitForOrKill(20000) //used to be just waitFor(), but it's started never returning 
-
-	if (javadocProcess.exitValue() != 0) {
-		def text
-		try {
-			ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
-		} catch (IOException e) {
-			println "Creating JavaDocs failed due to an unknown reason, had to kill the process. Continuing the build"
+		println "beginning packaging"
+		def packageProcess = "mvn -f ${moduleDir}/pom.xml clean install".execute()
+		packageProcess.waitFor()
+		println "clean package done"
+		if (packageProcess.exitValue() != 0) {
+			ant.fail(message: "Packaging $moduleName failed:\n " + packageProcess.text)
 		}
-	}
+		"mvn -f ${moduleDir}/pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DexcludeScope=provided -DexcludeArtifactIds=junit".execute().text
 
-	println "done with javadocs"
-	println "deleting lib"
-	ant.delete(verbose: "true", failonerror: "true") {
-		fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
-	}
+		println "creating javadocs"
+		def javadocProcess = "mvn -f ${moduleDir}/pom.xml javadoc:javadoc".execute()
+		println "waiting for javadocs"
+		javadocProcess.waitForOrKill(20000) //used to be just waitFor(), but it's started never returning
 
-	println "copying files"
-	def distClientJar = "${apiDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
-	ant.copy(file: distClientJar, todir: targetApiDir, verbose: "true")
-	ant.copy(todir: targetApiDir, verbose: "true") {
-		fileset(dir:"${apiDir}/target/dependency", includes: "*.jar")
+		if (javadocProcess.exitValue() != 0) {
+			def text
+			try {
+				ant.fail(message: "Creating JavaDocs failed:\n" + javadocProcess.text)
+			} catch (IOException e) {
+				println "Creating JavaDocs failed due to an unknown reason, had to kill the process. Continuing the build"
+			}
+		}
+
+		println "done with javadocs"
+		println "deleting lib"
+		ant.delete(verbose: "true", failonerror: "false") {
+			fileset(dir:"lib", includes: "${pomXml.artifactId}-*.jar")
+		}
+
+		println "copying files"
+		def distClientJar = "${moduleDir}/target/${pomXml.artifactId}-${pomXml.version}.jar"
+		ant.copy(file: distClientJar, todir: targetDir, verbose: "true")
+		ant.copy(todir: targetDir, verbose: "true") {
+			fileset(dir:"${moduleDir}/target/dependency", includes: "*.jar")
+		}
+		println "done copying"
+		grailsSettings.compileDependencies << new File(distClientJar)
 	}
-	println "done copying"
-	grailsSettings.compileDependencies << new File(distClientJar)
 }
 
+target(cuantoapi: "Build the Cuanto test API", getModulePackager("Cuanto API", apiDir, apiPomXml, targetApiDir))
+target(cuantoadapter: "Build the Cuanto Adapter", getModulePackager("Cuanto Adapter", adapterDir, adapterPomXml, targetAdapterDir))
 
 target(cuantowar: "Build the Cuanto WAR") {
 	println "Building the Cuanto WAR"
@@ -129,8 +133,9 @@ target(cuantopackage: "Build the Cuanto distributable") {
 	ant.mkdir(dir: licenseDir)
 	ant.mkdir(dir: releaseDir)
 	ant.mkdir(dir: targetApiDir)
+	ant.mkdir(dir: targetAdapterDir)
 
-	depends(cuantoapi, cuantowar, cuantosql)
+	depends(cuantoapi, cuantoadapter, cuantowar, cuantosql)
 
 	println "Packaging the Cuanto distribution"
 
@@ -146,6 +151,10 @@ target(cuantopackage: "Build the Cuanto distributable") {
 	}
 
 	ant.copy(todir: "${targetApiDir}/javadoc") {
+		fileset(dir:javadocDir, includes: "**/*")
+	}
+
+	ant.copy(todir: "${targetAdapterDir}/javadoc") {
 		fileset(dir:javadocDir, includes: "**/*")
 	}
 	
