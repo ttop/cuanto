@@ -64,8 +64,7 @@ class ProjectService {
 				testRunService.deleteTestRun(testRun, false)
 			}
 
-			TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
-
+			dataService.deleteTestCasesForProject(project)
 			project.delete(flush: true)
 			deleteProjectGroupIfUnused(origGroup)
 		}

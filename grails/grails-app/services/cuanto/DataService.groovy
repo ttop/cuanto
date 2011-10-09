@@ -560,6 +560,15 @@ class DataService {
 	}
 
 
+	def deleteTestCasesForProject(project) {
+		def cases = getTestCases(project)
+		cases.each { TestCase tc ->
+			TestOutcome.executeUpdate("delete cuanto.TestOutcome tout where tout.testCase = ?", [tc])
+		}
+		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
+	}
+
+
 	def getBugSummary(testRun) {
 		def bugStats = TestOutcome.executeQuery("""select distinct outc.bug, (select count(outb) from
 				cuanto.TestOutcome outb	where outb.testRun = ? and outb.bug = outc.bug) from cuanto.TestOutcome
