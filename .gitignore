@@ -3,6 +3,7 @@
 *~
 *.iws
 api/target
+adapter
 db
 grails/.classpath
 grails/.project
@@ -35,3 +36,4 @@ db/master.sql
 db/time_scripts.sh
 doc/2009 Cuanto DB schema diagram.pdf
 doc/2009 Cuanto DB schema.pdf
+sql_dump
