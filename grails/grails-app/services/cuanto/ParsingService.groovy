@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import cuanto.parsers.ParsableTestOutcome
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.hibernate.StaleObjectStateException
+import java.text.ParseException
 
 class ParsingService {
 	static transactional = false
@@ -51,7 +52,7 @@ class ParsingService {
 			throw new ParsingException("No TestRun ID or Project ID was provided")
 		}
 
-		def parser = getParser(project.testType)
+		def parser = getParser(project?.testType)
 		def outcomes = parser.parseStream(stream)
 
 		def attempts = 0
@@ -231,7 +232,7 @@ class ParsingService {
 		if (!jsonObj.isNull("valid")) {
 			testRun.valid = jsonObj.getBoolean("valid")
 		}
-		testRun.dateExecuted = new SimpleDateFormat(Defaults.fullDateFormat).parse(jsonObj.getString("dateExecuted"))
+		testRun.dateExecuted = getDateFromString(jsonObj.getString("dateExecuted"))
 
 		if (!jsonObj.isNull("links")) {
 			def links = jsonObj.getJSONObject("links")
@@ -247,6 +248,33 @@ class ParsingService {
 			}
 		}
 		return testRun
+	}
+
+
+	Date getDateFromString(String dateString) {
+		Date parsedDate = null
+		ParseException pe = null
+		for (String dateFormat : [Defaults.fullDateFormat, Defaults.jsonDateFormat, Defaults.dateFormat])
+		{
+			def sdf = new SimpleDateFormat(dateFormat)
+			try {
+				parsedDate = sdf.parse(dateString)
+				break
+			} catch (ParseException e) {
+				pe = e
+			}
+		}
+
+		if (parsedDate) {
+			return parsedDate
+		} else {
+			Long dateLong
+			try {
+				return new Date(Long.valueOf(dateString))
+			} catch (NumberFormatException e) {
+				throw pe
+			}
+		}
 	}
 
 
@@ -273,8 +301,7 @@ class ParsingService {
 		if (jsonTestOutcome.isNull(fieldName)) {
 			return null
 		} else {
-			def formatter = new SimpleDateFormat(Defaults.fullDateFormat)
-			return formatter.parse(jsonTestOutcome.getString(fieldName))
+			return getDateFromString(jsonTestOutcome.getString(fieldName))
 		}
 	}
 
