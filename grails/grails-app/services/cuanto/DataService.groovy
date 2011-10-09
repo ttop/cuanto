@@ -565,6 +565,10 @@ class DataService {
 		cases.each { TestCase tc ->
 			TestOutcome.executeUpdate("delete cuanto.TestOutcome tout where tout.testCase = ?", [tc])
 		}
+
+	    TestCase.withSession {
+		    it.flush()
+	    }
 		TestCase.executeUpdate("delete cuanto.TestCase tc where tc.project = ?", [project])
 	}
 
