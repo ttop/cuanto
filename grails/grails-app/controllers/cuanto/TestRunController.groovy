@@ -322,6 +322,7 @@ class TestRunController {
 
 				render myJson as JSON
 			}
+			/*      TODO: DELETE? I think this code is unused
 			text {
 				def testRunMap = [:]
 				TestRunStats stats = TestRunStats.findByTestRun(testRun)
@@ -330,9 +331,11 @@ class TestRunController {
 					testRunMap.tests = stats.tests
 					testRunMap.passed = stats.passed
 					testRunMap.failed = stats.failed
+					testRunMap.skipped = stats.skipped
 				}
 				render(view: 'get', model: ['testRunMap': testRunMap])
 			}
+			*/
 		}
 	}
 

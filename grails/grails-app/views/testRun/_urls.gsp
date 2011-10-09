@@ -39,7 +39,7 @@ YAHOO.cuanto.urls.set('failureChart', "${createLink(controller:'testRun', action
 YAHOO.cuanto.urls.set('summaryTable', "${createLink(controller:'testRun', action: 'summaryTable')}/${testRun?.id}");
 YAHOO.cuanto.urls.set('testRunResults', "${createLink(controller: 'testRun', action:'results')}/");
 YAHOO.cuanto.urls.set('testRunLatest', "${createLink(controller: 'testRun', action:'latest')}/");
-YAHOO.cuanto.urls.set('testRunInfo', "${createLink(controller: 'testRun', action:'get')}/");
+%{--YAHOO.cuanto.urls.set('testRunInfo', "${createLink(controller: 'testRun', action:'get')}/"); todo: delete?--}%
 YAHOO.cuanto.urls.set('testRunUpdate', "${createLink(controller: 'testRun', action:'update')}/");
 YAHOO.cuanto.urls.set('testRunUpdateNote', "${createLink(controller: 'testRun', action:'updateNote')}/");
 YAHOO.cuanto.urls.set('testRunDelete', "${createLink(controller: 'testRun', action:'delete')}/");
