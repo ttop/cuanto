@@ -76,6 +76,19 @@ public class CuantoConnector {
 	}
 
 
+	/**
+	 * Creates a new instance of CuantoConnector that connects to the specified URL via a HTTP proxy server.
+	 *
+	 * @param cuantoServerUrl The URL of the Cuanto server instance.
+	 * @param proxyHost       The hostname of the HTTP proxy.
+	 * @param proxyPort       The port for the HTTP proxy.
+	 * @return The new CuantoConnector instance.
+	 */
+	public static CuantoConnector newInstance(String cuantoServerUrl, String proxyHost, Integer proxyPort) {
+		return newInstance(cuantoServerUrl, null, proxyHost, proxyPort);
+	}
+
+
 
 	/**
 	 * Creates a new instance of CuantoConnector that connects to the specified URL and Cuanto project.
