@@ -295,7 +295,7 @@ class ApiController {
 
 	def addProject = {
 		try {
-			Project project = projectService.createProject(params)
+			Project project = parsingService.parseProject(request.JSON)
 			response.status = response.SC_CREATED
 			render project.toJSONMap() as JSON
 		} catch (CuantoException e) {

@@ -184,28 +184,7 @@ public class CuantoConnector {
 	public Long addProject(Project project) {
 		PostMethod post = (PostMethod) getHttpMethod(HTTP_POST, getCuantoUrl() + "/api/addProject");
 		try {
-			/*
-			if (project.name == null || project.name.trim() == "") {
-				throw new RuntimeException("A project must have a name specified");
-			}
-			*/
-
-			if (project.name != null) {
-				post.setParameter("name", project.name);
-			}
-			if (project.projectKey != null) {
-				post.setParameter("projectKey", project.projectKey);
-			}
-			if (project.projectGroup != null) {
-				post.setParameter("group", project.projectGroup);
-			}
-			if (project.bugUrlPattern != null) {
-				post.setParameter("bugUrlPattern", project.bugUrlPattern);
-			}
-			if (project.testType != null) {
-				post.setParameter("testType", project.testType);
-			}
-
+			post.setRequestEntity(new StringRequestEntity(project.toJSON(), "application/json", null));
 			int httpStatus = getHttpClient().executeMethod(post);
 			if (httpStatus == HttpStatus.SC_CREATED) {
 				Project created = Project.fromJSON(getResponseBodyAsString(post));
@@ -223,6 +202,7 @@ public class CuantoConnector {
 			throw new RuntimeException("Error parsing server response", e);
 		}
 	}
+
 
 	/**
 	 * @return An HTTP client, optionally configured to use a proxy.

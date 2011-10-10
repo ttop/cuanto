@@ -516,4 +516,31 @@ class ParsingService {
 		}
 		return testRun
 	}
+
+
+	Project parseProject(JSONObject jsonObj) {
+		Map paramsMap = [:]
+
+		if (jsonObj.containsKey("projectKey")) {
+			paramsMap.projectKey = jsonObj.getString("projectKey")
+		}
+
+		if (jsonObj.containsKey("name")) {
+			paramsMap.name = jsonObj.getString("name")
+		}
+
+		if (jsonObj.containsKey("projectGroup")) {
+			paramsMap.group = jsonObj.getString("projectGroup")
+		}
+
+		if (jsonObj.containsKey("bugUrlPattern")) {
+			paramsMap.bugUrlPattern = jsonObj.getString("bugUrlPattern")
+		}
+
+		if (jsonObj.containsKey("testType")) {
+			paramsMap.testType = jsonObj.getString("testType")
+		}
+
+		return projectService.createProject(paramsMap)
+	}
 }

@@ -24,6 +24,8 @@ package cuanto.api;
 import net.sf.json.JSONObject;
 
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class that represents a server-side Cuanto project.
@@ -211,4 +213,44 @@ public class Project {
 
 		return project;
 	}
+
+
+	public String toJSON() {
+		JSONObject jsonProject = JSONObject.fromObject(toJsonMap());
+		return jsonProject.toString();
+	}
+
+
+	Map toJsonMap() {
+		Map jsonMap = new HashMap();
+		if (this.projectKey != null) {
+			jsonMap.put("projectKey", this.projectKey);
+		}
+
+		if (this.name != null) {
+			jsonMap.put("name", this.name);
+		}
+
+		if (this.id != null) {
+			jsonMap.put("id", this.id);
+		}
+		if (this.projectGroup != null){
+			jsonMap.put("projectGroup", this.projectGroup);
+		}
+		if (this.projectKey != null) {
+			jsonMap.put("projectKey", this.projectKey);
+		}
+
+		if (this.bugUrlPattern != null) {
+			jsonMap.put("bugUrlPattern", this.bugUrlPattern);
+		}
+
+		if (this.testType != null) {
+			jsonMap.put("testType", this.testType);
+		}
+
+		return jsonMap;
+	}
+
+
 }
