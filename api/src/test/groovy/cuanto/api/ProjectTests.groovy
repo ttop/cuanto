@@ -33,11 +33,14 @@ class ProjectTests extends TestBase {
 
 	@Override
 	void setUp() {
-		client = CuantoConnector.newInstance(CUANTO_URL)
+		//client = CuantoConnector.newInstance(CUANTO_URL)
+		client = CuantoConnector.newInstance(CUANTO_URL, "localhost", 8888)
 	}
 
 
 	void testAddAndDeleteProject() {
+
+		// add a project
 		final projectName = wordGen.getCamelWords(3)
 		final projectGroup = "CuantoTest"
 		final String projectKey = wordGen.getCamelWords(3)
@@ -46,8 +49,11 @@ class ProjectTests extends TestBase {
 		Project project = new Project(projectName, projectGroup, projectKey, bugUrlPattern, testType)
 		
 		Long projectId = client.addProject(project)
-		
+
+		// get project by ID
 		Project fetchedProjectById = client.getProject(projectId)
+
+		// get project by key
 		Project fetchedProjectByKey = client.getProject(projectKey)
 		
 		assertEquals("Projects fetched by ID and projectKey are not equal", fetchedProjectById, fetchedProjectByKey)
@@ -66,23 +72,29 @@ class ProjectTests extends TestBase {
 		assertEquals("Wrong testType", testType, fetchedProjectByKey.testType)
 		assertEquals("Wrong ID", projectId, fetchedProjectByKey.id)
 
+		// delete the project
 		client.deleteProject(projectId)
 
+		// try fetching the deleted project
 		try {
 			client.getProject(projectId)
 			fail "Expected exception not thrown when fetching deleted project via ID"
 		} catch (RuntimeException e) {
+			assertNotNull e.message
 			assertTrue("Wrong exception message: ${e.message}",
-				e.message.contains("A Project matching the projectkey or id was not found."))
+				e.message?.contains("A Project matching the projectkey or id was not found."))
 		}
 		
 		try {
 			client.getProject(projectKey)
 			fail "Expected exception not thrown when fetching deleted project via projectKey"
 		} catch (RuntimeException e) {
+			assertNotNull e.message
 			assertTrue("Wrong exception message: ${e.message}",
-				e.message.contains("A Project matching the projectkey or id was not found."))
+				e.message?.contains("A Project matching the projectkey or id was not found."))
 		}
+
+		// rinse, repeat
 
 		client.addProject(project)
 		client.deleteProject(projectKey)
@@ -91,17 +103,31 @@ class ProjectTests extends TestBase {
 			client.getProject(projectId)
 			fail "Expected exception not thrown when fetching deleted project via ID"
 		} catch (RuntimeException e) {
+			assertNotNull(e.message)
 			assertTrue("Wrong exception message: ${e.message}",
-				e.message.contains("A Project matching the projectkey or id was not found."))
+				e.message?.contains("A Project matching the projectkey or id was not found."))
 		}
 
 		try {
 			client.getProject(projectKey)
 			fail "Expected exception not thrown when fetching deleted project via projectKey"
 		} catch (RuntimeException e) {
+			assertNotNull(e.message)
 			assertTrue("Wrong exception message: ${e.message}",
-				e.message.contains("A Project matching the projectkey or id was not found."))
+				e.message?.contains("A Project matching the projectkey or id was not found."))
 		}
+	}
+
+
+	void testDeleteProjectByNonExistentId() {
+		try {
+			client.deleteProject(9298379372L)
+			fail "Exception not thrown for non-existent ID"
+		} catch (RuntimeException e) {
+			assertNotNull e.message
+			assertTrue("Wrong exception message: ${e.message}", e.message.contains("Project not found"))
+		}
+
 	}
 
 
@@ -116,6 +142,7 @@ class ProjectTests extends TestBase {
 	void testGetProjectsByGroup() {
 		Map<String, List<Project>> projects = new HashMap<String, List<Project>>()
 
+		// get all the projects and put them in a map by projectGroup name
 		def allProjects = client.getAllProjects();
 		allProjects.each { Project project ->
 			if (project.projectGroup) {
@@ -126,6 +153,8 @@ class ProjectTests extends TestBase {
 			}
 		}
 
+		// fetch each projectGroup and verify that when calling client.getProjectsForGroup the correct number of projects
+		// are returned with the correct names
 		projects.keySet().each { groupName ->
 			def groupProjects = client.getProjectsForGroup(groupName)
 			assertEquals("Wrong number of projects returned for ${groupName}",
@@ -137,6 +166,29 @@ class ProjectTests extends TestBase {
 			}
 		}
 	}
+
+
+	void testGetProjectsByNullGroup() {
+		try {
+			client.getProjectsForGroup(null)
+			fail "Exception not thrown"
+		} catch (RuntimeException e) {
+			assertTrue "Wrong exception message for null ProjectGroup: '${e.message}'",
+				e.message?.contains("No projectGroup argument was provided.")
+		}
+	}
+
+
+	void testGetProjectsByNonExistentGroup() {
+		try {
+			client.getProjectsForGroup("NonExistentGroup")
+			fail "Exception not thrown"
+		} catch (RuntimeException e) {
+			assertTrue "Wrong exception message for non-existent Project Group: '${e.message}'",
+				e.message.contains("No group by the name NonExistentGroup was found.")
+		}
+	}
+
 
 	void testAddDeficientProjects() {
 		Project project = new Project()

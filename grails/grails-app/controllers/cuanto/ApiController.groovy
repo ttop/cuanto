@@ -376,8 +376,16 @@ class ApiController {
 
 			if (project) {
 				def projectName = project.name
+				def projectGroup = project.projectGroup?.name
 				projectService.queueForDeletion(project)
-				render "Queued Project ${params.id}, ${projectName} for deletion."
+
+				def msg
+				if (projectGroup) {
+					msg = "Queued Project ${project.id}, ${projectGroup}: ${projectName} for deletion"
+				} else {
+					msg = "Queued Project ${project.id}, ${projectName} for deletion."
+				}
+				render msg
 			} else {
 				response.status = response.SC_NOT_FOUND
 				render "A Project matching the projectkey or id was not found."
