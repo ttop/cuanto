@@ -836,6 +836,9 @@ public class CuantoConnector {
 	 * @return A List of Projects.
 	 */
 	public List<Project> getProjectsForGroup(String projectGroup) {
+		if (projectGroup == null) {
+			throw new NullPointerException("No projectGroup argument was provided.");
+		}
 		String escapedGroup = projectGroup.replaceAll(" ", "+");
 		GetMethod get = (GetMethod) getHttpMethod(HTTP_GET, getCuantoUrl() + "/api/getProjectsForGroup?name=" + escapedGroup);
 		return getProjects(get);
