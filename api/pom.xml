@@ -6,21 +6,59 @@
 	<version>2.8.b1</version>
 	<packaging>jar</packaging>
 
+	<parent>
+		<groupId>org.codehaus</groupId>
+		<artifactId>codehaus-parent</artifactId>
+		<version>4</version>
+	</parent>
+
 	<name>Cuanto Connector</name>
 	<description>The Java API for submitting results to Cuanto</description>
 	<url>http://cuanto.codehaus.org/</url>
 	<inceptionYear>2008</inceptionYear>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.version>2.0.9</maven.version>
-	</properties>
+	<licenses>
+		<license>
+			<name>GPLv3</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>ttop</id>
+			<name>Todd Wells</name>
+			<email>ttopwells@gmail.com</email>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-8</timezone>
+		</developer>
+		<developer>
+			<id>sukhyun.cho</id>
+			<name>Suk-Hyun Cho</name>
+			<email>choey2k5@gmail.com</email>
+			<roles>
+				<role>developer</role>
+				<role>tester</role>
+			</roles>
+			<timezone>-7</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:ttop/cuanto.git</connection>
+		<developerConnection>scm:git:git@github.com:ttop/cuanto.git</developerConnection>
+		<url>git@github.com:ttop/cuanto.git</url>
+	</scm>
 
 	<issueManagement>
 		<system>jira</system>
 		<url>http://test.jira.codehaus.org/browse/CUANTO</url>
 	</issueManagement>
+
 	<ciManagement>
 		<notifiers>
 			<notifier>
@@ -53,6 +91,17 @@
 		</mailingList>
 	</mailingLists>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.version>2.0.9</maven.version>
+	</properties>
+
+	  
+
+
+	<!-- removed per https://docs.sonatype.org/display/Repository/Central+Sync+Requirements -->
+	<!--
 	<repositories>
 		<repository>
 			<releases>
@@ -62,7 +111,24 @@
 			<name>Codehaus Snapshot Development Repository</name>
 			<url>http://snapshots.repository.codehaus.org/</url>
 		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<id>codehaus-snapshots</id>
+			<name>Codehaus Snapshot Development Repository</name>
+			<url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<id>codehaus-snapshots</id>
+			<name>Codehaus Release Staging Repository</name>
+			<url>https://nexus.codehaus.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</repositories>
+	-->
 
 	<dependencies>
 		<dependency>
@@ -174,7 +240,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 	</dependencies>
 
 	<distributionManagement>
@@ -229,6 +294,19 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<extensions>
