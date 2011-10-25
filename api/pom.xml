@@ -97,38 +97,6 @@
 		<maven.version>2.0.9</maven.version>
 	</properties>
 
-	  
-
-
-	<!-- removed per https://docs.sonatype.org/display/Repository/Central+Sync+Requirements -->
-	<!--
-	<repositories>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<id>codehaus-snapshots</id>
-			<name>Codehaus Snapshot Development Repository</name>
-			<url>http://snapshots.repository.codehaus.org/</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<id>codehaus-snapshots</id>
-			<name>Codehaus Snapshot Development Repository</name>
-			<url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<id>codehaus-snapshots</id>
-			<name>Codehaus Release Staging Repository</name>
-			<url>https://nexus.codehaus.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</repositories>
-	-->
 
 	<dependencies>
 		<dependency>
@@ -241,23 +209,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>codehaus.org</id>
-			<name>Cuanto Repository</name>
-			<url>dav:https://dav.codehaus.org/repository/cuanto/</url>
-		</repository>
-		<snapshotRepository>
-			<id>codehaus.org</id>
-			<name>Cuanto Development Repository</name>
-			<url>dav:https://dav.codehaus.org/snapshots.repository/cuanto/</url>
-		</snapshotRepository>
-		<site>
-			<id>codehaus.org</id>
-			<url>dav:https://dav.codehaus.org/cuanto</url>
-		</site>
-	</distributionManagement>
 
 	<build>
 		<plugins>
