@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --}%
 
 <%@ page contentType="text/html;charset=UTF-8" %>
+<g:set var="bullet" value="${grailsApplication.config.bullet}"/>
 
 <html>
 	<head>
@@ -61,11 +62,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<div id="projectBody">
 				<span class="headone">Projects</span>
 				<span class="smaller hdActions">
-					<a id="addProject" href="#addProject">Add Project</a> 
+					<a id="expandAll" href="#expandAll">Expand All</a>
+					${bullet}
+					<a id="collapseAll" href="#collapseAll">Collapse All</a>
+					${bullet}
+					<a id="addProject" href="#addProject">Add Project</a>
 				</span>
 				<g:render template="mason"/>
 				<g:render template="projectDialog"/>
-
 			</div>
 		</div>
 	</body>

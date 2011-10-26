@@ -29,6 +29,7 @@ YAHOO.cuanto.ProjectMason = function() {
 	pub.init = function() {
 		initMasonry();
 		initProjectDialog();
+		initExpandAndCollapse();
 		YAHOO.cuanto.events.projectChangeEvent.subscribe(onProjectChange);
 	};
 
@@ -36,6 +37,16 @@ YAHOO.cuanto.ProjectMason = function() {
 		YAHOO.util.Event.onAvailable("addProject", function() {
 			YAHOO.util.Event.addListener("addProject", "click", showAddProject);
 		});
+	}
+
+	function initExpandAndCollapse() {
+		YAHOO.util.Event.onAvailable("expandAll", function() {
+			YAHOO.util.Event.addListener("expandAll", "click", expandAll);
+		});
+		YAHOO.util.Event.onAvailable("collapseAll", function() {
+			YAHOO.util.Event.addListener("collapseAll", "click", collapseAll);
+		});
+
 	}
 
 
@@ -56,22 +67,48 @@ YAHOO.cuanto.ProjectMason = function() {
 				event.preventDefault();
 				var projList = $(".projList", this);
 				if (projList.css("display") == "none") {
-					var projBox = $(event.target).closest('.projBox');
-					projBox.addClass("shown");
-					$(".projList", this).show();
-					$(event.target).closest('.projBox').find(".groupLink").show();
-					$('#groups').masonry();
-					var grpId = $(".projGroup", projBox).attr("id");
+					showProjectGroup(this);
 				} else {
-					$(".projList", this).hide();
-					$(event.target).closest('.projBox').removeClass("shown");
-					$(event.target).closest('.projBox').find(".groupLink").hide();
-					$('#groups').masonry();
+					hideProjectGroup(this);
 				}
+				$('#groups').masonry();
 				storeVisibleGroups()
 			}
 		});
 	}
+
+	function showProjectGroup(grp) {
+		var projList = $(".projList", grp);
+		var projBox = $(grp).closest('.projBox');
+		projBox.addClass("shown");
+		$(".projList", grp).show();
+		$(grp).closest('.projBox').find(".groupLink").show();
+	}
+
+	function hideProjectGroup(grp) {
+		var projList = $(".projList", grp);
+		$(".projList", grp).hide();
+		$(grp).closest('.projBox').removeClass("shown");
+		$(grp).closest('.projBox').find(".groupLink").hide();
+	}
+
+	function expandAll() {
+		$.each($(".projBox"), function(idx, grp) {
+			showProjectGroup(grp);
+		});
+		$('#groups').masonry();
+		storeVisibleGroups();
+	}
+
+
+	function collapseAll() {
+		$.each($(".projBox"), function(idx, grp) {
+			hideProjectGroup(grp);
+		});
+		$('#groups').masonry();
+		storeVisibleGroups();
+	}
+
 
 	function storeVisibleGroups() {
 		var visible = $(".shown").children(".projGroup");
