@@ -93,7 +93,7 @@ YAHOO.cuanto.format = function() {
 			if (title != null && url != null && url != "") {
 				var cnt = $("<div></div>");
 				cnt.html("<span>" + title + " </span>");
-				var link = $("<a href=''" + url + "'<img src='" + YAHOO.cuanto.urls.get("shortcutImg") +
+				var link = $("<a href='" + url + "'><img src='" + YAHOO.cuanto.urls.get("shortcutImg") +
 					"' style='width:13px; height:13px;'/></a>");
 				cnt.append(link);
 				$(elCell).html("");
