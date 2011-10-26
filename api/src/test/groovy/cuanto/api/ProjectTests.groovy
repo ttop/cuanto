@@ -33,8 +33,7 @@ class ProjectTests extends TestBase {
 
 	@Override
 	void setUp() {
-		//client = CuantoConnector.newInstance(CUANTO_URL)
-		client = CuantoConnector.newInstance(CUANTO_URL, "localhost", 8888)
+		client = CuantoConnector.newInstance(CUANTO_URL)
 	}
 
 
@@ -125,7 +124,8 @@ class ProjectTests extends TestBase {
 			fail "Exception not thrown for non-existent ID"
 		} catch (RuntimeException e) {
 			assertNotNull e.message
-			assertTrue("Wrong exception message: ${e.message}", e.message.contains("Project not found"))
+			assertTrue("Wrong exception message: ${e.message}",
+				e.message?.contains("A Project matching the projectkey or id was not found."))
 		}
 
 	}
