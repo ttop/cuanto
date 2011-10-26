@@ -48,6 +48,10 @@ if (cuantoVersion.toString() != apiPomXml.version.toString()) {
 	println "\nWARNING: Grails application version and API pom version are mismatched!\n"
 }
 
+if (cuantoVersion.toString() != adapterPomXml.version.toString()) {
+	println "\nWARNING: Grails application version and adapter pom version are mismatched!\n"
+}
+
 Closure getModulePackager(moduleName, moduleDir, pomXml, targetDir)
 {
 	return {
@@ -93,7 +97,14 @@ Closure getModulePackager(moduleName, moduleDir, pomXml, targetDir)
 	}
 }
 
+// Update the Cuanto Java Client version to match the grails application version.
+String userAgent = "final static String HTTP_USER_AGENT = \"Java CuantoConnector ${cuantoVersion.toString()}; Jakarta Commons-HttpClient/3.1\";"
+ant.replaceregexp(file: "${apiDir}/src/main/java/cuanto/api/CuantoConnector.java",
+	match: '(.+)final static String HTTP_USER_AGENT.+', replace: "\\1${userAgent}")
+
 target(cuantoapi: "Build the Cuanto test API", getModulePackager("Cuanto API", apiDir, apiPomXml, targetApiDir))
+
+
 target(cuantoadapter: "Build the Cuanto Adapter", getModulePackager("Cuanto Adapter", adapterDir, adapterPomXml, targetAdapterDir))
 
 target(cuantowar: "Build the Cuanto WAR") {
