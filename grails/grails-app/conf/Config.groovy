@@ -101,4 +101,4 @@ failureStatusCalcJobBatchSize = 100
 
 bullet = "&bull;"
 
-grails.json.legacy.builder=true
+//grails.json.legacy.builder=true
