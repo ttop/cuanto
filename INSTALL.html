@@ -61,7 +61,7 @@
 		<h3>Caution</h3>
 		<p>Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production
 		instance using this method.</p>
-		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.3.4 installed. Copy
+		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.3.7 installed. Copy
 		<span class="mono">cuanto-db.groovy</span> file to the
 		<span class="mono">~/.grails</span> directory (or the Windows equivalent) and modify as described below. Copy your JDBC driver to the
 			<span class="mono">grails/lib</span> directory. Then in the
@@ -74,7 +74,7 @@
 		<p>You are probably fine just using the downloaded distributable and WAR file, but if you wish to build from scratch,
 		here are the instructions:</p>
 
-		<p>With Grails 1.3.4, Ant 1.7.0 or greater and maven (2.0.9 or greater recommended) installed, change to the
+		<p>With Grails 1.3.7, Ant 1.7.0 or greater and maven (2.2.1 or greater recommended) installed, change to the
 			<span class="mono">cuanto/grails</span> directory and
 		type "<span class="mono">grails build-cuanto</span>". This will create a
 			<span class="mono">cuanto-&lt;version&gt;.zip</span>
@@ -109,7 +109,7 @@
 		link to read about how to use Cuanto.</p>
 
 		<h2>Building/using the client jar/ant task</h2>
-		<p>Presently maven is required to build the client jar. With maven installed (2.0.9 or greater recommended),
+		<p>Presently maven is required to build the client jar. With maven installed (2.2.1 or greater recommended),
 		change to the <span class="mono">cuanto/api</span> directory and type</p>
 			<pre class="code">mvn clean package</pre>
 		<p>The jar will be built and placed in the <span class="mono">target</span> directory, with a name like
