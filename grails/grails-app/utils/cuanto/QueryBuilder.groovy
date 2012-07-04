@@ -35,7 +35,7 @@ public class QueryBuilder {
         List whereClauses = []
         List params = []
         List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
-        processors.asSynchronized().each {QueryModule queryProcessor ->
+        processors.each {QueryModule queryProcessor ->
             def details = queryProcessor.getQueryParts(queryFilter)
 
             if (details.from?.trim()) {
@@ -116,7 +116,7 @@ public class QueryBuilder {
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
 
-        processors.asSynchronized().each {QueryModule queryProcessor ->
+        processors.each {QueryModule queryProcessor ->
 			def details = queryProcessor.getQueryParts(queryFilter)
 
             if (details.from?.trim()) {
@@ -157,7 +157,7 @@ public class QueryBuilder {
 	}
 
 
-	List<QueryModule> getProcessors(Class clazz) {
+	synchronized List<QueryModule> getProcessors(Class clazz) {
 		if (!moduleProcessors) {
 			moduleProcessors = new HashMap<Class, List<QueryModule>>();
 			queryModules.each { QueryModule module ->
