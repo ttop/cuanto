@@ -79,7 +79,7 @@ class ParsingService {
 	TestRun saveParsedOutcomes(outcomes, testRun, project) {
 		def localTestRun = null
 		if (testRun) {
-			localTestRun = TestRun.get(testRun.id)
+			localTestRun = TestRun.lock(testRun.id)
 		}
 
 		def testOutcomesToSave = []
@@ -95,7 +95,7 @@ class ParsingService {
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${localTestRun.project}"
 
 		if (localTestRun) {
-			localTestRun = TestRun.get(localTestRun.id)
+			localTestRun = TestRun.lock(localTestRun.id)
 			testOutcomesToSave.each { outcome ->
 				outcome.tags?.each { tag ->
 					localTestRun.addToTags(tag)
@@ -131,7 +131,7 @@ class ParsingService {
 		if (jsonTestOutcome.has("testRun")) {
 			JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
 			if (jsonTestRun != null) {
-				testOutcome.testRun = TestRun.get(jsonTestRun.getLong("id"))
+				testOutcome.testRun = TestRun.lock(jsonTestRun.getLong("id"))
 			}
 		}
 		testOutcome.testResult = dataService.result(jsonTestOutcome.getString("result").toLowerCase())
@@ -507,7 +507,7 @@ class ParsingService {
 		def errMsg = "Unable to locate test run ID ${testRunId}"
 		def testRun
 		try {
-			testRun = TestRun.get(testRunId)
+			testRun = TestRun.lock(testRunId)
 		} catch (Exception e) {
 			throw new ParsingException(errMsg)
 		}
