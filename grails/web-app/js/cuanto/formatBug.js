@@ -66,6 +66,16 @@ YAHOO.cuanto.format = function () {
 		return maxLength;
 	}
 
+	function findLastCommonTokenIndex(brokenString, maxLength) {
+		var lastCommonToken = -1;
+		for (var i = 0; i < brokenString.length && i < maxLength; ++i) {
+			var c = brokenString[i];
+			if (c == '.' || c == ' ' || c == ',')
+				lastCommonToken = i;
+		}
+		return lastCommonToken;
+	}
+
 	var pub = {}; // public methods
 
 	pub.showBugInNewWindow = function (e) {
@@ -165,16 +175,6 @@ YAHOO.cuanto.format = function () {
 		truncationToggler.isTruncated = !truncationToggler.isTruncated;
 		return false;
 	};
-
-	function findLastCommonTokenIndex(brokenString, maxLength) {
-		var lastCommonToken = -1;
-		for (var i = 0; i < brokenString.length && i < maxLength; ++i) {
-			var c = brokenString[i];
-			if (c == '.' || c == ' ' || c == ',')
-				lastCommonToken = i;
-		}
-		return lastCommonToken;
-	}
 
 	pub.breakOnToken = function (str, token, suggestedWidthInPx) {
 		var maxLength = getNumCharactersForPixelLength(suggestedWidthInPx);
