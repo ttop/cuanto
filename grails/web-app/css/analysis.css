@@ -178,3 +178,8 @@
 	zoom:1;
 	*display:inline;
 }
+
+#resultsTabContents {
+    width: 100%;
+    overflow: auto;
+}
