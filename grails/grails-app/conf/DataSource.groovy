@@ -37,6 +37,15 @@ environments {
 			url = application.config.dataSource.url
 			username = application.config.dataSource.username
 			password = application.config.dataSource.password
+			properties {
+				maxActive = 10
+				maxIdle = 8
+				minIdle = 5
+				initialSize = 5
+				minEvictableIdleTimeMillis = 1800000
+				timeBetweenEvictionRunsMillis = 1800000
+				maxWait = 10000
+			}
 		}
 	}
 }
