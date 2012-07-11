@@ -184,7 +184,7 @@ class TestOutcomeTests extends GroovyTestCase {
 		String newTitle = wordGen.getSentence(3)
 		Bug newTitleBug = bugService.getBug(newTitle, createdBugUrl)
 		assertNotNull newTitleBug
-		assertEquals createdBugId, newTitleBug.id
+		assertFalse createdBugId.equals(newTitleBug.id)
 		assertEquals newTitle, newTitleBug.title
 		assertEquals createdBugUrl, newTitleBug.url
 

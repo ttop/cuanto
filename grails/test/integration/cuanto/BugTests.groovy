@@ -86,4 +86,24 @@ class BugTests extends GroovyTestCase {
 		assertEquals "Wrong total", 1, bugSummary[3].total
 
 	}
+
+
+	void testGetBug() {
+
+		Bug bugA = bugService.getBug("Foo", "http://bar")
+		Bug bugB = bugService.getBug("Foo", "http://bar")
+
+		assertEquals("Wrong bug total", 1, Bug.count())
+		assertEquals("Bugs not equal", bugA, bugB)
+
+		Bug bugC = bugService.getBug("Foo", "http://blah")
+		assertEquals("Wrong bug total", 2, Bug.count())
+
+		Bug bugD = bugService.getBug("Bar", "http://foo")
+		assertEquals("Wrong bug total", 3, Bug.count())
+
+		Bug bugE = bugService.getBug("Baz", "http://bar")
+		assertEquals("Wrong bug total", 4, Bug.count())
+
+	}
 }

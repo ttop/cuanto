@@ -496,6 +496,82 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		assertTestNamesExtracted "", "solo"
 	}
 
+
+	void testChangeBugOnTestOutcome() {
+
+		// create a project
+		Project proj = to.getProject()
+		proj.save()
+
+		// create a test case
+		TestCase tc = to.getTestCase(proj)
+		dataService.saveDomainObject tc
+
+		// create a test run
+		TestRun testRun = to.getTestRun(proj)
+		dataService.saveDomainObject testRun
+
+		Bug bugA = new Bug(title: "A", url: "http://a")
+		Bug bugB = new Bug(title: "B", url: "http://b")
+		Bug bugC = new Bug(title: "C", url: "http://c")
+		Bug bugD = new Bug(title: "D", url: "http://a")
+
+		// create a TestOutcome1 referencing bug A
+		TestOutcome outcome1 = to.getTestOutcome(tc, testRun)
+		dataService.saveDomainObject bugA
+		outcome1.bug = bugA
+		dataService.saveDomainObject outcome1
+
+		// create a  TestOutcome2 referencing bug A
+		TestOutcome outcome2 = to.getTestOutcome(tc, testRun)
+		outcome2.bug = bugA
+		dataService.saveDomainObject outcome2
+		assertEquals("Wrong bug count", 1, Bug.count())
+
+		// create a TestOutcome3 referencing bug B
+		TestOutcome outcome3 = to.getTestOutcome(tc, testRun)
+		dataService.saveDomainObject bugB
+		outcome3.bug = bugB
+		dataService.saveDomainObject outcome3
+		assertEquals("Wrong bug count", 2, Bug.count())
+
+		// update TestOutcome1 to bugC
+		TestOutcome updatedOutcome1 = new TestOutcome()
+		updatedOutcome1.id = outcome1.id
+		updatedOutcome1.testCase = outcome1.testCase
+		updatedOutcome1.note = outcome1.note
+		updatedOutcome1.testRun = outcome1.testRun
+		updatedOutcome1.testOutput = outcome1.testOutput
+		updatedOutcome1.testResult = outcome1.testResult
+		dataService.saveDomainObject bugC
+		updatedOutcome1.bug = bugC
+		testOutcomeService.updateTestOutcome(updatedOutcome1)
+		assertEquals("Wrong number of TestOutcomes", 3, TestOutcome.count())
+		assertEquals("Wrong number of Bugs", 3, Bug.count())
+
+		// update TestOutcome2 to reference bugB
+		outcome2.bug = bugB
+		testOutcomeService.updateTestOutcome(outcome2)
+		def outcomeList = TestOutcome.findAllByBug(bugA)
+		dataService.deleteBugIfUnused(bugA)
+		def bugList = Bug.findAll()
+		assertEquals("Wrong number of Bugs", 2, Bug.count())
+
+		// update TestOutcome3 to reference bugC
+		outcome3.bug = bugC
+		testOutcomeService.updateTestOutcome(outcome3)
+		dataService.deleteBugIfUnused(bugB)
+		assertEquals("Wrong number of Bugs", 2, Bug.count())
+
+		//update TestOutcome2 to reference bugC
+		outcome2.bug = bugC
+		testOutcomeService.updateTestOutcome(outcome2)
+		dataService.deleteBugIfUnused(bugB)
+		assertEquals("Wrong number of Bugs", 1, Bug.count())
+
+	}
+
+
 	void assertTestNamesExtracted(pkgName, tName) {
 		def fullName = pkgName? pkgName + "." + tName : tName
 		def extracted = testOutcomeService.extractTestCaseNames(pkgName + "." + tName)
