@@ -1,6 +1,5 @@
 package cuanto.adapter.listener.testng.adhoc;
 
-import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -10,51 +9,30 @@ import org.testng.annotations.Test;
  * <p/>
  * Failures are expected and do not indicate a bug.
  */
-public class TestNgListenerAdHocTests extends BaseTestClass
+public class SomeOtherTests extends BaseTestClass
 {
 	@Test(groups = "1.0.0")
-	public void one() {}
+	public void testSomething1() {}
 
 	@Test(groups = "reaperagent")
-	public void two() {}
-
-	@Test(groups = "1.0.0")
-	public void three() {}
-
-	@Test(groups = "reaperagent")
-	public void four() {}
-
-	@Test(groups = "Happy")
-	public void testHappy1()
-	{
-		System.out.println("testHappy1: " + Thread.currentThread().getName());
-	}
+	public void testSomething2() {}
 
 	@Test(groups = { "Happy", "Second" })
-	public void testHappy2()
+	public void testSomething3() {}
 	{
 		System.out.println("testHappy2: " + Thread.currentThread().getName());
-	}
-
-	@Test(groups = "Sad")
-	public void testSad1()
-	{
-		System.out.println("testSad1: " + Thread.currentThread().getName());
-		Assert.fail("sad1");
-	}
-
-	@Test(groups = { "Sad", "Second" })
-	public void testSad2()
-	{
-		System.out.println("testSad2: " + Thread.currentThread().getName());
-		Assert.fail("sad2");
 	}
 
 	@Test
 	public void testSkip1()
 	{
 		System.out.println("testSkip1: " + Thread.currentThread().getName());
-		throw new SkipException("skip1");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 200; ++i)
+        {
+            sb.append(i % 10);
+        }
+		throw new SkipException("skip1: " + sb.toString());
 	}
 
 	@Test
