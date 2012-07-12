@@ -39,16 +39,11 @@ class BugService {
 
 		def bug = null
 
-		if (localUrl) {
-			bug = dataService.findBugByUrl(url)
-		} else if (localTitle) {
-			bug = dataService.findBugByTitle(title)
+		if (localTitle || localUrl) {
+			bug = Bug.findByTitleAndUrl(localTitle, localUrl)
 		}
-
 		if (bug) {
-			bug.title = localTitle
-			bug.url = localUrl
-			dataService.saveDomainObject(bug)
+			return bug
 		} else {
 			bug = new Bug('title': localTitle, 'url': localUrl)
 			dataService.saveDomainObject(bug)
