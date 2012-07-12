@@ -70,7 +70,7 @@ YAHOO.cuanto.format = function () {
 		var lastCommonToken = -1;
 		for (var i = 0; i < brokenString.length && i < maxLength; ++i) {
 			var c = brokenString[i];
-			if (c == '.' || c == ' ' || c == ',')
+			if (c == '.' || c == ' ' || c == ',' || c == ':')
 				lastCommonToken = i;
 		}
 		return lastCommonToken;
@@ -220,7 +220,12 @@ YAHOO.cuanto.format = function () {
 			if (lastCommonTokenIndex > -1) {
 				lines.push(brokenString.substring(0, lastCommonTokenIndex + 1));
 				brokenString = brokenString.substring(lastCommonTokenIndex + 1);
+			} else {
+				// force line break, since no good token to break on was found
+				lines.push(brokenString.substring(0, maxLength));
+				brokenString = brokenString.substring(maxLength);
 			}
+
 		}
 		if (brokenString.length > 0) {
 			lines.push(brokenString);
