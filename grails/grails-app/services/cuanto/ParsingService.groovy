@@ -113,7 +113,7 @@ class ParsingService {
 		TestOutcome testOutcome = null
 
 		if (!jsonTestOutcome.isNull("id")) {
-			testOutcome = TestOutcome.get(jsonTestOutcome.getLong("id"))
+			testOutcome = TestOutcome.lock(jsonTestOutcome.getLong("id"))
 		}
 
 		if (!testOutcome) {
