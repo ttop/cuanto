@@ -5,7 +5,7 @@ Cuanto is a tool for storing automated and manual test results, organizing them 
 analyzing the nature of individual test failures, and using the resulting data to provide useful
 statistics.
 
-You can find out more about Cuanto at the [Cuanto web site](http://cuanto.codehaus.org).
+You can find out more about Cuanto at the [Cuanto web site](http://trackyourtests.com).
 
 ### Licensing
 
