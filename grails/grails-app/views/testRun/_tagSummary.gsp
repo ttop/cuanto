@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <th>Failed</th>
                 <th>Skipped</th>
                 <th>Total</th>
+                <th>Duration</th>
             </tr>
             </thead>
             <tbody>
@@ -44,6 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <td align="center">${tagstat?.failed}</td>
                     <td align="center">${tagstat?.skipped}</td>
                     <td align="center">${tagstat?.total}</td>
+                    <td align="center"><g:formatDuration ms="${tagstat?.duration}" /></td>
                 </tr>
             </g:each>
             </tbody>

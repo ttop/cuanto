@@ -21,9 +21,9 @@ package cuanto
 
 import grails.util.Environment
 import java.math.MathContext
+import org.hibernate.StaleObjectStateException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
-import org.hibernate.StaleObjectStateException
 
 class StatisticService {
 
@@ -186,21 +186,22 @@ class StatisticService {
 			calculateAnalysisStats(testRun)
 			dataService.saveDomainObject(calculatedStats)
 
-			def testRunStatistics = TestRunStats.findByTestRun(testRun)
-			if (testRunStatistics.tagStatistics?.size() > 0) {
-				def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
-				statsToRemove.each {
-					testRunStatistics.removeFromTagStatistics(it).save()
-					it.delete(flush:true)
-				}
-			}
-			dataService.saveDomainObject(testRunStatistics)
+            TestRunStats.withTransaction {
+                def testRunStatistics = TestRunStats.findByTestRun(testRun)
+                if (testRunStatistics.tagStatistics?.size() > 0) {
+                    def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
+                    statsToRemove.each {
+                        testRunStatistics.removeFromTagStatistics(it).save()
+                        it.delete(flush:true)
+                    }
+                }
 
-			def tagStats = getTagStatistics(testRun)
-			tagStats.each {
-				testRunStatistics.addToTagStatistics(it)
-			}
-			dataService.saveDomainObject(testRunStatistics, true)
+                def tagStats = getTagStatistics(testRun)
+                tagStats.each {
+                    testRunStatistics.addToTagStatistics(it)
+                }
+                dataService.saveDomainObject(testRunStatistics, true)
+            }
 		}
 	}
 
@@ -231,25 +232,30 @@ class StatisticService {
 		if (Environment.current != Environment.TEST) {
 			// The HSQL database doesn't like the following query, so we won't do it in testing.
 			testRun.tags.each {tag ->
-				def rawStats = TestOutcome.executeQuery("select t.testResult, count(*) from cuanto.TestOutcome t " +
+                def (iTestResult, iDuration, iCount) = [0, 1, 2]
+				def rawStats = TestOutcome.executeQuery("select t.testResult, sum(t.duration), count(*) from cuanto.TestOutcome t " +
 					"inner join t.tags tag_0 where t.testRun = ? and tag_0 = ? group by t.testResult", [testRun, tag])
 				def tagStat = new TagStatistic()
 				tagStat.tag = tag
 
-				def passed = rawStats.findAll {!it[0].isFailure && !it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
-				tagStat.passed = passed ? passed : 0;
+				def passed = rawStats.findAll {!it[iTestResult].isFailure && !it[iTestResult].isSkip && it[iTestResult].includeInCalculations}.collect {it[iCount]}.sum()
+				tagStat.passed = passed ?: 0;
 				log.debug "${passed} passed for ${tag.name}"
 
-				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && !it[0].isSkip}.collect {it[1]}.sum()
-				tagStat.failed = failed ? failed : 0;
+				def failed = rawStats.findAll {it[iTestResult].isFailure && it[iTestResult].includeInCalculations && !it[iTestResult].isSkip}.collect {it[iCount]}.sum()
+				tagStat.failed = failed ?: 0;
 				log.debug "${failed} failed for ${tag.name}"
 
-				def skipped = rawStats.findAll {it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
-				tagStat.skipped = skipped ? skipped : 0;
+				def skipped = rawStats.findAll {it[iTestResult].isSkip && it[iTestResult].includeInCalculations}.collect {it[iCount]}.sum()
+				tagStat.skipped = skipped ?: 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 
-				def total = rawStats.collect {it[1]}.sum()
-				tagStat.total = total ? total : 0;
+                def duration = rawStats.collect { it[iDuration] }.sum()
+                tagStat.duration = Math.max(0, duration ?: 0);
+
+				def total = rawStats.collect {it[iCount]}.sum()
+				tagStat.total = total ?: 0;
+                
 				tagStats << tagStat
 			}
 		}
