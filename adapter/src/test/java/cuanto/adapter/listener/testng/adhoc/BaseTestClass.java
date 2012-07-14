@@ -2,7 +2,7 @@ package cuanto.adapter.listener.testng.adhoc;
 
 import cuanto.adapter.listener.testng.TestNgListener;
 import cuanto.adapter.listener.testng.TestNgListenerArguments;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
  */
 public class BaseTestClass
 {
-	@BeforeMethod
+	@BeforeClass
 	public void setUpTestNgListener() throws URISyntaxException, InterruptedException {
 		TestNgListenerArguments arguments = new TestNgListenerArguments();
 		arguments.setCuantoUrl(new URI("http://localhost:8080/cuanto"));

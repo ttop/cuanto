@@ -1,6 +1,8 @@
 package cuanto.adapter.listener.testng.adhoc;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.testng.SkipException;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -11,11 +13,20 @@ import org.testng.annotations.Test;
  */
 public class SomeOtherTests extends BaseTestClass
 {
+    @BeforeMethod
+    void delay() throws InterruptedException {
+        Thread.sleep(1000 + RandomUtils.nextLong() % 1000);
+    }
+    
 	@Test(groups = "1.0.0")
-	public void testSomething1() {}
+	public void testSomething1() throws InterruptedException {
+        Thread.sleep(1000 + RandomUtils.nextLong() % 1000);
+    }
 
 	@Test(groups = "reaperagent")
-	public void testSomething2() {}
+	public void testSomething2() throws InterruptedException {
+        Thread.sleep(1000 + RandomUtils.nextLong() % 1000);
+    }
 
 	@Test(groups = { "Happy", "Second" })
 	public void testSomething3() {}
