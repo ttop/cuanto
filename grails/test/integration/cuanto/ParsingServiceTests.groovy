@@ -264,28 +264,32 @@ class ParsingServiceTests extends GroovyTestCase {
         testOutcomes2[0].analysisState = dataService.getAnalysisStateByName("Quarantined")
         dataService.saveDomainObject(testOutcomes2[0], true)
 
-        // run 3: TestOutcome.analysisState remains Quarantined with other analyzed fields retained
+        // run 3: don't execute the quarantined test case.
         TestRun testRun3 = fakes.getTestRun(proj)
         dataService.saveDomainObject(testRun3, true)
-        parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun3.id)
-        def testOutcomes3 = TestOutcome.executeQuery("from TestOutcome to where to.testRun = ? AND to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'", [testRun3])
-        assert testOutcomes3.size() == 1
-        assert testOutcomes3[0].analysisState == testOutcomes2[0].analysisState
-        assert testOutcomes3[0].bug == testOutcomes2[0].bug
-        assert testOutcomes3[0].note == testOutcomes2[0].note
 
-        // un-quarantine
-        testOutcomes3[0].analysisState = dataService.getAnalysisStateByName("Environment")
-        dataService.saveDomainObject(testOutcomes3[0])
-
-        // run 4: TestOutcome.analysisState no longer retains quarantined states
+        // run 4: TestOutcome.analysisState remains Quarantined , because the last time it ran, it was quarantined
         TestRun testRun4 = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRun4
+        dataService.saveDomainObject(testRun4, true)
         parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun4.id)
         def testOutcomes4 = TestOutcome.executeQuery("from TestOutcome to where to.testRun = ? AND to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'", [testRun4])
         assert testOutcomes4.size() == 1
-        assert testOutcomes4[0].analysisState == null
-        assert testOutcomes4[0].bug == null
-        assert testOutcomes4[0].note == null
+        assert testOutcomes4[0].analysisState == testOutcomes2[0].analysisState
+        assert testOutcomes4[0].bug == testOutcomes2[0].bug
+        assert testOutcomes4[0].note == testOutcomes2[0].note
+
+        // un-quarantine
+        testOutcomes4[0].analysisState = dataService.getAnalysisStateByName("Environment")
+        dataService.saveDomainObject(testOutcomes4[0])
+
+        // run 4: TestOutcome.analysisState no longer retains quarantined states
+        TestRun testRun5 = fakes.getTestRun(proj)
+        dataService.saveDomainObject testRun5
+        parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun5.id)
+        def testOutcomes5 = TestOutcome.executeQuery("from TestOutcome to where to.testRun = ? AND to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'", [testRun5])
+        assert testOutcomes5.size() == 1
+        assert testOutcomes5[0].analysisState == null
+        assert testOutcomes5[0].bug == null
+        assert testOutcomes5[0].note == null
     }
 }

@@ -653,7 +653,11 @@ class DataService {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
 
-
+    def findLastOutcomeForTestCase(testCase) {
+        List<TestOutcome> lastTestOutcomes = TestOutcome.findAll(
+                "from cuanto.TestOutcome outcome where outcome.testCase = ? order by id desc", [testCase], [max: 1])
+        return lastTestOutcomes ? lastTestOutcomes.get(0) : null
+    }
 }
 
 

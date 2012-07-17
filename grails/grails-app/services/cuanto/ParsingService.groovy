@@ -84,12 +84,11 @@ class ParsingService {
 
 		def testOutcomesToSave = []
 		def numberOfOutcomes = 0
-        def lastTestRun = testRunService.findTestRunBefore(testRun)
 
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
 			def testOutcome = processParsableOutcome(parsableTestOutcome, localTestRun, project)
-            def lastTestOutcome = dataService.findOutcomeForTestCase(testOutcome.testCase, lastTestRun)
+            def lastTestOutcome = dataService.findLastOutcomeForTestCase(testOutcome.testCase)
             if (lastTestOutcome?.analysisState == dataService.getAnalysisStateByName('Quarantined')) {
                 testOutcome.applyAnalysisFrom(lastTestOutcome)
             }

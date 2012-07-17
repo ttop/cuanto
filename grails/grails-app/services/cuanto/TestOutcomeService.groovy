@@ -562,8 +562,7 @@ class TestOutcomeService {
 
         TestOutcome.withLock {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
-            def lastTestRun = testRunService.findTestRunBefore(testOutcome.testRun)
-            def lastTestOutcome = dataService.findOutcomeForTestCase(testOutcome.testCase, lastTestRun)
+            def lastTestOutcome = dataService.findLastOutcomeForTestCase(testOutcome.testCase)
             if (lastTestOutcome?.analysisState == dataService.getAnalysisStateByName('Quarantined')) {
                 testOutcome.applyAnalysisFrom(lastTestOutcome)
             }
