@@ -52,7 +52,7 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunDataSource.connXhrMode = "queueRequests";
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
-			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed", "skipped",
+			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed", "skipped", "quarantined",
 				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties", "tags"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
@@ -79,6 +79,7 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"passed", label:"Passed", sortable:true},
 			{key:"failed", label: "Failed", sortable:true},
 			{key:"skipped", label: "Skipped", sortable:true},
+			{key:"quarantined", label:"Quarant'd", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
