@@ -128,7 +128,7 @@ YAHOO.cuanto.SelectControl = function() {
 
 
 	function updateSelectedTotal() {
-		$('#currentSelected').html(selected.length + " Tests Selected");
+		$('#currentSelected').html(selected.length + " Selected");
 	}
 
 

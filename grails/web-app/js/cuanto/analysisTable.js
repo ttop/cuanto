@@ -760,7 +760,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function updateSelectedTotal() {
-		$('#currentSelected').html(targetOutcomes.length + " Tests Selected");
+		$('#currentSelected').html(targetOutcomes.length + " Selected");
 	}
 
 
