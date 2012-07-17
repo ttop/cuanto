@@ -278,7 +278,7 @@ class ParsingServiceTests extends GroovyTestCase {
         testOutcomes3[0].analysisState = dataService.getAnalysisStateByName("Environment")
         dataService.saveDomainObject(testOutcomes3[0])
 
-        // run 4: TestOutcome.analysisState remains Quarantined with other analyzed fields retained
+        // run 4: TestOutcome.analysisState no longer retains quarantined states
         TestRun testRun4 = fakes.getTestRun(proj)
         dataService.saveDomainObject testRun4
         parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun4.id)
