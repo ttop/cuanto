@@ -238,10 +238,10 @@ class ParsingServiceTests extends GroovyTestCase {
     void testParseFileWithPreviouslyQuarantinedTestCase() {
         Project proj = fakes.getProject()
         proj.testType = TestType.findByName("TestNG")
-        dataService.saveDomainObject proj
+        dataService.saveDomainObject(proj, true)
 
         TestRun testRun1 = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRun1
+        dataService.saveDomainObject(testRun1, true)
         parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun1.id)
 
         // run 1: TestOutcome.analysisState = Bug
@@ -252,7 +252,7 @@ class ParsingServiceTests extends GroovyTestCase {
 
         // run 2: TestOutcome.analysisState = Quarantined
         TestRun testRun2 = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRun2
+        dataService.saveDomainObject(testRun2, true)
         parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun2.id)
         def testOutcomes2 = TestOutcome.executeQuery("from TestOutcome to where to.testRun = ? AND to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'", [testRun2])
         assert testOutcomes2.size() == 1
@@ -266,7 +266,7 @@ class ParsingServiceTests extends GroovyTestCase {
 
         // run 3: TestOutcome.analysisState remains Quarantined with other analyzed fields retained
         TestRun testRun3 = fakes.getTestRun(proj)
-        dataService.saveDomainObject testRun3
+        dataService.saveDomainObject(testRun3, true)
         parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun3.id)
         def testOutcomes3 = TestOutcome.executeQuery("from TestOutcome to where to.testRun = ? AND to.testCase.fullName like 'cuanto.test.testNgOne.testMethod1'", [testRun3])
         assert testOutcomes3.size() == 1

@@ -160,6 +160,14 @@ class TestOutcome {
 		return myJson
 	}
 
+    void applyAnalysisFrom(TestOutcome source)
+    {
+        this.owner = source.owner
+        this.note = source.note
+        this.bug = source.bug
+        this.analysisState = source.analysisState
+    }
+
     public static void withLock(Closure toRun)
     {
         LOCK.lock()

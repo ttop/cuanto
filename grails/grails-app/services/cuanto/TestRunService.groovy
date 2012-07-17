@@ -732,4 +732,13 @@ class TestRunService {
 			}
 		}
 	}
+
+    def findTestRunBefore(TestRun testRun)
+    {
+        List<TestRun> lastTestRuns = TestRun.findAll(
+                "from cuanto.TestRun where id < ? order by id desc",
+                [testRun.id], [max: 1])
+        TestRun lastTestRun = lastTestRuns.size() == 1 ? lastTestRuns.get(0) : null
+        return lastTestRun
+    }
 }
