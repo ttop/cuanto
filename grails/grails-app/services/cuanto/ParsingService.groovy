@@ -309,8 +309,8 @@ class ParsingService {
 	private TestOutcome processParsableOutcome(ParsableTestOutcome parsableTestOutcome, TestRun testRun, Project project = null) {
 		if (!project) {
 			project = testRun?.project
-		}
-
+		}        
+        
 		TestCase testCase = parseTestCase(parsableTestOutcome, project)
 		def matchingTestCase = dataService.findMatchingTestCaseForProject(project, testCase)
 
@@ -319,6 +319,14 @@ class ParsingService {
 		} else {
 			dataService.addTestCases(project, [testCase])
 		}
+
+        // find the two most recent test runs; the 2nd one is the last test run
+        List<TestRun> recentTestRuns = TestRun.list([max: 2, sort: 'id', order: 'desc'])
+        TestRun lastTestRun = recentTestRuns.size() == 2 ? recentTestRuns[1] : null
+        TestOutcome lastTestOutcome = null
+        if (lastTestRun)
+            lastTestOutcome = dataService.findOutcomeForTestCase(testCase, lastTestRun)
+        
 
 		setTestCaseDescription(parsableTestOutcome.testCase.description, testCase)
 		TestOutcome testOutcome = new TestOutcome('testCase': testCase)
@@ -330,12 +338,24 @@ class ParsingService {
 
         setTestOutputSummary(testOutcome)
 
-        testOutcome.owner = parsableTestOutcome.owner
-		testOutcome.note = parsableTestOutcome.note
 		testOutcome.testRun = testRun
 		testOutcome.startedAt = parsableTestOutcome.startedAt
 		testOutcome.finishedAt = parsableTestOutcome.finishedAt
 		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+
+        if (lastTestOutcome?.analysisState?.name == cuanto.api.AnalysisState.Quarantined.toString())
+        {
+            testOutcome.owner = lastTestOutcome.owner
+            testOutcome.note = lastTestOutcome.note
+            testOutcome.bug = lastTestOutcome.bug
+            testOutcome.analysisState = lastTestOutcome.analysisState
+        }
+        else
+        {
+            testOutcome.owner = parsableTestOutcome.owner
+            testOutcome.note = parsableTestOutcome.note
+        }
+
 		processTestFailure(testOutcome, project)
 		List tags = processTags(parsableTestOutcome)
 		tags.each {
