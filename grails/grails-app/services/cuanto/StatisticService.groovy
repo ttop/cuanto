@@ -242,7 +242,7 @@ class StatisticService {
 				calculatedStats?.addToAnalysisStatistics(stat)
 			}
 			def analyzedStats = analysisStats.findAll {
-                it.state.isAnalyzed && it.state != dataService.getAnalysisStateByName("Quarantined")}
+                it.state?.isAnalyzed && it.state != dataService.getAnalysisStateByName("Quarantined")}
 			def sum = analyzedStats.collect { it.qty }.sum()
 			if (sum) {
 				calculatedStats.analyzed = sum

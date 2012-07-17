@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<th>Passed</th>
 			<th>Failed</th>
 			<th>Skipped</th>
+            <th>Quarantined</th>
 			<th>Success</th>
 			<th>Duration</th>
 			<th>Avg Duration</th>
@@ -36,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<td>${stats?.passed?.encodeAsHTML()}</td>
 			<td>${stats?.failed?.encodeAsHTML()}</td>
 			<td>${stats?.skipped?.encodeAsHTML()}</td>
+            <td>${stats?.quarantined?.encodeAsHTML()}</td>
 			<td>${stats?.successRate?.encodeAsHTML()} %</td>
 			<td><g:formatDuration ms="${stats?.totalDuration}"/></td>
 			<td><g:formatDuration ms="${stats?.averageDuration}"/></td>
