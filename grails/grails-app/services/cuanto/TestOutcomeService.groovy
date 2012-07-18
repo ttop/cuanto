@@ -560,7 +560,7 @@ class TestOutcomeService {
 			throw new CuantoException("No projectKey parameter was specified.")
 		}
 
-        TestOutcome.withLock {
+        TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             def lastTestOutcome = dataService.findLastOutcomeForTestCase(testOutcome.testCase)
             if (lastTestOutcome?.analysisState == dataService.getAnalysisStateByName('Quarantined')) {
@@ -582,7 +582,7 @@ class TestOutcomeService {
 
     TestOutcome apiUpdateTestOutcome(request) {
         TestOutcome testOutcome = null
-        TestOutcome.withLock {
+        TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             if (testOutcome) {
                 updateTestOutcome(testOutcome)

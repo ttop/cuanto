@@ -22,11 +22,8 @@ package cuanto
 
 import java.text.SimpleDateFormat
 import cuanto.formatter.TestNameFormatter
-import java.util.concurrent.locks.ReentrantLock
 
 class TestOutcome {
-
-    private static final ReentrantLock LOCK = new ReentrantLock()
 
 	static constraints = {
 		testCase(nullable: false)
@@ -166,15 +163,5 @@ class TestOutcome {
         this.note = source.note
         this.bug = source.bug
         this.analysisState = source.analysisState
-    }
-
-    public static void withLock(Closure toRun)
-    {
-        LOCK.lock()
-        try {
-            toRun.call()
-        } finally {
-            LOCK.unlock()
-        }
     }
 }
