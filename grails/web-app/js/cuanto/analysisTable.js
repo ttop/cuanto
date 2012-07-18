@@ -1034,8 +1034,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			return hiddenCols;
 		} else {
 			var cols = {};
-			$.each(["startedAt", "finishedAt", "output", "parameters"], function(idx, item)
-			{
+			$.each(["startedAt", "finishedAt", "output", "parameters"],
+				function(idx, item) {
 				cols[item] = true;
 			});
 			return cols;

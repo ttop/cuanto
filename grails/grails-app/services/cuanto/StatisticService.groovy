@@ -171,41 +171,34 @@ class StatisticService {
 				testResultIncludedInCalculations: true,
 				isSkip: true
 			)
-            def quarantinedNewFailuresQueryFilter = new TestOutcomeQueryFilter(testRun: testRun,
+            def quarantinedPassQueryFilter = new TestOutcomeQueryFilter(
+                testRun: testRun,
                 testResultIncludedInCalculations: true,
-                isFailure: true,
-                isFailureStatusChanged: true)
+                analysisState: dataService.getAnalysisStateByName('Quarantined'),
+                isFailure: false,
+                isSkip: false
+            )
             def quarantinedQueryFilter = new TestOutcomeQueryFilter(
                 testRun: testRun,
                 testResultIncludedInCalculations: true,
-                analysisState: dataService.getAnalysisStateByName('Quarantined')
-            )
-            def quarantinedFailureQueryFilter = new TestOutcomeQueryFilter(
-                testRun: testRun,
-                testResultIncludedInCalculations: true,
                 analysisState: dataService.getAnalysisStateByName('Quarantined'),
-                isFailure: true
-            )
-            def quarantinedSkipQueryFilter = new TestOutcomeQueryFilter(
-                testRun: testRun,
-                testResultIncludedInCalculations: true,
-                analysisState: dataService.getAnalysisStateByName('Quarantined'),
-                isSkip: true
             )
 
-            def quarantinedNewFailures = dataService.countTestOutcomes(quarantinedNewFailuresQueryFilter)
-            def quarantinedFailures = dataService.countTestOutcomes(quarantinedFailureQueryFilter)
-            def quarantinedSkips = dataService.countTestOutcomes(quarantinedSkipQueryFilter)
-			calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter) - quarantinedNewFailures
-			calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter) - quarantinedFailures
-			calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter) - quarantinedSkips
-            calculatedStats.quarantined = dataService.countTestOutcomes(quarantinedQueryFilter) ?: 0
-			calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped - calculatedStats.quarantined
+            def quarantinedPasses = dataService.countTestOutcomes(quarantinedPassQueryFilter)
+            def quarantined = dataService.countTestOutcomes(quarantinedQueryFilter)
+			calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
+			calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
+			calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
+			calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
 
 			if (calculatedStats.tests > 0) {
-                int totalEligibleTests = calculatedStats.tests - calculatedStats.quarantined
-				BigDecimal successRate = (calculatedStats.passed / totalEligibleTests) * 100
-				calculatedStats.successRate = successRate.round(new MathContext(4))
+                MathContext fourDigitRounding = new MathContext(4)
+				BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
+                calculatedStats.successRate = successRate.round(fourDigitRounding)
+                int numNonQuarantinedPasses = calculatedStats.passed - quarantinedPasses
+                int numNonQuarantinedTests = calculatedStats.tests - quarantined 
+                calculatedStats.effectiveSuccessRate = numNonQuarantinedPasses / numNonQuarantinedTests * 100
+                calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
 			}
 
 			dataService.saveDomainObject(calculatedStats)
