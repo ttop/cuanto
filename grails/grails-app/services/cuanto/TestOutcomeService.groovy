@@ -558,7 +558,7 @@ class TestOutcomeService {
 			throw new CuantoException("No projectKey parameter was specified.")
 		}
 
-        TestOutcome.withLock {
+        TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             dataService.saveTestOutcomes([testOutcome])
 
@@ -576,7 +576,7 @@ class TestOutcomeService {
 
     TestOutcome apiUpdateTestOutcome(request) {
         TestOutcome testOutcome = null
-        TestOutcome.withLock {
+        TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
             if (testOutcome) {
                 updateTestOutcome(testOutcome)
