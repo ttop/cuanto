@@ -58,9 +58,6 @@ class StatisticService {
 				def queuedItem = new QueuedTestRunStat(testRunId: testRunId)
 				dataService.saveDomainObject queuedItem, true
 			}
-			if (Environment.current == Environment.TEST) {
-				calculateTestRunStats(testRunId)
-			}
 		}
 	}
 
