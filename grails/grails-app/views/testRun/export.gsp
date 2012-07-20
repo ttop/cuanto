@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			  <li><g:link controller="testRun" action="csv" id="TestRun_${testRun?.id}.csv">Comma Separated (CSV)</g:link></li>
 			  <li><g:link controller="testRun" action="tab" id="TestRun_${testRun?.id}.tsv">Tab Separated (TSV)</g:link></li>
 			  <li><g:link controller="testRun" action="xml" id="TestRun_${testRun?.id}.xml">XML</g:link></li>
+              <li><g:link controller="testRun" action="testNgBuckets" id="TestRun_${testRun?.id}.xml">Bucketed TestNG Suite</g:link></li>
 		  </ul>
 		  <p/>
 		  <br/>

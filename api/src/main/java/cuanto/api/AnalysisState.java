@@ -34,6 +34,7 @@ public class AnalysisState {
 	public static final AnalysisState Other = new AnalysisState("Other");
 	public static final AnalysisState TestBug = new AnalysisState("Test Bug");
 	public static final AnalysisState Investigate = new AnalysisState("Investigate");
+    public static final AnalysisState Quarantined = new AnalysisState("Quarantined");
 
 	private final String analysisState;
 
@@ -85,7 +86,7 @@ public class AnalysisState {
 	 * @return A List of the known defaults for AnalysisStates.
 	 */
 	public static List<AnalysisState> getAnalysisStateList() {
-		return Arrays.asList(Unanalyzed, Bug, Environment, Harness, NoRepro, Other, TestBug, Investigate);
+		return Arrays.asList(Unanalyzed, Bug, Environment, Harness, NoRepro, Other, TestBug, Investigate, Quarantined);
 	}
 
 

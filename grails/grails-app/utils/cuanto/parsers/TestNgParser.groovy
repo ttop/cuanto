@@ -63,8 +63,11 @@ class TestNgParser implements CuantoTestParser{
 								out.testResult = "Skip"
 							}
 
-	                        out.startedAt = dateFormatter.parse(testMethod.'@started-at')
-	                        out.finishedAt = dateFormatter.parse(testMethod.'@finished-at')
+                            synchronized(dateFormatter) {
+                                out.startedAt = dateFormatter.parse(testMethod.'@started-at')
+                                out.finishedAt = dateFormatter.parse(testMethod.'@finished-at')
+                            }
+
 							out.testCase = new ParsableTestCase()
 							out.testCase.packageName = testClass.'@name'
 							out.testCase.fullName = testClass.'@name' + "." + testMethod.'@name'

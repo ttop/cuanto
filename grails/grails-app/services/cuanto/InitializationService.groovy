@@ -66,7 +66,8 @@ class InitializationService {
 
 
 	void initAnalysisStates() {
-		if (AnalysisState.list().size() <= 0) {
+        def existingAnalysisStates = AnalysisState.list()
+        if (existingAnalysisStates.size() < cuanto.api.AnalysisState.analysisStateList.size()) {
 			def analysisList = []
 
 			analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
@@ -77,9 +78,11 @@ class InitializationService {
 			analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Test Bug", isAnalyzed: true, isDefault: false, isBug: false)
 			analysisList << new AnalysisState(name: "Investigate", isAnalyzed: false, isDefault: false, isBug: false)
+            analysisList << new AnalysisState(name: "Quarantined", isAnalyzed: true, isDefault: false, isBug: false)
 
 			analysisList.each {analysis ->
-				if (!analysis.save()) {
+                def doesAnalysisExist = existingAnalysisStates.find { it.name == analysis.name }
+                if (!doesAnalysisExist && !analysis.save()) {
 					analysis.errors.allErrors.each {
 						log.warning it.toString()
 					}

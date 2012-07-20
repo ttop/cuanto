@@ -28,6 +28,33 @@ public class TestOutcomeTests extends ApiTestBase {
 
 	static testCaseCounter = 1
 
+    void testToggleAnalysisStateQuickly() {     // CUANTO-5
+        TestRun run1 = new TestRun(new Date())
+        client.addTestRun(run1)
+        testRunsToCleanUp << run1
+
+        TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",
+                TestResult.valueOf("Fail"))
+        outcome.analysisState = AnalysisState.Bug
+        client.addTestOutcome(outcome, run1)
+
+        List<Thread> threads = []
+        Exception exception = null
+        for (def i = 0; i < 10; i++) {
+            [AnalysisState.Environment, AnalysisState.Other, AnalysisState.Bug].each {
+                outcome.analysisState = it
+                threads << Thread.start {
+                    try {
+                        client.updateTestOutcome(outcome)
+                    } catch (Exception e) {
+                        exception = e
+                    }
+                }
+            }
+        }
+        threads*.join()
+        assert exception == null
+    }
 
 	void testAddTestOutcomeAndGetTestOutcomeWithTestRun() {
 		TestOutcome outcome = TestOutcome.newInstance("org.codehaus.cuanto", "testAddTestOutcome", "my parameters",

@@ -21,9 +21,11 @@ package cuanto
 
 import grails.util.Environment
 import java.math.MathContext
+import org.apache.commons.collections.CollectionUtils
+import org.apache.commons.collections.Predicate
+import org.hibernate.StaleObjectStateException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
-import org.hibernate.StaleObjectStateException
 
 class StatisticService {
 
@@ -31,11 +33,12 @@ class StatisticService {
 	def dataService
 	def grailsApplication
 
+    int numRecentTestOutcomes = 40
 	Boolean processingTestRunStats = false;
 	final private static String queueLock = "Test Run Stat Queue Lock"
 	final private static String calcLock = "Test Run Calculation Lock"
 
-	void queueTestRunStats(TestRun testRun) {
+    void queueTestRunStats(TestRun testRun) {
 		queueTestRunStats testRun.id
 	}
 
@@ -58,9 +61,10 @@ class StatisticService {
 				def queuedItem = new QueuedTestRunStat(testRunId: testRunId)
 				dataService.saveDomainObject queuedItem, true
 			}
-			if (Environment.current == Environment.TEST) {
-				calculateTestRunStats(testRunId)
-			}
+            // don't calculate test run stats on-demand, because it is not thread-safe
+//			if (Environment.current == Environment.TEST) {
+//				calculateTestRunStats(testRunId)
+//			}
 		}
 	}
 
@@ -105,6 +109,7 @@ class StatisticService {
 					try {
 						QueuedTestRunStat.withTransaction {
 							calculateTestRunStats(queuedItem.testRunId)
+                            calculateTestOutcomeStats(queuedItem.testRunId)
 							queuedItem.delete(flush: true)
 							queueSize = QueuedTestRunStat.list().size()
 						}
@@ -171,14 +176,34 @@ class StatisticService {
 				testResultIncludedInCalculations: true,
 				isSkip: true
 			)
+            def quarantinedPassQueryFilter = new TestOutcomeQueryFilter(
+                testRun: testRun,
+                testResultIncludedInCalculations: true,
+                analysisState: dataService.getAnalysisStateByName('Quarantined'),
+                isFailure: false,
+                isSkip: false
+            )
+            def quarantinedQueryFilter = new TestOutcomeQueryFilter(
+                testRun: testRun,
+                testResultIncludedInCalculations: true,
+                analysisState: dataService.getAnalysisStateByName('Quarantined'),
+            )
+
+            def quarantinedPasses = dataService.countTestOutcomes(quarantinedPassQueryFilter)
+            def quarantined = dataService.countTestOutcomes(quarantinedQueryFilter)
 			calculatedStats.newFailures = dataService.countTestOutcomes(newFailuresQueryFilter)
 			calculatedStats.failed = dataService.countTestOutcomes(allFailuresQueryFilter)
 			calculatedStats.skipped = dataService.countTestOutcomes(allSkipsQueryFilter)
 			calculatedStats.passed = calculatedStats.tests - calculatedStats.failed - calculatedStats.skipped
 
 			if (calculatedStats.tests > 0) {
-				BigDecimal successRate = (calculatedStats.passed / calculatedStats.tests) * 100
-				calculatedStats.successRate = successRate.round(new MathContext(4))
+                MathContext fourDigitRounding = new MathContext(4)
+				BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
+                calculatedStats.successRate = successRate.round(fourDigitRounding)
+                int numNonQuarantinedPasses = calculatedStats.passed - quarantinedPasses
+                int numNonQuarantinedTests = calculatedStats.tests - quarantined 
+                calculatedStats.effectiveSuccessRate = numNonQuarantinedPasses / numNonQuarantinedTests * 100
+                calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
 			}
 
 			dataService.saveDomainObject(calculatedStats)
@@ -186,26 +211,85 @@ class StatisticService {
 			calculateAnalysisStats(testRun)
 			dataService.saveDomainObject(calculatedStats)
 
-			def testRunStatistics = TestRunStats.findByTestRun(testRun)
-			if (testRunStatistics.tagStatistics?.size() > 0) {
-				def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
-				statsToRemove.each {
-					testRunStatistics.removeFromTagStatistics(it).save()
-					it.delete(flush:true)
-				}
-			}
-			dataService.saveDomainObject(testRunStatistics)
+            TestRunStats.withTransaction {
+                def testRunStatistics = TestRunStats.findByTestRun(testRun)
+                if (testRunStatistics.tagStatistics?.size() > 0) {
+                    def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
+                    statsToRemove.each {
+                        testRunStatistics.removeFromTagStatistics(it).save()
+                        it.delete(flush:true)
+                    }
+                }
 
-			def tagStats = getTagStatistics(testRun)
-			tagStats.each {
-				testRunStatistics.addToTagStatistics(it)
-			}
-			dataService.saveDomainObject(testRunStatistics, true)
+                def tagStats = getTagStatistics(testRun)
+                tagStats.each {
+                    testRunStatistics.addToTagStatistics(it)
+                }
+                dataService.saveDomainObject(testRunStatistics, true)
+            }
 		}
 	}
 
+    void calculateTestOutcomeStats(Long testRunId) {
+        def testRun = TestRun.lock(testRunId)
+        if (!testRun) {
+            log.error "Couldn't find test run ${testRunId}"
+        } else {
+            List<TestOutcome> testOutcomes = TestOutcome.findAllByTestRun(testRun)
+            for (TestOutcome testOutcome : testOutcomes)
+            {
+                testOutcome.lock()
+                def stats = new TestOutcomeStats()
+                dataService.saveDomainObject(stats, true)
+                testOutcome.testOutcomeStats = stats
+                List<TestResult> recentTestResults = TestResult.executeQuery(
+                        "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
+                        [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
+                calculateStreak(testOutcome, recentTestResults)
+                calculateSuccessRate(testOutcome, recentTestResults)
+                testOutcome.save()
+            }
+        }
+    }
+    
+    private void calculateStreak(TestOutcome testOutcome, List<TestResult> recentTestResults)
+    {
+        int streak = countRecentStreak(recentTestResults)
+        testOutcome.testOutcomeStats.streak = streak
+    }    
 
-	def calculateAnalysisStats(TestRun testRun) {
+
+    private void calculateSuccessRate(TestOutcome testOutcome, List<TestResult> recentTestResults) {
+        int passes = CollectionUtils.countMatches(recentTestResults, { TestResult testResult ->
+            testResult.getName() == cuanto.api.TestResult.Pass.toString()
+        } as Predicate)
+        testOutcome.testOutcomeStats.successRate = 100 * passes / recentTestResults.size()
+    }
+
+    private int countRecentStreak(List list) {
+        if (!list)
+            return 0
+        else if (list.size() == 1)
+            return 1
+
+        int streak = 0;
+        def lastResult = list[0];
+        for (int i = 0; i < list.size() && lastResult != null; ++i)
+        {
+            def result = list[i]
+            if (lastResult == result)
+            {
+                streak++
+            }
+            else
+            {
+                lastResult = null
+            }
+        }
+        return streak
+    }
+
+    def calculateAnalysisStats(TestRun testRun) {
 		TestRun.withTransaction {
 			def calculatedStats = TestRunStats.findByTestRun(testRun)
 			clearAnalysisStatistics(calculatedStats)
@@ -213,7 +297,8 @@ class StatisticService {
 			analysisStats?.each { stat ->
 				calculatedStats?.addToAnalysisStatistics(stat)
 			}
-			def analyzedStats = analysisStats.findAll { it.state.isAnalyzed }
+			def analyzedStats = analysisStats.findAll {
+                it.state?.isAnalyzed && it.state != dataService.getAnalysisStateByName("Quarantined")}
 			def sum = analyzedStats.collect { it.qty }.sum()
 			if (sum) {
 				calculatedStats.analyzed = sum
@@ -231,25 +316,30 @@ class StatisticService {
 		if (Environment.current != Environment.TEST) {
 			// The HSQL database doesn't like the following query, so we won't do it in testing.
 			testRun.tags.each {tag ->
-				def rawStats = TestOutcome.executeQuery("select t.testResult, count(*) from cuanto.TestOutcome t " +
+                def (iTestResult, iDuration, iCount) = [0, 1, 2]
+				def rawStats = TestOutcome.executeQuery("select t.testResult, sum(t.duration), count(*) from cuanto.TestOutcome t " +
 					"inner join t.tags tag_0 where t.testRun = ? and tag_0 = ? group by t.testResult", [testRun, tag])
 				def tagStat = new TagStatistic()
 				tagStat.tag = tag
 
-				def passed = rawStats.findAll {!it[0].isFailure && !it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
-				tagStat.passed = passed ? passed : 0;
+				def passed = rawStats.findAll {!it[iTestResult].isFailure && !it[iTestResult].isSkip && it[iTestResult].includeInCalculations}.collect {it[iCount]}.sum()
+				tagStat.passed = passed ?: 0;
 				log.debug "${passed} passed for ${tag.name}"
 
-				def failed = rawStats.findAll {it[0].isFailure && it[0].includeInCalculations && !it[0].isSkip}.collect {it[1]}.sum()
-				tagStat.failed = failed ? failed : 0;
+				def failed = rawStats.findAll {it[iTestResult].isFailure && it[iTestResult].includeInCalculations && !it[iTestResult].isSkip}.collect {it[iCount]}.sum()
+				tagStat.failed = failed ?: 0;
 				log.debug "${failed} failed for ${tag.name}"
 
-				def skipped = rawStats.findAll {it[0].isSkip && it[0].includeInCalculations}.collect {it[1]}.sum()
-				tagStat.skipped = skipped ? skipped : 0;
+				def skipped = rawStats.findAll {it[iTestResult].isSkip && it[iTestResult].includeInCalculations}.collect {it[iCount]}.sum()
+				tagStat.skipped = skipped ?: 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 
-				def total = rawStats.collect {it[1]}.sum()
-				tagStat.total = total ? total : 0;
+                def duration = rawStats.collect { it[iDuration] }.sum()
+                tagStat.duration = Math.max(0, duration ?: 0);
+
+				def total = rawStats.collect {it[iCount]}.sum()
+				tagStat.total = total ?: 0;
+                
 				tagStats << tagStat
 			}
 		}

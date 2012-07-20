@@ -159,7 +159,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
+			fields: ["testCase", "result", "streak", "successRate", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
 				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties", "links"],
 			metaFields: {
 				offset: "offset",
@@ -467,6 +467,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
             {key:"tags", label:"Tags", resizeable:true, formatter: formatTags, sortable: false, hidden: ($('.tagspan').length == 0)},
 			{key:"result", label:"Result", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
+            {key:"streak", label:"Streak", sortable:true },
+            {key:"successRate", label:"Pass Rate", sortable:true, formatter: formatPercentage },
 			{key:"analysisState", label:"Reason", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
 			{key:"startedAt", label: "Started At", sortable:true},
@@ -523,6 +525,10 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		YAHOO.util.Event.addListener(boxid, "click", selectRecord);
 	}
 
+    function formatPercentage(elCell, oRecord, oColumn, oData) {
+        elCell.style.textAlign = "right";
+        $(elCell).html(oData + '%');
+    }
 
 	function formatTestCase(elCell, oRecord, oColumn, oData) {
 		$(elCell).html("");
@@ -760,7 +766,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function updateSelectedTotal() {
-		$('#currentSelected').html(targetOutcomes.length + " Tests Selected");
+		$('#currentSelected').html(targetOutcomes.length + " Selected");
 	}
 
 
@@ -1034,8 +1040,8 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			return hiddenCols;
 		} else {
 			var cols = {};
-			$.each(["startedAt", "finishedAt", "output", "parameters"], function(idx, item)
-			{
+			$.each(["startedAt", "finishedAt", "output", "parameters"],
+				function(idx, item) {
 				cols[item] = true;
 			});
 			return cols;

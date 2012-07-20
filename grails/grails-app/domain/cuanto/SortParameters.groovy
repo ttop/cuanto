@@ -23,4 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 public class SortParameters {
 	String sort
 	String sortOrder
+
+    @Override
+    public String toString() {
+        return String.format("%s|%s", sort, sortOrder);
+    }
 }

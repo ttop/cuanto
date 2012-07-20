@@ -310,17 +310,17 @@ class DataService {
 		def sortOrder = previous ? 'desc' : 'asc'
 
 		if (outcome.finishedAt) {
-			filter.dateCriteria = [new DateCriteria(field: "finishedAt", date: outcome.finishedAt, operator: operator)]
-			filter.sorts = [new SortParameters(sort: "finishedAt", sortOrder: sortOrder)]
+			filter.dateCriteria = [new DateCriteria(field: 'finishedAt', date: outcome.finishedAt, operator: operator)]
+			filter.sorts = [new SortParameters(sort: 'finishedAt', sortOrder: sortOrder)]
 		} else if (outcome.startedAt) {
-			filter.dateCriteria = [new DateCriteria(field: "startedAt", date: outcome.startedAt, operator: operator)]
-			filter.sorts = [new SortParameters(sort: "startedAt", sortOrder: sortOrder)]
+			filter.dateCriteria = [new DateCriteria(field: 'startedAt', date: outcome.startedAt, operator: operator)]
+			filter.sorts = [new SortParameters(sort: 'startedAt', sortOrder: sortOrder)]
 		} else if (outcome.testRun?.dateExecuted) {
-			filter.dateCriteria = [new DateCriteria(field: "testRun", date: outcome.testRun?.dateExecuted, operator: operator)]
-			filter.sorts = [new SortParameters(sort: "testRun.dateExecuted", sortOrder: sortOrder)]
+			filter.dateCriteria = [new DateCriteria(field: 'testRun', date: outcome.testRun?.dateExecuted, operator: operator)]
+			filter.sorts = [new SortParameters(sort: 'testRun.dateExecuted', sortOrder: sortOrder)]
 		} else {
-			filter.dateCriteria = [new DateCriteria(field: "dateCreated", date: outcome.dateCreated, operator: operator)]
-			filter.sorts = [new SortParameters(sort: "dateCreated", sortOrder: sortOrder)]
+			filter.dateCriteria = [new DateCriteria(field: 'dateCreated', date: outcome.dateCreated, operator: operator)]
+			filter.sorts = [new SortParameters(sort: 'dateCreated', sortOrder: sortOrder)]
 		}
 
 		filter.queryOffset = 0
@@ -368,9 +368,9 @@ class DataService {
 		CuantoQuery cuantoQuery = queryBuilder.buildQuery(queryFilter)
         def results
 		if (cuantoQuery.paginateParameters) {
-			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
+			results = TestOutcome.executeQuery(cuantoQuery.hql, (Collection) cuantoQuery.positionalParameters, cuantoQuery.paginateParameters)
 		} else {
-			results = TestOutcome.executeQuery(cuantoQuery.hql, cuantoQuery.positionalParameters)
+			results = TestOutcome.executeQuery(cuantoQuery.hql, (Collection) cuantoQuery.positionalParameters)
 		}
         def transformed = queryFilter.resultTransform(results)
         return transformed
@@ -653,7 +653,11 @@ class DataService {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
 
-
+    def findLastOutcomeForTestCase(testCase) {
+        List<TestOutcome> lastTestOutcomes = TestOutcome.findAll(
+                "from cuanto.TestOutcome outcome where outcome.testCase = ? order by id desc", [testCase], [max: 1])
+        return lastTestOutcomes ? lastTestOutcomes.get(0) : null
+    }
 }
 
 

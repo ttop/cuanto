@@ -407,7 +407,9 @@ class TestOutcomeService {
 			filter.isAnalyzed = false
 		} else if (params.filter?.equalsIgnoreCase("allskipped")) {
 			filter.isSkip = true
-		}
+		} else if (params.filter?.equalsIgnoreCase("allquarantined")) {
+            filter.analysisState = dataService.getAnalysisStateByName('Quarantined')
+        }
 
         if (params.tag) {
             filter.tags = [params.tag].flatten()
@@ -560,6 +562,10 @@ class TestOutcomeService {
 
         TestOutcome.withTransaction {
             testOutcome = parsingService.parseTestOutcome(request.JSON)
+            def lastTestOutcome = dataService.findLastOutcomeForTestCase(testOutcome.testCase)
+            if (lastTestOutcome?.analysisState == dataService.getAnalysisStateByName('Quarantined')) {
+                testOutcome.applyAnalysisFrom(lastTestOutcome)
+            }
             dataService.saveTestOutcomes([testOutcome])
 
             if (testOutcome.testRun) {
