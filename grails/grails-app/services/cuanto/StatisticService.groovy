@@ -21,6 +21,8 @@ package cuanto
 
 import grails.util.Environment
 import java.math.MathContext
+import org.apache.commons.collections.CollectionUtils
+import org.apache.commons.collections.Predicate
 import org.hibernate.StaleObjectStateException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
@@ -31,11 +33,12 @@ class StatisticService {
 	def dataService
 	def grailsApplication
 
+    int numRecentTestOutcomes = 40
 	Boolean processingTestRunStats = false;
 	final private static String queueLock = "Test Run Stat Queue Lock"
 	final private static String calcLock = "Test Run Calculation Lock"
 
-	void queueTestRunStats(TestRun testRun) {
+    void queueTestRunStats(TestRun testRun) {
 		queueTestRunStats testRun.id
 	}
 
@@ -235,7 +238,7 @@ class StatisticService {
             List<TestOutcome> testOutcomes = TestOutcome.findAllByTestRun(testRun)
             for (TestOutcome testOutcome : testOutcomes)
             {
-                int numRecentTestOutcomes = 10
+                testOutcome.lock()
                 def stats = new TestOutcomeStats()
                 dataService.saveDomainObject(stats, true)
                 testOutcome.testOutcomeStats = stats
@@ -243,7 +246,7 @@ class StatisticService {
                         "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
                         [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
                 calculateStreak(testOutcome, recentTestResults)
-                calculateReliability(testOutcome, recentTestResults)
+                calculateSuccessRate(testOutcome, recentTestResults)
                 testOutcome.save()
             }
         }
@@ -256,34 +259,11 @@ class StatisticService {
     }    
 
 
-    private void calculateReliability(TestOutcome testOutcome, List<String> recentTestResults) {
-        int numConsecutiveGroups = countConsecutiveElements(recentTestResults)
-        int numRecentTestOutcomes = recentTestResults.size()
-        testOutcome.testOutcomeStats.reliability = 1 - 2 * (numConsecutiveGroups - 1) / numRecentTestOutcomes
-        if (testOutcome.testOutcomeStats.reliability < 0)
-            testOutcome.testOutcomeStats.reliability *= 1 - 1 / (2 * (numRecentTestOutcomes - 1) / numRecentTestOutcomes)
-    }
-
-    private int countConsecutiveElements(List list) {
-        if (!list)
-            return 0
-        else if (list.size() == 1)
-            return 1
-
-        int numConsecutiveGroups = 0
-        def lastElement = list[0]
-        list.each {
-            if (it == lastElement)
-            {
-                numConsecutiveGroups++
-            }
-            else
-            {
-                numConsecutiveGroups = 1
-                lastElement = it
-            }
-        }
-        return numConsecutiveGroups
+    private void calculateSuccessRate(TestOutcome testOutcome, List<TestResult> recentTestResults) {
+        int passes = CollectionUtils.countMatches(recentTestResults, { TestResult testResult ->
+            testResult.getName() == cuanto.api.TestResult.Pass.toString()
+        } as Predicate)
+        testOutcome.testOutcomeStats.successRate = 100 * passes / recentTestResults.size()
     }
 
     private int countRecentStreak(List list) {
@@ -293,13 +273,16 @@ class StatisticService {
             return 1
 
         int streak = 0;
-        def lastResult = list[list.size() - 1];
-        for (int i = list.size() - 1; i > -1 && lastResult != null; --i)
+        def lastResult = list[0];
+        for (int i = 0; i < list.size() && lastResult != null; ++i)
         {
             def result = list[i]
             if (lastResult == result)
             {
                 streak++
+            }
+            else
+            {
                 lastResult = null
             }
         }

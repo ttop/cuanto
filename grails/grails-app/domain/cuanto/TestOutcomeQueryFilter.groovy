@@ -56,7 +56,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
 			"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
 			"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged",
-			"hasAllTestOutcomeProperties"].each {
+			"hasAllTestOutcomeProperties", "successRate"].each {
 			this.setProperty(it, filterToCopy.getProperty(it))
 		}
 	}
@@ -274,6 +274,8 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		nameMap.fullname = "testCase.fullName"
 		nameMap.result = "testResult"
 		nameMap.testresult = "testResult.name"
+        nameMap.streak = "testOutcomeStats.streak"
+        nameMap.successrate = "testOutcomeStats.successRate"
 		nameMap.state = "analysisState"
 		nameMap.analysisstate = "analysisState"
 		nameMap.duration = "duration"
