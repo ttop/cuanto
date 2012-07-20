@@ -242,7 +242,7 @@ class StatisticService {
                 def stats = new TestOutcomeStats()
                 dataService.saveDomainObject(stats, true)
                 testOutcome.testOutcomeStats = stats
-                List<String> recentTestResults = TestOutcome.executeQuery(
+                List<TestResult> recentTestResults = TestResult.executeQuery(
                         "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
                         [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
                 calculateStreak(testOutcome, recentTestResults)
@@ -252,7 +252,7 @@ class StatisticService {
         }
     }
     
-    private void calculateStreak(TestOutcome testOutcome, List<String> recentTestResults)
+    private void calculateStreak(TestOutcome testOutcome, List<TestResult> recentTestResults)
     {
         int streak = countRecentStreak(recentTestResults)
         testOutcome.testOutcomeStats.streak = streak
