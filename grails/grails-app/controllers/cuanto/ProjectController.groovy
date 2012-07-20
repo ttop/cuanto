@@ -307,7 +307,7 @@ class ProjectController {
 		render "TBD"
 	}
 
-	def getJsonForTestRun(testRun, graph) {
+	synchronized def getJsonForTestRun(testRun, graph) {
 		def stats = TestRunStats.findByTestRun(testRun)
 		if (stats) {
 			def friendlyDate

@@ -292,4 +292,39 @@ class ParsingServiceTests extends GroovyTestCase {
         assert testOutcomes5[0].bug == null
         assert testOutcomes5[0].note == null
     }
+
+    void testParseTestResultsForSameTestRun()
+    {
+        Project proj = fakes.getProject()
+        proj.testType = TestType.findByName("TestNG")
+        dataService.saveDomainObject(proj, true)
+
+        TestRun testRun = fakes.getTestRun(proj)
+        dataService.saveDomainObject(testRun, true)
+
+        def threads = []
+        def exception = null
+        def startTime = System.currentTimeMillis()
+        def getElapsedTime = { System.currentTimeMillis() - startTime }
+        10.times {
+            threads << Thread.start {
+                TestRun.withNewSession {
+                    while (exception == null && getElapsedTime() < 30000)
+                    {
+                        try {
+                            parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun.id)
+                        } catch (Exception e) {
+                            exception = e
+                        }
+                    }
+                }
+            }
+        }
+        threads*.join()
+
+        if (exception)
+        {
+            throw new RuntimeException("Concurrent parseFileWithTestRun failed!", exception);
+        }
+    }
 }

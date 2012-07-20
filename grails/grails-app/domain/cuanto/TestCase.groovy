@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import cuanto.Project
-
 class TestCase implements Comparable{
 
 	static constraints = {
@@ -34,6 +32,7 @@ class TestCase implements Comparable{
 	}
 	static mapping = {
 		cache true
+        version false
 	}
 
 	String testName

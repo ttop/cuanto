@@ -38,6 +38,7 @@ class TestRun {
 		testRunLink fetch: "join"
 		testRunProperty fetch: "join"
         tag fetch: "join"
+        version false
 	}
 	
 	Date dateCreated // date the record was added to the database
@@ -48,7 +49,6 @@ class TestRun {
 	Project project
 	List<TestRunLink> links
 	List<TestRunProperty> testProperties
-	private final static SimpleDateFormat defaultDateFormatter = new SimpleDateFormat(Defaults.dateFormat)
 
 	def beforeInsert = {
 
