@@ -106,7 +106,6 @@ class StatisticService {
 					try {
 						QueuedTestRunStat.withTransaction {
 							calculateTestRunStats(queuedItem.testRunId)
-                            calculateTestOutcomeStats(queuedItem.testRunId)
 							queuedItem.delete(flush: true)
 							queueSize = QueuedTestRunStat.list().size()
 						}
@@ -226,85 +225,6 @@ class StatisticService {
             }
 		}
 	}
-
-    void calculateTestOutcomeStats(Long testRunId) {
-        def testRun = TestRun.lock(testRunId)
-        if (!testRun) {
-            log.error "Couldn't find test run ${testRunId}"
-        } else {
-            List<TestOutcome> testOutcomes = TestOutcome.findAllByTestRun(testRun)
-            for (TestOutcome testOutcome : testOutcomes)
-            {
-                int numRecentTestOutcomes = 10
-                def stats = new TestOutcomeStats()
-                dataService.saveDomainObject(stats, true)
-                testOutcome.testOutcomeStats = stats
-                List<String> recentTestResults = TestOutcome.executeQuery(
-                        "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
-                        [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
-                calculateStreak(testOutcome, recentTestResults)
-                calculateReliability(testOutcome, recentTestResults)
-                testOutcome.save()
-            }
-        }
-    }
-    
-    private void calculateStreak(TestOutcome testOutcome, List<String> recentTestResults)
-    {
-        int streak = countRecentStreak(recentTestResults)
-        testOutcome.testOutcomeStats.streak = streak
-    }    
-
-
-    private void calculateReliability(TestOutcome testOutcome, List<String> recentTestResults) {
-        int numConsecutiveGroups = countConsecutiveElements(recentTestResults)
-        int numRecentTestOutcomes = recentTestResults.size()
-        testOutcome.testOutcomeStats.reliability = 1 - 2 * (numConsecutiveGroups - 1) / numRecentTestOutcomes
-        if (testOutcome.testOutcomeStats.reliability < 0)
-            testOutcome.testOutcomeStats.reliability *= 1 - 1 / (2 * (numRecentTestOutcomes - 1) / numRecentTestOutcomes)
-    }
-
-    private int countConsecutiveElements(List list) {
-        if (!list)
-            return 0
-        else if (list.size() == 1)
-            return 1
-
-        int numConsecutiveGroups = 0
-        def lastElement = list[0]
-        list.each {
-            if (it == lastElement)
-            {
-                numConsecutiveGroups++
-            }
-            else
-            {
-                numConsecutiveGroups = 1
-                lastElement = it
-            }
-        }
-        return numConsecutiveGroups
-    }
-
-    private int countRecentStreak(List list) {
-        if (!list)
-            return 0
-        else if (list.size() == 1)
-            return 1
-
-        int streak = 0;
-        def lastResult = list[list.size() - 1];
-        for (int i = list.size() - 1; i > -1 && lastResult != null; --i)
-        {
-            def result = list[i]
-            if (lastResult == result)
-            {
-                streak++
-                lastResult = null
-            }
-        }
-        return streak
-    }
 
     def calculateAnalysisStats(TestRun testRun) {
 		TestRun.withTransaction {
