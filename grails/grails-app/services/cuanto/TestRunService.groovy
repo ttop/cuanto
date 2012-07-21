@@ -161,7 +161,7 @@ class TestRunService {
 	}
 
 
-	private String getDateLegend(List testRuns) {
+	private synchronized String getDateLegend(List testRuns) {
 		if (testRuns.size() == 1) {
 			return "|" + chartDateFormat.format(testRuns[0].dateExecuted) + "|"
 		} else {

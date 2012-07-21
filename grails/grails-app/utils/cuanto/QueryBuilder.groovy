@@ -157,7 +157,7 @@ public class QueryBuilder {
 	}
 
 
-	List<QueryModule> getProcessors(Class clazz) {
+	synchronized List<QueryModule> getProcessors(Class clazz) {
 		if (!moduleProcessors) {
 			moduleProcessors = new HashMap<Class, List<QueryModule>>();
 			queryModules.each { QueryModule module ->

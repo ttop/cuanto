@@ -1,11 +1,6 @@
 package cuanto
 
-import cuanto.Project
-import cuanto.TestCase
-import cuanto.TestRun
-import cuanto.TestType
 import cuanto.test.TestObjects
-import cuanto.ParsingException
 
 class ParsingServiceTests extends GroovyTestCase {
 	ParsingService parsingService
@@ -239,5 +234,40 @@ class ParsingServiceTests extends GroovyTestCase {
 		}
 		assertNotNull "didn't find target outcome", targetOutcome
 		assertEquals "Wrong testOutputSummary", "EV313322 is broken in this build. (Build 344 of R2008Trunk.)", targetOutcome.testOutputSummary
+	}
+
+	void testParseTestResultsForSameTestRun()
+	{
+		Project proj = fakes.getProject()
+		proj.testType = TestType.findByName("TestNG")
+		dataService.saveDomainObject(proj, true)
+
+		TestRun testRun = fakes.getTestRun(proj)
+		dataService.saveDomainObject(testRun, true)
+
+		def threads = []
+		def exception = null
+		def startTime = System.currentTimeMillis()
+		def getElapsedTime = { System.currentTimeMillis() - startTime }
+		10.times {
+			threads << Thread.start {
+				TestRun.withNewSession {
+					while (exception == null && getElapsedTime() < 30000)
+					{
+						try {
+							parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun.id)
+						} catch (Exception e) {
+							exception = e
+						}
+					}
+				}
+			}
+		}
+		threads*.join()
+
+		if (exception)
+		{
+			throw new RuntimeException("Concurrent parseFileWithTestRun failed!", exception);
+		}
 	}
 }
