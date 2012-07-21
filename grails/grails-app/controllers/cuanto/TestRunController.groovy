@@ -35,8 +35,6 @@ class TestRunController {
 	static def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST', submit: 'POST', create: 'POST',
 		submitFile: 'POST', createXml: 'POST', deleteProperty: 'POST', deleteLink: 'POST']
 
-	SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
-
 	def index = { redirect(action: 'mason', controller: 'project', params: params) }
 
 
@@ -341,6 +339,7 @@ class TestRunController {
 
 
 	def get = {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(Defaults.dateFormat)
 		def testRun = TestRun.get(Long.valueOf(params.id))
 		def testRunMap = testRun?.toJSONWithDateFormat(dateFormat)
 		withFormat {
