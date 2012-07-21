@@ -498,7 +498,8 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 
 
 	void testChangeBugOnTestOutcome() {
-
+        int originalTestOutcomeCount = TestOutcome.count()
+        int originalBugCount = Bug.count()
 		// create a project
 		Project proj = to.getProject()
 		proj.save()
@@ -546,8 +547,8 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		dataService.saveDomainObject bugC
 		updatedOutcome1.bug = bugC
 		testOutcomeService.updateTestOutcome(updatedOutcome1)
-		assertEquals("Wrong number of TestOutcomes", 3, TestOutcome.count())
-		assertEquals("Wrong number of Bugs", 3, Bug.count())
+		assertEquals("Wrong number of TestOutcomes", originalTestOutcomeCount + 3, TestOutcome.count())
+		assertEquals("Wrong number of Bugs", originalBugCount + 3, Bug.count())
 
 		// update TestOutcome2 to reference bugB
 		outcome2.bug = bugB
@@ -555,19 +556,19 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 		def outcomeList = TestOutcome.findAllByBug(bugA)
 		dataService.deleteBugIfUnused(bugA)
 		def bugList = Bug.findAll()
-		assertEquals("Wrong number of Bugs", 2, Bug.count())
+		assertEquals("Wrong number of Bugs", originalBugCount + 2, Bug.count())
 
 		// update TestOutcome3 to reference bugC
 		outcome3.bug = bugC
 		testOutcomeService.updateTestOutcome(outcome3)
 		dataService.deleteBugIfUnused(bugB)
-		assertEquals("Wrong number of Bugs", 2, Bug.count())
+		assertEquals("Wrong number of Bugs", originalBugCount + 2, Bug.count())
 
 		//update TestOutcome2 to reference bugC
 		outcome2.bug = bugC
 		testOutcomeService.updateTestOutcome(outcome2)
 		dataService.deleteBugIfUnused(bugB)
-		assertEquals("Wrong number of Bugs", 1, Bug.count())
+		assertEquals("Wrong number of Bugs", originalBugCount + 1, Bug.count())
 
 	}
 
