@@ -1,9 +1,5 @@
 package cuanto
-
 import cuanto.test.TestObjects
-import org.springframework.orm.hibernate3.HibernateSystemException
-
-
 /**
  * Created by IntelliJ IDEA.
  * User: todd.wells
@@ -158,6 +154,10 @@ class ProjectTests extends GroovyTestCase {
 
 
 	void testDataServiceDeleteProjectWithoutGroup() {
+        int originalProjectCount = Project.count()
+        int originalTestRunCount = TestRun.count()
+        int originalTestCaseCount = TestCase.count()
+        int originalTestOutcomeCount = TestOutcome.count()
 		def proj = fakes.project
 		dataService.saveDomainObject(proj)
 
@@ -182,17 +182,17 @@ class ProjectTests extends GroovyTestCase {
 			}
 		}
 
-		assertEquals "Wrong number of projects", 1, Project.list().size()
-		assertEquals "Wrong number of test outcomes", testRuns.size() * numCases, TestOutcome.list().size()
-		assertEquals "Wrong number of test cases", numCases, TestCase.list().size()
-		assertEquals "Wrong number of test runs", testRuns.size(), TestRun.list().size()
+		assertEquals "Wrong number of projects", originalProjectCount + 1, Project.list().size()
+		assertEquals "Wrong number of test outcomes", originalTestOutcomeCount + testRuns.size() * numCases, TestOutcome.list().size()
+		assertEquals "Wrong number of test cases", originalTestCaseCount + numCases, TestCase.list().size()
+		assertEquals "Wrong number of test runs", originalTestRunCount + testRuns.size(), TestRun.list().size()
 
 		projectService.deleteProject(proj)
 
-		assertEquals "Wrong number of projects", 0, Project.list().size()
-		assertEquals "Wrong number of test outcomes", 0, TestOutcome.list().size()
-		assertEquals "Wrong number of test cases", 0, TestCase.list().size()
-		assertEquals "Wrong number of test runs", 0, TestRun.list().size()
+		assertEquals "Wrong number of projects", originalProjectCount, Project.list().size()
+		assertEquals "Wrong number of test outcomes", originalTestOutcomeCount, TestOutcome.list().size()
+		assertEquals "Wrong number of test cases", originalTestCaseCount, TestCase.list().size()
+		assertEquals "Wrong number of test runs", originalTestRunCount, TestRun.list().size()
 	}
 
 
@@ -309,11 +309,12 @@ class ProjectTests extends GroovyTestCase {
 
 	
 	void testCreateTestCaseErrorConditions() {
+        int originalTestCaseCount = TestCase.count()
 		assertNull "No test case should've been returned", projectService.createTestCase(null)
-		assertEquals "No test case should've been created", 0, TestCase.list().size()
+		assertEquals "No test case should've been created", originalTestCaseCount, TestCase.list().size()
 
 		assertNull "No test case should've been returned", projectService.createTestCase([:])
-		assertEquals "No test case should've been created", 0, TestCase.list().size()
+		assertEquals "No test case should've been created", originalTestCaseCount, TestCase.list().size()
 
 		def msg = shouldFail(CuantoException) {
 			def params = [project: 12345]

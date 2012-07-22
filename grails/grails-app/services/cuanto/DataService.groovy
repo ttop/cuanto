@@ -101,15 +101,20 @@ class DataService {
 				paginateParams['offset'] = Integer.valueOf(queryParams.offset)
 			}
 
-			def q = "from cuanto.TestRun t, cuanto.TestRunStats trs where trs.testRun = t and t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+            def q = null
+            def joinTrs = queryParams.sort?.startsWith('trs')
+            if (joinTrs)
+                q = "from cuanto.TestRun t, cuanto.TestRunStats trs where trs.testRun = t and t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+            else
+                q = "from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}"
 
 			// use the paginate params if applicable; otherwise, don't paginate
 			if (paginateParams.size() > 0){
 				def results = TestRun.executeQuery(q, [proj], paginateParams)
-				return results.collect{it[0]}
+				return joinTrs ? results.collect{it[0]} : results
 			} else {
 				def results = TestRun.executeQuery(q, [proj])
-				return results.collect{it[0]}
+				return joinTrs ? results.collect{it[0]} : results
 			}
 		}
 	}
