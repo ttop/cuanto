@@ -182,13 +182,13 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	/**
 	 * The offset of the first TestOutcome to return.
 	 */
-	Long queryOffset
+	Integer queryOffset
 
 
 	/**
 	 * The maximum number of TestOutcomes to return
 	 */
-	Long queryMax
+	Integer queryMax
 
 
     /**
