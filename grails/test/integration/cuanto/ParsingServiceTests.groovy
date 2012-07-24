@@ -236,7 +236,11 @@ class ParsingServiceTests extends GroovyTestCase {
 		assertEquals "Wrong testOutputSummary", "EV313322 is broken in this build. (Build 344 of R2008Trunk.)", targetOutcome.testOutputSummary
 	}
 
-	void testParseTestResultsForSameTestRun()
+	/*
+	* This test is presently skipped because it occasionally hangs due to http://jira.grails.org/browse/GRAILS-7861,
+	* which is resolved in grails 2.0.
+	*/
+	void skip_testParseTestResultsForSameTestRun()
 	{
 		Project proj = fakes.getProject()
 		proj.testType = TestType.findByName("TestNG")
@@ -252,10 +256,11 @@ class ParsingServiceTests extends GroovyTestCase {
 		10.times {
 			threads << Thread.start {
 				TestRun.withNewSession {
-					while (exception == null && getElapsedTime() < 30000)
+					while (exception == null && getElapsedTime() < 10000)
 					{
 						try {
 							parsingService.parseFileWithTestRun(getFile("testng-results-run1.xml"), testRun.id)
+							sleep 50
 						} catch (Exception e) {
 							exception = e
 						}
