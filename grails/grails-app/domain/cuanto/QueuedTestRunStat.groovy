@@ -26,4 +26,8 @@ public class QueuedTestRunStat {
 	// while in the queue
 	Long testRunId
 	Date dateCreated
+
+	static mapping = {
+		version false
+	}
 }

@@ -75,12 +75,10 @@ class StatisticService {
 		}
 
 		synchronized (queueLock) {
-			QueuedTestRunStat.withTransaction {
-				def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
-				if (queuedItem) {
-					log.info "removing test run ${testRunId} from stat queue"
-					queuedItem.delete(flush: true)
-				}
+			def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
+			if (queuedItem) {
+				log.info "removing test run ${testRunId} from stat queue"
+				queuedItem.delete(flush: true)
 			}
 		}
 	}
@@ -99,21 +97,9 @@ class StatisticService {
 				log.debug "${queueSize} items in stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
-					try {
-						QueuedTestRunStat.withTransaction {
-							calculateTestRunStats(queuedItem.testRunId)
-							queuedItem.delete(flush: true)
-							queueSize = QueuedTestRunStat.list().size()
-						}
-					} catch (OptimisticLockingFailureException e) {
-						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-						// leave it in queue so it gets tried again
-					} catch (HibernateOptimisticLockingFailureException e) {
-						log.info "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-					} catch (StaleObjectStateException e) {
-						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
-						// leave it in queue so it gets tried again
-					}
+					calculateTestRunStats(queuedItem.testRunId)
+					queuedItem.delete(flush: true)
+					queueSize = QueuedTestRunStat.list().size()
 				}
 			}
 			if (grailsApplication.config.statSleep) {
@@ -138,7 +124,7 @@ class StatisticService {
 		if (latest.size() == 0) {
 			return null
 		} else {
-			return latest[0]
+			return QueuedTestRunStat.lock(latest[0].id)
 		}
 	}
 
