@@ -14,7 +14,7 @@
 				color: #006dba;
 				font-weight: normal;
 				font-size: 16px;
-				margin: .8em 0 .3em 0;
+				margin: 1.5em 0 .3em 0;
 			}
 
 			h3 {
@@ -25,7 +25,8 @@
 			}
 
 			body {
-				margin-left:3%;
+				margin-left:9%;
+				margin-right: 9%;
 				font: 14px verdana, arial, helvetica, sans-serif;
 			}
 
@@ -50,17 +51,16 @@
 		recommended database configuration because the database upgrade scripts that Cuanto provides for version upgrades
 		are usually MySQL-specific.</p>
 
-
 		<h2>Creating the database</h2>
 		Create a database on your SQL server named "cuanto". Typically this is done with a command like
 		"<span class="mono">create database cuanto;</span>" when logged onto your SQL server, although you may want
 		to specify additional details depending on any additional database restrictions or options you want to enable.
 
-
 		<h2>Running Locally</h2>
-		<h3>Caution</h3>
-		<p>Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production
-		instance using this method.</p>
+
+		<p><em>Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production
+		Cuanto server using this method.</em></p>
+
 		<p>To run locally, you want to have <a href="http://grails.org">Grails</a> 1.3.7 installed. Copy
 		<span class="mono">cuanto-db.groovy</span> file to the
 		<span class="mono">~/.grails</span> directory (or the Windows equivalent) and modify as described below. Copy your JDBC driver to the
@@ -69,17 +69,6 @@
 		Then you can start Cuanto by executing <span class="mono">"grails run-app"</span>. Once it has started,
 			the URL to reach Cuanto will be displayed,
 		usually <span class="mono">http://localhost:8080/cuanto</span>.</p>
-
-		<h2>Building the WAR and client jar from scratch</h2>
-		<p>You are probably fine just using the downloaded distributable and WAR file, but if you wish to build from scratch,
-		here are the instructions:</p>
-
-		<p>With Grails 1.3.7, Ant 1.7.0 or greater and maven (2.2.1 or greater recommended) installed, change to the
-			<span class="mono">cuanto/grails</span> directory and
-		type "<span class="mono">grails build-cuanto</span>". This will create a
-			<span class="mono">cuanto-&lt;version&gt;.zip</span>
-		file in the <span class="mono">dist/release</span> directory. Inside the ZIP will be a WAR, the client API Jar,
-		and a <span class="mono">cuanto-db.groovy</span> file.</p>
 
 		<h2>Customizing cuanto-db.groovy</h2>
 			Edit <span class="mono">cuanto-db.groovy</span> with a text editor.  You'll see a section like this:
@@ -107,6 +96,17 @@
 		<p>The application should be ready to run now -- start your application server and go to the appropriate URL
 		for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu
 		link to read about how to use Cuanto.</p>
+
+		<h2>Building the WAR and client jar from scratch</h2>
+		<p>The downloaded distributable and WAR file should be fine for everyday usage, but if you wish to build from scratch,
+		here are the instructions:</p>
+
+		<p>With Grails 1.3.7, Ant 1.7.0 or greater and maven (2.2.1 or greater recommended) installed, change to the
+			<span class="mono">cuanto/grails</span> directory and
+		type "<span class="mono">grails prod build-cuanto</span>". This will create a
+			<span class="mono">cuanto-&lt;version&gt;.zip</span>
+		file in the <span class="mono">dist/release</span> directory. Inside the ZIP will be a WAR, the client API Jar,
+		and a <span class="mono">cuanto-db.groovy</span> file.</p>
 
 		<h2>Building/using the client jar/ant task</h2>
 		<p>Presently maven is required to build the client jar. With maven installed (2.2.1 or greater recommended),
