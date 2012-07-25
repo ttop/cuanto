@@ -37,10 +37,6 @@ class TestRunStats {
         testRun(nullable: false)
 	}
 
-	static mapping = {
-		cache true
-	}
-
 	Integer tests
 	Integer passed
 	Integer failed
