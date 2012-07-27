@@ -54,6 +54,7 @@ class TestOutcome {
 		testOutputSummary index:'test_output_summary_idx'
 		links fetch: "join", lazy: false, cascade: "all-delete-orphan"
 		testProperties fetch: "join", lazy: false, cascade: "all-delete-orphan"
+		version false
 	}
 
     static hasMany = [tags: Tag, testProperties: TestOutcomeProperty, links: TestOutcomeLink]
