@@ -40,6 +40,9 @@ Upgrading
 =========
 If you are upgrading, shut down Cuanto and back up your database first.
 
+If you are upgrading from 2.7.1, then execute upgrade_to_2.8.0.sql. This may take a number of minutes depending on the
+size of your cuanto database's test_outcome table.
+
 If you are upgrading from 2.6.6, then execute add_skips_2.7.sql and add_testoutcome_props_and_links_2.7.sql. After
 starting Cuanto, all of the test run statistics will be recalculated, and skips will be tracked separately from failures.
 It takes about one second per existing test run to update the statistics, so it may take a while for all of them to be
