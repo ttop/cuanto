@@ -29,9 +29,11 @@ class TestRunStats {
 		skipped(nullable: true)
 		analyzed(nullable: true)
 		newFailures(nullable: true)
+        quarantined(nullable: true)
 		totalDuration(nullable: true)
 		averageDuration(nullable: true)
 		successRate(nullable: true)
+        effectiveSuccessRate(nullable: true)
 		tests(nullable: true)
 		analysisStatistics(nullable: true)
         testRun(nullable: false)
@@ -43,9 +45,11 @@ class TestRunStats {
 	Integer skipped
 	Integer analyzed
 	Integer newFailures
+    Integer quarantined
 	Long totalDuration
 	Long averageDuration
 	BigDecimal successRate
+    BigDecimal effectiveSuccessRate
 	Date lastUpdated
 	List analysisStatistics
     List tagStatistics
@@ -56,13 +60,15 @@ class TestRunStats {
 	Map toJsonMap() {
 		def json = [:]
 		json['id'] = this.id
-		json['passed'] = passed
-		json['skipped'] = skipped
-		json['failed'] = failed
-		json['tests'] = tests
-		json['totalDuration'] = totalDuration
-		json['averageDuration'] = averageDuration
-		json['successRate'] = successRate ? successRate : 0
+		json['passed'] = passed ?: 0
+		json['skipped'] = skipped ?: 0
+		json['failed'] = failed ?: 0
+        json['quarantined'] = quarantined ?: 0
+		json['tests'] = tests ?: 0
+		json['totalDuration'] = totalDuration ?: 0
+		json['averageDuration'] = averageDuration ?: 0
+		json['successRate'] = successRate ?: 0
+        json['effectiveSuccessRate'] = effectiveSuccessRate ?: 0
 		return json
 	}
 

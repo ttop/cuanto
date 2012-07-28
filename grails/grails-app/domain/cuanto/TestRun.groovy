@@ -38,7 +38,7 @@ class TestRun {
 		testRunLink fetch: "join"
 		testRunProperty fetch: "join"
         tag fetch: "join"
-		version false
+        version false
 	}
 	
 	Date dateCreated // date the record was added to the database

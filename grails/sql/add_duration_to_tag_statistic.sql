@@ -1,0 +1,1 @@
+ALTER TABLE tag_statistic CHANGE COLUMN `duration` `duration` BIGINT(20) NOT NULL DEFAULT 0;

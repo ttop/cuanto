@@ -3,7 +3,7 @@
 *~
 *.iws
 api/target
-adapter
+adapter/target
 db
 grails/.classpath
 grails/.project

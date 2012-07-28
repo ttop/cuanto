@@ -116,7 +116,7 @@ public class QueryBuilder {
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
 
-		processors.each {QueryModule queryProcessor ->
+        processors.each {QueryModule queryProcessor ->
 			def details = queryProcessor.getQueryParts(queryFilter)
 
             if (details.from?.trim()) {

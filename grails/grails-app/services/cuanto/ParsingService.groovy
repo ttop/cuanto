@@ -79,7 +79,7 @@ class ParsingService {
 	TestRun saveParsedOutcomes(outcomes, testRun, project) {
 		def localTestRun = null
 		if (testRun) {
-			localTestRun = TestRun.get(testRun.id)
+			localTestRun = TestRun.lock(testRun.id)
 		}
 
 		def testOutcomesToSave = []
@@ -88,6 +88,10 @@ class ParsingService {
 		for (ParsableTestOutcome parsableTestOutcome in outcomes) {
 			numberOfOutcomes++
 			def testOutcome = processParsableOutcome(parsableTestOutcome, localTestRun, project)
+            def lastTestOutcome = dataService.findLastOutcomeForTestCase(testOutcome.testCase)
+            if (lastTestOutcome?.analysisState == dataService.getAnalysisStateByName('Quarantined')) {
+                testOutcome.applyAnalysisFrom(lastTestOutcome)
+            }
 			testOutcomesToSave.add(testOutcome)
 		}
 
@@ -95,7 +99,7 @@ class ParsingService {
 		log.info "${numberOfOutcomes} outcomes parsed from file for project ${localTestRun.project}"
 
 		if (localTestRun) {
-			localTestRun = TestRun.get(localTestRun.id)
+			localTestRun = TestRun.lock(localTestRun.id)
 			testOutcomesToSave.each { outcome ->
 				outcome.tags?.each { tag ->
 					localTestRun.addToTags(tag)
@@ -131,7 +135,7 @@ class ParsingService {
 		if (jsonTestOutcome.has("testRun")) {
 			JSONObject jsonTestRun = jsonTestOutcome.getJSONObject("testRun")
 			if (jsonTestRun != null) {
-				testOutcome.testRun = TestRun.get(jsonTestRun.getLong("id"))
+				testOutcome.testRun = TestRun.lock(jsonTestRun.getLong("id"))
 			}
 		}
 		testOutcome.testResult = dataService.result(jsonTestOutcome.getString("result").toLowerCase())
@@ -330,12 +334,13 @@ class ParsingService {
 
         setTestOutputSummary(testOutcome)
 
-        testOutcome.owner = parsableTestOutcome.owner
-		testOutcome.note = parsableTestOutcome.note
 		testOutcome.testRun = testRun
 		testOutcome.startedAt = parsableTestOutcome.startedAt
 		testOutcome.finishedAt = parsableTestOutcome.finishedAt
 		testOutcome.isFailureStatusChanged = testOutcomeService.isFailureStatusChanged(testOutcome)
+        testOutcome.owner = parsableTestOutcome.owner
+        testOutcome.note = parsableTestOutcome.note
+
 		processTestFailure(testOutcome, project)
 		List tags = processTags(parsableTestOutcome)
 		tags.each {
@@ -507,7 +512,7 @@ class ParsingService {
 		def errMsg = "Unable to locate test run ID ${testRunId}"
 		def testRun
 		try {
-			testRun = TestRun.get(testRunId)
+			testRun = TestRun.lock(testRunId)
 		} catch (Exception e) {
 			throw new ParsingException(errMsg)
 		}

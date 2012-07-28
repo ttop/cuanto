@@ -25,11 +25,11 @@ class InitializationServiceTests extends GroovyTestCase {
 	void testDefaultAnalysisState() {
 		initializationService.initializeAll()
 
-		assertEquals "Wrong number of analysis states", 8, AnalysisState.list().size()
+		assertEquals "Wrong number of analysis states", 9, AnalysisState.list().size()
 		def analyzed = AnalysisState.findAllByIsAnalyzed(true)
-		assertEquals "Wrong number are analyzed", 6, analyzed.size()
+		assertEquals "Wrong number are analyzed", 7, analyzed.size()
 		def stateNotDefault = AnalysisState.findAllByIsDefault(false)
-		assertEquals "Wrong number are not default", 7, stateNotDefault.size()
+		assertEquals "Wrong number are not default", 8, stateNotDefault.size()
 
 		assertNull "Found Unanalyzed state in analyzed list", analyzed.find { it -> it.name == "Unanalyzed" }
 		assertNull "Found Investigate state in analyzed list", analyzed.find { it -> it.name == "Investigate" }

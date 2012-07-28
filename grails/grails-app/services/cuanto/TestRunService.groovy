@@ -59,9 +59,11 @@ class TestRunService {
 			sortMap["tests"] = "trs.tests"
 			sortMap["passed"] = "trs.passed"
 			sortMap["failed"] = "trs.failed"
+            sortMap["quarantined"] = "trs.quarantined"
 			sortMap["totalDuration"] = "trs.totalDuration"
 			sortMap["averageDuration"] = "trs.averageDuration"
 			sortMap["successRate"] = "trs.successRate"
+            sortMap["effectiveSuccessRate"] = "trs.effectiveSuccessRate"
 			sortMap["dateExecuted"] = "t.dateExecuted"
 
 			if (sortMap.containsKey(params.sort)) {
@@ -432,11 +434,11 @@ class TestRunService {
 
 		def text = """<table>
 <thead>
-	<tr><th>Date</th><th>Tests</th><th>Passed</th><th>Failed</th><th>Success</th><th>Total Duration</th>
+	<tr><th>Date</th><th>Tests</th><th>Passed</th><th>Failed</th><td>Quarantined</td><th>Success</th><th>Total Duration</th>
 		<th>Average Duration</th></tr>
 </thead>
 <tbody>
-	<tr><td>${dateTxt}</td><td>${stats?.tests}</td><td>${stats?.passed}</td><td>${stats?.failed}</td>
+	<tr><td>${dateTxt}</td><td>${stats?.tests}</td><td>${stats?.passed}</td><td>${stats?.failed}</td><td>${stats?.quarantined}</td>
 		<td>${stats?.successRate}%</td><td>${stats?.totalDuration}</td><td>${stats?.averageDuration}</td></tr>
 </tbody></table>"""
 		return text.toString()

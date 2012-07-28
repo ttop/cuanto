@@ -31,4 +31,5 @@ public class TagStatistic {
     Integer failed
     Integer skipped
     Integer total
+    Long duration
 }

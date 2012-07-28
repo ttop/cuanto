@@ -40,8 +40,9 @@ class TestOutcome {
 		finishedAt(nullable: true)
 		dateCreated(nullable: true)
 		lastUpdated(nullable: true)
-        tags(nullable:true)
-		isFailureStatusChanged(nullable:true)
+        tags(nullable :true)
+		isFailureStatusChanged(nullable: true)
+        testOutcomeStats(nullable: true)
 		//testOutcomeLink(nullable: true)
 		//testOutcomeProperty(nullable: true)
 	}
@@ -76,16 +77,25 @@ class TestOutcome {
 	Boolean isFailureStatusChanged
 	List<TestOutcomeLink> links
 	List<TestOutcomeProperty> testProperties
+    TestOutcomeStats testOutcomeStats
 
 	Map toJSONmap(Boolean includeTestOutput = false, Integer truncateOutput = null, TestNameFormatter testCaseFormatter = null,
 		Boolean includeTestRunDetails = true) {
 		def outcome = this
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
+        def successRate = outcome.testOutcomeStats?.successRate
+        def formattedSuccessRate = null
+        if (successRate != null)
+        {
+            formattedSuccessRate = String.format("%.2f", successRate)
+        }
 
 		def myJson = [
 			id: outcome.id,
 			analysisState: outcome.analysisState?.name,
 			result: outcome.testResult?.name,
+            streak: outcome.testOutcomeStats?.streak,
+            successRate: formattedSuccessRate,
 			owner: outcome.owner,
 			note: outcome.note,
 			duration: outcome.duration,

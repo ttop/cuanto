@@ -32,7 +32,7 @@ class TestCase implements Comparable{
 	}
 	static mapping = {
 		cache true
-		version false
+        version false
 	}
 
 	String testName

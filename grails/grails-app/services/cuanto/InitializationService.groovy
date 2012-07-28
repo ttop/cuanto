@@ -66,20 +66,23 @@ class InitializationService {
 
 
 	void initAnalysisStates() {
-		if (AnalysisState.list().size() <= 0) {
-			def analysisList = []
+		def existingAnalysisStates = AnalysisState.list()
 
-			analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
-			analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false, isBug: true)
-			analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false, isBug: false)
-			analysisList << new AnalysisState(name: "Harness", isAnalyzed: true, isDefault: false, isBug: false)
-			analysisList << new AnalysisState(name: "No Repro", isAnalyzed: true, isDefault: false, isBug: false)
-			analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
-			analysisList << new AnalysisState(name: "Test Bug", isAnalyzed: true, isDefault: false, isBug: false)
-			analysisList << new AnalysisState(name: "Investigate", isAnalyzed: false, isDefault: false, isBug: false)
+		def analysisList = []
+		analysisList << new AnalysisState(name: "Unanalyzed", isAnalyzed: false, isDefault: true, isBug: false)
+		analysisList << new AnalysisState(name: "Bug", isAnalyzed: true, isDefault: false, isBug: true)
+		analysisList << new AnalysisState(name: "Environment", isAnalyzed: true, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "Harness", isAnalyzed: true, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "No Repro", isAnalyzed: true, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "Other", isAnalyzed: true, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "Test Bug", isAnalyzed: true, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "Investigate", isAnalyzed: false, isDefault: false, isBug: false)
+		analysisList << new AnalysisState(name: "Quarantined", isAnalyzed: true, isDefault: false, isBug: false)
 
+		if (existingAnalysisStates.size() < analysisList.size()) {
 			analysisList.each {analysis ->
-				if (!analysis.save()) {
+                def doesAnalysisExist = existingAnalysisStates.find { it.name == analysis.name }
+                if (!doesAnalysisExist && !analysis.save()) {
 					analysis.errors.allErrors.each {
 						log.warning it.toString()
 					}

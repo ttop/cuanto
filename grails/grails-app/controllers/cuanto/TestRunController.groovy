@@ -20,10 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
-import grails.converters.*
+import grails.converters.JSON
+import grails.converters.XML
 import java.text.SimpleDateFormat
 
 class TestRunController {
+    def bucketService
 	def parsingService
 	def dataService
 	def testOutcomeService
@@ -273,6 +275,19 @@ class TestRunController {
 		}
 	}
 
+    def testNgBuckets = {
+        def testRunId = getTestRunIdFromFilename(params.id)
+        if (testRunId) {
+            def testRun = TestRun.get(testRunId)
+            def bucket = bucketService.getTestNgSuiteForPassFailBuckets(testRun)
+            response.contentType = "text/xml"
+            render bucket
+        } else {
+            response.status = response.SC_BAD_REQUEST
+            render "Couldn't parse TestRun ID for XML"
+        }
+    }
+
 
 	def outcomeCount = {
 		render testOutcomeService.countOutcomes(params)
@@ -431,6 +446,7 @@ class TestRunController {
 		filterList += [id: "allskipped", value: "All Skipped"]
 		filterList += [id: "newpasses", value: "New Passes"]
 		filterList += [id: "allresults", value: "All Results"]
+        filterList += [id: "allquarantined", value: "All Quarantined"]
 		return filterList
 	}
 
@@ -503,7 +519,7 @@ class TestRunController {
 		def matcher = filename =~/.+_(\d+).*/
 		if (matcher.matches()) {
 			def match = matcher[0][1]
-			return new Integer(match)
+			return Long.parseLong(match.toString())
 		} else {
 			return null
 		}
