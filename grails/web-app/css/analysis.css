@@ -187,3 +187,19 @@
 .yui-skin-sam tr.yui-dt-selected td a {
 	color: white;
 }
+
+.acnt {
+	display: inline;
+	position: relative;
+	left: -23px;
+	top: -5px;
+}
+
+.mag {
+	position: relative;
+	top: 10px;
+}
+
+.maglink {
+	text-decoration: none;
+}
