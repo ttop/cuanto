@@ -62,11 +62,9 @@ class StatisticService {
 				dataService.saveDomainObject queuedItem, true
 			}
             // don't calculate test run stats on-demand, because it is not thread-safe
-			/*
-            if (Environment.current == Environment.TEST) {
-				calculateTestRunStats(testRunId)
-			}
-			*/
+//			if (Environment.current == Environment.TEST) {
+//				calculateTestRunStats(testRunId)
+//			}
 		}
 	}
 
@@ -84,10 +82,12 @@ class StatisticService {
 		}
 
 		synchronized (queueLock) {
-			def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
-			if (queuedItem) {
-				log.info "removing test run ${testRunId} from stat queue"
-				queuedItem.delete(flush: true)
+			QueuedTestRunStat.withTransaction {
+				def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
+				if (queuedItem) {
+					log.info "removing test run ${testRunId} from stat queue"
+					queuedItem.delete(flush: true)
+				}
 			}
 		}
 	}
@@ -106,9 +106,22 @@ class StatisticService {
 				log.debug "${queueSize} items in stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
-					calculateTestRunStats(queuedItem.testRunId)
-					queuedItem.delete(flush: true)
-					queueSize = QueuedTestRunStat.list().size()
+					try {
+						QueuedTestRunStat.withTransaction {
+							calculateTestRunStats(queuedItem.testRunId)
+                            calculateTestOutcomeStats(queuedItem.testRunId)
+							queuedItem.delete(flush: true)
+							queueSize = QueuedTestRunStat.list().size()
+						}
+					} catch (OptimisticLockingFailureException e) {
+						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+						// leave it in queue so it gets tried again
+					} catch (HibernateOptimisticLockingFailureException e) {
+						log.info "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
+					} catch (StaleObjectStateException e) {
+						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
+						// leave it in queue so it gets tried again
+					}
 				}
 			}
 			if (grailsApplication.config.statSleep) {
@@ -133,7 +146,7 @@ class StatisticService {
 		if (latest.size() == 0) {
 			return null
 		} else {
-			return QueuedTestRunStat.lock(latest[0].id)
+			return latest[0]
 		}
 	}
 
@@ -229,7 +242,7 @@ class StatisticService {
                 def stats = new TestOutcomeStats()
                 dataService.saveDomainObject(stats, true)
                 testOutcome.testOutcomeStats = stats
-                List<TestResult> recentTestResults = TestResult.executeQuery(
+                List<String> recentTestResults = TestOutcome.executeQuery(
                         "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
                         [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
                 calculateStreak(testOutcome, recentTestResults)
@@ -239,7 +252,7 @@ class StatisticService {
         }
     }
     
-    private void calculateStreak(TestOutcome testOutcome, List<TestResult> recentTestResults)
+    private void calculateStreak(TestOutcome testOutcome, List<String> recentTestResults)
     {
         int streak = countRecentStreak(recentTestResults)
         testOutcome.testOutcomeStats.streak = streak

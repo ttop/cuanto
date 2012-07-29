@@ -83,7 +83,7 @@ class TestOutcome {
 		Boolean includeTestRunDetails = true) {
 		def outcome = this
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat(Defaults.fullDateFormat)
-        def successRate = outcome.testOutcomeStats?.successRate
+        def successRate = outcome.testOutcomeStats?.successRate ?: 0.0f
         def formattedSuccessRate = null
         if (successRate != null)
         {
@@ -94,7 +94,7 @@ class TestOutcome {
 			id: outcome.id,
 			analysisState: outcome.analysisState?.name,
 			result: outcome.testResult?.name,
-            streak: outcome.testOutcomeStats?.streak,
+            streak: outcome.testOutcomeStats?.streak ?: 0,
             successRate: formattedSuccessRate,
 			owner: outcome.owner,
 			note: outcome.note,
