@@ -183,3 +183,7 @@
     width: 100%;
     overflow: auto;
 }
+
+.yui-skin-sam tr.yui-dt-selected td a {
+	color: white;
+}

@@ -159,8 +159,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		dataSource.maxCacheEntries = 0;
 		dataSource.responseSchema = {
 			resultsList: 'testOutcomes',
-			fields: ["testCase", "result", "streak", "successRate", "analysisState", "duration", "bug", "owner", "note", "id", "testOutput",
-				"startedAt", "finishedAt", "tags", "isFailureStatusChanged", "testProperties", "links"],
+			fields: ["testCase", "result", "streak", "successRate", "testCase.analysisCount", "analysisState", "duration",
+				"bug", "owner", "note", "id", "testOutput",	"startedAt", "finishedAt", "tags", "isFailureStatusChanged",
+				"testProperties", "links"],
 			metaFields: {
 				offset: "offset",
 				totalCount: "totalCount"
@@ -469,6 +470,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:testResultNames})},
             {key:"streak", label:"Streak", sortable:true },
             {key:"successRate", label:"Pass Rate", sortable:true, formatter: formatPercentage },
+			{key:"testCase.analysisCount", label: "Prior", sortable: false, formatter: formatAnalysisCount},
 			{key:"analysisState", label:"Reason", sortable:true,
 				editor:new YAHOO.widget.DropdownCellEditor({dropdownOptions:analysisStateNames, disableBtns:true})},
 			{key:"startedAt", label: "Started At", sortable:true},
@@ -566,13 +568,13 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		var tcId = oRecord.getData("testCase").id;
 
 		var historyLinkId = 'history' + tcId;
-		$(elCell).html("<a id='" + historyLinkId + "'><img src='" + historyImgUrl + "'/></a>");
+		$(elCell).html("<a href='' id='" + historyLinkId + "'><img src='" + historyImgUrl + "'/></a>");
 
 		var outputLinkId = 'to' + toId;
-		$(elCell).append("<img src='" + outputImgUrl + "' id='" + outputLinkId + "' class='outLink'/>");
+		$(elCell).append("<a href=''><img src='" + outputImgUrl + "' id='" + outputLinkId + "' class='outLink'/></a>");
 
 		var anlzLinkId = 'an' + toId;
-		$(elCell).append("<a id='" + anlzLinkId + "' class='anlzLink'><img src='" + anlzImgUrl + "'/></a>");
+		$(elCell).append("<a href='' id='" + anlzLinkId + "' class='anlzLink'><img src='" + anlzImgUrl + "'/></a>");
 
 		YAHOO.util.Event.addListener(outputLinkId, "click", handleOutputIcon);
 		YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
@@ -590,6 +592,19 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
             $(elCell).html(oData.join(", "));
         }
     }
+
+	function formatAnalysisCount(elCell, oRecord, oColumn, oData){
+		var tcId = oRecord.getData("testCase").id;
+		var analysisCount = oRecord.getData("testCase.analysisCount");
+		if (analysisCount > 0) {
+			var historyLinkId = 'ahistory' + tcId;
+			$(elCell).html("<a href='' id='" + historyLinkId + "'>" + analysisCount + "</a>");
+			YAHOO.util.Event.addListener(historyLinkId, "click", showHistoryForLink, tcId);
+		} else {
+			$(elCell).html(analysisCount);
+		}
+
+	}
 
 	function setImgTitleAndAlt(imgElem, title) {
 		imgElem.attr('title', title);
