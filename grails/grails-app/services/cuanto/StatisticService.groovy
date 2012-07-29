@@ -62,11 +62,9 @@ class StatisticService {
 				dataService.saveDomainObject queuedItem, true
 			}
             // don't calculate test run stats on-demand, because it is not thread-safe
-			/*
-            if (Environment.current == Environment.TEST) {
-				calculateTestRunStats(testRunId)
-			}
-			*/
+//			if (Environment.current == Environment.TEST) {
+//				calculateTestRunStats(testRunId)
+//			}
 		}
 	}
 
@@ -84,10 +82,12 @@ class StatisticService {
 		}
 
 		synchronized (queueLock) {
-			def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
-			if (queuedItem) {
-				log.info "removing test run ${testRunId} from stat queue"
-				queuedItem.delete(flush: true)
+			QueuedTestRunStat.withTransaction {
+				def queuedItem = QueuedTestRunStat.findByTestRunId(testRunId, [lock: true])
+				if (queuedItem) {
+					log.info "removing test run ${testRunId} from stat queue"
+					queuedItem.delete(flush: true)
+				}
 			}
 		}
 	}
@@ -106,11 +106,13 @@ class StatisticService {
 				log.debug "${queueSize} items in stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
-					calculateTestRunStats(queuedItem.testRunId)
+					try {
+						QueuedTestRunStat.withTransaction {
+							calculateTestRunStats(queuedItem.testRunId)
                             calculateTestOutcomeStats(queuedItem.testRunId)
-					queuedItem.delete(flush: true)
-					queueSize = QueuedTestRunStat.list().size()
-				}
+							queuedItem.delete(flush: true)
+							queueSize = QueuedTestRunStat.list().size()
+						}
 					} catch (OptimisticLockingFailureException e) {
 						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
 						// leave it in queue so it gets tried again
@@ -119,7 +121,7 @@ class StatisticService {
 					} catch (StaleObjectStateException e) {
 						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
 						// leave it in queue so it gets tried again
-			}
+					}
 				}
 			}
 			if (grailsApplication.config.statSleep) {
