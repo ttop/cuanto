@@ -30,7 +30,7 @@ class FailureStatusService
 	def queueFailureStatusUpdateForOutcomes(affectedOutcomes) {
 		if (affectedOutcomes) {
 			def notNullOutcomes = affectedOutcomes.findAll { it != null && it.id != null }
-			def updateTasksForAffectedOutcomes = []
+
 			notNullOutcomes.each { affectedOutcome ->
 				def existingTask = FailureStatusUpdateTask.findByTargetIdAndType(
 					affectedOutcome.id, TestOutcome.class.name)
@@ -38,9 +38,8 @@ class FailureStatusService
 					return
 
 				log.info "adding affected test outcomes ${notNullOutcomes*.id} to failure status update queue"
-				updateTasksForAffectedOutcomes << new FailureStatusUpdateTask(affectedOutcome)
+				dataService.saveDomainObject(new FailureStatusUpdateTask(affectedOutcome))
 			}
-			dataService.saveTestOutcomes(updateTasksForAffectedOutcomes)
 		}
 	}
 
