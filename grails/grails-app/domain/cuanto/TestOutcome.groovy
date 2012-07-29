@@ -110,14 +110,15 @@ class TestOutcome {
 
 		def testCaseJson
 		if (testCaseFormatter) {
-			testCaseJson = [name: testCaseFormatter.getTestName(outcome.testCase), id: outcome.testCase.id]
+			testCaseJson = [name: testCaseFormatter.getTestName(outcome.testCase), id: outcome.testCase.id,
+				analysisCount: outcome.testCase?.analysisCount]
 			if (outcome.testCase.parameters) {
 				testCaseJson.parameters = outcome.testCase.parameters
 			}
 		} else {
 			testCaseJson = [testName: outcome.testCase?.testName, packageName: outcome.testCase?.packageName,
 				parameters: outcome.testCase?.parameters, description: outcome.testCase?.description,
-				fullName: outcome.testCase?.fullName]
+				fullName: outcome.testCase?.fullName, analysisCount: outcome.testCase?.analysisCount]
 		}
 
 		myJson.testCase = testCaseJson
