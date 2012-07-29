@@ -109,7 +109,7 @@ class StatisticService {
 					try {
 						QueuedTestRunStat.withTransaction {
 							calculateTestRunStats(queuedItem.testRunId)
-                            calculateTestOutcomeStats(queuedItem.testRunId)
+							calculateTestOutcomeStats(queuedItem.testRunId)
 							queuedItem.delete(flush: true)
 							queueSize = QueuedTestRunStat.list().size()
 						}
@@ -251,7 +251,7 @@ class StatisticService {
             }
         }
     }
-    
+
     private void calculateStreak(TestOutcome testOutcome, List<String> recentTestResults)
     {
         int streak = countRecentStreak(recentTestResults)
@@ -261,7 +261,7 @@ class StatisticService {
 
     private void calculateSuccessRate(TestOutcome testOutcome, List<TestResult> recentTestResults) {
         int passes = CollectionUtils.countMatches(recentTestResults, { TestResult testResult ->
-            testResult.getName() == cuanto.api.TestResult.Pass.toString()
+            testResult.getName() == "Pass"
         } as Predicate)
         testOutcome.testOutcomeStats.successRate = 100 * passes / recentTestResults.size()
     }
