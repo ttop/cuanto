@@ -177,7 +177,8 @@ class DataService {
 
 
 	def saveTestOutcomes(List outcomes) {
-		for (outcome in outcomes) {
+		for (TestOutcome outcome in outcomes) {
+			updateAnalysisCountForTestCase(outcome.testCase)
 			saveDomainObject outcome
 		}
 	}
@@ -658,11 +659,24 @@ class DataService {
 		TestOutcome.findWhere('testCase': testCase, 'testRun': testRun)
 	}
 
+
     def findLastOutcomeForTestCase(testCase) {
         List<TestOutcome> lastTestOutcomes = TestOutcome.findAll(
                 "from cuanto.TestOutcome outcome where outcome.testCase = ? order by id desc", [testCase], [max: 1])
         return lastTestOutcomes ? lastTestOutcomes.get(0) : null
     }
+
+
+	def countAnalysesForTestCase(testCase) {
+		return TestOutcome.executeQuery("select count(*) from cuanto.TestOutcome t where t.testCase = ? and t.analysisState.isAnalyzed = true",
+			[testCase])[0]
+	}
+
+	def updateAnalysisCountForTestCase(TestCase testCase) {
+		testCase.lock()
+		testCase.analysisCount = countAnalysesForTestCase(testCase) as Integer
+		saveDomainObject(testCase)
+	}
 }
 
 

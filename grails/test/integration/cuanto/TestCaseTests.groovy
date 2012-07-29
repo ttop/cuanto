@@ -154,4 +154,81 @@ class TestCaseTests extends GroovyTestCase {
 		assertEquals "Wrong number of test cases", 1, dataService.getTestCases(fetchedProj).size()
 	}
 
+
+	void testAnalysisCount() {
+		def project = to.project
+		dataService.saveDomainObject project
+
+		// create test case
+		TestCase testCase = to.getTestCase(project)
+		dataService.saveDomainObject testCase
+
+		// verify analysisCount is 0
+		assertEquals "Wrong analysisCount", 0, 	dataService.countAnalysesForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 0, testCase.analysisCount
+
+		// create an unanalyzed TestOutcome
+		TestRun runA = to.getTestRun(project)
+		dataService.saveDomainObject(runA)
+
+		TestOutcome outcomeA = to.getTestOutcome(testCase, runA)
+		dataService.saveDomainObject(outcomeA)
+
+
+		// verify analysisCount is 0
+		assertEquals "Wrong analysisCount", 0, 	dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 0, testCase.analysisCount
+
+		// create an unanalyzed TestOutcome
+		TestRun runB = to.getTestRun(project)
+		dataService.saveDomainObject(runB)
+
+		TestOutcome outcomeB = to.getTestOutcome(testCase, runB)
+		dataService.saveDomainObject(outcomeB)
+
+		// verify analysisCount is 0
+		assertEquals "Wrong analysisCount", 0, dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 0, testCase.analysisCount
+
+
+		// Change analysisState of one TestOutcome
+		outcomeA.analysisState = dataService.getAnalysisStateByName("Bug")
+		dataService.saveDomainObject(outcomeA)
+
+		// verify analysisCount is 1
+		assertEquals "Wrong analysisCount", 1, dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 1, testCase.analysisCount
+
+		// Change analysisState of another TestOutcome
+		outcomeB.analysisState = dataService.getAnalysisStateByName("Environment")
+		dataService.saveDomainObject(outcomeB)
+
+		// verify analysisCount is 2
+		assertEquals "Wrong analysisCount", 2, dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 2, testCase.analysisCount
+
+		// Change one analysis State to unanalyzed
+		outcomeB.analysisState = dataService.getAnalysisStateByName("Investigate")
+		dataService.saveDomainObject(outcomeB)
+
+		// verify analysisCount is 1
+		assertEquals "Wrong analysisCount", 1, dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 1, testCase.analysisCount
+
+		// Change second analysis State to unanalyzed
+		outcomeA.analysisState = dataService.getAnalysisStateByName("Investigate")
+		dataService.updateAnalysisCountForTestCase(testCase)
+		dataService.saveDomainObject(outcomeA)
+
+		// verify analysisCount is 0
+		assertEquals "Wrong analysisCount", 0, dataService.countAnalysesForTestCase(testCase)
+		dataService.updateAnalysisCountForTestCase(testCase)
+		assertEquals "Wrong analysisCount", 0, testCase.analysisCount
+
+	}
 }

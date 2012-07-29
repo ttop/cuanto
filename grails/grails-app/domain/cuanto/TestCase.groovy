@@ -41,6 +41,7 @@ class TestCase implements Comparable{
 	String parameters
 	String description
 	Project project
+	Integer analysisCount = 0
 
 	public int compareTo(Object t) {
 		TestCase tc = (TestCase)t
@@ -55,7 +56,7 @@ class TestCase implements Comparable{
 	Map toJSONmap() {
 		return [
 			testCase: [testName: this.testName, packageName: this.packageName,
-				parameters: this.parameters, description: this.description, id: this.id]
+				parameters: this.parameters, description: this.description, id: this.id, analysisCount: this.analysisCount]
 		]
 	}
 }

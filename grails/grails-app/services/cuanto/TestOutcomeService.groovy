@@ -81,7 +81,7 @@ class TestOutcomeService {
 					}
 				}
 
-				dataService.saveDomainObject outcome
+				dataService.saveTestOutcomes([outcome])
 				dataService.deleteBugIfUnused origBug
 				queueRecalculationJobs(outcome)
 			}
