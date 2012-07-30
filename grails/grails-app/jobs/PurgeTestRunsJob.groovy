@@ -2,7 +2,7 @@ import cuanto.Project
 import cuanto.TestRun
 
 /*
-	Copyright (c) 2010 Todd E. Wells
+	Copyright (c) 2012 Todd E. Wells
 
 	This file is part of Cuanto, a test results repository and analysis program.
 
