@@ -149,9 +149,9 @@ class ProjectService {
 			}
 
 			def purgeDays = params.purgeDays
-			if (purgeDays?.trim() == "") {
+			if (purgeDays == null || purgeDays?.trim() == "") {
 				project.purgeDays = null
-			} else {
+			} else{
 				project.purgeDays = Integer.valueOf(params.purgeDays)
 			}
 
