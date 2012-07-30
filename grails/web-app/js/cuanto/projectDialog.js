@@ -35,6 +35,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 	});
 
 	$('.pdInput').css("width", "180px");
+	$('#pdPurge').css("width", "38px");
 
 	if (title) {
 		$('#pdHd').html(title);
@@ -182,6 +183,7 @@ YAHOO.cuanto.ProjectDialog = function(title) {
 					$('#pdUrlPattern').val(project['bugUrlPattern']);
 				}
 				$('#pdType').val(project['testType']['name']);
+				$('#pdPurge').val(project['purgeDays']);
 				$('#pdLoading').hide();
 			}
 		});

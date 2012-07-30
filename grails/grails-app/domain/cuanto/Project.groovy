@@ -31,6 +31,7 @@ class Project implements Comparable {
 	String bugUrlPattern
 	TestType testType
 	Boolean deleted = false
+	Integer purgeDays
 
 	static constraints = {
 		name(nullable: false, blank: false)
@@ -47,6 +48,7 @@ class Project implements Comparable {
 		bugUrlPattern(nullable: true)
 		testType(nullable: false)
 		deleted(nullable: true)
+		purgeDays(nullable: true)
 	}
 
 	Project(){}
@@ -146,6 +148,7 @@ class Project implements Comparable {
 		json.projectKey = this.projectKey
 		json.bugUrlPattern = this.bugUrlPattern
 		json.testType = this.testType?.toJSONMap()
+		json.purgeDays = this.purgeDays
 		return json
 	}
 

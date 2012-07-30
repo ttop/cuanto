@@ -90,6 +90,7 @@ class ProjectService {
 		parsedProject.name = params?.name
 		parsedProject.projectKey = params?.projectKey
 		parsedProject.testType = params?.testType
+		parsedProject.purgeDays = params?.purgeDays
 		return createProject(parsedProject)
 	}
 
@@ -102,6 +103,7 @@ class ProjectService {
 			newProj.name = project?.name
 			newProj.projectKey = project?.projectKey
 			newProj.testType = dataService.getTestType(project?.testType)
+			newProj.purgeDays = project.purgeDays
 
 			if (newProj.validate()) {
 				dataService.saveDomainObject(newProj)
@@ -144,6 +146,13 @@ class ProjectService {
 
 			if (project.projectGroup != origGroup) {
 				deleteProjectGroupIfUnused(origGroup)
+			}
+
+			def purgeDays = params.purgeDays
+			if (purgeDays?.trim() == "") {
+				project.purgeDays = null
+			} else {
+				project.purgeDays = Integer.valueOf(params.purgeDays)
 			}
 
 			dataService.saveDomainObject(project)

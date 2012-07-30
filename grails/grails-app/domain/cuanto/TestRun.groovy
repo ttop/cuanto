@@ -49,6 +49,7 @@ class TestRun {
 	Project project
 	List<TestRunLink> links
 	List<TestRunProperty> testProperties
+	Boolean allowPurge = true
 
 	def beforeInsert = {
 

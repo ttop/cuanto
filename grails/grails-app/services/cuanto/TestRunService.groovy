@@ -257,7 +257,9 @@ class TestRunService {
 
 			processTestPropertiesFromParameters(params, testRun)
 			processLinksFromParameters(params, testRun)
-
+			if (params.pinRun == "on") {
+				testRun.allowPurge = false
+			}
 			dataService.saveDomainObject testRun
 		}
 		return testRun

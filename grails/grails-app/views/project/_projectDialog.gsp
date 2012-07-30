@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</div>
 				<div class="projectLine">
 					<label class="wideLabel" for="pdUrlPattern">Bug URL Pattern:<br/>(e.g. http://url/{BUG})</label>
-					<input id="pdUrlPattern" class="pdInput" type="text" name="bugUrlPattern" value="${project?.bugUrlPattern}"/>
+					<input id="pdUrlPattern" type="text" name="bugUrlPattern" value="${project?.bugUrlPattern}"/>
 					<br/>
 				</div>
 				<div class="projectLine">
@@ -64,6 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<g:select id="pdType" class="pdInput" from="${testTypes}" optionKey="name" optionValue="name" name="testType"
 						value="${currentTestType?.name}" />
 					<br/>
+					<label class="wideLabel" for="pdPurge">Purge Runs After:</label>
+					<input id="pdPurge" class="pdInput" type="text" name="purgeDays" value="${project?.purgeDays}"/>  Days
 				</div>			
 			</form>
 			<div id="pdLoading" style="display:none"><img src="${resource(dir: 'images/progress', file: 'mozilla_blu.gif')}"

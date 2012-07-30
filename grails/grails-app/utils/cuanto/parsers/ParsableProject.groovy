@@ -39,4 +39,5 @@ public class ParsableProject {
     String bugUrlPattern
     String testType
     Long id
+	Integer purgeDays
 }

@@ -58,6 +58,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<g:form name="editTestRun" action="update" id="${testRun?.id}">
 					<label class="narrowLabel">Test Run is valid? </label><g:checkBox name="valid" value="${testRun?.valid}"/>
 					<div class="clear"></div>
+					<br/>
+					<label class="narrowLabel">Pin test run?</label><g:checkBox name="pinRun" value="${!testRun?.allowPurge}"/>
+					<div class="clear"></div>
+					<br/>
+
 					<label class="narrowLabel">Note: </label><g:textField name="note" value="${testRun?.note}" size="81"/>
 					<br/><br/>
 					<span class="headone">Properties:</span><br/><br/>
