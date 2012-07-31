@@ -677,6 +677,106 @@ class DataService {
 		testCase.analysisCount = countAnalysesForTestCase(testCase) as Integer
 		saveDomainObject(testCase)
 	}
-}
+
+
+	/*
+	* Return the TestOutcomes in testRunB which are TestResult.isFailure where the same TestOutcome in testRunA is not.
+	* */
+	List<List<TestOutcome>> getNewFailures(TestRun testRunA, TestRun testRunB) {
+		def query = "FROM cuanto.TestOutcome outcomeA, cuanto.TestOutcome outcomeB " +
+			"WHERE outcomeA.testCase = outcomeB.testCase AND outcomeA.testRun = ? AND outcomeB.testRun = ? " +
+			"AND outcomeA.testResult.isFailure IS FALSE AND outcomeB.testResult.isFailure IS TRUE ORDER BY outcomeB.testCase.fullName"
+		return TestOutcome.executeQuery(query, [testRunA, testRunB])
+	}
+
+
+	/*
+	* Return the TestOutcomes in testRunB which are TestResult.isFailure where the same test was not executed in testRunA.
+	*/
+	List<TestOutcome> getBrandNewFailures(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeB WHERE outcomeB.testRun = ? AND outcomeB.testResult.isFailure IS TRUE AND
+		                  outcomeB.testCase NOT IN (
+		                     FROM cuanto.TestOutcome outcomeA WHERE outcomeA.testRun = ? AND outcomeB.testCase = outcomeA.testCase)
+		                     ORDER BY outcomeB.testCase.fullName
+		"""
+		return TestOutcome.executeQuery(query, [testRunB, testRunA])
+	}
+
+
+	/*
+	* Return the TestOutcomes in testRunB which are TestResult.isFailure = false where the same TestOutcome in testRunA
+	* has TestResult.isFailure = true.
+	*/
+	List<List<TestOutcome>> getNewPasses(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeA, cuanto.TestOutcome outcomeB
+			WHERE outcomeA.testCase = outcomeB.testCase
+			AND outcomeA.testRun = ? AND outcomeB.testRun = ?
+			AND (outcomeA.testResult.isFailure IS TRUE OR outcomeA.testResult.isSkip IS TRUE OR outcomeA.testResult.includeInCalculations IS FALSE)
+			AND (outcomeB.testResult.isFailure IS FALSE AND outcomeB.testResult.isSkip IS FALSE AND outcomeB.testResult.includeInCalculations IS TRUE)
+			ORDER BY outcomeB.testCase.fullName"""
+		def results = TestOutcome.executeQuery(query, [testRunA, testRunB])
+		return results
+	}
+
+
+	/*
+	* Return the TestOutcomes in testRunB which are TestResult.isFailure = false, TestResult.isSkip = false and
+	*  TestResult.includeInCalculations = true where the same test was not executed in testRunA.
+	*/
+	List<TestOutcome> getBrandNewPasses(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeB WHERE outcomeB.testRun = ? AND
+		                  outcomeB.testResult.isFailure IS FALSE AND
+		                  outcomeB.testResult.isSkip IS FALSE AND
+		                  outcomeB.testResult.includeInCalculations IS TRUE AND
+							  outcomeB.testCase NOT IN (
+								 FROM cuanto.TestOutcome outcomeA WHERE outcomeA.testRun = ? AND outcomeB.testCase = outcomeA.testCase)
+								 ORDER BY outcomeB.testCase.fullName
+		"""
+		return TestOutcome.executeQuery(query, [testRunB, testRunA])
+	}
+
+
+	List<List<TestOutcome>> getNewSkips(TestRun testRunA, TestRun testRunB) {
+		def query = "FROM cuanto.TestOutcome outcomeA, cuanto.TestOutcome outcomeB " +
+			"WHERE outcomeA.testCase = outcomeB.testCase AND outcomeA.testRun = ? AND outcomeB.testRun = ? " +
+			"AND outcomeA.testResult.isSkip IS FALSE AND outcomeB.testResult.isSkip IS TRUE ORDER BY outcomeB.testCase.fullName"
+		return TestOutcome.executeQuery(query, [testRunA, testRunB])
+	}
+
+
+	List<TestOutcome> getBrandNewSkips(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeB WHERE outcomeB.testRun = ? AND
+		                  outcomeB.testResult.isSkip IS TRUE AND
+							  outcomeB.testCase NOT IN (
+								 FROM cuanto.TestOutcome outcomeA WHERE outcomeA.testRun = ? AND outcomeB.testCase = outcomeA.testCase)
+								 ORDER BY outcomeB.testCase.fullName
+		"""
+		return TestOutcome.executeQuery(query, [testRunB, testRunA])
+	}
+
+
+	List<List<TestOutcome>> getNewExcluded(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeA, cuanto.TestOutcome outcomeB
+			WHERE outcomeA.testCase = outcomeB.testCase AND outcomeA.testRun = ? AND outcomeB.testRun = ?
+			AND outcomeA.testResult.includeInCalculations IS TRUE AND outcomeB.testResult.includeInCalculations IS FALSE
+			ORDER BY outcomeB.testCase.fullName"""
+		def results = TestOutcome.executeQuery(query, [testRunA, testRunB])
+		return results
+	}
+
+
+	List<TestOutcome> getBrandNewExcluded(TestRun testRunA, TestRun testRunB) {
+		def query = """FROM cuanto.TestOutcome outcomeB WHERE outcomeB.testRun = ? AND
+		                  outcomeB.testResult.includeInCalculations IS FALSE AND
+							  outcomeB.testCase NOT IN (
+								 FROM cuanto.TestOutcome outcomeA WHERE outcomeA.testRun = ? AND outcomeB.testCase = outcomeA.testCase)
+								 ORDER BY outcomeB.testCase.fullName
+		"""
+		def results = TestOutcome.executeQuery(query, [testRunB, testRunA])
+		return results
+
+	}
+
+ }
 
 

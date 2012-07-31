@@ -1,7 +1,6 @@
 package cuanto
 
 import cuanto.test.TestObjects
-import org.springframework.orm.hibernate3.HibernateSystemException
 
 class DataServiceTests extends GroovyTestCase {
 
@@ -1078,6 +1077,261 @@ class DataServiceTests extends GroovyTestCase {
 		def testRunAfterRun3 = dataService.getNextTestRun(testRun3)
 		assertNull "The last TestRun in this project should not have any next TestRuns.", testRunAfterRun3
 	}
+
+
+	void testDiffTestRuns() {
+		//fail "TODO: implement"
+	}
+
+
+	void testDiffNewFailures() {
+		Project proj = to.project
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			dataService.reportSaveError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			dataService.saveDomainObject testCase
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj)
+		testRunOne.save()
+
+		List<TestOutcome> outcomesForA = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			outcomesForA << out
+			dataService.saveDomainObject out
+		}
+
+		def testRunTwo = to.getTestRun(proj)
+		testRunTwo.save()
+
+		List<TestOutcome>  outcomesForB = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			outcomesForB << out
+			dataService.saveDomainObject out
+		}
+
+		outcomesForA[0].testResult = dataService.result("pass")
+		outcomesForB[0].testResult = dataService.result("fail")
+
+		outcomesForA[1].testResult = dataService.result("pass")
+		outcomesForB[1].testResult = dataService.result("error")
+
+		outcomesForA[2].testResult = dataService.result("ignore")
+		outcomesForB[2].testResult = dataService.result("fail")
+
+		outcomesForA[3].testResult = dataService.result("skip")
+		outcomesForB[3].testResult = dataService.result("fail")
+
+		outcomesForA[4].testResult = dataService.result("unexecuted")
+		outcomesForB[4].testResult = dataService.result("error")
+
+		outcomesForA[5].testResult = dataService.result("fail")
+		outcomesForA[6].testResult = dataService.result("error")
+
+		[outcomesForA,outcomesForB].flatten().each {
+			dataService.saveDomainObject(it)
+		}
+
+		// TODO: What if a test run has two outcomes for the same test? What about parameters?
+
+		List<List> newFailures = dataService.getNewFailures(testRunOne, testRunTwo)
+		assertNotNull newFailures
+		assertTrue("Empty new failures list", newFailures.size() > 0)
+		assertEquals "Wrong number of new failures", 5, newFailures.size()
+
+		List<List> newPasses = dataService.getNewPasses(testRunOne, testRunTwo)
+		assertEquals "Wrong number of new passes", 2, newPasses.size()
+
+		outcomesForB[2].testResult = dataService.result("pass")
+		outcomesForB[3].testResult = dataService.result("pass")
+		outcomesForB[4].testResult = dataService.result("pass")
+		outcomesForB.each {
+			dataService.saveDomainObject(it)
+		}
+		newPasses = dataService.getNewPasses(testRunOne, testRunTwo)
+		assertEquals "Wrong number of new passes", 5, newPasses.size()
+
+		TestCase testCaseA = to.getTestCase(proj)
+		TestCase testCaseB = to.getTestCase(proj)
+		TestCase testCaseC = to.getTestCase(proj)
+		TestCase testCaseD = to.getTestCase(proj)
+		testCases << testCaseA
+		testCases << testCaseB
+		testCases << testCaseC
+		testCases << testCaseD
+		dataService.saveDomainObject(testCaseA)
+		dataService.saveDomainObject(testCaseB)
+		dataService.saveDomainObject(testCaseC)
+		dataService.saveDomainObject(testCaseD)
+
+		def oneMoreFailure = to.getTestOutcome(testCaseA, testRunTwo)
+		oneMoreFailure.testResult = dataService.result("fail")
+		dataService.saveDomainObject(oneMoreFailure, true)
+		outcomesForB << oneMoreFailure
+
+		def oneMorePass = to.getTestOutcome(testCaseB, testRunTwo)
+		dataService.saveDomainObject(oneMorePass, true)
+		outcomesForB << oneMorePass
+
+		List <TestOutcome> brandNewFailures = dataService.getBrandNewFailures(testRunOne, testRunTwo)
+		assertNotNull brandNewFailures
+		assertTrue("Empty new failures list", brandNewFailures.size() > 0)
+		assertEquals "Wrong number of new failures", 1, brandNewFailures.size()
+
+		List <TestOutcome> brandNewPasses = dataService.getBrandNewPasses(testRunOne, testRunTwo)
+		assertEquals "Wrong number of brand new passes", 1, brandNewPasses.size()
+	}
+
+
+	void testDiffNewExcluded() {
+		Project proj = to.project
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			dataService.reportSaveError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			dataService.saveDomainObject testCase
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj)
+		testRunOne.save()
+
+		List<TestOutcome> outcomesForA = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			outcomesForA << out
+			dataService.saveDomainObject out
+		}
+
+		def testRunTwo = to.getTestRun(proj)
+		testRunTwo.save()
+
+		List<TestOutcome>  outcomesForB = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			outcomesForB << out
+			dataService.saveDomainObject out
+		}
+
+		outcomesForA[0].testResult = dataService.result("pass")
+		outcomesForB[0].testResult = dataService.result("ignore")
+
+		outcomesForA[1].testResult = dataService.result("pass")
+		outcomesForB[1].testResult = dataService.result("error")
+
+		outcomesForA[2].testResult = dataService.result("ignore")
+		outcomesForB[2].testResult = dataService.result("fail")
+
+		outcomesForA[3].testResult = dataService.result("skip")
+		outcomesForB[3].testResult = dataService.result("unexecuted")
+
+		outcomesForA[4].testResult = dataService.result("unexecuted")
+		outcomesForB[4].testResult = dataService.result("ignore")
+
+		outcomesForA[5].testResult = dataService.result("fail")
+		outcomesForA[6].testResult = dataService.result("error")
+
+		[outcomesForA,outcomesForB].flatten().each {
+			dataService.saveDomainObject(it)
+		}
+
+		def newExcludes = dataService.getNewExcluded(testRunOne, testRunTwo)
+		assertEquals "Wrong number of new excluded", 2, newExcludes.size()
+
+		TestCase newTestCase = to.getTestCase(proj)
+		dataService.saveDomainObject(newTestCase, true)
+		TestOutcome brandNewIgnore = to.getTestOutcome(newTestCase, testRunTwo)
+		brandNewIgnore.testResult = dataService.result("ignore")
+		dataService.saveDomainObject(brandNewIgnore, true)
+
+		def brandNewExcludes = dataService.getBrandNewExcluded(testRunOne, testRunTwo)
+		assertEquals "Wrong number of brand new excluded", 1, brandNewExcludes.size()
+	}
+
+
+	void testDiffBrandNewExcluded() {
+		Project proj = to.project
+		proj.testType = TestType.findByName("JUnit")
+		if (!proj.save()) {
+			dataService.reportSaveError proj
+		}
+
+		final int numTests = 10
+
+		def testCases = []
+		for (x in 1..numTests) {
+			TestCase testCase = to.getTestCase(proj)
+			dataService.saveDomainObject testCase
+			testCases.add(testCase)
+		}
+
+		def testRunOne = to.getTestRun(proj)
+		testRunOne.save()
+
+		List<TestOutcome> outcomesForA = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunOne)
+			outcomesForA << out
+			dataService.saveDomainObject out
+		}
+
+		def testRunTwo = to.getTestRun(proj)
+		testRunTwo.save()
+
+		List<TestOutcome>  outcomesForB = []
+		for (testCase in testCases) {
+			TestOutcome out = to.getTestOutcome(testCase, testRunTwo)
+			outcomesForB << out
+			dataService.saveDomainObject out
+		}
+
+		outcomesForA[0].testResult = dataService.result("pass")
+		outcomesForB[0].testResult = dataService.result("ignore")
+
+		outcomesForA[1].testResult = dataService.result("pass")
+		outcomesForB[1].testResult = dataService.result("error")
+
+		outcomesForA[2].testResult = dataService.result("ignore")
+		outcomesForB[2].testResult = dataService.result("fail")
+
+		outcomesForA[3].testResult = dataService.result("skip")
+		outcomesForB[3].testResult = dataService.result("unexecuted")
+
+		outcomesForA[4].testResult = dataService.result("unexecuted")
+		outcomesForB[4].testResult = dataService.result("ignore")
+
+		[outcomesForA,outcomesForB].flatten().each {
+			dataService.saveDomainObject(it)
+		}
+
+		TestCase newTestCase = to.getTestCase(proj)
+		dataService.saveDomainObject(newTestCase, true)
+
+		TestOutcome brandNewIgnore = to.getTestOutcome(newTestCase, testRunTwo)
+		brandNewIgnore.testResult = dataService.result("ignore")
+		dataService.saveDomainObject(brandNewIgnore, true)
+
+		def brandNewExcludes = dataService.getBrandNewExcluded(testRunOne, testRunTwo)
+		assertEquals "Wrong number of brand new excluded", 1, brandNewExcludes.size()
+	}
+
+
 
 	List<TestOutcome> createNewTestRun(Project proj, Date dateExecuted, List<TestCase> testCases) {
 		TestRun testRun = to.getTestRun(proj)
