@@ -1,4 +1,3 @@
-
 /*
  Copyright (c) 2010 Todd Wells.
 
@@ -28,6 +27,8 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import cuanto.parsers.ParsableProject
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import flotjf.Chart
+import flotjf.data.PlotData
 
 class ApiController {
 
@@ -140,6 +141,51 @@ class ApiController {
 		}
 	}
     
+
+	def getAllTestRunsGraph = {
+		if (!params.projectKey) {
+			response.status = response.SC_BAD_REQUEST
+			render "No projectKey parameter was specified"
+		} else {
+			Project project = projectService.getProject(params.projectKey)
+			if (project) {
+				def testRuns = dataService.getTestRunsByProject(project)
+				def jsonMap = [:]
+				def testRunsToRender = []
+				PlotData success = new PlotData("Pass", null);;
+				PlotData failures = new PlotData("Fail", null);;
+				testRuns.each {
+					def paramsMap = [ "id" : it?.id, "sort" : "fullName", "sort" : "dateCreated", "order" : "asc", "order" : "asc", "max" : "100", "offset" : "0" ]
+					Map results = testOutcomeService.getTestOutcomeQueryResultsForParams(paramsMap)
+					def successCount = 0
+					def failureCount = 0
+					results?.testOutcomes?.each {
+						if (it?.testResult.isFailure) {
+							failureCount+= 1
+						} else if (it?.testResult.isSkip) {
+							failureCount+= 1
+						} else {
+							successCount+= 1
+						}
+					}
+					success.addPoint(it.dateCreated.getTime(), successCount)
+					failures.addPoint(it.dateCreated.getTime(), failureCount)
+				}
+				Chart chart = new Chart();
+				chart.addElements(success);
+				chart.addElements(failures);
+				//testRunsToRender << success
+				//testRunsToRender << failures
+		
+				response.contentType = "application/json"
+				render chart.printChart()
+			} else {
+				response.status = response.SC_NOT_FOUND
+				render "Project was not found for projectKey ${params.projectKey}"
+			}
+		}
+	}
+
 
 	def addTestOutcome = {
         try {
