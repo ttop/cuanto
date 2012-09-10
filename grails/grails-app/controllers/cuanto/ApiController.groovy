@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package cuanto
 
+import java.awt.event.ItemEvent;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import cuanto.TestOutcome
 import cuanto.TestRun
 import cuanto.formatter.TestNameFormatter
@@ -27,8 +31,6 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import cuanto.parsers.ParsableProject
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import flotjf.Chart
-import flotjf.data.PlotData
 
 class ApiController {
 
@@ -143,27 +145,59 @@ class ApiController {
     
 
 
-	def getAllTestOutcomesGraph = {
+	def getAllTestRunStatsGraph = {
 		try {
-			PlotData success = new PlotData("Pass", null);;
-			PlotData failures = new PlotData("Fail", null);;
-			def failureCount = 0
-			def successCount = 0
-			def dateCreated = 0
+			// Two Calendar objects required to adjust time to UTC.
+			// This is to handle locale time properly without using timezone property
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
+			Calendar localCal = Calendar.getInstance();
+			def timeOffset = localCal.getTimeZone().getOffset(cal.getTimeInMillis());
+
+			def chartdata = [];
+			def passed = [];
+			def failed = [];
+			def tests = [];
 			def testRuns = testRunService.getTestRunsForProject(params)
-			
+
 			testRuns.each {
 				def stats = TestRunStats.findByTestRun(it)
-				failures.addPoint(it.dateCreated.getTime(), stats.failed)
-				success.addPoint(it.dateCreated.getTime(), stats.passed)
+				def runTime = it.dateExecuted.getTime() + timeOffset;
+				passed.add([runTime, stats.passed])
+				failed.add([runTime, stats.failed])
+				tests.add([runTime, stats.tests])
 			}
+			chartdata << [data: passed, label: "Passed"]
+			chartdata << [data: failed, label: "Failed"]
+			chartdata << [data: tests, label: "Tests"]
 
-			Chart chart = new Chart();
-			chart.addElements(success);
-			chart.addElements(failures);
+			render chartdata as JSON
+		} catch (CuantoException e) {
+			response.status = response.SC_INTERNAL_SERVER_ERROR
+			render e.message
+		}
+	}
 
-			response.contentType = "application/json"
-			render chart.printChart()
+
+	def getAllFailedTestCaseHistoryGraph = {
+		try {
+			def chartdata = []
+			def failed = [:]
+			def testRuns = testRunService.getTestRunsForProject(params)
+
+			testRuns.each {
+				def testOutcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: it, isFailure: true))
+				testOutcomes.each {
+					def desc = it.testCase.description? " (" + it.testCase.description + ")" : ""
+					def testName = it.testCase.testName + desc
+					if (failed[testName] == null) {
+						failed[testName] = 0
+					}
+					failed[testName]+= 1
+				}
+			}
+			chartdata << [data: failed, label: "Failures"]
+
+			render chartdata as JSON
 		} catch (CuantoException e) {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render e.message

@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package cuanto
 
 
+import java.text.SimpleDateFormat;
+
+
 class DataService {
 
 	boolean transactional = true
@@ -84,11 +87,24 @@ class DataService {
 
 
 	def getTestRunsByProject(proj, final Map queryParams) {
+		// Setup from and to date
+		def dateParams = ""
+		def props = [:]
+		props["proj"] = proj
+		if (queryParams.from != null) {
+			dateParams+= " AND t.dateExecuted > :from"
+			props["from"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.from)
+		}
+		if (queryParams.to != null) {
+			dateParams+= " AND t.dateExecuted > :to"
+			props["to"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.to)
+		}
 		if (queryParams.sort?.startsWith("prop|")) {
 			def propName = queryParams.sort.substring(queryParams.sort.indexOf("|") + 1)
+			props["propName"] = propName
 			def result = TestRun.executeQuery(
-				"from cuanto.TestRun t left outer join t.testProperties as prop with prop.name = ? where t.project = ? order by prop.value ${queryParams.order}",
-				[propName, proj], [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
+				"from cuanto.TestRun t left outer join t.testProperties as prop with prop.name = :propName where t.project = :proj ${dateParams} order by prop.value ${queryParams.order}",
+				props, [max: Integer.valueOf(queryParams.max), offset: Integer.valueOf(queryParams.offset)])
 
 			def realResult = result.collect { it[0] }
 			return realResult
@@ -104,16 +120,16 @@ class DataService {
             def q = null
             def joinTrs = queryParams.sort?.startsWith('trs')
             if (joinTrs)
-                q = "from cuanto.TestRun t, cuanto.TestRunStats trs where trs.testRun = t and t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+                q = "from cuanto.TestRun t, cuanto.TestRunStats trs where trs.testRun = t and t.project = :proj ${dateParams} order by ${queryParams.sort} ${queryParams.order}"
             else
-                q = "from cuanto.TestRun t where t.project = ? order by ${queryParams.sort} ${queryParams.order}"
+                q = "from cuanto.TestRun t where t.project = :proj ${dateParams} order by ${queryParams.sort} ${queryParams.order}"
 
 			// use the paginate params if applicable; otherwise, don't paginate
 			if (paginateParams.size() > 0){
-				def results = TestRun.executeQuery(q, [proj], paginateParams)
+				def results = TestRun.executeQuery(q, props, paginateParams)
 				return joinTrs ? results.collect{it[0]} : results
 			} else {
-				def results = TestRun.executeQuery(q, [proj])
+				def results = TestRun.executeQuery(q, props)
 				return joinTrs ? results.collect{it[0]} : results
 			}
 		}
