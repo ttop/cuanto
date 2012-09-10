@@ -155,20 +155,26 @@ class ApiController {
 
 			def chartdata = [];
 			def passed = [];
+			def passedCount = 0;
 			def failed = [];
+			def failedCount = 0;
 			def tests = [];
+			def testsCount = 0;
 			def testRuns = testRunService.getTestRunsForProject(params)
 
 			testRuns.each {
 				def stats = TestRunStats.findByTestRun(it)
 				def runTime = it.dateExecuted.getTime() + timeOffset;
+				passedCount+= stats.passed
+				failedCount+= stats.failed
+				testsCount+= stats.tests
 				passed.add([runTime, stats.passed])
 				failed.add([runTime, stats.failed])
 				tests.add([runTime, stats.tests])
 			}
-			chartdata << [data: passed, label: "Passed"]
-			chartdata << [data: failed, label: "Failed"]
-			chartdata << [data: tests, label: "Tests"]
+			chartdata << [data: params.noTime? passedCount : passed, label: "Passed"]
+			chartdata << [data: params.noTime? failedCount : failed, label: "Failed"]
+			chartdata << [data: params.noTime? testsCount : tests, label: "Tests"]
 
 			render chartdata as JSON
 		} catch (CuantoException e) {
@@ -195,7 +201,9 @@ class ApiController {
 					failed[testName]+= 1
 				}
 			}
-			chartdata << [data: failed, label: "Failures"]
+			failed.each { key, value ->
+				chartdata << [data: value, label: key]
+			}
 
 			render chartdata as JSON
 		} catch (CuantoException e) {
