@@ -44,7 +44,7 @@ class TestRunService {
 
 		def queryParams = [:]
 
-		["offset", "max", "order", "from", "to"].each {
+		["offset", "max", "order", "startDate", "endDate"].each {
 			if (params.containsKey(it)) {
 				queryParams[it] = params[it]
 			}

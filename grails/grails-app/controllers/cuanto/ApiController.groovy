@@ -154,28 +154,33 @@ class ApiController {
 			def timeOffset = localCal.getTimeZone().getOffset(cal.getTimeInMillis());
 
 			def chartdata = [];
+			def tests = [];
+			def testsCount = 0;
 			def passed = [];
 			def passedCount = 0;
 			def failed = [];
 			def failedCount = 0;
-			def tests = [];
-			def testsCount = 0;
+			def skipped = [];
+			def skippedCount = 0;
 			def testRuns = testRunService.getTestRunsForProject(params)
 
 			testRuns.each {
 				def stats = TestRunStats.findByTestRun(it)
 				def runTime = it.dateExecuted.getTime() + timeOffset;
+				testsCount+= stats.tests
 				passedCount+= stats.passed
 				failedCount+= stats.failed
-				testsCount+= stats.tests
+				skippedCount+= stats.skipped
+				tests.add([runTime, stats.tests])
 				passed.add([runTime, stats.passed])
 				failed.add([runTime, stats.failed])
-				tests.add([runTime, stats.tests])
+				skipped.add([runTime, stats.skipped])
 			}
+			chartdata << [data: params.noTime? testsCount : tests, label: "Tests"]
 			chartdata << [data: params.noTime? passedCount : passed, label: "Passed"]
 			chartdata << [data: params.noTime? failedCount : failed, label: "Failed"]
-			chartdata << [data: params.noTime? testsCount : tests, label: "Tests"]
-
+			chartdata << [data: params.noTime? testsCount : skipped, label: "Skipped"]
+			
 			render chartdata as JSON
 		} catch (CuantoException e) {
 			response.status = response.SC_INTERNAL_SERVER_ERROR

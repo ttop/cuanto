@@ -443,7 +443,7 @@ class ParsingService {
 
 
 	def processTestOutput(testOutput) {
-		int MAX_LENGTH = 10000
+		int MAX_LENGTH = 100000
 		if (testOutput?.length() > MAX_LENGTH) {
 			return testOutput.substring(0, MAX_LENGTH - 2)
 		} else {

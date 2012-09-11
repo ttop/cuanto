@@ -91,13 +91,13 @@ class DataService {
 		def dateParams = ""
 		def props = [:]
 		props["proj"] = proj
-		if (queryParams.from != null) {
-			dateParams+= " AND t.dateExecuted > :from"
-			props["from"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.from)
+		if (queryParams.startDate != null) {
+			dateParams+= " AND t.dateExecuted >= :startDate"
+			props["startDate"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.startDate)
 		}
-		if (queryParams.to != null) {
-			dateParams+= " AND t.dateExecuted > :to"
-			props["to"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.to)
+		if (queryParams.endDate != null) {
+			dateParams+= " AND t.dateExecuted <= :endDate"
+			props["endDate"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.endDate)
 		}
 		if (queryParams.sort?.startsWith("prop|")) {
 			def propName = queryParams.sort.substring(queryParams.sort.indexOf("|") + 1)
