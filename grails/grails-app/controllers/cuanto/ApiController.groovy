@@ -179,7 +179,7 @@ class ApiController {
 			chartdata << [data: params.noTime? testsCount : tests, label: "Tests"]
 			chartdata << [data: params.noTime? passedCount : passed, label: "Passed"]
 			chartdata << [data: params.noTime? failedCount : failed, label: "Failed"]
-			chartdata << [data: params.noTime? testsCount : skipped, label: "Skipped"]
+			chartdata << [data: params.noTime? skippedCount : skipped, label: "Skipped"]
 			
 			render chartdata as JSON
 		} catch (CuantoException e) {
