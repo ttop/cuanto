@@ -292,6 +292,21 @@ class DataService {
 		return getTestOutcomes(filter)
 	}
 
+	List getTestOutcomeFailuresByProject(Project project, params) {
+		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
+		filter.project = project
+		filter.isFailure = true
+
+		if (params.startDate) {
+			filter.dateCriteria = [new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.startDate), operator: '>')]
+		}
+		if (params.endDate) {
+			filter.dateCriteria = [filter.dateCriteria, new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.endDate), operator: '>')]
+		}
+
+		return getTestOutcomes(filter)
+	}
+
 	TestOutcomeQueryFilter getTestOutcomeQueryFilterWithOptions(String sort, String order, Map paging) {
 		TestOutcomeQueryFilter filter = new TestOutcomeQueryFilter()
 		filter.sorts = [new SortParameters('sort': processSort(sort), sortOrder: processOrder(order))]

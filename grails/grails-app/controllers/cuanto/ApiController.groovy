@@ -22,6 +22,7 @@ package cuanto
 
 import java.awt.event.ItemEvent;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import cuanto.TestOutcome
@@ -191,12 +192,16 @@ class ApiController {
 
 	def getAllFailedTestCaseHistoryGraph = {
 		try {
-			def chartdata = []
-			def failed = [:]
-			def testRuns = testRunService.getTestRunsForProject(params)
+			Project project = projectService.getProject(params.projectKey)
+			if (!project) {
+				response.status = response.SC_BAD_REQUEST
+				render "ProjectKey ${params.projectKey} was not found"
+			} else {
+				def chartdata = []
+				def failed = [:]
+				TestOutcomeQueryFilter queryFilter
 
-			testRuns.each {
-				def testOutcomes = dataService.getTestOutcomes(new TestOutcomeQueryFilter(testRun: it, isFailure: true))
+				def testOutcomes = dataService.getTestOutcomeFailuresByProject(project, params)
 				testOutcomes.each {
 					def desc = it.testCase.description? " (" + it.testCase.description + ")" : ""
 					def testName = it.testCase.testName + desc
@@ -205,12 +210,12 @@ class ApiController {
 					}
 					failed[testName]+= 1
 				}
-			}
-			failed.each { key, value ->
-				chartdata << [data: value, label: key]
-			}
+				failed.each { key, value ->
+					chartdata << [data: value, label: key]
+				}
 
-			render chartdata as JSON
+				render chartdata as JSON
+			}
 		} catch (CuantoException e) {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
 			render e.message
