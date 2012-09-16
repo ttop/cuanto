@@ -94,10 +94,12 @@ class DataService {
 		if (queryParams.startDate != null) {
 			dateParams+= " AND t.dateExecuted >= :startDate"
 			props["startDate"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.startDate)
+			props["startDate"].set(hourOfDay: 0, minutes: 0, seconds: 0)
 		}
 		if (queryParams.endDate != null) {
 			dateParams+= " AND t.dateExecuted <= :endDate"
 			props["endDate"] = new SimpleDateFormat("yyyy-MM-dd").parse(queryParams.endDate)
+			props["endDate"].set(hourOfDay: 23, minute: 59, second: 59)
 		}
 		if (queryParams.sort?.startsWith("prop|")) {
 			def propName = queryParams.sort.substring(queryParams.sort.indexOf("|") + 1)
@@ -297,11 +299,16 @@ class DataService {
 		filter.project = project
 		filter.isFailure = true
 
+		filter.dateCriteria = []
 		if (params.startDate) {
-			filter.dateCriteria = [new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.startDate), operator: '>=')]
+			def startDate = new SimpleDateFormat("yyyy-MM-dd").parse(params.startDate)
+			startDate.set(hourOfDay: 0, minutes: 0, seconds: 0)
+			filter.dateCriteria << new DateCriteria(field: 'dateCreated', date: startDate, operator: '>=')
 		}
 		if (params.endDate) {
-			filter.dateCriteria = [filter.dateCriteria, new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.endDate), operator: '<=')]
+			def endDate = new SimpleDateFormat("yyyy-MM-dd").parse(params.endDate)
+			endDate.set(hourOfDay: 23, minutes: 59, seconds: 59)
+			filter.dateCriteria << new DateCriteria(field: 'dateCreated', date: endDate, operator: '<=')
 		}
 
 		return getTestOutcomes(filter)
