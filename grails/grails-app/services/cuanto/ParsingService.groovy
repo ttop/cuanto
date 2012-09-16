@@ -37,7 +37,9 @@ class ParsingService {
 	def statisticService
 	def projectService
 	def testOutcomeService
+	def grailsApplication
 
+	static final long DEFAULT_MAX_OUTPUT_LENGTH = 10000
 
 	TestRun parseFileFromStream(stream, testRunId, projectId = null) {
 		def testRun = null
@@ -443,9 +445,9 @@ class ParsingService {
 
 
 	def processTestOutput(testOutput) {
-		int MAX_LENGTH = 100000
-		if (testOutput?.length() > MAX_LENGTH) {
-			return testOutput.substring(0, MAX_LENGTH - 2)
+		int maxLength = getMaxTestOutputLength()
+		if (testOutput?.length() > maxLength) {
+			return testOutput.substring(0, maxLength - 2) + "\u001e\u001e"
 		} else {
 			return testOutput
 		}
@@ -547,5 +549,10 @@ class ParsingService {
 		}
 
 		return projectService.createProject(paramsMap)
+	}
+
+	long getMaxTestOutputLength()
+	{
+		return Long.valueOf(grailsApplication.config.maxTestOutputLength ?: DEFAULT_MAX_OUTPUT_LENGTH)
 	}
 }

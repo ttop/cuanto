@@ -298,10 +298,10 @@ class DataService {
 		filter.isFailure = true
 
 		if (params.startDate) {
-			filter.dateCriteria = [new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.startDate), operator: '>')]
+			filter.dateCriteria = [new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.startDate), operator: '>=')]
 		}
 		if (params.endDate) {
-			filter.dateCriteria = [filter.dateCriteria, new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.endDate), operator: '>')]
+			filter.dateCriteria = [filter.dateCriteria, new DateCriteria(field: 'dateCreated', date: Date.parse("yyyy-MM-dd", params.endDate), operator: '<=')]
 		}
 
 		return getTestOutcomes(filter)

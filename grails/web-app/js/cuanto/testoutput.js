@@ -58,15 +58,13 @@ YAHOO.cuanto.OutputPanel = function(outputProxy) {
 
 	function populateContents(output, testName) {
 		var outDiv = $("<div class='testOutput' readOnly='true'/>");
+		output = output.replace(/\u001e\u001e$/, "<p class='outputTruncate'>[Output truncated by Cuanto]</p>");
 		outDiv.html(output);
 		var wdth = ($('#outPanel').width() * .98) + "px";
 		outDiv.width(wdth);
 		outputPanel.setBody(outDiv[0]);
 		outputPanel.setHeader("Output for " + testName);
 		outDiv.focus();
-		if (output.length >= 99998) {
-			outDiv.append("<p class='outputTruncate'>[Output truncated by Cuanto]</p>");
-		}
 	}
 
 	function prefetchNextOutputs(currentOutputId) {

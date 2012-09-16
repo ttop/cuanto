@@ -101,4 +101,7 @@ failureStatusCalcJobBatchSize = 100
 
 bullet = "&bull;"
 
+// Max length of testOutput to store in DB
+maxTestOutputLength=10000
+
 //grails.json.legacy.builder=true

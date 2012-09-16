@@ -29,6 +29,8 @@ import cuanto.TestOutcome
 import cuanto.TestRun
 import cuanto.formatter.TestNameFormatter
 import grails.converters.JSON
+
+import org.apache.jasper.compiler.Node.ParamsAction;
 import org.codehaus.groovy.grails.web.json.JSONObject
 import cuanto.parsers.ParsableProject
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -143,45 +145,49 @@ class ApiController {
 			}
 		}
 	}
-    
 
 
+	/**
+	 * Returns an array of dateExecuted and results.
+	 * If params.noTime=true is provided summary of results will be returned instead.
+	 * This is useful to expose trending graphs and/or summaries.
+	 */
 	def getAllTestRunStatsGraph = {
 		try {
 			// Two Calendar objects required to adjust time to UTC.
 			// This is to handle locale time properly without using timezone property
-			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
-			Calendar localCal = Calendar.getInstance();
-			def timeOffset = localCal.getTimeZone().getOffset(cal.getTimeInMillis());
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"))
+			Calendar localCal = Calendar.getInstance()
+			def timeOffset = localCal.getTimeZone().getOffset(cal.getTimeInMillis())
 
-			def chartdata = [];
-			def tests = [];
-			def testsCount = 0;
-			def passed = [];
-			def passedCount = 0;
-			def failed = [];
-			def failedCount = 0;
-			def skipped = [];
-			def skippedCount = 0;
+			def chartdata = [[data: [], label: "Tests"], [data: [], label: "Passed"],
+				[data: [], label: "Failed"], [data: [], label: "Skipped"]]
+			def testsCount = [0, 0, 0, 0];
 			def testRuns = testRunService.getTestRunsForProject(params)
 
 			testRuns.each {
 				def stats = TestRunStats.findByTestRun(it)
-				def runTime = it.dateExecuted.getTime() + timeOffset;
-				testsCount+= stats.tests
-				passedCount+= stats.passed
-				failedCount+= stats.failed
-				skippedCount+= stats.skipped
-				tests.add([runTime, stats.tests])
-				passed.add([runTime, stats.passed])
-				failed.add([runTime, stats.failed])
-				skipped.add([runTime, stats.skipped])
+
+				def runTime = it.dateExecuted.getTime() + timeOffset
+				chartdata[0].data << [runTime, stats?.tests]
+				testsCount[0]+= stats?.tests
+				chartdata[1].data << [runTime, stats?.passed]
+				testsCount[1]+= stats?.passed
+				chartdata[2].data << [runTime, stats?.failed]
+				testsCount[2]+= stats?.failed
+				chartdata[3].data << [runTime, stats?.skipped]
+				testsCount[3]+= stats?.skipped
+				
 			}
-			chartdata << [data: params.noTime? testsCount : tests, label: "Tests"]
-			chartdata << [data: params.noTime? passedCount : passed, label: "Passed"]
-			chartdata << [data: params.noTime? failedCount : failed, label: "Failed"]
-			chartdata << [data: params.noTime? skippedCount : skipped, label: "Skipped"]
-			
+
+			// Special parameter which only return the total number of test results
+			// Useful for Pie and Bar charts.
+			if (params?.noTime) {
+				chartdata = [[data: testsCount[0], label: "Tests"],
+					[data: testsCount[1], label: "Passed"],
+					[data: testsCount[2], label: "Failed"],
+					[data: testsCount[3], label: "Skipped"]]
+			}
 			render chartdata as JSON
 		} catch (CuantoException e) {
 			response.status = response.SC_INTERNAL_SERVER_ERROR
@@ -190,6 +196,12 @@ class ApiController {
 	}
 
 
+	/**
+	 * Returns number of faults per testCase for specified project.
+	 * This is useful as a blame chart to show which testCase caused the most errors.
+	 * By default label is set to the testName, but can be overridden to use any testCase
+	 * property using the label query parameter.
+	 */
 	def getAllFailedTestCaseHistoryGraph = {
 		try {
 			Project project = projectService.getProject(params.projectKey)
@@ -203,12 +215,13 @@ class ApiController {
 
 				def testOutcomes = dataService.getTestOutcomeFailuresByProject(project, params)
 				testOutcomes.each {
-					def desc = it.testCase.description? " (" + it.testCase.description + ")" : ""
-					def testName = it.testCase.testName + desc
-					if (failed[testName] == null) {
-						failed[testName] = 0
+					if (it.testRun) { // Skip outcomes where user deleted the testRun manually
+						def testName = it.testCase.(params.label?: "testName")?: it.testCase.testName
+						if (failed[testName] == null) {
+							failed[testName] = 0
+						}
+						failed[testName]+= 1
 					}
-					failed[testName]+= 1
 				}
 				failed.each { key, value ->
 					chartdata << [data: value, label: key]
