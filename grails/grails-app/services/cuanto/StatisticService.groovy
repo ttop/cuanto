@@ -152,7 +152,7 @@ class StatisticService {
 
 
 	void calculateTestRunStats(Long testRunId) {
-		def testRun = TestRun.lock(testRunId)
+		def testRun = TestRun.get(testRunId)
 		if (!testRun) {
 			log.error "Couldn't find test run ${testRunId}"
 		} else {
@@ -211,22 +211,26 @@ class StatisticService {
 			calculateAnalysisStats(testRun)
 			dataService.saveDomainObject(calculatedStats)
 
-            TestRunStats.withTransaction {
-                def testRunStatistics = TestRunStats.findByTestRun(testRun)
-                if (testRunStatistics.tagStatistics?.size() > 0) {
-                    def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
-                    statsToRemove.each {
-                        testRunStatistics.removeFromTagStatistics(it).save()
-                        it.delete(flush:true)
-                    }
-                }
+			// delete the existing tagStatistics
+			def testRunStatistics = TestRunStats.findByTestRun(testRun)
+			if (testRunStatistics.tagStatistics?.size() > 0) {
+				TagStatistic.executeUpdate("delete from TagStatistic t where t.testRunStats = ?", [testRunStatistics])
+				testRunStatistics.tagStatistics.clear()
+				testRunStatistics.tagStatistics.each {  stat ->
+					stat.discard()
+				}
+				testRunStatistics.discard()
+			}
 
-                def tagStats = getTagStatistics(testRun)
-                tagStats.each {
-                    testRunStatistics.addToTagStatistics(it)
-                }
-                dataService.saveDomainObject(testRunStatistics, true)
-            }
+			testRun.discard()
+
+			// get new tagStatistics
+			def tagStats = getTagStatistics(testRun)
+			testRunStatistics = TestRunStats.findByTestRun(testRun)
+			tagStats.each {
+				testRunStatistics.addToTagStatistics(it)
+			}
+			dataService.saveDomainObject(testRunStatistics, true)
 		}
 	}
 
@@ -312,6 +316,7 @@ class StatisticService {
 
 
 	List getTagStatistics(TestRun testRun) {
+		testRun = testRun.refresh()
 		def tagStats = []
 		if (Environment.current != Environment.TEST) {
 			// The HSQL database doesn't like the following query, so we won't do it in testing.

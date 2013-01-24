@@ -57,6 +57,10 @@ class TestRunStats {
 
 	static hasMany = [analysisStatistics: AnalysisStatistic, tagStatistics:TagStatistic]
 
+	static mapping = {
+		tagStatistics(cascade: 'all-delete-orphan')
+	}
+
 	Map toJsonMap() {
 		def json = [:]
 		json['id'] = this.id
