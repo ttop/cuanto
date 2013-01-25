@@ -215,10 +215,10 @@ class StatisticService {
 			def testRunStatistics = TestRunStats.findByTestRun(testRun)
 			if (testRunStatistics.tagStatistics?.size() > 0) {
 				TagStatistic.executeUpdate("delete from TagStatistic t where t.testRunStats = ?", [testRunStatistics])
-				testRunStatistics.tagStatistics.clear()
 				testRunStatistics.tagStatistics.each {  stat ->
 					stat.discard()
 				}
+				testRunStatistics.tagStatistics.clear()
 				testRunStatistics.discard()
 			}
 
