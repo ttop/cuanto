@@ -46,7 +46,7 @@ YAHOO.cuanto.groupHistory = function() {
 			resultsList: 'testRuns',
 			fields: ["projectName", "projectKey","dateExecuted", "note", "valid", "testProperties", "skipped",
 				"tests", "passed", "failed", "quarantined", "totalDuration", "averageDuration",	"successRate",
-				"effectiveSuccessRate", "tests", "id", "numAnalyzed"],
+				"effectiveSuccessRate", "successRateChange", "tests", "id", "numAnalyzed"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
 		return testRunDataSource;
@@ -71,6 +71,7 @@ YAHOO.cuanto.groupHistory = function() {
 			{key:"quarantined", label:"Quarant'd", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
 			{key:"effectiveSuccessRate", label:"Effective Success", sortable:true, formatter: pctFormatter},
+			{key:"successRateChange", label:"% Change", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
 			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAvgDuration},
@@ -80,7 +81,11 @@ YAHOO.cuanto.groupHistory = function() {
 
 
 	function pctFormatter(elCell, oRecord, oColumn, oData) {
-		$(elCell).html(oData + " %");
+		if (oData == null) {
+			$(elCell).html("N/A");
+		} else {
+			$(elCell).html(oData + " %");
+		}
 	}
 
 

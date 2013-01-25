@@ -31,6 +31,7 @@ class StatisticService {
 
 	boolean transactional = false
 	def dataService
+	def testRunService
 	def grailsApplication
 
     int numRecentTestOutcomes = 40
@@ -204,6 +205,13 @@ class StatisticService {
                 int numNonQuarantinedTests = calculatedStats.tests - quarantined 
                 calculatedStats.effectiveSuccessRate = numNonQuarantinedPasses / numNonQuarantinedTests * 100
                 calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
+
+				def previousSuccessRate = testRunService.getPreviousTestRunSuccessRate(testRun)
+				if (previousSuccessRate != null) {
+					calculatedStats.successRateChange = (calculatedStats.successRate - previousSuccessRate).round(fourDigitRounding)
+				} else {
+					calculatedStats.successRateChange = null
+				}
 			}
 
 			dataService.saveDomainObject(calculatedStats)

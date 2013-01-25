@@ -27,3 +27,6 @@ foreign key (test_outcome_stats_id) references test_outcome_stats (id);
 
 -- Add TestRun.allowPurge
 ALTER TABLE `test_run` ADD COLUMN `allow_purge` bit(1) default true;
+
+-- Add TestRunStats.successRateChange
+ALTER TABLE `test_run_stats` ADD COLUMN `success_rate_change` decimal(19,2);
