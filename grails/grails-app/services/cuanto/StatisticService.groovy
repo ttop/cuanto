@@ -199,12 +199,12 @@ class StatisticService {
 
 			if (calculatedStats.tests > 0) {
                 MathContext fourDigitRounding = new MathContext(4)
-				BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
-                calculatedStats.successRate = successRate.round(fourDigitRounding)
+				//BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
+                //calculatedStats.successRate = successRate.round(fourDigitRounding)
                 int numNonQuarantinedPasses = calculatedStats.passed - quarantinedPasses
                 int numNonQuarantinedTests = calculatedStats.tests - quarantined 
-                calculatedStats.effectiveSuccessRate = numNonQuarantinedPasses / numNonQuarantinedTests * 100
-                calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
+                calculatedStats.successRate = (numNonQuarantinedPasses / numNonQuarantinedTests * 100).round(fourDigitRounding)
+                //calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
 
 				def previousSuccessRate = testRunService.getPreviousTestRunSuccessRate(testRun)
 				if (previousSuccessRate != null) {

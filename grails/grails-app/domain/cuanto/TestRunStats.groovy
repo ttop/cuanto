@@ -34,7 +34,6 @@ class TestRunStats {
 		averageDuration(nullable: true)
 		successRate(nullable: true)
         successRateChange(nullable: true)
-        effectiveSuccessRate(nullable: true)
 		tests(nullable: true)
 		analysisStatistics(nullable: true)
         testRun(nullable: false)
@@ -50,7 +49,6 @@ class TestRunStats {
 	Long totalDuration
 	Long averageDuration
 	BigDecimal successRate
-    BigDecimal effectiveSuccessRate
 	BigDecimal successRateChange
 	Date lastUpdated
 	List analysisStatistics
@@ -75,7 +73,6 @@ class TestRunStats {
 		json['averageDuration'] = averageDuration ?: 0
 		json['successRate'] = successRate ?: 0
 		json['successRateChange'] = successRateChange
-        json['effectiveSuccessRate'] = effectiveSuccessRate ?: 0
 		return json
 	}
 

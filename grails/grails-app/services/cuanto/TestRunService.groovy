@@ -63,7 +63,6 @@ class TestRunService {
 			sortMap["totalDuration"] = "trs.totalDuration"
 			sortMap["averageDuration"] = "trs.averageDuration"
 			sortMap["successRate"] = "trs.successRate"
-            sortMap["effectiveSuccessRate"] = "trs.effectiveSuccessRate"
 			sortMap["dateExecuted"] = "t.dateExecuted"
 
 			if (sortMap.containsKey(params.sort)) {

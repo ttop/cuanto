@@ -334,7 +334,6 @@ class ProjectController {
                     note: testRun?.note,
                     valid: testRun?.valid,
                     successRate: stats?.successRate ?: 0,
-                    effectiveSuccessRate: stats?.effectiveSuccessRate ?:0,
 				    successRateChange: stats?.successRateChange,
                     tests: stats?.tests,
                     passed: stats?.passed,
