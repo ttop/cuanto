@@ -602,6 +602,7 @@ class TestRunService {
 			def testOutcome = new TestOutcome()
 			testOutcome.testCase = tc
 			testOutcome.testResult = dataService.result("Unexecuted")
+            testOutcome.testRun = testRun
 			testOutcomesToSave << testOutcome
 		}
 		dataService.saveTestOutcomes(testOutcomesToSave)
