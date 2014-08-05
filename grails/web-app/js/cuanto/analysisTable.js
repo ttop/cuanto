@@ -859,7 +859,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 	function setSubCookie(name, value) {
 		var expDate = new Date();
-		expDate.setDate(expDate.getDate() + 30);
+		expDate.setDate(expDate.getDate() + 365);
 		YAHOO.util.Cookie.setSub(analysisCookieName, name, value, {path: "/", expires: expDate})
 	}
 
