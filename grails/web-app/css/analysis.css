@@ -184,6 +184,10 @@
     overflow: auto;
 }
 
+#trDetailsTable > table {
+	width: 100%;
+}
+
 .yui-skin-sam tr.yui-dt-selected td a {
 	color: white;
 }
