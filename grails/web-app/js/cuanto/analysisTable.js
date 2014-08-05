@@ -25,6 +25,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
 	var prefHiddenColumns = "hiddenColumns";
+	var prefRowsPerPage = "rowsPerPage";
+
+	var defaultRowsPerPage = 10;
 
 	var dataTable;
 	var analysisDialog;
@@ -79,6 +82,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		onSearchTermChange(null);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
+		dataTable.get('paginator').subscribe('rowsPerPageChange', onRowsPerPageChange);
 
 		var hiddenCols = getHiddenColumns();
 
@@ -186,7 +190,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			width: tableWidth + "px",
 			renderLoopSize:10,
 			generateRequest: buildOutcomeQueryString,
-			paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, 10),
+			paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, getRowsPerPage(defaultRowsPerPage)),
 			sortedBy: {key:"testCase", dir:YAHOO.widget.DataTable.CLASS_ASC},
 			dynamicData: true
 		};
@@ -412,13 +416,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function getDefaultTableState() {
-		var tcFormat = YAHOO.util.Cookie.getSub(analysisCookieName, prefTcFormat);
+		var tcFormat = getSubCookie(prefTcFormat);
 		if (tcFormat) {
 			$('#tcFormat').val(tcFormat);
 		} else {
 			setTcFormatPref();
 		}
-		return "format=json&offset=0&max=10&order=asc&sort=testCase&filter=" + getCurrentFilter() +
+		return "format=json&offset=0&max=" + getRowsPerPage(defaultRowsPerPage) + 
+		       "&order=asc&sort=testCase&filter=" + getCurrentFilter() +
 		       "&tcFormat=" + tcFormat + "&rand=" + new Date().getTime();
 	}
 
@@ -830,19 +835,37 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function onTcFormatChange(e) {
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat(), {path: "/", expires: new Date().getDate() + 30});
 		setTcFormatPref();
 		onTableStateChange(e);
 	}
 
 	function setTcFormatPref() {
 		var tcFormat = getCurrentTcFormat();
-		var expDate = new Date();
-		expDate.setDate(expDate.getDate() + 30);
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, tcFormat, {path: "/", expires: expDate});
+		setSubCookie(prefTcFormat, tcFormat);
 		return tcFormat;
 	}
 
+	function onRowsPerPageChange(e) {
+		setSubCookie("rowsPerPage", e.newValue);
+	}
+
+	function getRowsPerPage(defaultVal) {
+		var rowsPerPage = getSubCookie("rowsPerPage");
+		if (!rowsPerPage) {
+			rowsPerPage = defaultVal;
+		}
+		return rowsPerPage;
+	}
+
+	function setSubCookie(name, value) {
+		var expDate = new Date();
+		expDate.setDate(expDate.getDate() + 30);
+		YAHOO.util.Cookie.setSub(analysisCookieName, name, value, {path: "/", expires: expDate})
+	}
+
+	function getSubCookie(name) {
+		return YAHOO.util.Cookie.getSub(analysisCookieName, name);
+	}
 
 	function onTableStateChange(e) {
 		var newRequest = generateNewRequest();
