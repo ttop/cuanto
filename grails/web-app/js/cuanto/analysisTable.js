@@ -248,7 +248,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 					return name.toLowerCase() == prop.toLowerCase();
 				});
 				if (matchingNames.length == 0) {
-					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
+					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:false,
 						formatter: propertyFormatter});
 					var hiddenCols = getHiddenColumns();
 					dataTable.insertColumn(col);
