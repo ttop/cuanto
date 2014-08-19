@@ -152,6 +152,15 @@ class TestRunController {
 	def outcomes = {
 		Map results = testOutcomeService.getTestOutcomeQueryResultsForParams(params)
 
+		def columns
+		if (params.columns) {
+			// I don't know why occasionally the columns come in as an array instead of String
+			if (params.columns.class.isArray() && !params.columns.isEmpty()) {
+				params.columns = params.columns[0]
+			}
+			columns = params.columns.tokenize(',').collect{ it.tokenize('|') }
+		}
+
 		withFormat {
 			json {
 				def formatter = testOutcomeService.getTestCaseFormatter(params.tcFormat)
@@ -175,11 +184,11 @@ class TestRunController {
 			}
 			csv {
 				response.contentType = "text/csv"
-				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, ",")
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, columns, ",")
 			}
 			tsv {
 				response.contentType = 'text/tab-separated-values'
-				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, "\t")
+				render testOutcomeService.getDelimitedTextForTestOutcomes(results?.testOutcomes, columns, "\t")
 			}
 		}
 	}
@@ -511,6 +520,7 @@ class TestRunController {
 
 
 	def export = {
+		println("TestRunController.export( " + params + " )" )
 		[testRun: TestRun.get(params.id)]
 	}
 

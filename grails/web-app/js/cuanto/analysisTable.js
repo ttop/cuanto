@@ -146,6 +146,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
 		YAHOO.util.Event.addListener("recalcStats", "click", recalcStats);
 		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
+		YAHOO.util.Event.addListener("export", "click", exportResults);
 
 
 		new YAHOO.widget.Tooltip("feedtt", {context:"feedImg"});
@@ -319,6 +320,22 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		return newRequest;
 	}
 
+	function generateExportRequest() {
+		var order;
+		if (dataTable.get("sortedBy").dir == YAHOO.widget.DataTable.CLASS_DESC) {
+			order = "desc";
+		} else {
+			order = "asc";
+		}
+		var newRequest = "filter=" + getCurrentFilter() +
+		                 "&order=" + order +
+		                 "&sort=" + dataTable.get("sortedBy").key +
+		                 getSearchQuery() +
+                         getTagsQuery() +
+                         "&rand=" + new Date().getTime();
+
+		return newRequest;	
+	}
 
     function onFilterChangeEvent(e, arg) {
 	    var filter = arg[0];
@@ -1055,6 +1072,23 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 				showFlashMsg("Queued for recalculating statistics.")
 			}
 		});
+	}
+
+	// modify the export url as it's clicked to add in current view filter
+	// query parameters
+	function exportResults(e) {
+		var requestString = generateExportRequest();
+
+		var columns = [];
+		$.each(dataTable.getColumnSet().flat, function(idx, column) {
+			var isYui = column.key.match(/^yui/);
+			if (!column.key.match(/^yui/) && !column.hidden) {
+				columns.push(column.label + "|" + column.key);
+			}
+		});
+
+		requestString += "&columns=" + columns;
+		e.target.href += "?" + requestString;
 	}
 
 	function unescapeHtmlEntities(s) {

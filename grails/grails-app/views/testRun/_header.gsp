@@ -26,8 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<span class="headone">Test Run ${testRun?.dateExecuted?.encodeAsHTML()}</span> 
 	<g:render template="/project/header" model="[project:testRun.project]"/>
 	<span id="trActions" class="smaller hdActions">
-		<span><g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
-		<g:link controller="testRun" action="export" id="${testRun?.id}">Export</g:link> ${bullet}
+		<span>
+			<g:link controller="testRun" action="results" id="${testRun?.id}">Permalink</g:link> ${bullet}
+			<g:link controller="testRun" action="export" id="${testRun?.id}" elementId="export">Export</g:link> ${bullet}
 			<g:link action="edit" id="${testRun.id}">Edit</g:link>
 		</span> ${bullet}
 		<span><a id="deleteTestRun" href="#deleteTestRun">Delete</a></span> ${bullet}

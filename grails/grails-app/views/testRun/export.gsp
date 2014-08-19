@@ -29,10 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	  <div class="body">
 		  <div class="headone">Export Test Run ${testRun?.dateExecuted?.encodeAsHTML()} of Project ${testRun?.project?.name?.encodeAsHTML()}</div>
 		  <ul>
-			  <li><g:link controller="testRun" action="csv" id="TestRun_${testRun?.id}.csv">Comma Separated (CSV)</g:link></li>
-			  <li><g:link controller="testRun" action="tab" id="TestRun_${testRun?.id}.tsv">Tab Separated (TSV)</g:link></li>
-			  <li><g:link controller="testRun" action="xml" id="TestRun_${testRun?.id}.xml">XML</g:link></li>
-              <li><g:link controller="testRun" action="testNgBuckets" id="TestRun_${testRun?.id}.xml">Bucketed TestNG Suite</g:link></li>
+			  <li><g:link controller="testRun" action="csv" id="TestRun_${testRun?.id}.csv" params="${params}">Comma Separated (CSV)</g:link></li>
+			  <li><g:link controller="testRun" action="tab" id="TestRun_${testRun?.id}.tsv" params="${params}">Tab Separated (TSV)</g:link></li>
+			  <li><g:link controller="testRun" action="xml" id="TestRun_${testRun?.id}.xml" params="${params}">XML</g:link></li>
+              <li><g:link controller="testRun" action="testNgBuckets" id="TestRun_${testRun?.id}.xml" params="${params}">Bucketed TestNG Suite</g:link></li>
 		  </ul>
 		  <p/>
 		  <br/>
