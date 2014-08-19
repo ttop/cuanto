@@ -520,7 +520,6 @@ class TestRunController {
 
 
 	def export = {
-		println("TestRunController.export( " + params + " )" )
 		[testRun: TestRun.get(params.id)]
 	}
 

@@ -485,7 +485,7 @@ class TestOutcomeService {
 			if ("parameters" in columnFields)
 				renderList << outcome.testCase.parameters
 			if ("tags" in columnFields)
-				renderList << outcome.tags
+				renderList << (outcome.tags.isEmpty() ? null : outcome.tags)
 			if ("result" in columnFields)
 				renderList << outcome.testResult.name
 			if ("streak" in columnFields)
@@ -526,11 +526,18 @@ class TestOutcomeService {
 
 			renderList.eachWithIndex { it, indx ->
 				if (it == null) {
-					buff << ''
+					it = ''
 				} else {
-					buff << it.toString().replaceAll(delimiter, "\\${delimiter}")
+					it = it.toString()
+					it = it.replaceAll(delimiter, "\\${delimiter}")
+					it = it.replaceAll("\"", "\"\"")
+					if (it.contains("\"") || it.contains(delimiter) || it.contains("\n")) {
+						it = "\"${it}\""
+					}
 				}
-				//buff << it != null ? it : ''
+
+				buff << it
+
 				if (indx != renderList.size() - 1) {
 					buff << delimiter
 				}
