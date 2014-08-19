@@ -405,6 +405,8 @@ class TestOutcomeService {
 			filter.isSkip = true
 		} else if (params.filter?.equalsIgnoreCase("allquarantined")) {
             filter.analysisState = dataService.getAnalysisStateByName('Quarantined')
+        } else if (params.filter?.equalsIgnoreCase("nonPassing")) {
+        	filter.isNonPassing = true
         }
 
         if (params.tag) {

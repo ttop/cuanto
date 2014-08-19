@@ -29,6 +29,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		testRun(nullable: true)
 		isFailure(nullable: true)
 		isSkip(nullable: true)
+		isNonPassing(nullable: true)
 		testResult(nullable:true)
 		testCaseFullName(nullable: true)
 		testCaseParameters(nullable: true)
@@ -53,7 +54,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	TestOutcomeQueryFilter() {}
 
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
-		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
+		["testRun", "isFailure", "isSkip", "isNonPassing", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
 			"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
 			"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged",
 			"hasAllTestOutcomeProperties", "successRate"].each {
@@ -84,6 +85,11 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 */
 	Boolean isSkip
 
+	/**
+	 * If true then all returned outcomes that are considered failures or skips will be returned.
+	 * If null, outcomes will not be returned based on isNonPassing status
+	 */
+	Boolean isNonPassing
 
 	/**
 	 * If not null, then all returned outcomes must have this exact TestResult.

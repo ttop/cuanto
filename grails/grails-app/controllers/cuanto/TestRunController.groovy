@@ -456,6 +456,7 @@ class TestRunController {
 		filterList += [id: "newpasses", value: "New Passes"]
 		filterList += [id: "allresults", value: "All Results"]
         filterList += [id: "allquarantined", value: "All Quarantined"]
+        filterList += [id: "nonPassing", value: "All Non-Passing"]
 		return filterList
 	}
 

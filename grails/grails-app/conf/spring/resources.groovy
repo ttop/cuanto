@@ -29,6 +29,7 @@ import cuanto.parsers.CuantoManualParser
 import cuanto.parsers.TestNgParser
 import cuanto.queryprocessor.TestRunQueryModule
 import cuanto.queryprocessor.TestResultIsFailureQueryModule
+import cuanto.queryprocessor.TestResultIsNonPassingQueryModule
 import cuanto.queryprocessor.TestResultQueryModule
 import cuanto.queryprocessor.TestCaseFullNameQueryModule
 import cuanto.queryprocessor.TestCaseParametersQueryModule
@@ -75,6 +76,7 @@ beans = {
 			new TestRunQueryModule(),
 			new TestResultIsFailureQueryModule(),
 			new TestResultIsSkipQueryModule(),
+			new TestResultIsNonPassingQueryModule(),
 			new TestResultQueryModule(),
 			new TestCaseFullNameQueryModule(),
 			new TestCaseParametersQueryModule(),
