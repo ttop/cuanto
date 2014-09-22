@@ -112,6 +112,8 @@ public class QueryBuilder {
 	def buildQueryForBaseQuery(QueryFilter queryFilter) {
         List fromClauses = []
 		List whereClauses = []
+        List groupByClauses = []
+        List havingClauses = []
 		List params = []
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
@@ -125,10 +127,19 @@ public class QueryBuilder {
 
 			if (details.where?.trim()) {
 				whereClauses << " ${details.where} "
-                if (details.params) {
-                    params += details.params
-                }
 			}
+
+            if (details.having?.trim()) {
+                havingClauses << " ${details.having} "                
+            }
+
+            if (details.group?.trim()) {
+                groupByClauses << " ${details.group} "
+            }
+
+            if (details.params) {
+                params += details.params
+            }
 		}
 
         String selectClause = queryFilter.selectClause()
@@ -152,7 +163,26 @@ public class QueryBuilder {
 			}
 		}
 
-        String query = selectClause + " " +  fromClause + " where " + whereClause
+        String groupByClause = ""
+        if (groupByClauses) {
+            groupByClause = " group by " + groupByClauses.join(", ")
+        }
+
+        String havingClause = ""
+        if (havingClauses) {
+            havingClause = " having "
+            havingClauses.eachWithIndex {clause, idx ->
+                havingClause += " ${clause}"
+                if (idx < havingClauses.size() - 1) {
+                    havingClause += " and "
+                }
+                else {
+                    havingClause += " "
+                }
+            }
+        }
+
+        String query = selectClause + " " +  fromClause + " where " + whereClause + groupByClause + havingClause
 		return [hql: query.toString(), 'params': params.flatten()]
 	}
 

@@ -226,6 +226,9 @@ public class TestOutcomeQueryFilter implements QueryFilter {
             def newList = sorts.collect{"t." + it.sort}
             select += ", " + newList.join(", ")
         }
+        if (tags) {
+            select += ", group_concat(tag_0.name)"
+        }
         return select
     }
 
