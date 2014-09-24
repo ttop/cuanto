@@ -347,7 +347,7 @@ class StatisticService {
 				tagStat.skipped = skipped ?: 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 
-                def duration = rawStats.collect { it[iDuration] }.sum()
+                def duration = rawStats.collect { it[iDuration] ?: 0 }.sum()
                 tagStat.duration = Math.max(0, duration ?: 0);
 
 				def total = rawStats.collect {it[iCount]}.sum()
