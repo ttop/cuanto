@@ -26,8 +26,6 @@ class TestRunStatsJob {
 	}
 
     def execute() {
-	    if (!statisticService.processingTestRunStats) {
-		    statisticService.processTestRunStats()
-	    }
+		statisticService.processTestRunStats()
     }
 }
