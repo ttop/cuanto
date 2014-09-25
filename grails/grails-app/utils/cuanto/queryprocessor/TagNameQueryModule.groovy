@@ -28,19 +28,36 @@ import cuanto.TestOutcome
 public class TagNameQueryModule implements QueryModule {
 
     public Map getQueryParts(QueryFilter queryFilter) {
-       if (queryFilter.tags) {
-           def whereClauses = []
-           def params = []
-           queryFilter.tags.each { tagName->
-               whereClauses << "upper(tag_0.name) like ?"
-               params << tagName.toUpperCase()
-           }
-           def whereText = "(" + whereClauses.join(" or ") + ")"
-           return [from: "inner join t.tags tag_0", where: whereText,
-                   'params': params ]
-       } else {
-           return [:]
-       }
+        def combineWith = "and"
+        def parts = [:]
+        if (queryFilter.tags) {
+            if (combineWith.equals("or")) {
+                def whereClauses = []
+                def params = []
+                queryFilter.tags.each { tagName->
+                    whereClauses << "upper(tag_0.name) like ?"
+                    params << tagName.toUpperCase()
+                }
+                def whereText = "(" + whereClauses.join(" OR ") + ")"
+                parts = [from: "inner join t.tags tag_0", where: whereText,
+                        'params': params ]
+            } else {
+                def having = []
+                def params = []
+                queryFilter.tags.each { tagName->
+                    //having << "find_in_set(?, upper(col_3_0_))"
+                    //params << tagName.toUpperCase()
+                    having << "upper(col_3_0_) like ?"
+                    params << "%" + tagName.toUpperCase() + "%"
+                }
+                parts = [from: "inner join t.tags tag_0",
+                         group: "t.id",
+                         having: "(" + having.join(" AND ") + ")",
+                         params: params]
+            }
+
+        }
+        return parts
     }
 
 

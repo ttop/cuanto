@@ -90,7 +90,9 @@ class ProjectService {
 		parsedProject.name = params?.name
 		parsedProject.projectKey = params?.projectKey
 		parsedProject.testType = params?.testType
-		parsedProject.purgeDays = params?.purgeDays
+		if (params?.purgeDays) {
+			parsedProject.purgeDays = params.purgeDays.toInteger()
+		}
 		return createProject(parsedProject)
 	}
 

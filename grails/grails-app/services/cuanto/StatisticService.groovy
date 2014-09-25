@@ -35,7 +35,6 @@ class StatisticService {
 	def grailsApplication
 
     int numRecentTestOutcomes = 40
-	Boolean processingTestRunStats = false;
 	final private static String queueLock = "Test Run Stat Queue Lock"
 	final private static String calcLock = "Test Run Calculation Lock"
 
@@ -107,28 +106,27 @@ class StatisticService {
 				log.debug "${queueSize} items in stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
+                    log.info "Calculating stats for test run ${queuedItem.testRunId}"
+                    def startTime = System.currentTimeMillis()
 					try {
 						QueuedTestRunStat.withTransaction {
 							calculateTestRunStats(queuedItem.testRunId)
 							calculateTestOutcomeStats(queuedItem.testRunId)
-							queuedItem.delete(flush: true)
 							queueSize = QueuedTestRunStat.list().size()
 						}
-					} catch (OptimisticLockingFailureException e) {
-						log.info "OptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-						// leave it in queue so it gets tried again
-					} catch (HibernateOptimisticLockingFailureException e) {
-						log.info "HibernateOptimisticLockingFailureException for test run ${queuedItem.testRunId}"
-					} catch (StaleObjectStateException e) {
-						log.info "StaleObjectStateException for test run ${queuedItem.testRunId}"
-						// leave it in queue so it gets tried again
-					}
+                        def elapsed = System.currentTimeMillis() - startTime
+                        log.info "Calculated stats for ${queuedItem.testRunId} in ${elapsed} ms"
+					} catch (Exception e) {
+                        // re-queue to the "end" of the queue so other items aren't starved
+                        log.info "Exception for test run ${queuedItem.testRunId} - ${e.toString()}"
+                        queuedItem.dateCreated = new Date()
+                        dataService.saveDomainObject(queuedItem, true)
+                    }
 				}
+                if (grailsApplication.config.statSleep) {
+                    sleep(grailsApplication.config.statSleep)
+                }
 			}
-			if (grailsApplication.config.statSleep) {
-				sleep(grailsApplication.config.statSleep)
-			}
-
 		}
 	}
 
@@ -143,12 +141,17 @@ class StatisticService {
 
 
 	QueuedTestRunStat getFirstTestRunIdInQueue() {
-		def latest = QueuedTestRunStat.listOrderByDateCreated(max: 1)
-		if (latest.size() == 0) {
-			return null
-		} else {
-			return latest[0]
-		}
+        synchronized (queueLock) {
+            QueuedTestRunStat.withTransaction {
+                def queuedItem = null
+                def latest = QueuedTestRunStat.listOrderByDateCreated(max: 1)
+                if (latest.size() != 0) {
+                    queuedItem = latest[0]
+                    queuedItem.delete(flush: true)
+                }
+                return queuedItem
+            }
+        }
 	}
 
 
@@ -250,16 +253,18 @@ class StatisticService {
             List<TestOutcome> testOutcomes = TestOutcome.findAllByTestRun(testRun)
             for (TestOutcome testOutcome : testOutcomes)
             {
-                testOutcome.lock()
-                def stats = new TestOutcomeStats()
-                dataService.saveDomainObject(stats, true)
-                testOutcome.testOutcomeStats = stats
-                List<String> recentTestResults = TestOutcome.executeQuery(
-                        "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
-                        [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
-                calculateStreak(testOutcome, recentTestResults)
-                calculateSuccessRate(testOutcome, recentTestResults)
-                testOutcome.save()
+                if (!testOutcome.testOutcomeStats) {
+                    testOutcome.lock()
+                    def stats = new TestOutcomeStats()
+                    dataService.saveDomainObject(stats, true)
+                    testOutcome.testOutcomeStats = stats
+                    List<String> recentTestResults = TestOutcome.executeQuery(
+                            "SELECT to.testResult FROM cuanto.TestOutcome to WHERE to.testCase = ?",
+                            [testOutcome.testCase], [max: numRecentTestOutcomes, sort: 'id', order: 'desc'])
+                    calculateStreak(testOutcome, recentTestResults)
+                    calculateSuccessRate(testOutcome, recentTestResults)
+                    testOutcome.save()
+                }
             }
         }
     }
@@ -324,7 +329,7 @@ class StatisticService {
 
 
 	List getTagStatistics(TestRun testRun) {
-		testRun = testRun.refresh()
+        testRun = testRun.refresh()
 		def tagStats = []
 		if (Environment.current != Environment.TEST) {
 			// The HSQL database doesn't like the following query, so we won't do it in testing.
@@ -347,7 +352,7 @@ class StatisticService {
 				tagStat.skipped = skipped ?: 0;
 				log.debug "${skipped} skipped for ${tag.name}"
 
-                def duration = rawStats.collect { it[iDuration] }.sum()
+                def duration = rawStats.collect { it[iDuration] ?: 0 }.sum()
                 tagStat.duration = Math.max(0, duration ?: 0);
 
 				def total = rawStats.collect {it[iCount]}.sum()
