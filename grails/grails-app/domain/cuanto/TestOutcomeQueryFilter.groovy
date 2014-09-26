@@ -227,13 +227,14 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	
 
     String selectClause() {
-        def select = "select distinct t"
+        def select = "select distinct "
+        if (tags) {
+            select += "group_concat(tag_0.name), "
+        }
+        select += " t"
         if (sorts) {
             def newList = sorts.collect{"t." + it.sort}
             select += ", " + newList.join(", ")
-        }
-        if (tags) {
-            select += ", group_concat(tag_0.name)"
         }
         return select
     }
@@ -309,10 +310,10 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
     public List resultTransform(List results) {
-        if (sorts) {
-            return results.collect{it[0]}
-        } else {
-            return results
-        }
+    	if (sorts || tags) {
+	    	return results.collect{ it[tags ? 1 : 0] }
+    	} else {
+    		return results
+    	}
     }
 }

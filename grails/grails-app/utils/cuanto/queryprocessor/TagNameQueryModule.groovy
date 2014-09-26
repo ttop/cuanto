@@ -45,9 +45,7 @@ public class TagNameQueryModule implements QueryModule {
                 def having = []
                 def params = []
                 queryFilter.tags.each { tagName->
-                    //having << "find_in_set(?, upper(col_3_0_))"
-                    //params << tagName.toUpperCase()
-                    having << "upper(col_3_0_) like ?"
+                    having << "upper(col_0_0_) like ?"
                     params << "%" + tagName.toUpperCase() + "%"
                 }
                 parts = [from: "inner join t.tags tag_0",

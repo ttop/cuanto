@@ -90,11 +90,11 @@ beans = {
 			new TestCaseQueryModule(),
 			new NoteQueryModule(),
 			new TestOutputQueryModule(),
-            new TagNameQueryModule(),
             new HasTagsQueryModule(),
 			new DateExecutedQueryModule(),
 			new FailureStatusChangedQueryModule(),
-			new TestOutcomeHasAllPropertiesQueryModule()
+			new TestOutcomeHasAllPropertiesQueryModule(),
+			new TagNameQueryModule()
 		]
 	}
 }
