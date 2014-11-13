@@ -34,6 +34,9 @@ class StatisticService {
 	def testRunService
 	def grailsApplication
 
+    def outcomeBatchSize = 100
+    def queuedTestResultStats = [] as Set
+
     int numRecentTestOutcomes = 40
 	final private static String queueLock = "Test Run Stat Queue Lock"
 	final private static String calcLock = "Test Run Calculation Lock"
@@ -102,17 +105,16 @@ class StatisticService {
 	def processTestRunStats() {
 		synchronized (calcLock) {
 			def queueSize = QueuedTestRunStat.list().size()
-			while (queueSize > 0) {
-				log.debug "${queueSize} items in stat queue"
+			while (queueSize > 0 || queuedTestResultStats.size() > 0) {
+				log.debug "${queueSize} items in stat queue and ${queuedTestResultStats.size()} in result stat queue"
 				QueuedTestRunStat queuedItem = getFirstTestRunIdInQueue()
 				if (queuedItem) {
                     log.info "Calculating stats for test run ${queuedItem.testRunId}"
                     def startTime = System.currentTimeMillis()
 					try {
+                        queuedTestResultStats.add(queuedItem.testRunId)
 						QueuedTestRunStat.withTransaction {
 							calculateTestRunStats(queuedItem.testRunId)
-							calculateTestOutcomeStats(queuedItem.testRunId)
-							queueSize = QueuedTestRunStat.list().size()
 						}
                         def elapsed = System.currentTimeMillis() - startTime
                         log.info "Calculated stats for ${queuedItem.testRunId} in ${elapsed} ms"
@@ -122,10 +124,16 @@ class StatisticService {
                         queuedItem.dateCreated = new Date()
                         dataService.saveDomainObject(queuedItem, true)
                     }
-				}
+				} else {
+                    // process some queued test outcome stats
+                    QueuedTestRunStat.withTransaction {
+                        calculateTestOutcomeStats(queuedTestResultStats.toList().first())
+                    }
+                }
                 if (grailsApplication.config.statSleep) {
                     sleep(grailsApplication.config.statSleep)
                 }
+                queueSize = QueuedTestRunStat.list().size()
 			}
 		}
 	}
@@ -250,9 +258,10 @@ class StatisticService {
         if (!testRun) {
             log.error "Couldn't find test run ${testRunId}"
         } else {
+            def counter = outcomeBatchSize
+            def startTime = System.currentTimeMillis()
             List<TestOutcome> testOutcomes = TestOutcome.findAllByTestRun(testRun)
-            for (TestOutcome testOutcome : testOutcomes)
-            {
+            for (TestOutcome testOutcome : testOutcomes) {
                 if (!testOutcome.testOutcomeStats) {
                     testOutcome.lock()
                     def stats = new TestOutcomeStats()
@@ -264,8 +273,15 @@ class StatisticService {
                     calculateStreak(testOutcome, recentTestResults)
                     calculateSuccessRate(testOutcome, recentTestResults)
                     testOutcome.save()
+                    if (counter-- <= 0) {
+                        log.info "processed a batch of ${outcomeBatchSize} outcome stats for test run ${testRunId} in " + (System.currentTimeMillis() - startTime) + " ms"
+                        return
+                    }
                 }
             }
+            // made it to the end of for every testOutcome!
+            log.info "finished processing test outcome stats for test run ${testRunId} in " + (System.currentTimeMillis() - startTime) + " ms"
+            queuedTestResultStats.remove(testRunId)
         }
     }
 
