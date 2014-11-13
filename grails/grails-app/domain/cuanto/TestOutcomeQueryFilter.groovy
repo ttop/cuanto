@@ -245,7 +245,9 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
 	String countClause() {
-        "select count(distinct t) "
+		// don't know how to combine group_concat with a count
+        //"select count(distinct t) "
+        return selectClause()
 	}
 
 
