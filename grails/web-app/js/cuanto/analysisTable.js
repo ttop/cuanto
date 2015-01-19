@@ -439,9 +439,14 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		} else {
 			setTcFormatPref();
 		}
-		return "format=json&offset=0&max=" + getRowsPerPage(defaultRowsPerPage) + 
-		       "&order=asc&sort=testCase&filter=" + getCurrentFilter() +
-		       "&tcFormat=" + tcFormat + "&rand=" + new Date().getTime();
+		return "format=json" + 
+		       "&offset=0" +
+		       "&max=" + getRowsPerPage(defaultRowsPerPage) + 
+		       "&order=asc" +
+		       "&sort=testCase" +
+		       "&filter=" + getCurrentFilter() +
+		       "&tcFormat=" + tcFormat + 
+		       "&rand=" + new Date().getTime();
 	}
 
 
@@ -1156,6 +1161,24 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
         $.each($('.tagspan'), function(idx, tagspan) {
             tagButtons.push(new YAHOO.widget.Button(tagspan.id, {type: "checkbox", checked: false, onclick: { fn: onTagClick } }));
         });
+
+    	// if there's a tags query param, toggle those tag buttons on
+		if (YAHOO.util.History.getQueryStringParameter('tags') ) {
+			var removeUnchecked = true;
+        	var tags = YAHOO.util.History.getQueryStringParameter('tags').split(",");
+			// loop over tag buttons
+			for (var i = 2; i < tagButtons.length; i++) {
+				var button = tagButtons[i];
+				if (tags.indexOf(button.get("label")) >= 0) {
+					button.set("checked", true);
+				} else {
+					if (removeUnchecked) {
+						$(button._button).parents('.tagspan').remove();
+					}
+				}
+			}
+			onFilterChange(null);	
+		}
     }
 
     function onTagClick(e) {
