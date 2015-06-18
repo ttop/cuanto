@@ -1,0 +1,359 @@
+addProject
+
+
+REQUEST
+
+POST /cuanto/api/addProject HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+Content-Length: 144
+Content-Type: application/json
+
+{ 
+  "bugUrlPattern" : "http://foo/{BUG}",
+  "name" : "RegularBlueberryWould",
+  "projectGroup" : "CuantoTest",
+  "projectKey" : "OrStickyCheese",
+  "testType" : "JUnit"
+}
+
+
+RESPONSE 
+
+HTTP/1.1 201 Created
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 02:51:26 GMT
+
+{ 
+  "bugUrlPattern" : "http://foo/{BUG}",
+  "id" : 644,
+  "name" : "RegularBlueberryWould",
+  "projectGroup" : { "id" : 388,
+      "name" : "CuantoTest"
+    },
+  "projectKey" : "OrStickyCheese",
+  "testType" : { "id" : 1,
+      "name" : "JUnit"
+    }
+}
+
+
+
+
+deleteProject
+
+
+
+REQUEST
+
+POST /cuanto/api/deleteProject/644 HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+Content-Length: 0
+
+
+RESPONSE
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 02:51:26 GMT
+
+Queued Project 644, CuantoTest: RegularBlueberryWould for deletion
+
+
+
+deleteProject?projectKey=FunkyColdMedina
+
+REQUEST
+
+POST /cuanto/api/deleteProject?projectKey=FunkyColdMedina HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+Content-Length: 0
+
+RESPONSE
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 02:51:26 GMT
+
+Queued Project 645, CuantoTest: FunkyColdMedina for deletion
+
+
+
+getProject
+
+REQUEST
+
+GET /cuanto/api/getProject/647 HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 03:17:12 GMT
+
+{ "bugUrlPattern" : "http://foo/{BUG}",
+  "id" : 647,
+  "name" : "InstructionsVersionComes",
+  "projectGroup" : { "id" : 390,
+      "name" : "CuantoTest"
+    },
+  "projectKey" : "TheLookingWhich",
+  "testType" : { "id" : 1,
+      "name" : "JUnit"
+    }
+}
+
+
+getProject (bad project id)
+
+REQUEST
+
+GET /cuanto/api/getProject/9898 HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+HTTP/1.1 404 Not Found
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 03:17:12 GMT
+
+A Project matching the projectkey or id was not found.
+
+
+
+getProject?projectKey=TheLookingWhich
+
+REQUEST
+
+GET /cuanto/api/getProject/?projectKey=TheLookingWhich HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+{ "bugUrlPattern" : "http://foo/{BUG}",
+  "id" : 647,
+  "name" : "InstructionsVersionComes",
+  "projectGroup" : { "id" : 390,
+      "name" : "CuantoTest"
+    },
+  "projectKey" : "TheLookingWhich",
+  "testType" : { "id" : 1,
+      "name" : "JUnit"
+    }
+}
+
+
+getProject?projectKey=NonExistentProject
+
+REQUEST
+
+GET /cuanto/api/getProject/?projectKey=NonExistentProject HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+HTTP/1.1 404 Not Found
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 03:17:12 GMT
+
+A Project matching the projectkey or id was not found.
+
+
+
+getAllProjects
+
+REQUEST
+
+GET /cuanto/api/getAllProjects HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE 
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 02:51:26 GMT
+
+[
+  { 
+    "bugUrlPattern" : "",
+    "id" : 76,
+    "name" : "Access Data Service",
+    "projectGroup" : { "id" : 19,
+        "name" : "AccessManagement"
+      },
+    "projectKey" : "access_ds",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 122,
+    "name" : "Access Data Service TestNG",
+    "projectGroup" : { "id" : 19,
+        "name" : "AccessManagement"
+      },
+    "projectKey" : "access_ds_ng",
+    "testType" : { "id" : 3,
+        "name" : "TestNG"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 72,
+    "name" : "Integration",
+    "projectGroup" : { "id" : 21,
+        "name" : "BTN"
+      },
+    "projectKey" : "BTN-Integration",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 35,
+    "name" : "Address Integration Tests",
+    "projectGroup" : { "id" : 2,
+        "name" : "Commerce 1_6"
+      },
+    "projectKey" : "COMMERCE-16-ADDRESS",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 40,
+    "name" : "Fulfillment Integration Tests",
+    "projectGroup" : { "id" : 2,
+        "name" : "Commerce 1_6"
+      },
+    "projectKey" : "COMMERCE-16-FULFILLMENT",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 34,
+    "name" : "Order Integration Tests",
+    "projectGroup" : { "id" : 2,
+        "name" : "Commerce 1_6"
+      },
+    "projectKey" : "COMMERCE-16-ORDER",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  }
+]
+
+
+getProjectsForGroup
+
+REQUEST
+
+GET /cuanto/api/getProjectsForGroup?name=Sample HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 03:17:13 GMT
+
+
+[
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 125,
+    "name" : "ClientTest",
+    "projectGroup" : { "id" : 9,
+        "name" : "Sample"
+      },
+    "projectKey" : "ClientTest",
+    "testType" : { "id" : 3,
+        "name" : "TestNG"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 124,
+    "name" : "CuantoNG",
+    "projectGroup" : { "id" : 9,
+        "name" : "Sample"
+      },
+    "projectKey" : "CNG",
+    "testType" : { "id" : 3,
+        "name" : "TestNG"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse/{BUG}",
+    "id" : 6,
+    "name" : "CuantoProd",
+    "projectGroup" : { "id" : 9,
+        "name" : "Sample"
+      },
+    "projectKey" : "CUANTOPROD",
+    "testType" : { "id" : 1,
+        "name" : "JUnit"
+      }
+  },
+  { "bugUrlPattern" : "http://tpjira/browse{BUG}",
+    "id" : 95,
+    "name" : "SampleNG",
+    "projectGroup" : { "id" : 9,
+        "name" : "Sample"
+      },
+    "projectKey" : "SampleNG",
+    "testType" : { "id" : 3,
+        "name" : "TestNG"
+      }
+  }
+]
+
+
+getProjectsForGroup (NonExistentGroup)
+
+REQUEST
+
+GET /cuanto/api/getProjectsForGroup?name=NonExistentGroup HTTP/1.1
+User-Agent: Java CuantoConnector 2.8.b1; Jakarta Commons-HttpClient/3.1
+Host: localhost:8080
+
+
+RESPONSE
+
+HTTP/1.1 404 Not Found
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Transfer-Encoding: chunked
+Date: Tue, 11 Oct 2011 03:35:40 GMT
+
+No group by the name NonExistentGroup was found.
+
+
