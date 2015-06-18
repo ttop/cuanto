@@ -287,11 +287,7 @@ class TestOutcomeService {
 			if (!testRun) {
 				throw new RuntimeException("No TestRun specified for getNewFailures()")
 			}
-			def newFailureQueryFilter = new TestOutcomeQueryFilter(
-				testRun: testRun,
-				isFailure: true,
-				isFailureStatusChanged: true)
-			testOutcomes = dataService.getTestOutcomes(newFailureQueryFilter)
+			testOutcomes = dataService.getTestOutcomes(testOutcomeFilter)
 			totalCount = testOutcomes.size()
 		} else if (params.outcome) { // todo: hmm, look at this
 			testOutcomes = [dataService.getTestOutcome(params.outcome)]

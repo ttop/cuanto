@@ -489,5 +489,44 @@ class TestRunServiceTests extends GroovyTestCase {
 		def fetchedProps = TestRunProperty.findAllByTestRun(origTestRun)
 		assertEquals "Wrong number of fetched properties", 0, fetchedProps.size()
 	}
+
+
+	void testGetPreviousTestRunSuccessRate() {
+		Project proj = to.project
+		dataService.saveDomainObject proj, true
+
+		TestRun testRunFirst = to.getTestRun(proj)
+		testRunFirst.dateExecuted = new Date() - 1
+		dataService.saveTestRun(testRunFirst)
+		TestRunStats testRunFirstStats = new TestRunStats(successRate: 90, testRun: testRunFirst)
+		dataService.saveDomainObject(testRunFirstStats)
+
+		TestRun testRunSecond = to.getTestRun(proj)
+		dataService.saveTestRun(testRunSecond)
+		TestRunStats testRunSecondStats = new TestRunStats(successRate: 95, testRun: testRunSecond)
+		dataService.saveDomainObject(testRunSecondStats)
+
+		TestRun testRunThird = to.getTestRun(proj)
+		testRunThird.dateExecuted = new Date() + 1
+		dataService.saveTestRun(testRunThird)
+		TestRunStats testRunThirdStats = new TestRunStats(successRate: 85, testRun: testRunThird)
+		dataService.saveDomainObject(testRunThirdStats)
+
+		assertEquals "Previous successRate should've been null for first TestRun",
+			null, testRunService.getPreviousTestRunSuccessRate(testRunFirst)
+
+		assertEquals "Wrong successRate returned", testRunFirstStats.successRate,
+			testRunService.getPreviousTestRunSuccessRate(testRunSecond)
+
+		assertEquals "Wrong successRate returned", testRunSecondStats.successRate,
+			testRunService.getPreviousTestRunSuccessRate(testRunThird)
+
+	    TestRun testRunWithoutStats = to.getTestRun(proj)
+		testRunWithoutStats.dateExecuted = new Date() - 2
+		dataService.saveTestRun(testRunWithoutStats)
+
+		assertEquals "Previous successRate for a TestRun without stats should've been null",
+			null, testRunService.getPreviousTestRunSuccessRate(testRunFirst)
+	}
 }
 

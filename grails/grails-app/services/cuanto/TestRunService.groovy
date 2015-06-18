@@ -63,7 +63,6 @@ class TestRunService {
 			sortMap["totalDuration"] = "trs.totalDuration"
 			sortMap["averageDuration"] = "trs.averageDuration"
 			sortMap["successRate"] = "trs.successRate"
-            sortMap["effectiveSuccessRate"] = "trs.effectiveSuccessRate"
 			sortMap["dateExecuted"] = "t.dateExecuted"
 
 			if (sortMap.containsKey(params.sort)) {
@@ -230,6 +229,29 @@ class TestRunService {
 		}
 	}
 
+	/*
+	* Find the TestRun chronologically before this test run and return the successRate of that testRun.
+	* If there is no previous TestRun or if the previous TestRun has a successRate of null, null will be returned.
+	*/
+	def getPreviousTestRunSuccessRate(TestRun testRun) {
+		if (testRun == null) {
+			throw new NullPointerException("Cannot fetch a null TestRun")
+		}
+
+		if (testRun.dateExecuted == null) {
+			throw new CuantoException("TestRun does not have a valid dateExecuted")
+		}
+
+		def previousStats = null
+
+		List<TestRun> previousTestRuns = TestRun.findAllByProjectAndDateExecutedLessThan(testRun.project, testRun.dateExecuted,
+			[max: 1, sort: "dateExecuted", order:"desc"])
+
+		if (previousTestRuns) {
+			previousStats = TestRunStats.findByTestRun(previousTestRuns[0])
+		}
+		return previousStats?.successRate
+	}
 
 	def countOutcomes(TestRun testRun) {
 		if (testRun) {
@@ -580,6 +602,7 @@ class TestRunService {
 			def testOutcome = new TestOutcome()
 			testOutcome.testCase = tc
 			testOutcome.testResult = dataService.result("Unexecuted")
+            testOutcome.testRun = testRun
 			testOutcomesToSave << testOutcome
 		}
 		dataService.saveTestOutcomes(testOutcomesToSave)

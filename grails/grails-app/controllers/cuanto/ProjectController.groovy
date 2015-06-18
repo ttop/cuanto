@@ -201,27 +201,32 @@ class ProjectController {
 	def feed = {
 		if (params.id) {
 			Project proj = Project.get(params.id)
+            if (proj) {
+                render(feedType: "rss", feedVersion: "2.0") {
+                    title = "${proj.toString()} Recent Results"
+                    link = "http://your.test.server/yourController/feed"
+                    description = "Recent Test Results for ${proj.toString()}"
 
-			render(feedType: "rss", feedVersion: "2.0") {
-				title = "${proj.toString()} Recent Results"
-				link = "http://your.test.server/yourController/feed"
-				description = "Recent Test Results for ${proj.toString()}"
+                    List<TestRun> testRuns = testRunService.getTestRunsForProject([id: proj.id, offset: 0, max: Defaults.ItemsPerFeed,
+                        sort: "dateExecuted", order: "desc"])
 
-				List<TestRun> testRuns = testRunService.getTestRunsForProject([id: proj.id, offset: 0, max: Defaults.ItemsPerFeed,
-					sort: "dateExecuted", order: "desc"])
+                    testRuns.each {testRun ->
+                        def stats = TestRunStats.findByTestRun(testRun)
+                        if (stats){
+                            entry(testRun.dateExecuted) {
+                                link = createLink(controller: "testRun", action: "summary", id: testRun.id)
+                                def feedTxt = testRunService.getFeedText(testRun, stats)
+                                return feedTxt
+                            }
+                        }
+                    }
+                }
+            } else {
+                response.status = response.SC_NOT_FOUND
+                render "Project ${params.id} not found"
+            }
 
-				testRuns.each {testRun ->
-					def stats = TestRunStats.findByTestRun(testRun)
-					if (stats){
-						entry(testRun.dateExecuted) {
-							link = createLink(controller: "testRun", action: "summary", id: testRun.id)
-							def feedTxt = testRunService.getFeedText(testRun, stats)
-							return feedTxt
-						}
-					}
-				}
-			}
-		}
+        }
 	}
 
 
@@ -334,12 +339,12 @@ class ProjectController {
                     note: testRun?.note,
                     valid: testRun?.valid,
                     successRate: stats?.successRate ?: 0,
-                    effectiveSuccessRate: stats?.effectiveSuccessRate ?:0,
+				    successRateChange: stats?.successRateChange,
                     tests: stats?.tests,
                     passed: stats?.passed,
                     failed: stats?.failed,
                     skipped: stats?.skipped,
-                    quarantined: stats?.quarantined,
+                    quarantined: stats?.quarantined ?: 0,
                     totalDuration: stats?.totalDuration,
                     averageDuration: stats?.averageDuration,
                     numAnalyzed: numAnalyzed,

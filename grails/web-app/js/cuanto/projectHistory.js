@@ -53,7 +53,7 @@ YAHOO.cuanto.projectHistory = function() {
 		testRunDataSource.responseSchema = {
 			resultsList: 'testRuns',
 			fields: ["dateExecuted", "note", "valid", "tests", "passed", "failed", "skipped", "quarantined",
-				"totalDuration", "averageDuration",	"successRate", "effectiveSuccessRate", "tests", "id", "numAnalyzed", "testProperties", "tags"],
+				"totalDuration", "averageDuration",	"successRate", "tests", "id", "numAnalyzed", "testProperties", "tags"],
 			metaFields: { totalCount:"totalCount", offset:"offset" }
 		};
 		return testRunDataSource;
@@ -81,7 +81,6 @@ YAHOO.cuanto.projectHistory = function() {
 			{key:"skipped", label: "Skipped", sortable:true},
 			{key:"quarantined", label:"Quarant'd", sortable:true},
 			{key:"successRate", label: "Success", sortable:true, formatter: pctFormatter},
-			{key:"effectiveSuccessRate", label:"Effective Success", sortable:true, formatter: pctFormatter},
 			{key:"numAnalyzed", label: "Analyzed", sortable:false},
 			{key:"totalDuration", label: "Duration", sortable:true, formatter: formatTotalDuration},
 			{key:"averageDuration", label: "Avg Duration", sortable:true, formatter: formatAverageDuration},
@@ -197,7 +196,7 @@ YAHOO.cuanto.projectHistory = function() {
 		if (hiddenCols && hiddenCols[0]) {
 			return hiddenCols;
 		} else {
-			return { "quarantined": true, "effectiveSuccessRate": true };
+			return { "quarantined": true};
 		}
 	}
 

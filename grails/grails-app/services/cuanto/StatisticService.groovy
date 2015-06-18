@@ -31,6 +31,7 @@ class StatisticService {
 
 	boolean transactional = false
 	def dataService
+	def testRunService
 	def grailsApplication
 
     int numRecentTestOutcomes = 40
@@ -152,7 +153,7 @@ class StatisticService {
 
 
 	void calculateTestRunStats(Long testRunId) {
-		def testRun = TestRun.lock(testRunId)
+		def testRun = TestRun.get(testRunId)
 		if (!testRun) {
 			log.error "Couldn't find test run ${testRunId}"
 		} else {
@@ -198,12 +199,19 @@ class StatisticService {
 
 			if (calculatedStats.tests > 0) {
                 MathContext fourDigitRounding = new MathContext(4)
-				BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
-                calculatedStats.successRate = successRate.round(fourDigitRounding)
+				//BigDecimal successRate = calculatedStats.passed / calculatedStats.tests * 100
+                //calculatedStats.successRate = successRate.round(fourDigitRounding)
                 int numNonQuarantinedPasses = calculatedStats.passed - quarantinedPasses
                 int numNonQuarantinedTests = calculatedStats.tests - quarantined 
-                calculatedStats.effectiveSuccessRate = numNonQuarantinedPasses / numNonQuarantinedTests * 100
-                calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
+                calculatedStats.successRate = (numNonQuarantinedPasses / numNonQuarantinedTests * 100).round(fourDigitRounding)
+                //calculatedStats.effectiveSuccessRate = calculatedStats.effectiveSuccessRate.round(fourDigitRounding)
+
+				def previousSuccessRate = testRunService.getPreviousTestRunSuccessRate(testRun)
+				if (previousSuccessRate != null) {
+					calculatedStats.successRateChange = (calculatedStats.successRate - previousSuccessRate).round(fourDigitRounding)
+				} else {
+					calculatedStats.successRateChange = null
+				}
 			}
 
 			dataService.saveDomainObject(calculatedStats)
@@ -211,22 +219,26 @@ class StatisticService {
 			calculateAnalysisStats(testRun)
 			dataService.saveDomainObject(calculatedStats)
 
-            TestRunStats.withTransaction {
-                def testRunStatistics = TestRunStats.findByTestRun(testRun)
-                if (testRunStatistics.tagStatistics?.size() > 0) {
-                    def statsToRemove = TagStatistic.findAllByTestRunStats(testRunStatistics)
-                    statsToRemove.each {
-                        testRunStatistics.removeFromTagStatistics(it).save()
-                        it.delete(flush:true)
-                    }
-                }
+			// delete the existing tagStatistics
+			def testRunStatistics = TestRunStats.findByTestRun(testRun)
+			if (testRunStatistics.tagStatistics?.size() > 0) {
+				TagStatistic.executeUpdate("delete from TagStatistic t where t.testRunStats = ?", [testRunStatistics])
+				testRunStatistics.tagStatistics.each {  stat ->
+					stat.discard()
+				}
+				testRunStatistics.tagStatistics.clear()
+				testRunStatistics.discard()
+			}
 
-                def tagStats = getTagStatistics(testRun)
-                tagStats.each {
-                    testRunStatistics.addToTagStatistics(it)
-                }
-                dataService.saveDomainObject(testRunStatistics, true)
-            }
+			testRun.discard()
+
+			// get new tagStatistics
+			def tagStats = getTagStatistics(testRun)
+			testRunStatistics = TestRunStats.findByTestRun(testRun)
+			tagStats.each {
+				testRunStatistics.addToTagStatistics(it)
+			}
+			dataService.saveDomainObject(testRunStatistics, true)
 		}
 	}
 
@@ -312,6 +324,7 @@ class StatisticService {
 
 
 	List getTagStatistics(TestRun testRun) {
+		testRun = testRun.refresh()
 		def tagStats = []
 		if (Environment.current != Environment.TEST) {
 			// The HSQL database doesn't like the following query, so we won't do it in testing.
