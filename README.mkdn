@@ -23,5 +23,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ### Contact
+
 The principal developer of Cuanto is Todd E. Wells of Seattle, Washington, who
-can be reached at ttopwells@gmail.com or cuanto@ttopzone.com.
+can be reached at ttopwells@gmail.com.
