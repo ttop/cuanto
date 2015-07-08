@@ -1,0 +1,64 @@
+# Getting started with Cuanto
+
+## Requirements
+
+In order to run Cuanto, you need an application server and a SQL database server. Cuanto has been tested using Jetty and MySQL, but any compliant application server and SQL database should work. MySQL with InnoDB is the recommended database configuration because the database upgrade scripts that Cuanto provides for version upgrades are usually MySQL-specific.
+
+## Creating the database
+
+Create a database on your SQL server named "cuanto". Typically this is done with a command like `create database cuanto;` when logged onto your SQL server, although you may want to specify additional details depending on any additional database restrictions or options you want to enable.
+
+## Running Locally
+
+_Running locally is only recommended if you are just wanting to try out Cuanto. Don't run a production Cuanto server using this method._
+
+To run locally, you want to have [Grails](http://grails.org) 1.3.7 installed. Copy `cuanto-db.groovy` file to the `~/.grails` directory (or the Windows equivalent) and modify as described below. Copy your JDBC driver to the `grails/lib` directory. Then in the `cuanto/grails` directory, type `grails upgrade`. Then you can start Cuanto by executing `grails run-app`. Once it has started, the URL to reach Cuanto will be displayed, usually `http://localhost:8080/cuanto`.
+
+## Customizing cuanto-db.groovy
+
+Edit `cuanto-db.groovy` with a text editor. You'll see a section like this:
+
+        production {
+            dataSource {
+                username = "my_sql_user"
+                password = "my_sql_password"
+                driverClassName = "com.mysql.jdbc.Driver"
+                url = "jdbc:mysql://my_sql_server:3306/cuanto?autoreconnect=true"
+            }
+        }
+
+Edit the username, password, driverClassName and url to correspond to the correct values for your database credentials, JDBC driver and the JDBC URL for your SQL server. Make sure you edit the "production" section.
+
+## Deploying the application
+
+Unzip the WAR into your application server's `webapps` directory into a subdirectory named "cuanto". Copy the `cuanto-db.groovy` you customized into the `cuanto/WEB-INF/classes` directory. Put your JDBC driver in the `cuanto/WEB-INF/lib` directory.
+
+The application should be ready to run now -- start your application server and go to the appropriate URL for cuanto (this will depend on how you've deployed it). Go to the root Cuanto URL and click on the 'Help' menu link to read about how to use Cuanto.
+
+## Building the WAR and client jar from scratch
+
+The downloaded distributable and WAR file should be fine for everyday usage, but if you wish to build from scratch, here are the instructions:
+
+With Grails 1.3.7, Ant 1.7.0 or greater and maven (2.2.1 or greater recommended) installed, change to the `cuanto/grails` directory and type `grails prod build-cuanto`. This will create a `cuanto-<version>.zip` file in the `dist/release` directory. Inside the ZIP will be a WAR, the client API Jar, and a `cuanto-db.groovy` file.
+
+## Building/using the client jar/ant task
+
+Presently maven is required to build the client jar. With maven installed (2.2.1 or greater recommended), change to the `cuanto/api` directory and type
+
+        mvn clean package
+
+The jar will be built and placed in the `target` directory, with a name like `cuanto-api-<VERSION>.jar`.
+
+The ant task is in the client jar, so if it is in your classpath you can use it from an ant build file like this:
+
+        <taskdef name="cuanto" classname="cuanto.api.CuantoAntTask"/>
+
+And then submit your results to Cuanto like this:
+
+        <cuanto url="http://cuantourl" testProject="Sample/CuantoProd"">
+            <fileset dir="src/test/resources/surefire-reports" includes="**/*.xml"/>
+            <property name="milestone" value="1.0"/>
+            <property name="build" value="3423"/>
+        </cuanto>
+
+Where the `testProject` property is the project key of an existing Cuanto project.
