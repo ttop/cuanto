@@ -59,6 +59,7 @@ Closure getModulePackager(moduleName, moduleDir, pomXml, targetDir)
 
 		println "beginning packaging"
 		def packageProcess = "mvn -f ${moduleDir}/pom.xml clean install".execute()
+		packageProcess.in.eachLine { line -> println line }
 		packageProcess.waitFor()
 		println "clean package done"
 		if (packageProcess.exitValue() != 0) {

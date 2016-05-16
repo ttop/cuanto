@@ -29,6 +29,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 		testRun(nullable: true)
 		isFailure(nullable: true)
 		isSkip(nullable: true)
+		isNonPassing(nullable: true)
 		testResult(nullable:true)
 		testCaseFullName(nullable: true)
 		testCaseParameters(nullable: true)
@@ -53,7 +54,7 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	TestOutcomeQueryFilter() {}
 
 	TestOutcomeQueryFilter(TestOutcomeQueryFilter filterToCopy) {
-		["testRun", "isFailure", "isSkip", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
+		["testRun", "isFailure", "isSkip", "isNonPassing", "testResult", "testCaseFullName", "testCaseParameters", "testCasePackage", "project",
 			"testResultIncludedInCalculations", "isAnalyzed", "analysisState", "bug", "owner", "testCase", "note",
 			"testOutput", "dateCriteria", "sorts", "queryOffset", "queryMax", "isFailureStatusChanged",
 			"hasAllTestOutcomeProperties", "successRate"].each {
@@ -84,6 +85,11 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	 */
 	Boolean isSkip
 
+	/**
+	 * If true then all returned outcomes that are considered failures or skips will be returned.
+	 * If null, outcomes will not be returned based on isNonPassing status
+	 */
+	Boolean isNonPassing
 
 	/**
 	 * If not null, then all returned outcomes must have this exact TestResult.
@@ -221,7 +227,11 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 	
 
     String selectClause() {
-        def select = "select distinct t"
+        def select = "select distinct "
+        if (tags) {
+            select += "group_concat(tag_0.name), "
+        }
+        select += " t"
         if (sorts) {
             def newList = sorts.collect{"t." + it.sort}
             select += ", " + newList.join(", ")
@@ -235,7 +245,9 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
 	String countClause() {
-        "select count(distinct t) "
+		// don't know how to combine group_concat with a count
+        //"select count(distinct t) "
+        return selectClause()
 	}
 
 
@@ -300,10 +312,10 @@ public class TestOutcomeQueryFilter implements QueryFilter {
 
 
     public List resultTransform(List results) {
-        if (sorts) {
-            return results.collect{it[0]}
-        } else {
-            return results
-        }
+    	if (sorts || tags) {
+	    	return results.collect{ it[tags ? 1 : 0] }
+    	} else {
+    		return results
+    	}
     }
 }

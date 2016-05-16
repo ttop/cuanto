@@ -202,9 +202,10 @@ class ProjectController {
 		if (params.id) {
 			Project proj = Project.get(params.id)
             if (proj) {
+            	def urlBase = request.scheme + "://" + request.serverName + ":" + request.serverPort + "/" + grailsApplication.metadata.'app.name'
                 render(feedType: "rss", feedVersion: "2.0") {
                     title = "${proj.toString()} Recent Results"
-                    link = "http://your.test.server/yourController/feed"
+                    link = createLink(controller: "project", action: "feed", id: proj.id, base: urlBase)
                     description = "Recent Test Results for ${proj.toString()}"
 
                     List<TestRun> testRuns = testRunService.getTestRunsForProject([id: proj.id, offset: 0, max: Defaults.ItemsPerFeed,
@@ -214,6 +215,7 @@ class ProjectController {
                         def stats = TestRunStats.findByTestRun(testRun)
                         if (stats){
                             entry(testRun.dateExecuted) {
+                            	// TODO: summary does not appear to be a valid action.  what's it supposed to link to?
                                 link = createLink(controller: "testRun", action: "summary", id: testRun.id)
                                 def feedTxt = testRunService.getFeedText(testRun, stats)
                                 return feedTxt

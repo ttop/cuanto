@@ -74,14 +74,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		YAHOO.util.Event.onDOMReady(function () {
 			<g:render template="urls"/>
-            var newWidth = $(window).width() * .95;
-            $('#tabContainer').width(newWidth);
-            tabView = new YAHOO.widget.TabView("tabContainer");
+
+		    var delay;
+		    var onWindowResize = function() {
+		    	clearTimeout(delay);
+		    	delay = setTimeout(resizeContent, 200);
+		    }
+		    function resizeContent() {
+				var newWidth = $(window).width() - 30;
+            	$('#tabContainer').width(newWidth);
+		    }
+            YAHOO.util.Event.addListener(window, "resize", onWindowResize);
+
+			resizeContent();
+			tabView = new YAHOO.widget.TabView("tabContainer");
 
 			new YAHOO.cuanto.SummaryTab();
 			new YAHOO.cuanto.AnalysisTable(${testResultList}, ${analysisStateList});
             new YAHOO.cuanto.GroupedOutput();
-
 		});
 		</script>
 	</head>

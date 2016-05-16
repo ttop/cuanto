@@ -33,8 +33,12 @@ public class QueryBuilder {
         Map<Object,Object> result
         List fromClauses = []
         List whereClauses = []
+        List groupByClauses = []
+        List havingClauses = []
         List params = []
+
         List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
+
         processors.each {QueryModule queryProcessor ->
             def details = queryProcessor.getQueryParts(queryFilter)
 
@@ -44,18 +48,32 @@ public class QueryBuilder {
 
             if (details.where?.trim()) {
                 whereClauses << " ${details.where} "
-                if (details.params) {
-                    params += details.params
-                }
+            }
+
+            if (details.having?.trim()) {
+                havingClauses << " ${details.having} "
+            }
+
+            if (details.group?.trim()) {
+                groupByClauses << " ${details.group} "
+            }
+
+            if (details.params) {
+                params += details.params
             }
         }
+
+        String selectClause = queryFilter.countClause()
+
         String fromClause = queryFilter.fromClause()
         fromClauses.each {
             fromClause += " ${it} "
         }
+
         if (whereClauses.size() == 0) {
             throw new CuantoException("No filter options were specified for query")
         }
+
         String whereClause = ""
         whereClauses.eachWithIndex {clause, idx ->
             whereClause += " ${clause}"
@@ -65,15 +83,33 @@ public class QueryBuilder {
                 whereClause += " "
             }
         }
-        String selectClause = queryFilter.countClause()
-        String query = selectClause + " " +  fromClause + " where " + whereClause
+
+        String groupByClause = ""
+        if (groupByClauses) {
+            groupByClause = " group by " + groupByClauses.join(", ")
+        }
+
+        String havingClause = ""
+        if (havingClauses) {
+            havingClause = " having "
+            havingClauses.eachWithIndex {clause, idx ->
+                havingClause += " ${clause}"
+                if (idx < havingClauses.size() - 1) {
+                    havingClause += " and "
+                }
+                else {
+                    havingClause += " "
+                }
+            }
+        }
+        
+        String query = selectClause + " " +  fromClause + " where " + whereClause + groupByClause + havingClause
         result = [hql: query.toString(), 'params': params.flatten()]
         return new CuantoQuery(hql: result.hql as String, positionalParameters: result.params as List)
     }
 
 
 	CuantoQuery buildQuery(QueryFilter queryFilter) throws CuantoException {
-
 		Map base = buildQueryForBaseQuery(queryFilter)
 		String query = base.hql as String
 
@@ -112,6 +148,8 @@ public class QueryBuilder {
 	def buildQueryForBaseQuery(QueryFilter queryFilter) {
         List fromClauses = []
 		List whereClauses = []
+        List groupByClauses = []
+        List havingClauses = []
 		List params = []
 
 		List<QueryModule> processors = getProcessors(queryFilter.appliesToClass())
@@ -125,10 +163,19 @@ public class QueryBuilder {
 
 			if (details.where?.trim()) {
 				whereClauses << " ${details.where} "
-                if (details.params) {
-                    params += details.params
-                }
 			}
+
+            if (details.having?.trim()) {
+                havingClauses << " ${details.having} "
+            }
+
+            if (details.group?.trim()) {
+                groupByClauses << " ${details.group} "
+            }
+
+            if (details.params) {
+                params += details.params
+            }
 		}
 
         String selectClause = queryFilter.selectClause()
@@ -152,7 +199,26 @@ public class QueryBuilder {
 			}
 		}
 
-        String query = selectClause + " " +  fromClause + " where " + whereClause
+        String groupByClause = ""
+        if (groupByClauses) {
+            groupByClause = " group by " + groupByClauses.join(", ")
+        }
+
+        String havingClause = ""
+        if (havingClauses) {
+            havingClause = " having "
+            havingClauses.eachWithIndex {clause, idx ->
+                havingClause += " ${clause}"
+                if (idx < havingClauses.size() - 1) {
+                    havingClause += " and "
+                }
+                else {
+                    havingClause += " "
+                }
+            }
+        }
+
+        String query = selectClause + " " +  fromClause + " where " + whereClause + groupByClause + havingClause
 		return [hql: query.toString(), 'params': params.flatten()]
 	}
 

@@ -393,7 +393,7 @@ class DataService {
 		} else {
 			results = TestOutcome.executeQuery(cuantoQuery.hql)
 		}
-		return results[0]
+		return results.size()
 	}
 
 

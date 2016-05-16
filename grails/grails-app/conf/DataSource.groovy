@@ -7,6 +7,8 @@ hibernate {
     cache.use_second_level_cache=true
     cache.use_query_cache=true
     cache.provider_class='org.hibernate.cache.EhCacheProvider'
+    dialect='cuanto.CustomDialect'
+    //show_sql=true
 }
 // environment specific settings
 environments {
@@ -21,6 +23,9 @@ environments {
 		}
 	}
 	test {
+		hibernate {
+			dialect='org.hibernate.dialect.HSQLDialect'
+		}
 		dataSource {
 			dbCreate = "update"
 			driverClassName = "org.hsqldb.jdbcDriver"
@@ -28,6 +33,17 @@ environments {
 			username = "sa"
 			password = ""
 		}
+		// use this for tag filter tests which are dependent on MySQL
+		/* 
+        dataSource {
+        	    dbCreate = "update"
+                pooled = true
+                username = "root"
+                password = ""
+                driverClassName = "com.mysql.jdbc.Driver"
+                url = "jdbc:mysql://localhost:3306/cuanto-test?autoreconnect=true"
+        }
+        */
 	}
 	production {
 		dataSource {

@@ -161,7 +161,7 @@ public class TestOutcomeServiceTests extends GroovyTestCase {
 			outcomes << outcome
 		}
 
-		def csv = testOutcomeService.getDelimitedTextForTestOutcomes(outcomes, ",")
+		def csv = testOutcomeService.getDelimitedTextForTestOutcomes(outcomes, null, ",")
 		def csvLines = csv.readLines()
 		assertEquals "Wrong number of lines for CSV output", outcomes.size() + 1, csvLines.size()
 

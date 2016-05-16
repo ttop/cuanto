@@ -43,9 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <button type="button" name="tagbtn-${tIdx + 2}">${tag}</button>
           </span>
         </span>
-        <g:if test="${(tIdx + 2) % 9 == 0}">
-          <br/>
-        </g:if>
       </g:each>
     </div>
   </div>

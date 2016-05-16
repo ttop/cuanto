@@ -25,6 +25,9 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 	var analysisCookieName = "cuantoAnalysis";
 	var prefTcFormat = "tcFormat";
 	var prefHiddenColumns = "hiddenColumns";
+	var prefRowsPerPage = "rowsPerPage";
+
+	var defaultRowsPerPage = 10;
 
 	var dataTable;
 	var analysisDialog;
@@ -79,6 +82,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		onSearchTermChange(null);
 		dataTable = new YAHOO.widget.DataTable("trDetailsTable", getDataTableColumnDefs(),
 			getAnalysisDataSource(), getDataTableConfig());
+		dataTable.get('paginator').subscribe('rowsPerPageChange', onRowsPerPageChange);
 
 		var hiddenCols = getHiddenColumns();
 
@@ -142,6 +146,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		YAHOO.util.Event.addListener("deleteTestRun", "click", deleteTestRun);
 		YAHOO.util.Event.addListener("recalcStats", "click", recalcStats);
 		YAHOO.util.Event.addListener("chooseColumns", "click", chooseColumns);
+		YAHOO.util.Event.addListener("export", "click", exportResults);
 
 
 		new YAHOO.widget.Tooltip("feedtt", {context:"feedImg"});
@@ -186,7 +191,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 			width: tableWidth + "px",
 			renderLoopSize:10,
 			generateRequest: buildOutcomeQueryString,
-			paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, 10),
+			paginator: getDataTablePaginator(0, Number.MAX_VALUE, 0, getRowsPerPage(defaultRowsPerPage)),
 			sortedBy: {key:"testCase", dir:YAHOO.widget.DataTable.CLASS_ASC},
 			dynamicData: true
 		};
@@ -244,7 +249,7 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 					return name.toLowerCase() == prop.toLowerCase();
 				});
 				if (matchingNames.length == 0) {
-					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:true,
+					var col = new YAHOO.widget.Column({key: prop, label: prop, resizeable: true, width: 100, sortable:false,
 						formatter: propertyFormatter});
 					var hiddenCols = getHiddenColumns();
 					dataTable.insertColumn(col);
@@ -315,6 +320,22 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		return newRequest;
 	}
 
+	function generateExportRequest() {
+		var order;
+		if (dataTable.get("sortedBy").dir == YAHOO.widget.DataTable.CLASS_DESC) {
+			order = "desc";
+		} else {
+			order = "asc";
+		}
+		var newRequest = "filter=" + getCurrentFilter() +
+		                 "&order=" + order +
+		                 "&sort=" + dataTable.get("sortedBy").key +
+		                 getSearchQuery() +
+                         getTagsQuery() +
+                         "&rand=" + new Date().getTime();
+
+		return newRequest;	
+	}
 
     function onFilterChangeEvent(e, arg) {
 	    var filter = arg[0];
@@ -412,14 +433,20 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function getDefaultTableState() {
-		var tcFormat = YAHOO.util.Cookie.getSub(analysisCookieName, prefTcFormat);
+		var tcFormat = getSubCookie(prefTcFormat);
 		if (tcFormat) {
 			$('#tcFormat').val(tcFormat);
 		} else {
 			setTcFormatPref();
 		}
-		return "format=json&offset=0&max=10&order=asc&sort=testCase&filter=" + getCurrentFilter() +
-		       "&tcFormat=" + tcFormat + "&rand=" + new Date().getTime();
+		return "format=json" + 
+		       "&offset=0" +
+		       "&max=" + getRowsPerPage(defaultRowsPerPage) + 
+		       "&order=asc" +
+		       "&sort=testCase" +
+		       "&filter=" + getCurrentFilter() +
+		       "&tcFormat=" + tcFormat + 
+		       "&rand=" + new Date().getTime();
 	}
 
 
@@ -830,19 +857,37 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 
 
 	function onTcFormatChange(e) {
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, getCurrentTcFormat(), {path: "/", expires: new Date().getDate() + 30});
 		setTcFormatPref();
 		onTableStateChange(e);
 	}
 
 	function setTcFormatPref() {
 		var tcFormat = getCurrentTcFormat();
-		var expDate = new Date();
-		expDate.setDate(expDate.getDate() + 30);
-		YAHOO.util.Cookie.setSub(analysisCookieName, prefTcFormat, tcFormat, {path: "/", expires: expDate});
+		setSubCookie(prefTcFormat, tcFormat);
 		return tcFormat;
 	}
 
+	function onRowsPerPageChange(e) {
+		setSubCookie("rowsPerPage", e.newValue);
+	}
+
+	function getRowsPerPage(defaultVal) {
+		var rowsPerPage = getSubCookie("rowsPerPage");
+		if (!rowsPerPage) {
+			rowsPerPage = defaultVal;
+		}
+		return rowsPerPage;
+	}
+
+	function setSubCookie(name, value) {
+		var expDate = new Date();
+		expDate.setDate(expDate.getDate() + 365);
+		YAHOO.util.Cookie.setSub(analysisCookieName, name, value, {path: "/", expires: expDate})
+	}
+
+	function getSubCookie(name) {
+		return YAHOO.util.Cookie.getSub(analysisCookieName, name);
+	}
 
 	function onTableStateChange(e) {
 		var newRequest = generateNewRequest();
@@ -1034,6 +1079,23 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
 		});
 	}
 
+	// modify the export url as it's clicked to add in current view filter
+	// query parameters
+	function exportResults(e) {
+		var requestString = generateExportRequest();
+
+		var columns = [];
+		$.each(dataTable.getColumnSet().flat, function(idx, column) {
+			var isYui = column.key.match(/^yui/);
+			if (!column.key.match(/^yui/) && !column.hidden) {
+				columns.push(column.label + "|" + column.key);
+			}
+		});
+
+		requestString += "&columns=" + columns;
+		e.target.href += "?" + requestString;
+	}
+
 	function unescapeHtmlEntities(s) {
 		return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 	}
@@ -1099,6 +1161,24 @@ YAHOO.cuanto.AnalysisTable = function(testResultNames, analysisStateNames, propN
         $.each($('.tagspan'), function(idx, tagspan) {
             tagButtons.push(new YAHOO.widget.Button(tagspan.id, {type: "checkbox", checked: false, onclick: { fn: onTagClick } }));
         });
+
+    	// if there's a tags query param, toggle those tag buttons on
+		if (YAHOO.util.History.getQueryStringParameter('tags') ) {
+			var removeUnchecked = true;
+        	var tags = YAHOO.util.History.getQueryStringParameter('tags').split(",");
+			// loop over tag buttons
+			for (var i = 2; i < tagButtons.length; i++) {
+				var button = tagButtons[i];
+				if (tags.indexOf(button.get("label")) >= 0) {
+					button.set("checked", true);
+				} else {
+					if (removeUnchecked) {
+						$(button._button).parents('.tagspan').remove();
+					}
+				}
+			}
+			onFilterChange(null);	
+		}
     }
 
     function onTagClick(e) {

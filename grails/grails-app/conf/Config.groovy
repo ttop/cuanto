@@ -92,7 +92,7 @@ uiperformance.exclusions = [
 ]
 
 // statSleep is the time to sleep between calculating test run stats
-statSleep = 1000
+statSleep = 3000
 
 // testOutcomeAndTestRunInitSleep is the time to sleep between initializing TestOutcomes and TestRuns
 testOutcomeAndTestRunInitSleepTime = 5000

@@ -405,6 +405,8 @@ class TestOutcomeService {
 			filter.isSkip = true
 		} else if (params.filter?.equalsIgnoreCase("allquarantined")) {
             filter.analysisState = dataService.getAnalysisStateByName('Quarantined')
+        } else if (params.filter?.equalsIgnoreCase("nonPassing")) {
+        	filter.isNonPassing = true
         }
 
         if (params.tag) {
@@ -447,29 +449,97 @@ class TestOutcomeService {
 	}
 
 
-	String getDelimitedTextForTestOutcomes(List<TestOutcome> outcomes, String delimiter) {
+	String getDelimitedTextForTestOutcomes(List<TestOutcome> outcomes, List columns, String delimiter) {
 		StringBuffer buff = new StringBuffer()
 		String d = delimiter
-		buff << "Test Outcome ID${d}Test Result${d}Analysis State${d}Started At${d}Finished At${d}Duration${d}Bug Title${d}Bug URL${d}Note\n"
+		def standardColumns = ["testCase", "parameters", "tags", "result", "streak", "successRate", "analysisState",
+		                        "startedAt", "finishedAt", "duration", "bug", "owner", "note", "testOutput", "links"]
+		def columnNames = ["Name", "Test Result", "Analysis State", "Started At", "Finished At", "Duration",
+		                   "Bug", "Note"]
+		def columnFields = ["testCase", "result", "analysisState", "startedAt", "finishedAt", "duration",
+		                    "bug", "note"]
+		def propertyFields = []
+
+		if (columns) {
+			columnNames = []
+			columnFields = []
+			columns.each { column ->
+				columnNames << column[0]
+				columnFields << column[1]
+				if (!standardColumns.contains(column[1])) {
+					propertyFields << column[0]
+				}
+			}
+		}
+
+		buff << "Test Outcome ID${d}"
+		columnNames.each { name ->
+			buff << name << d
+		}
+		buff.setLength(buff.length() - 1)
+		buff << '\n'
 
 		outcomes.each { outcome ->
 			def renderList = []
 			renderList << outcome.id
-			renderList << outcome.testResult.name
-			renderList << outcome.analysisState?.name
-			renderList << outcome.startedAt
-			renderList << outcome.finishedAt
-			renderList << outcome.duration
-			renderList << outcome.bug?.title
-			renderList << outcome.bug?.url
-			renderList << outcome.note
+			if ("testCase" in columnFields)
+				renderList << outcome.testCase.fullName
+			if ("parameters" in columnFields)
+				renderList << outcome.testCase.parameters
+			if ("tags" in columnFields)
+				renderList << (outcome.tags.isEmpty() ? null : outcome.tags)
+			if ("result" in columnFields)
+				renderList << outcome.testResult.name
+			if ("streak" in columnFields)
+				renderList << outcome.testOutcomeStats?.streak
+			if ("successRate" in columnFields)
+				renderList << outcome.testOutcomeStats?.successRate
+			if ("analysisState" in columnFields)
+				renderList << outcome.analysisState?.name
+			if ("startedAt" in columnFields)
+				renderList << outcome.startedAt
+			if ("finishedAt" in columnFields)
+				renderList << outcome.finishedAt
+			if ("duration" in columnFields)
+				renderList << outcome.duration
+			if ("bug" in columnFields)
+				renderList << outcome.bug?.title
+			if ("owner" in columnFields)
+				renderList << outcome.owner
+			if ("note" in columnFields)
+				renderList << outcome.note
+			if ("testOutput" in columnFields)
+				renderList << outcome.testOutput
+			if ("links" in columnFields)
+				renderList << (outcome.links.isEmpty() ? null : outcome.links)
+				
+			propertyFields.each { propertyField ->
+				def found = false
+				outcome.testProperties.each { property ->
+					if (property.name == propertyField) {
+						renderList << property.value
+						found = true
+					}
+				}
+				if (!found) {
+					renderList << null
+				}
+			}
+
 			renderList.eachWithIndex { it, indx ->
 				if (it == null) {
-					buff << ''
+					it = ''
 				} else {
-					buff << it.toString().replaceAll(delimiter, "\\${delimiter}")
+					it = it.toString()
+					it = it.replaceAll(delimiter, "\\${delimiter}")
+					it = it.replaceAll("\"", "\"\"")
+					if (it.contains("\"") || it.contains(delimiter) || it.contains("\n")) {
+						it = "\"${it}\""
+					}
 				}
-				//buff << it != null ? it : ''
+
+				buff << it
+
 				if (indx != renderList.size() - 1) {
 					buff << delimiter
 				}

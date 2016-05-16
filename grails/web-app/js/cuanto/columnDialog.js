@@ -56,7 +56,7 @@ YAHOO.cuanto.ColumnDialog = function (datatable, overlayManager, subCookieName, 
 
 	function setAnalysisColumnPref() {
 		var expDate = new Date();
-		expDate.setDate(expDate.getDate() + 30);
+		expDate.setDate(expDate.getDate() + 365);
 
 		var colHidden = [];
 		$.each(datatable.getColumnSet().flat, function(idx, column) {

@@ -1,6 +1,7 @@
 package cuanto
 
 import cuanto.test.TestObjects
+import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 /**
  * User: Todd Wells
@@ -84,6 +85,10 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
 
 
     void testFilterByTagsAndTestRun() {
+        // tests involving tags depend on MySQL specific code
+        if (!ApplicationHolder.application.config.dataSource.driverClassName.contains("mysql")) {
+            return
+        }
         def testCases = []
         def numOutcomes = 10
         0.upto(numOutcomes - 1) {
@@ -122,48 +127,65 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
         outcomes[6].addToTags(tags[0])
         outcomes[6].addToTags(tags[1])
         outcomes[6].addToTags(tags[2])
-        outcomes[6].addToTags(tags[3])
+
+        outcomes[7].addToTags(tags[0])
 
         outcomes.each {
             dataService.saveDomainObject it, true
         }
 
+        // 1 tag - tag 0, 4 tests
         TestOutcomeQueryFilter queryFilterA = new TestOutcomeQueryFilter()
         queryFilterA.testRun = testRun
-        queryFilterA.tags = tags.collect{it.name}
+        queryFilterA.tags = [tags[0].name]
 
         def fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
-        assertEquals "Wrong number of TestOutcomes returned", 7, fetchedOutcomes.size()
+        assertEquals "Wrong number of TestOutcomes returned", 4, fetchedOutcomes.size()
 
+        // try it also with sorts
+        queryFilterA.sorts = []
+        queryFilterA.sorts << new SortParameters(sort: "testRun.dateExecuted", sortOrder: "desc")
+        queryFilterA.sorts << new SortParameters(sort: "testRun.lastUpdated", sortOrder: "desc")
+        fetchedOutcomes = dataService.getTestOutcomes(queryFilterA)
+        assertEquals "Wrong number of TestOutcomes returned", 4, fetchedOutcomes.size()
+
+        // 2 tags - tag 0, 1 - 2 tests (4, 6)
         TestOutcomeQueryFilter queryFilterB = new TestOutcomeQueryFilter()
         queryFilterB.testRun = testRun
         queryFilterB.tags = tags[0..1].collect{ it.name }
         fetchedOutcomes = dataService.getTestOutcomes(queryFilterB)
-        assertEquals "Wrong number of TestOutcomes returned", 4, fetchedOutcomes.size()
+        assertEquals "Wrong number of TestOutcomes returned", 2, fetchedOutcomes.size()
 
         fetchedOutcomes.each { outcome ->
-            assertNotNull "Couldnt find a matching tag", outcome.tags.find {it.name == tags[0].name} || outcome.tags.find {it.name == tags[1].name}
+            assertNotNull "Couldnt find a matching tag", outcome.tags.find {it.name == tags[0].name} && outcome.tags.find {it.name == tags[1].name}
         }
 
         // now do all uppercase, tags should still be found
         queryFilterB.tags = tags[0..1].collect{ it.name.toUpperCase() }
         fetchedOutcomes = dataService.getTestOutcomes(queryFilterB)
-        assertEquals "Wrong number of TestOutcomes returned", 4, fetchedOutcomes.size()
+        assertEquals "Wrong number of TestOutcomes returned", 2, fetchedOutcomes.size()
 
         fetchedOutcomes.each { outcome ->
-            assertNotNull "Couldnt find a matching tag", outcome.tags.find {it.name == tags[0].name} || outcome.tags.find {it.name == tags[1].name}
+            assertNotNull "Couldnt find a matching tag", outcome.tags.find {it.name == tags[0].name} && outcome.tags.find {it.name == tags[1].name}
         }
 
-        // now search for TestOutcomes without any tags
+        // all tags - 0 tests
         TestOutcomeQueryFilter queryFilterC = new TestOutcomeQueryFilter()
         queryFilterC.testRun = testRun
+        queryFilterC.sorts = queryFilterA.sorts
+        queryFilterC.tags = tags.collect{ it.name }
+        fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
+        assertEquals "Wrong number of TestOutcomes returned", 0, fetchedOutcomes.size()
+
+        // now search for TestOutcomes without any tags
+        queryFilterC = new TestOutcomeQueryFilter()
         queryFilterC.hasTags = false
         fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
-        assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+        assertEquals "Wrong number of TestOutcomes returned", 2, fetchedOutcomes.size()
 
         queryFilterC.hasTags = true
         fetchedOutcomes = dataService.getTestOutcomes(queryFilterC)
-        assertEquals "Wrong number of TestOutcomes returned", 7, fetchedOutcomes.size()
+        assertEquals "Wrong number of TestOutcomes returned", 8, fetchedOutcomes.size()
     }
 
 
@@ -239,32 +261,32 @@ public class TestOutcomeQueryFilterTests extends GroovyTestCase {
 		fetchedOutcomes = dataService.getTestOutcomes(queryfilterD)
 		assertEquals "Wrong number of TestOutcomes returned", 0, fetchedOutcomes.size()
 
-		println "****** ${Tag.count()} tags"
+        // tests involving tags depend on MySQL specific code
+        if (ApplicationHolder.application.config.dataSource.driverClassName.contains("mysql")) {
+    		println "****** ${Tag.count()} tags"
 
-		TestOutcomeQueryFilter queryFilterWithTagsB = new TestOutcomeQueryFilter()
-		queryFilterWithTagsB.testRun = testRun
-		//queryFilterWithTagsB.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
-		queryFilterWithTagsB.tags = ["cool"]
+    		TestOutcomeQueryFilter queryFilterWithTagsB = new TestOutcomeQueryFilter()
+    		queryFilterWithTagsB.testRun = testRun
+    		queryFilterWithTagsB.tags = ["cool"]
 
-		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsB)
-		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+    		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsB)
+    		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
 
+    		TestOutcomeQueryFilter queryFilterWithTags = new TestOutcomeQueryFilter()
+    		queryFilterWithTags.testRun = testRun
+    		queryFilterWithTags.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
+    		queryFilterWithTags.tags = ["cool"]
 
-		TestOutcomeQueryFilter queryFilterWithTags = new TestOutcomeQueryFilter()
-		queryFilterWithTags.testRun = testRun
-		queryFilterWithTags.hasAllTestOutcomeProperties = [new TestOutcomeProperty("john", "lennon")]
-		queryFilterWithTags.tags = ["cool"]
+    		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTags)
+    		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
 
-		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTags)
-		assertEquals "Wrong number of TestOutcomes returned", 3, fetchedOutcomes.size()
+    		TestOutcomeQueryFilter queryFilterWithTagsC = new TestOutcomeQueryFilter()
+    		queryFilterWithTagsC.testRun = testRun
+    		queryFilterWithTagsC.hasAllTestOutcomeProperties = [new TestOutcomeProperty("george", "harrison")]
+    		queryFilterWithTagsC.tags = ["cool"]
 
-		TestOutcomeQueryFilter queryFilterWithTagsC = new TestOutcomeQueryFilter()
-		queryFilterWithTagsC.testRun = testRun
-		queryFilterWithTagsC.hasAllTestOutcomeProperties = [new TestOutcomeProperty("george", "harrison")]
-		queryFilterWithTagsC.tags = ["cool"]
-
-		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsC)
-		assertEquals "Wrong number of TestOutcomes returned", 1, fetchedOutcomes.size()
-
+    		fetchedOutcomes = dataService.getTestOutcomes(queryFilterWithTagsC)
+    		assertEquals "Wrong number of TestOutcomes returned", 1, fetchedOutcomes.size()
+        }
 	}
 }
